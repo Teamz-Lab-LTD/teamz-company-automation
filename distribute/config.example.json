@@ -1,0 +1,75 @@
+{
+  "_instructions": "Copy this file to distribute-config.json and fill in your API keys. See distribute-setup.md for step-by-step instructions.",
+
+  "devto": {
+    "enabled": false,
+    "api_key": "YOUR_DEVTO_API_KEY"
+  },
+
+  "hashnode": {
+    "enabled": false,
+    "api_key": "YOUR_HASHNODE_PAT",
+    "publication_id": "YOUR_PUBLICATION_ID"
+  },
+
+  "medium": {
+    "enabled": false,
+    "integration_token": "YOUR_MEDIUM_INTEGRATION_TOKEN"
+  },
+
+  "blogger": {
+    "enabled": false,
+    "blog_id": "YOUR_BLOG_ID",
+    "credentials_file": "~/.config/teamzlab/blogger-credentials.json"
+  },
+
+  "wordpress": {
+    "enabled": false,
+    "site": "YOUR_SITE.wordpress.com",
+    "username": "YOUR_USERNAME",
+    "app_password": "YOUR_APP_PASSWORD"
+  },
+
+  "tumblr": {
+    "enabled": false,
+    "blog_name": "YOUR_BLOG_NAME",
+    "consumer_key": "YOUR_CONSUMER_KEY",
+    "consumer_secret": "YOUR_CONSUMER_SECRET",
+    "oauth_token": "YOUR_OAUTH_TOKEN",
+    "oauth_secret": "YOUR_OAUTH_SECRET"
+  },
+
+  "bluesky": {
+    "enabled": false,
+    "handle": "YOUR_HANDLE.bsky.social",
+    "app_password": "YOUR_APP_PASSWORD"
+  },
+
+  "mastodon": {
+    "enabled": false,
+    "instance": "https://mastodon.social",
+    "access_token": "YOUR_ACCESS_TOKEN"
+  },
+
+  "pinterest": {
+    "enabled": false,
+    "app_id": "YOUR_PINTEREST_APP_ID",
+    "app_secret": "YOUR_PINTEREST_APP_SECRET",
+    "board_id": "YOUR_BOARD_ID",
+    "credentials_file": "~/.config/teamzlab/pinterest-credentials.json",
+    "redirect_uri": "http://localhost:8085/",
+    "default_pin_image_url": "https://tool.teamzlab.com/og-images/tools.png"
+  },
+
+  "google_sites": {
+    "enabled": false,
+    "webapp_url": "YOUR_APPS_SCRIPT_WEB_APP_URL",
+    "secret_key": "YOUR_SECRET_KEY"
+  },
+
+  "defaults": {
+    "site_url": "https://tool.teamzlab.com",
+    "author": "Teamz Lab",
+    "canonical_base": "https://tool.teamzlab.com"
+  }
+}

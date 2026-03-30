@@ -1,0 +1,4315 @@
+{
+  "links": [
+    {
+      "source": "https://dev.to/teamzlab/1100-free-browser-tools-no-signup-no-backend-100-private-3a4h",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-20T08:46:36.964154+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhi7skp4ap2b",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-20T09:01:02.460655+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116260793353162833",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-20T09:26:15.462036+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/1100-free-online-tools",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-20T11:27:55.198083+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/20/1100-free-online-tools/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-20T12:01:51.984911+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811607838970593280",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-20T12:25:51.395300+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/1100-free-online-tools.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-20T12:50:38.382242+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/1100-Free-Online-Tools--No-Signup-No-Email-No-Downloads-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:39:45.346929+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/27",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:42:47.970440+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245589",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:57:42.229187+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://gitlab.com/-/snippets/5973100",
+      "platform": "gitlab",
+      "type": "DoFollow",
+      "date": "2026-03-26T20:16:11.027988+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1T8Oqd7xDznGGWL1Jur5oeBouzzbi_HRutvNjZhZomiw",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T22:59:41Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/eid-salami-goes-digital-free-tools-to-make-gift-giving-fun-3cen",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-20T19:33:10.434431+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/eid-salami-goes-digital-free-tools-to-make-gift-giving-fun",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-20T19:33:11.682163+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/eid-salami-goes-digital-free-tools-to.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-20T19:33:15.411630+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/21/eid-salami-goes-digital-free-tools-to-make-gift-giving-fun/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-20T19:33:23.304313+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811634738125275136",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-20T19:33:24.378954+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhjb36mtkr2o",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-20T19:33:26.418656+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116263171303773640",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-20T19:33:27.345310+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Eid-Salami-Goes-Digital--Free-Tools-to-Make-Gift-Giving-Fun-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:39:47.445822+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/28",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:42:50.722870+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245594",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:57:46.426504+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1ioHxMrBQUjFBmVFXBPvp9Q6e4P_QBhbjFrsBdGyGB2g",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T22:59:49Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/20-free-tools-for-bangladesh-bkash-nagad-tax-cgpa-more-3927",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-20T19:33:33.987694+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/20-free-tools-for-bangladesh-bkash-nagad-tax-cgpa-more",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-20T19:33:35.080838+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/20-free-tools-for-bangladesh-bkash.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-20T19:33:37.512924+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/21/20-free-tools-for-bangladesh-bkash-nagad-tax-cgpa-more/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-20T19:33:45.320388+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811634760753577984",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-20T19:33:46.087566+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhjb3tabrh23",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-20T19:33:48.029149+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116263172758115532",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-20T19:33:49.009747+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/20-Free-Tools-for-Bangladesh--bKash-Nagad-Tax-CGPA--More-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:39:50.068025+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/29",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:42:58.337693+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245602",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:57:50.859266+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=16fY6LDqJpdxEaMLXqHCHsSGvVD0PcpP2eCJ7IuaYcWI",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:00:00Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/50-free-developer-tools-no-install-no-signup-runs-in-browser-4g64",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:32:29.345392+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/50-free-developer-tools-no-install-no-signup-runs-in-browser",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:32:30.515549+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/50-free-developer-tools-no-install-no.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:32:35.240849+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/23/50-free-developer-tools-no-install-no-signup-runs-in-browser/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:32:43.256271+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811891387649949696",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:32:45.019622+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqezmr7hl2p",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:32:47.205828+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116279211993808635",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:32:48.646082+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/50-Free-Developer-Tools--No-Install-No-Signup-Runs-in-Browser-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:39:52.739294+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/30",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:00.646170+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245609",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:57:55.148834+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=17et4QICt3rTQUOntVR-Z0ENdPsRQYUvLGXOuSkH1jjk",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:00:10Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/80-free-health-calculators-no-signup-no-data-collection-1bkj",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:32:54.920410+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/80-free-health-calculators-no-signup-no-data-collection",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:32:56.096821+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/80-free-health-calculators-no-signup-no.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:32:57.242156+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/23/80-free-health-calculators-no-signup-no-data-collection/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:33:06.807119+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811891411850002432",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:33:07.479510+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqf2c4gqk2m",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:33:09.608419+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116279213425703735",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:33:10.209664+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/80-Free-Health-Calculators--No-Signup-No-Data-Collection-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:39:55.323577+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/31",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:03.021003+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245620",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:57:59.321525+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1iAnLQ_1RTnhhlfK3_p8A3mPkG0hOeKE9y71UlzkdJtc",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:00:23Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/free-resume-career-tools-no-uploads-your-data-stays-private-309p",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:33:18.729453+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/free-resume-career-tools-no-uploads-your-data-stays-private",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:33:20.057753+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/free-resume-career-tools-no-uploads.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:33:22.063928+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/23/free-resume-career-tools-no-uploads-your-data-stays-private/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:33:29.893615+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811891436537757697",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:33:31.120407+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqf2ytehl2i",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:33:33.416057+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116279214995995465",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:33:34.184259+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Free-Resume--Career-Tools--No-Uploads-Your-Data-Stays-Private-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:39:57.864847+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/32",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:05.220683+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245626",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:03.498221+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1yW9symwJ_3SEJUv526Bn3EJdCFolzaMwmRGd-fws3oA",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:00:33Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/free-ai-tools-that-run-in-your-browser-no-signup-no-server-no-limits-l3m",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:35:26.841294+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/free-ai-tools-that-run-in-your-browser-no-signup-no-server-no-limits",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:35:28.411701+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/free-ai-tools-that-run-in-your-browser.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:35:30.771224+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/23/free-ai-tools-that-run-in-your-browser-no-signup-no-server-no-limits/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:35:39.090986+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811891571596345344",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:35:39.939915+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqf6vlua32p",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:35:44.253735+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116279223559155333",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:35:44.960994+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Free-AI-Tools-That-Run-in-Your-Browser--No-Signup-No-Server-No-Limits-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:00.429303+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/33",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:07.569223+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245633",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:07.854160+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1cxmhjMchhgzOzzKaKgtc_5pquEs8jxm0Qk09BkomaME",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:00:43Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/free-logo-design-tools-no-watermarks-no-signup-no-catches-55gd",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:35:45.801168+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/free-logo-design-tools-no-watermarks-no-signup-no-catches",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:35:48.037644+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/free-logo-design-tools-no-watermarks-no.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:35:50.311494+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/23/free-logo-design-tools-no-watermarks-no-signup-no-catches/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T15:35:58.034786+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811891591393558528",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:35:58.737270+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqf7fn5z32p",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:36:01.060844+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116279224661731777",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T15:36:01.633185+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Free-Logo--Design-Tools--No-Watermarks-No-Signup-No-Catches-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:03.041696+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/34",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:09.653558+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245637",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:12.883952+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1WSjkwaA_vZdAB4FqXkBAYruuboOZyxk3aBecXjmWY6s",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:00:53Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/10-free-coffee-tools-for-home-baristas-no-app-no-signup-ega",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T17:57:55.050009+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/10-free-coffee-tools-for-home-baristas-no-app-no-signup",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T17:57:56.195818+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/10-free-coffee-tools-for-home-baristas.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T17:58:00.875013+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/23/10-free-coffee-tools-for-home-baristas-no-app-no-signup/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T17:58:08.498381+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811900536423055360",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T17:58:09.434169+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqn5mvrni27",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T17:58:11.541126+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116279783720224986",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T17:58:12.221881+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/10-Free-Coffee-Tools-for-Home-Baristas--No-App-No-Signup-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:05.681470+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/35",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:11.919938+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245641",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:17.045343+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=106g-g9NZI6rpBFx6eMGO_HhxWT_3Gu521CEMKBYorZE",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:01:04Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/7-free-signature-tools-no-upload-no-signup-100-private-1i5c",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T18:09:07.334009+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/7-free-signature-tools-no-upload-no-signup-100-private",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T18:09:08.689946+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/7-free-signature-tools-no-upload-no.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T18:09:10.730925+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/24/7-free-signature-tools-no-upload-no-signup-100-private/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T18:09:18.080002+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811901238325149696",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T18:09:18.781689+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqnrligsz2e",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T18:09:21.149811+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116279827608433174",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T18:09:21.889291+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/7-Free-Signature-Tools--No-Upload-No-Signup-100-Private-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:08.264571+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/36",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:14.132268+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245644",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:20.997901+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1FO0qBECEFpGh_n3zpyGmo9WDMzMoC51-qt6C5f3kImU",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:01:14Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/10-free-tea-tools-for-tea-lovers-no-app-no-signup-mnh",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T18:58:41.914544+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/10-free-tea-tools-for-tea-lovers-no-app-no-signup",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T18:58:43.038640+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/10-free-tea-tools-for-tea-lovers-no-app.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T18:58:47.060960+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/24/10-free-tea-tools-for-tea-lovers-no-app-no-signup/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T18:58:55.117262+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811904360062779392",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T18:58:55.825120+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqqkciapo26",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T18:58:57.996440+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116280022693540060",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T18:58:58.631925+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/10-Free-Tea-Tools-for-Tea-Lovers--No-App-No-Signup-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:11.032262+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/37",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:16.295878+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245657",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:25.423994+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1WWmWUN2DbBRhcdLvrBp0Vw0r-O0AfP_slK8c2l-8djI",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:01:26Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/10-free-baking-tools-for-home-bakers-no-app-no-signup-2o1j",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-23T19:29:51.829187+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/10-free-baking-tools-for-home-bakers-no-app-no-signup",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-23T19:29:53.153847+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/10-free-baking-tools-for-home-bakers-no.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-23T19:29:55.490098+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/24/10-free-baking-tools-for-home-bakers-no-app-no-signup/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-23T19:30:05.346298+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811906321540612096",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-23T19:30:06.454881+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhqsc2i66r2w",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-23T19:30:08.680009+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116280145293308641",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-23T19:30:09.719600+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/10-Free-Baking-Tools-for-Home-Bakers--No-App-No-Signup-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:13.803251+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/38",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:18.567223+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245665",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:29.687114+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1NJgaZ6eQb9xPSMWiZSVGDTEFIZLWJuXjcVud1vFdQJ0",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:01:37Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/5-free-us-finance-calculators-for-2026-tax-law-student-loans-aca-and-more-2ojg",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-24T10:07:59.306813+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/5-free-us-finance-calculators-for-2026-tax-law-student-loans-aca-and-more",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-24T10:08:00.378636+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/5-free-us-finance-calculators-for-2026.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-24T10:08:04.603119+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/24/5-free-us-finance-calculators-for-2026-tax-law-student-loans-aca-and-more/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-24T10:08:12.964285+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811961568575291392",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-24T10:08:14.238530+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhsdebkpyu2i",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-24T10:08:16.524334+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116283598241926078",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-24T10:08:17.169399+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-Free-US-Finance-Calculators-for-2026--Tax-Law-Student-Loans-ACA-and-More-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:16.382073+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/39",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:21.301899+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245672",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:33.889666+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1M-si7CNYCIf2GjI6kV3Po82FIBb_pFh8qswSE5tceis",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:01:47Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/8-free-japanese-finance-calculators-tedori-furusato-nozei-housing-loan-and-more-1png",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:04:35.891655+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/8-free-japanese-finance-calculators-tedori-furusato-nozei-housing-loan-and-more",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:04:37.069944+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/8-free-japanese-finance-calculators.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:04:39.546050+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/24/8-free-japanese-finance-calculators-tedori-furusato-nozei-housing-loan-and-more/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:04:46.889082+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811965127281786880",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:04:48.235683+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhsgjg3uvh2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:04:50.347387+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116283820653054893",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:04:51.191176+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/8-Free-Japanese-Finance-Calculators--Tedori-Furusato-Nozei-Housing-Loan-and-More-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:18.955906+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/40",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:23.491536+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245686",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:38.246270+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1HqDNHMyml43ACy-T5X4UstTCmDM2auJ_1wzN09tZfi8",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:02:01Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/10-free-photo-video-editing-tools-no-signup-no-watermark-private-2bkl",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:28:29.839307+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/10-free-photo-video-editing-tools-no-signup-no-watermark-private",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:28:31.050028+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/10-free-photo-video-editing-tools-no.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:28:35.533482+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/24/10-free-photo-video-editing-tools-no-signup-no-watermark-private/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:28:42.320583+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811966632448622592",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:28:43.861789+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhshu77vbo2y",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:28:46.004518+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116283914739494616",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:28:46.606449+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/10-Free-Photo--Video-Editing-Tools--No-Signup-No-Watermark-Private-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:21.575259+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/41",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:25.704286+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245698",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:44.068701+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1B_RJ-wYoepbm1iRT3afX6dnl_xTTEjcWh4aNlF8x80o",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:18:00Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/us-capital-gains-tax-401k-growth-calculator-free-private-no-signup-34l0",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:29:09.634844+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/us-capital-gains-tax-401k-growth-calculator-free-private-no-signup",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:29:10.790259+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/us-capital-gains-tax-401k-growth.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:29:13.338679+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/24/us-capital-gains-tax-401k-growth-calculator-free-private-no-signup/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-24T11:29:19.082510+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811966671370747904",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:29:21.427400+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhshvd3hxy23",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:29:23.557720+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116283917207013802",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-24T11:29:24.204431+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/US-Capital-Gains-Tax--401k-Growth-Calculator--Free-Private-No-Signup-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:24.215791+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/42",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:28.093036+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245706",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:48.629586+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1toCA6ugXfi2JbPUkQxbw4G6lGE-TJVe8-Gg8nv1zFX0",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:18:11Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/40-free-finance-tools-for-5-european-countries-in-native-languages-l0o",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-24T13:35:16.779916+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/40-free-finance-tools-for-5-european-countries-in-native-languages",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-24T13:35:17.916473+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/40-free-finance-tools-for-5-european.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-24T13:35:22.254439+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/24/40-free-finance-tools-for-5-european-countries-in-native-languages/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-24T13:35:28.126527+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/811974607344205824",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-24T13:35:29.400477+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhsowuqhtk2y",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-24T13:35:31.806285+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116284413220720475",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-24T13:35:33.109811+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/40-Free-Finance-Tools-for-5-European-Countries--In-Native-Languages-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:26.990177+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/43",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:31.162038+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245716",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:58:57.340468+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1pWV91n5-TBaDGzBrATFtkRTAUdd1D8lv7jzUlGNoQRM",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:18:21Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/20-free-browser-tools-that-replace-paid-software-99mo-45fo",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-24T20:42:09.109399+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/20-free-browser-tools-that-replace-paid-software-99mo",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-24T20:42:10.323205+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/20-free-browser-tools-that-replace-paid.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-24T20:42:14.320690+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/25/20-free-browser-tools-that-replace-paid-software-99-mo/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-24T20:42:22.499138+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812001466456948736",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-24T20:42:24.171726+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhtgsapvop2p",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-24T20:42:26.350409+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116286091898487007",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-24T20:42:27.280687+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/20-Free-Browser-Tools-That-Replace-Paid-Software--99mo-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:29.728171+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/44",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:43:33.546648+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245729",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:59:01.887823+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1_uJyvrxTyufAVAR2Gttj8BxWXKjToSnUD7bItRFlFu4",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:02:11Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/5-free-mens-health-calculators-semaglutide-testosterone-1rm-protein-creatine",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-24T21:59:45.645369+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/5-free-mens-health-calculators.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-24T21:59:49.913859+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/25/5-free-mens-health-calculators-semaglutide-testosterone-1rm-protein-creatine/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-24T21:59:59.886785+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812006350041251840",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-24T22:00:01.058501+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhtl4zpup222",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-24T22:00:03.107018+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116286397064118734",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-24T22:00:04.318481+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/20",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-24T22:00:05.641212+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/5-free-mens-health-calculators-semaglutide-testosterone-1rm-protein-creatine-1eod",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-24T22:00:24.144566+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-Free-Mens-Health-Calculators--Semaglutide-Testosterone-1RM-Protein-Creatine-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:32.346048+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245734",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:59:06.743961+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1fQr1W1fn9VOAXPnTIsMKjhp76JynnKlxlu0sioN6_7E",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:02:21Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/5-free-phone-gadget-calculators-screen-time-storage-charging-data-depreciation-2d8m",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:35:52.993337+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/5-free-phone-gadget-calculators-screen-time-storage-charging-data-depreciation",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:35:54.164757+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/5-free-phone-gadget-calculators-screen.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:35:58.197256+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/25/5-free-phone-gadget-calculators-screen-time-storage-charging-data-depreciation/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:36:04.158293+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812038818310012928",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-25T06:36:05.260179+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhuhxtflea2j",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-25T06:36:07.285469+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116288426311874131",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-25T06:36:07.686483+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/21",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:36:08.939648+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-Free-Phone--Gadget-Calculators--Screen-Time-Storage-Charging-Data--Depreciation-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:35.057768+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245746",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:59:10.875975+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1PRfWslaG9dMeWcyCLoGjKwSlzkb1a8LdYFle4CRJnhQ",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:18:33Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/10-free-research-paper-publishing-tools-citation-doi-lookup-abstract-more-m89",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:48:10.465623+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/10-free-research-paper-publishing-tools-citation-doi-lookup-abstract-more",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:48:11.827131+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/10-free-research-paper-publishing-tools.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:48:14.139607+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/25/10-free-research-paper-publishing-tools-citation-doi-lookup-abstract-more/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:48:21.659485+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812039591712440320",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-25T06:48:22.910548+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhuinswkfq26",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-25T06:48:24.997818+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116288474679934285",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-25T06:48:25.732802+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/22",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-25T06:48:27.047379+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/10-Free-Research-Paper--Publishing-Tools--Citation-DOI-Lookup-Abstract--More-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:37.212490+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245749",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:59:15.689736+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1v9ldlpN9EKeJxpMJh38783Z6_4yRuE6FvKaJBarHugU",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:02:32Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/10-free-physics-calculators-every-student-needs-262f",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-25T08:49:19.293790+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/10-free-physics-calculators-every-student-needs",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-25T08:49:20.552140+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/10-free-physics-calculators-every.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-25T08:49:24.499046+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/25/10-free-physics-calculators-every-student-needs/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-25T08:49:30.652617+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812047213293338624",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-25T08:49:31.352792+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhupggnsdq2p",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-25T08:49:33.459519+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116288951005228758",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-25T08:49:33.945930+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/23",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-25T08:49:35.163480+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/10-Free-Physics-Calculators-Every-Student-Needs-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:39.897122+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245754",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:59:20.224458+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1tTQ-tZnAKJ_rsMbY0aGi0sa1oDOEuW3cs35sNYCBork",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:18:43Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/free-uae-expat-calculators-visa-fines-salik-gratuity-corporate-tax-2n53",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-25T09:57:04.665211+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/free-uae-expat-calculators-visa-fines-salik-gratuity-corporate-tax",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-25T09:57:05.689723+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/free-uae-expat-calculators-visa-fines.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-25T09:57:09.426945+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/25/free-uae-expat-calculators-visa-fines-salik-gratuity-corporate-tax/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-25T09:57:18.645211+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812051480982978560",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-25T09:57:19.335706+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhut7q2i7l2m",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-25T09:57:21.391316+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116289217733235610",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-25T09:57:21.812482+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/24",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-25T09:57:23.545506+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Free-UAE-Expat-Calculators--Visa-Fines-Salik-Gratuity--Corporate-Tax-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:42.648305+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245763",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:59:24.207414+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1-vCMlHALWTEUzPi9KaFegGeOfGJ3jpog99AFi9Qq3ps",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:02:42Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/9-free-tools-for-emerging-tech-trends-2026-2027-ai-agents-post-quantum-greenops-4099",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-25T21:36:28.298791+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/9-free-tools-for-emerging-tech-trends-2026-2027-ai-agents-post-quantum-greenops",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-25T21:36:29.376414+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/9-free-tools-for-emerging-tech-trends.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-25T21:36:33.592689+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/26/9-free-tools-for-emerging-tech-trends-2026-2027-ai-agents-post-quantum-greenops/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-25T21:36:40.028685+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812095478706716672",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-25T21:36:41.380573+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhw2calkqv2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-25T21:36:43.660407+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116291967658827963",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-25T21:36:44.260192+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/25",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-25T21:36:45.728208+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/9-Free-Tools-for-Emerging-Tech-Trends-2026-2027-AI-Agents-Post-Quantum-GreenOps-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:45.325307+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245769",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:59:28.675469+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1_q5tZb0dgnmKilTHfY-pAvPq_e1XZHC7oi0lMn2DulE",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:18:54Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/renovation-costs-are-up-10-this-spring-12-free-calculators-to-plan-before-you-overspend-43g7",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-26T15:14:46.072797+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/renovation-costs-are-up-10-this-spring-12-free-calculators-to-plan-before-you-overspend",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-26T15:14:47.312699+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/renovation-costs-are-up-10-this-spring.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-26T15:14:48.571064+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812162090243686400",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-26T15:15:26.477138+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhxvhgr6ek2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-26T15:15:28.763734+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116296130831850263",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-26T15:15:29.522017+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/26",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-26T15:15:31.121161+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Renovation-Costs-Are-Up-10-This-Spring--12-Free-Calculators-to-Plan-Before-You-Overspend-03-26",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:40:47.520199+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/27/renovation-costs-are-up-10-this-spring-12-free-calculators-to-plan-before-you-overspend-2/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-26T18:44:01.573698+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192245781",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-26T19:59:32.938627+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://gitlab.com/-/snippets/5973099",
+      "platform": "gitlab",
+      "type": "DoFollow",
+      "date": "2026-03-26T20:15:46.472010+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/13-free-finland-tools-aurora-forecast-unemployment-calculator-sauna-timer-more-4i8o",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T00:47:39.778999+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/13-free-finland-tools-aurora-forecast.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T00:48:14.909300+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/27/13-free-finland-tools-aurora-forecast-unemployment-calculator-sauna-timer-more/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T00:48:24.887459+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812198139446624256",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-27T00:48:25.931908+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mhyvhzs7e22c",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T00:48:28.414055+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116298383948333081",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T00:48:29.303500+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/45",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T00:48:31.348319+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192267516",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T00:48:39.723892+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/13-Free-Finland-Tools--Aurora-Forecast-Unemployment-Calculator-Sauna-Timer--More-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T00:48:40.593053+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/13-free-finland-tools-aurora-forecast-unemployment-calculator-sauna-timer-more",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T00:51:07.876750+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1vB-IfrOKdbYegnrfA8ScRWTQkFG8IOpGsuTzXCBWeTI",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:02:52Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/i-built-1700-free-browser-tools-in-2-weeks-heres-what-actually-works",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T14:04:24.862973+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/i-built-1700-free-browser-tools-in-2.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T14:04:29.493452+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/27/i-built-1700-free-browser-tools-in-2-weeks-heres-what-actually-works/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T14:04:36.827546+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812248232044511232",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-27T14:04:37.820712+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi2bxq7cwy2w",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T14:04:39.905291+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116301514704692467",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T14:04:40.751600+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/46",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T14:04:43.349489+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192315524",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T14:04:50.594447+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/I-Built-1700-Free-Browser-Tools-in-2-Weeks--Heres-What-Actually-Works-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T14:04:51.334748+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/i-built-1700-free-browser-tools-in-2-weeks-heres-what-actually-works-1n7d",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T14:05:27.447232+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1stbs3NVhIkjuHkO3J9HQWulo47ruJqGYSQuOKuZa48w",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:03:03Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/3-free-cd-savings-calculators-no-signup-no-tracking-no-bank-pitches-1k8l",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:37:53.915110+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/3-free-cd-savings-calculators-no-signup-no-tracking-no-bank-pitches",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:37:55.145549+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/3-free-cd-savings-calculators-no-signup.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:37:58.401255+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/28/3-free-cd-savings-calculators-no-signup-no-tracking-no-bank-pitches/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:04.349040+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812269211232714752",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-27T19:38:05.033246+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi2ulykw3d2s",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T19:38:07.082969+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116302825902325228",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T19:38:08.032396+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/47",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:10.407495+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192347990",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:17.659421+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/3-Free-CD--Savings-Calculators--No-Signup-No-Tracking-No-Bank-Pitches-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:18.343010+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1DvH4PGdvQ_3mGfk7lPp7OB-fzNMLqN0NSVSTXhZcLqo",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:19:03Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/convert-heic-to-jpg-without-uploading-your-photos-plus-3-more-free-tools-p56",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:37.518734+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/convert-heic-to-jpg-without-uploading-your-photos-plus-3-more-free-tools",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:38.754363+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/convert-heic-to-jpg-without-uploading.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:40.173922+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/28/convert-heic-to-jpg-without-uploading-your-photos-plus-3-more-free-tools/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:46.467116+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.tumblr.com/post/812269255342030849",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-03-27T19:38:47.093254+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi2unaoo262e",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T19:38:49.155473+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116302828635001561",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T19:38:49.848223+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/48",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:38:50.993746+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192348033",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:39:02.665555+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Convert-HEIC-to-JPG-Without-Uploading-Your-Photos--Plus-3-More-Free-Tools-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T19:39:03.310523+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1atA7uexBiF6-deTYa05-AOx3KMfZpCwgAyOXelPr8IE",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:19:15Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/kostenlose-finanzrechner-fur-luxemburg-2026-gehalt-steuer-grenzganger-37co",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:33:32.762163+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/kostenlose-finanzrechner-fur-luxemburg-2026-gehalt-steuer-grenzganger",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:33:33.999928+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/kostenlose-finanzrechner-fur-luxemburg.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:33:38.023207+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/28/kostenlose-finanzrechner-fur-luxemburg-2026-gehalt-steuer-grenzganger/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:33:49.928096+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi36gbmmvz2w",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:33:52.662567+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116303516986591470",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:33:53.040487+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/49",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:33:54.127793+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192361252",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:00.872919+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Kostenlose-Finanzrechner-f\u00fcr-Luxemburg-2026--Gehalt-Steuer--Grenzg\u00e4nger-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:01.561134+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1Vo1j3PxXCzdlDz1tFprqQNobpu8WZ_jW56FJxtoy0-s",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:03:13Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/gratis-belgische-financiele-tools-2026-bruto-netto-registratierechten-erfbelasting-hypotheek",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:21.086595+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/gratis-belgische-financiele-tools-2026.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:23.392690+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/28/gratis-belgische-financiele-tools-2026-bruto-netto-registratierechten-erfbelasting-hypotheek/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:34.364019+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi36hlt7p52s",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:34:36.934289+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116303519889051857",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:34:37.472797+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/50",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:39.242833+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192361296",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:43.947639+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Gratis-Belgische-Financi\u00eble-Tools-2026--Bruto-Netto-Registratierechten-Erfbelasting--Hypotheek-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:44.626819+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/gratis-belgische-financiele-tools-2026-bruto-netto-registratierechten-erfbelasting-hypotheek-49i",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:38:44.734777+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1a4skMHX66tXUKQvteBIwprFwXmF2gJsTZcFIr0GWnFk",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:03:25Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/darmowe-kalkulatory-finansowe-dla-polski-2026-wynagrodzenia-kredyt-pit",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:34:59.652300+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/darmowe-kalkulatory-finansowe-dla.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:01.792048+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/28/darmowe-kalkulatory-finansowe-dla-polski-2026-wynagrodzenia-kredyt-pit/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:12.524923+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi36iqbppc2e",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:35:15.140901+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116303522403356500",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:35:16.074540+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/51",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:17.267994+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192361332",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:22.827221+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Darmowe-Kalkulatory-Finansowe-dla-Polski-2026--Wynagrodzenia-Kredyt-PIT-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:23.484225+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/darmowe-kalkulatory-finansowe-dla-polski-2026-wynagrodzenia-kredyt-pit-d18",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:38:48.816482+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=16noRZ-x-yTJA4UXFHFgWA2b-ZgCSnULAiJJlrs6cxDs",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:03:35Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/bezplatne-financni-kalkulacky-pro-cesko-2026-mzdy-hypoteka-dane-53ko",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:39.523433+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/bezplatne-financni-kalkulacky-pro-cesko-2026-mzdy-hypoteka-dane",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:40.701296+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/bezplatne-financni-kalkulacky-pro-cesko.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:42.690165+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/28/bezplatne-financni-kalkulacky-pro-cesko-2026-mzdy-hypoteka-dane/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:52.045219+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi36jwddpy2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:35:55.051457+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116303525019650445",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:35:55.676367+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/52",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:35:57.361050+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192361379",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:36:03.013792+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Bezplatn\u00e9-Finan\u010dn\u00ed-Kalkula\u010dky-pro-\u010cesko-2026--Mzdy-Hypot\u00e9ka-Dan\u011b-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:36:03.645920+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1HbOAbrqAnNRr8WGHFu_2x07WkAUDd27K105fmVA_Bho",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:03:47Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/4-free-crypto-tax-tools-for-2026-dac8-portfolio-rebalancer-fear-greed-dca-1344",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:59:04.548959+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/4-free-crypto-tax-tools-for-2026-dac8-portfolio-rebalancer-fear-greed-dca",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:59:05.861163+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/28/4-free-crypto-tax-tools-for-2026-dac8-portfolio-rebalancer-fear-greed-dca/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:59:15.752455+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/4-free-crypto-tax-tools-for-2026-dac8.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:59:18.211025+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi37tss3jl2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:59:20.607017+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116303617124169831",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-27T22:59:21.034750+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/4-Free-Crypto-Tax-Tools-for-2026--DAC8-Portfolio-Rebalancer-Fear--Greed-DCA-03-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:59:34.993690+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/53",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:59:36.285098+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192362900",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-27T22:59:42.318496+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1-LPkEcPWqp780vFDsgqo5vjLrjpDCo6wV9FJ7dq8uPw",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:03:56Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/10-free-marketing-tools-for-small-business-owners-3ead",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-28T21:47:46.640148+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/10-free-marketing-tools-for-small-business-owners",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-28T21:47:48.052050+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/10-free-marketing-tools-for-small.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-28T21:47:52.141158+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/29/10-free-marketing-tools-for-small-business-owners/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-28T21:48:02.328645+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi5mdch7kk2q",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-28T21:48:04.743979+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116308999218822360",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-28T21:48:05.358722+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/59",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-28T21:48:06.848619+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192460143",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-28T21:48:16.443472+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/10-Free-Marketing-Tools-for-Small-Business-Owners-03-28",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-28T21:48:17.124035+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1srUByS1iKfpJp8s3QpcDb0g1U8Mgmr-nSgGOo4zmJTw",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:04:06Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/1800-free-browser-tools-complete-directory-no-signup-no-downloads-100-private",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:32:33.657865+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/1800-free-browser-tools-complete.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:32:37.919076+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/29/1800-free-browser-tools-complete-directory-no-signup-no-downloads-100-private/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:32:47.313489+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/1800-Free-Browser-Tools--Complete-Directory-No-Signup-No-Downloads-100-Private-03-28",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:32:49.686708+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/60",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:32:51.132053+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192466673",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:32:56.283497+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1Pqf4_WQ6scRp-EuB1dReDfmgbIoL3szDPqZKZwNOtn0",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:33:05.724919+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/i-built-1829-free-browser-tools-heres-the-complete-directory",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:37:58.453567+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/i-built-1829-free-browser-tools-heres.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:38:00.894451+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/29/i-built-1829-free-browser-tools-heres-the-complete-directory/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:38:08.787193+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/I-Built-1829-Free-Browser-Tools--Heres-the-Complete-Directory-03-28",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:38:09.713057+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/61",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:38:11.392180+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192467001",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:38:16.661857+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=15foUB8J4zvpDcI5zQmbVOsAFp4q5A40nXQz5Gh6z_dk",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-28T23:38:26.875870+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://medium.com/@teamz.lab.contact/i-built-1-829-free-browser-tools-heres-the-complete-directory-9698e4bf9a63",
+      "platform": "medium",
+      "type": "DoFollow",
+      "date": "2026-03-29T00:02:30Z",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/5-free-baby-parenting-tools-every-new-parent-needs-2m",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-29T11:10:50.264368+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/5-free-baby-parenting-tools-every-new-parent-needs",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-29T11:10:51.470504+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/5-free-baby-parenting-tools-every-new.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-29T11:10:56.235603+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/29/5-free-baby-parenting-tools-every-new-parent-needs/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-29T11:11:07.192683+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi6z7dbei324",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-29T11:11:09.728323+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116312157076506715",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-29T11:11:10.955160+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/62",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-29T11:11:12.463870+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192496810",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-29T11:11:19.048333+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-Free-Baby--Parenting-Tools-Every-New-Parent-Needs-03-29",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-29T11:11:19.856563+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1TCROprt6pwlZPYn89UEMwbpjMRCWX4WfqyK2xvNWX2M",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-29T11:11:26.804355+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/5-free-space-science-tools-nasa-iss-spacex-earthquakes-55na",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:44:35.411128+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/5-free-space-science-tools-nasa-iss-spacex-earthquakes",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:44:36.500907+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/5-free-space-science-tools-nasa-iss.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:44:40.845722+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/30/5-free-space-science-tools-nasa-iss-spacex-earthquakes/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:44:46.606816+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi7vvt5ya22b",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-29T19:44:49.381467+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116314176856746200",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-29T19:44:49.729494+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/65",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:44:50.646565+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192539294",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:44:55.786590+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-Free-Space--Science-Tools--NASA-ISS-SpaceX--Earthquakes-03-29",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:44:56.558538+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1qlCOIpqc6eOHsR6shHjxp4GCevQcH7rSnfvZ_WiWnCg",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:45:05.863789+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/5-free-food-nutrition-tools-built-on-public-apis-1",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:48:40.211290+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/5-free-food-nutrition-tools-built-on_01252048026.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:48:42.561553+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/30/5-free-food-nutrition-tools-built-on-public-apis-2/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:48:48.296663+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi7w4zetls2e",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-29T19:48:50.780789+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116314192682193690",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-29T19:48:51.232180+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/67",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:48:52.336581+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192539645",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:48:57.702664+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-Free-Food--Nutrition-Tools-Built-on-Public-APIs-03-29-2",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:48:58.452198+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1h1nnDPmA1mT8IwelBV11YWuEWsxN0f8MdSTndLG4I5E",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:06.196165+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/5-free-finance-data-tools-powered-by-live-apis-67l",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:13.444048+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/5-free-finance-data-tools-powered-by-live-apis-1",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:14.521931+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/5-free-finance-data-tools-powered-by_01535328632.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:15.849078+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/30/5-free-finance-data-tools-powered-by-live-apis-2/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:30.344537+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi7w6bg3ld2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-29T19:49:32.768213+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116314195460549283",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-29T19:49:33.729875+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/68",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:34.774090+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192539702",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:39.947266+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-Free-Finance--Data-Tools-Powered-by-Live-APIs-03-29-2",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:40.613041+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1ZxD_IAd_9ElRviGQR7rPF90zGEfPPBh1Pq8liYSRg7o",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:48.646467+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/5-free-knowledge-entertainment-tools-using-open-apis-5ddi",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:56.559717+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/5-free-knowledge-entertainment-tools-using-open-apis-1",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:57.686061+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/5-free-knowledge-entertainment-tools_01194184222.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:49:59.881049+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/30/5-free-knowledge-entertainment-tools-using-open-apis-2/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:50:05.622136+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mi7w7d3puc2b",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-29T19:50:08.077131+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116314197765718451",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-29T19:50:08.907335+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/69",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:50:10.098134+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192539761",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:50:15.480628+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-Free-Knowledge--Entertainment-Tools-Using-Open-APIs-03-29-2",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:50:16.195789+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1p3GCgzUFAXcgdm3gDdDi1t85AVdyS3O-UcRAPO7Aktw",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-29T19:50:24.319948+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/ddr5-prices-dropped-72-free-tools-to-know-if-upgrading-is-worth-it-4ka5",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-29T21:14:03.006766+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/ddr5-prices-dropped-72-free-tools-to-know-if-upgrading-is-worth-it",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-29T21:14:04.180259+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/ddr5-prices-dropped-72-free-tools-to.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-29T21:14:07.673291+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/30/ddr5-prices-dropped-7-2-free-tools-to-know-if-upgrading-is-worth-it/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-29T21:14:18.516047+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mia2vwjgqr2r",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-29T21:14:21.672593+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116314528934209058",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-29T21:14:22.156502+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/70",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-29T21:14:23.406647+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192547248",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-29T21:14:30.013472+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/DDR5-Prices-Dropped-72--Free-Tools-to-Know-If-Upgrading-Is-Worth-It-03-29",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-29T21:14:30.756796+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1VzvxicV3k_RoTILUiSofUihwpcvrr_1W1ULSGVMTNpg",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-29T21:14:40.378173+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/6-free-api-powered-tools-weather-zip-fake-data-currency-chart-demographics",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:24:27.105405+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/6-free-api-powered-tools-weather-zip.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:24:31.196560+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/30/6-free-api-powered-tools-weather-zip-fake-data-currency-chart-demographics/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:24:40.392484+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mia6tqrrdn2e",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-29T22:24:43.456723+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116314805621183610",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-29T22:24:43.988749+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/71",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:24:45.188987+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192552668",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:24:51.553921+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/6-Free-API-Powered-Tools--Weather-ZIP-Fake-Data-Currency-Chart-Demographics-03-29",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:24:52.234457+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1XI4gJf1aS3vjhcCqsr_cvXVOD7SpkRbcE8pK_fCFiIg",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:25:02.607841+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/6-free-api-powered-tools-weather-zip-fake-data-currency-chart-demographics-542l",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:26:35.861742+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/4-free-finance-tools-live-gold-price-uae-crypto-portfolio-us-stock-checker",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:25:11.521994+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/03/4-free-finance-tools-live-gold-price.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:25:13.647072+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/03/30/4-free-finance-tools-live-gold-price-uae-crypto-portfolio-us-stock-checker/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:25:21.729115+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mia6uxzqzz2s",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-03-29T22:25:24.612247+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://mastodon.social/@teamzlab/116314808320332918",
+      "platform": "mastodon",
+      "type": "NoFollow",
+      "date": "2026-03-29T22:25:25.239692+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/72",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:25:26.237241+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-192552726",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:25:33.085452+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/4-Free-Finance-Tools--Live-Gold-Price-UAE-Crypto-Portfolio-US-Stock-Checker-03-29",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:25:33.733673+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://docs.google.com/open?id=1MP3CIeqKMtyX5wfrxzn3_Xj8KYLRN0keAyHAbW8mbIQ",
+      "platform": "google_sites",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:25:41.067035+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/4-free-finance-tools-live-gold-price-uae-crypto-portfolio-us-stock-checker-2m91",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-03-29T22:26:44.937421+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://api.indexnow.org/indexnow",
+      "platform": "ping_indexnow",
+      "type": "DoFollow",
+      "date": "2026-03-29T17:43:38.388233",
+      "status": "submitted",
+      "origin": "directory"
+    }
+  ],
+  "scanned_at": "2026-03-30T05:47:56.297296",
+  "linking_sites": [],
+  "top_pages": [
+    {
+      "page": "/ramadan/eid-salami-qr-card-generator/",
+      "clicks": 15,
+      "impressions": 46
+    },
+    {
+      "page": "/weather/wind-chill-calculator/",
+      "clicks": 6,
+      "impressions": 118
+    },
+    {
+      "page": "/",
+      "clicks": 3,
+      "impressions": 75
+    },
+    {
+      "page": "/bd/loan-emi-calculator/",
+      "clicks": 3,
+      "impressions": 45
+    },
+    {
+      "page": "/career/resume-job-match-checker/",
+      "clicks": 3,
+      "impressions": 258
+    },
+    {
+      "page": "/football/ucl-group-stage-simulator/",
+      "clicks": 3,
+      "impressions": 17
+    },
+    {
+      "page": "/health/down-syndrome-risk-calculator/",
+      "clicks": 3,
+      "impressions": 12
+    },
+    {
+      "page": "/jp/tsuukin-hi-keisan/",
+      "clicks": 3,
+      "impressions": 30
+    },
+    {
+      "page": "/bd/independence-day-greeting-card/",
+      "clicks": 2,
+      "impressions": 97
+    },
+    {
+      "page": "/design/logo-text-maker/",
+      "clicks": 2,
+      "impressions": 172
+    },
+    {
+      "page": "/grooming/attractiveness-quiz/",
+      "clicks": 2,
+      "impressions": 156
+    },
+    {
+      "page": "/health/screen-distance-checker/",
+      "clicks": 2,
+      "impressions": 7
+    },
+    {
+      "page": "/health/time-blindness-calculator/",
+      "clicks": 2,
+      "impressions": 4
+    },
+    {
+      "page": "/ramadan/eid-salami-scratch-challenge/",
+      "clicks": 2,
+      "impressions": 11
+    },
+    {
+      "page": "/tools/birthday-countdown/",
+      "clicks": 2,
+      "impressions": 28
+    },
+    {
+      "page": "/3d/fluid-simulation/",
+      "clicks": 1,
+      "impressions": 30
+    },
+    {
+      "page": "/bd/customs-duty-calculator/",
+      "clicks": 1,
+      "impressions": 32
+    },
+    {
+      "page": "/bd/electricity-bill-calculator/",
+      "clicks": 1,
+      "impressions": 152
+    },
+    {
+      "page": "/bd/family-card-generator/",
+      "clicks": 1,
+      "impressions": 1
+    },
+    {
+      "page": "/bd/govt-salary-calculator/",
+      "clicks": 1,
+      "impressions": 42
+    },
+    {
+      "page": "/bd/pohela-boishakh-countdown/",
+      "clicks": 1,
+      "impressions": 5
+    },
+    {
+      "page": "/cricket/ipl-auction-budget-calculator/",
+      "clicks": 1,
+      "impressions": 16
+    },
+    {
+      "page": "/diagnostic/dns-leak-test/",
+      "clicks": 1,
+      "impressions": 151
+    },
+    {
+      "page": "/football/football-salary-calculator/",
+      "clicks": 1,
+      "impressions": 78
+    },
+    {
+      "page": "/gaming/dpi-calculator/",
+      "clicks": 1,
+      "impressions": 53
+    },
+    {
+      "page": "/ie/irish-salary-calculator/",
+      "clicks": 1,
+      "impressions": 108
+    },
+    {
+      "page": "/mobile/",
+      "clicks": 1,
+      "impressions": 7
+    },
+    {
+      "page": "/ramadan/eid-salami-cheque-book/",
+      "clicks": 1,
+      "impressions": 4
+    },
+    {
+      "page": "/student/attendance-percentage-calculator/",
+      "clicks": 1,
+      "impressions": 120
+    },
+    {
+      "page": "/tea/",
+      "clicks": 1,
+      "impressions": 6
+    },
+    {
+      "page": "/text/passive-voice-checker/",
+      "clicks": 1,
+      "impressions": 168
+    },
+    {
+      "page": "/tools/ai-named-entity-extractor/",
+      "clicks": 1,
+      "impressions": 43
+    },
+    {
+      "page": "/tools/birthday-invitation-maker/",
+      "clicks": 1,
+      "impressions": 1
+    },
+    {
+      "page": "/tools/habit-tracker/",
+      "clicks": 1,
+      "impressions": 2
+    },
+    {
+      "page": "/tools/name-meaning-generator/",
+      "clicks": 1,
+      "impressions": 17
+    },
+    {
+      "page": "/tools/number-typing-practice/",
+      "clicks": 1,
+      "impressions": 188
+    },
+    {
+      "page": "/tools/random-name-picker/",
+      "clicks": 1,
+      "impressions": 357
+    },
+    {
+      "page": "/tools/signature-background-remover/",
+      "clicks": 1,
+      "impressions": 26
+    },
+    {
+      "page": "/us/income-tax-calculator/",
+      "clicks": 1,
+      "impressions": 186
+    },
+    {
+      "page": "/us/roth-conversion-calculator/",
+      "clicks": 1,
+      "impressions": 23
+    },
+    {
+      "page": "/work/business-day-calculator/",
+      "clicks": 1,
+      "impressions": 160
+    },
+    {
+      "page": "/3d/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/3d/dice-roller/",
+      "clicks": 0,
+      "impressions": 3
+    },
+    {
+      "page": "/3d/model-viewer/",
+      "clicks": 0,
+      "impressions": 31
+    },
+    {
+      "page": "/3d/print-time-estimator/",
+      "clicks": 0,
+      "impressions": 7
+    },
+    {
+      "page": "/3d/printing-cost-calculator/",
+      "clicks": 0,
+      "impressions": 2
+    },
+    {
+      "page": "/3d/product-mockup-generator/",
+      "clicks": 0,
+      "impressions": 2
+    },
+    {
+      "page": "/accessibility/accessible-color-palette-generator/",
+      "clicks": 0,
+      "impressions": 8
+    },
+    {
+      "page": "/accessibility/ada-compliance-checker/",
+      "clicks": 0,
+      "impressions": 58
+    },
+    {
+      "page": "/accessibility/autism-support-plan-generator/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/accessibility/color-blindness-simulator/",
+      "clicks": 0,
+      "impressions": 24
+    },
+    {
+      "page": "/accessibility/dyslexia-friendly-text-converter/",
+      "clicks": 0,
+      "impressions": 3
+    },
+    {
+      "page": "/accessibility/screen-reader-text-preview/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/accessibility/ssdi-benefits-estimator/",
+      "clicks": 0,
+      "impressions": 13
+    },
+    {
+      "page": "/accessibility/visual-schedule-maker/",
+      "clicks": 0,
+      "impressions": 9
+    },
+    {
+      "page": "/accessibility/wcag-accessibility-checklist/",
+      "clicks": 0,
+      "impressions": 45
+    },
+    {
+      "page": "/ae/birthday-wishes-generator/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/ae/corporate-tax-calculator/",
+      "clicks": 0,
+      "impressions": 4
+    },
+    {
+      "page": "/ae/gratuity-calculator/",
+      "clicks": 0,
+      "impressions": 20
+    },
+    {
+      "page": "/ae/visa-overstay-fine-calculator/",
+      "clicks": 0,
+      "impressions": 88
+    },
+    {
+      "page": "/ai/",
+      "clicks": 0,
+      "impressions": 7
+    },
+    {
+      "page": "/ai/ai-agent-roi-calculator/",
+      "clicks": 0,
+      "impressions": 2
+    },
+    {
+      "page": "/ai/ai-text-humanizer/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/ai/cover-letter-helper/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/ai/headline-generator/",
+      "clicks": 0,
+      "impressions": 101
+    },
+    {
+      "page": "/ai/interview-question-generator/",
+      "clicks": 0,
+      "impressions": 21
+    },
+    {
+      "page": "/ai/prompt-cleaner/",
+      "clicks": 0,
+      "impressions": 9
+    },
+    {
+      "page": "/ai/resume-summary-generator/",
+      "clicks": 0,
+      "impressions": 136
+    },
+    {
+      "page": "/amazon/a-plus-content-image-guide/",
+      "clicks": 0,
+      "impressions": 14
+    },
+    {
+      "page": "/amazon/acos-calculator/",
+      "clicks": 0,
+      "impressions": 29
+    },
+    {
+      "page": "/amazon/bsr-sales-calculator/",
+      "clicks": 0,
+      "impressions": 143
+    },
+    {
+      "page": "/amazon/competitor-analysis-tool/",
+      "clicks": 0,
+      "impressions": 11
+    },
+    {
+      "page": "/amazon/fba-fee-calculator/",
+      "clicks": 0,
+      "impressions": 332
+    },
+    {
+      "page": "/amazon/fba-roi-calculator/",
+      "clicks": 0,
+      "impressions": 7
+    },
+    {
+      "page": "/amazon/keyword-research-tool/",
+      "clicks": 0,
+      "impressions": 7
+    },
+    {
+      "page": "/amazon/listing-character-counter/",
+      "clicks": 0,
+      "impressions": 2
+    },
+    {
+      "page": "/amazon/ppc-bid-calculator/",
+      "clicks": 0,
+      "impressions": 2
+    },
+    {
+      "page": "/amazon/referral-fee-calculator/",
+      "clicks": 0,
+      "impressions": 27
+    },
+    {
+      "page": "/amazon/restock-planner/",
+      "clicks": 0,
+      "impressions": 3
+    },
+    {
+      "page": "/amazon/sales-estimator/",
+      "clicks": 0,
+      "impressions": 30
+    },
+    {
+      "page": "/amazon/storage-fee-calculator/",
+      "clicks": 0,
+      "impressions": 13
+    },
+    {
+      "page": "/apple/apple-event-countdown/",
+      "clicks": 0,
+      "impressions": 6
+    },
+    {
+      "page": "/apple/apple-trade-in-estimator/",
+      "clicks": 0,
+      "impressions": 9
+    },
+    {
+      "page": "/at/brutto-netto-rechner/",
+      "clicks": 0,
+      "impressions": 3
+    },
+    {
+      "page": "/at/einkommensteuer-rechner/",
+      "clicks": 0,
+      "impressions": 3
+    },
+    {
+      "page": "/at/familienbeihilfe-rechner/",
+      "clicks": 0,
+      "impressions": 21
+    },
+    {
+      "page": "/at/kreditrechner/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/at/pendlerpauschale-rechner/",
+      "clicks": 0,
+      "impressions": 22
+    },
+    {
+      "page": "/au/",
+      "clicks": 0,
+      "impressions": 6
+    },
+    {
+      "page": "/au/capital-gains-tax-calculator/",
+      "clicks": 0,
+      "impressions": 34
+    },
+    {
+      "page": "/au/employee-true-cost-calculator/",
+      "clicks": 0,
+      "impressions": 44
+    },
+    {
+      "page": "/au/english-test-score-converter/",
+      "clicks": 0,
+      "impressions": 8
+    },
+    {
+      "page": "/au/help-threshold-jump-checker/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/au/ielts-band-score-calculator/",
+      "clicks": 0,
+      "impressions": 17
+    },
+    {
+      "page": "/au/medicare-levy-surcharge-calculator-australia/",
+      "clicks": 0,
+      "impressions": 8
+    },
+    {
+      "page": "/au/payday-super-deadline-calculator/",
+      "clicks": 0,
+      "impressions": 1
+    },
+    {
+      "page": "/au/pr-points-calculator/",
+      "clicks": 0,
+      "impressions": 82
+    },
+    {
+      "page": "/au/salary-sacrifice-calculator/",
+      "clicks": 0,
+      "impressions": 10
+    },
+    {
+      "page": "/au/sole-trader-tax-super-buffer/",
+      "clicks": 0,
+      "impressions": 3
+    },
+    {
+      "page": "/au/stamp-duty-calculator/",
+      "clicks": 0,
+      "impressions": 17
+    }
+  ],
+  "summary": {
+    "total": 475,
+    "dofollow": 360,
+    "nofollow": 115,
+    "distribution": 474,
+    "directory": 1
+  }
+}

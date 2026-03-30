@@ -7,9 +7,11 @@ Shared **Python + shell** tooling for Teamz Lab: content distribution, Google Se
 From your site or app repo (e.g. Teamz Lab Tools):
 
 ```bash
-git submodule add ../teamz-company-automation teamz-company-automation
+git submodule add https://github.com/YOUR_ORG/teamz-company-automation.git teamz-company-automation
 git submodule update --init --recursive
 ```
+
+For local development only, Teamz Lab Tools may use `git -c protocol.file.allow=always submodule add file:///absolute/path/to/teamz-company-automation teamz-company-automation`. After you create the repo on GitHub, change `.gitmodules` to the `https` URL so others can clone without that flag.
 
 Teamz Lab Tools mounts the same files under `scripts/` via symlinks so existing commands keep working:
 

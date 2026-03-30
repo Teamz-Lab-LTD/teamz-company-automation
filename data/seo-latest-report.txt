@@ -1,0 +1,13 @@
+CATCH-UP REPORT — 2026-03-31
+Stale items fixed: 1
+Tasks run: directories monthly
+Seasonal: Tax filing deadline, Ramadan tools, spring cleaning, Eid prep
+---
+SCRIPT HEALTH: REVIEW NEEDED (1 issues)
+  - Content gaps:   ERROR: --gaps requires Search Console. Run: python3 build-search-console-auth.py
+---
+SUGGESTED NEXT ACTIONS:
+  1. python3 scripts/build-backlinks.py submit     # Submit to 5 directories (38 pending)
+  2. python3 scripts/build-content-ideas.py --trending  # See what to build
+  3. python3 scripts/build-rank-tracker.py movers  # Check biggest rank changes
+  4. python3 scripts/build-content-ideas.py --seasonal  # Seasonal tool ideas

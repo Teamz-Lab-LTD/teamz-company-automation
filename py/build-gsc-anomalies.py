@@ -1,0 +1,311 @@
+#!/usr/bin/env python3
+"""
+Google Search Console — URL + query anomaly alerts (free, uses existing SC token).
+
+Compares two equal-length windows (default: last 7 days vs prior 7 days) on dimensions
+page + query. Flags:
+  - CTR drop (relative + minimum impression floors)
+  - Impression spike / drop
+
+Usage:
+    python3 scripts/build-gsc-anomalies.py
+    python3 scripts/build-gsc-anomalies.py --days 14          # 14d vs prior 14d
+    python3 scripts/build-gsc-anomalies.py --json-only        # write JSON, minimal stdout
+    python3 scripts/build-gsc-anomalies.py --min-impr 50      # raise noise floor
+
+Output:
+    TEAMZ_DATA_DIR/gsc-anomalies-latest.json (and dated copy)
+
+Requires: TEAMZ_SC_TOKEN_FILE, TEAMZ_SITE_PROPERTY, TEAMZ_GOOGLE_CLOUD_PROJECT
+"""
+
+import argparse
+import json
+import ssl
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+from _teamz_config import load_runtime
+
+_CTX = ssl.create_default_context()
+
+
+def _refresh_token(token_path: Path, project: str) -> Optional[str]:
+    if not token_path.exists():
+        return None
+    data = json.loads(token_path.read_text())
+    body = urllib.parse.urlencode(
+        {
+            "client_id": data["client_id"],
+            "client_secret": data["client_secret"],
+            "refresh_token": data["refresh_token"],
+            "grant_type": "refresh_token",
+        }
+    ).encode()
+    req = urllib.request.Request("https://oauth2.googleapis.com/token", data=body, method="POST")
+    try:
+        resp = urllib.request.urlopen(req, context=_CTX)
+        return json.loads(resp.read()).get("access_token")
+    except Exception as e:
+        print(f"ERROR: token refresh failed: {e}", file=sys.stderr)
+        return None
+
+
+def _sc_query(
+    token: str,
+    site_url: str,
+    project: str,
+    start: str,
+    end: str,
+    dimensions: list[str],
+    row_limit: int = 25000,
+    start_row: int = 0,
+) -> List[dict]:
+    encoded = urllib.parse.quote(site_url, safe="")
+    url = f"https://searchconsole.googleapis.com/webmasters/v3/sites/{encoded}/searchAnalytics/query"
+    body = {
+        "startDate": start,
+        "endDate": end,
+        "dimensions": dimensions,
+        "rowLimit": row_limit,
+        "startRow": start_row,
+        "dataState": "all",
+    }
+    data = json.dumps(body).encode()
+    req = urllib.request.Request(url, data=data, method="POST")
+    req.add_header("Authorization", f"Bearer {token}")
+    req.add_header("Content-Type", "application/json")
+    req.add_header("x-goog-user-project", project)
+    try:
+        resp = urllib.request.urlopen(req, context=_CTX)
+        return json.loads(resp.read()).get("rows", [])
+    except urllib.error.HTTPError as e:
+        print(f"ERROR: Search Console API {e.code}: {e.read().decode()[:400]}", file=sys.stderr)
+        return []
+
+
+def _fetch_all_page_query(
+    token: str, site_url: str, project: str, start: str, end: str
+) -> Dict[Tuple[str, str], dict]:
+    """Map (page_url, query) -> {clicks, impressions, ctr, position}."""
+    out: Dict[Tuple[str, str], dict] = {}
+    start_row = 0
+    batch = 25000
+    while True:
+        rows = _sc_query(token, site_url, project, start, end, ["page", "query"], batch, start_row)
+        if not rows:
+            break
+        for row in rows:
+            keys = row.get("keys") or []
+            if len(keys) < 2:
+                continue
+            page, query = keys[0], keys[1]
+            k = (page, query)
+            out[k] = {
+                "clicks": int(row.get("clicks", 0)),
+                "impressions": int(row.get("impressions", 0)),
+                "ctr": float(row.get("ctr", 0.0)),
+                "position": float(row.get("position", 0.0)),
+            }
+        if len(rows) < batch:
+            break
+        start_row += batch
+    return out
+
+
+def _ctr(clicks: int, impressions: int) -> float:
+    if impressions <= 0:
+        return 0.0
+    return clicks / impressions
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="GSC page+query anomaly detection")
+    ap.add_argument("--days", type=int, default=7, help="Length of each comparison window (default 7)")
+    ap.add_argument("--lag-days", type=int, default=3, help="End date offset for GSC data lag (default 3)")
+    ap.add_argument("--min-impr", type=int, default=25, help="Minimum impressions in prior window to consider a row")
+    ap.add_argument("--min-impr-recent", type=int, default=8, help="Minimum impressions in recent window for CTR alerts")
+    ap.add_argument("--ctr-drop-ratio", type=float, default=0.65, help="Flag CTR if recent < prior * this (default 0.65)")
+    ap.add_argument("--impr-drop-ratio", type=float, default=0.45, help="Flag if recent impr < prior * this")
+    ap.add_argument("--impr-spike-ratio", type=float, default=2.0, help="Flag if recent impr > prior * this")
+    ap.add_argument("--json-only", action="store_true", help="Minimal console output")
+    args = ap.parse_args()
+
+    cfg = load_runtime(__file__)
+    if cfg["project_type"] == "app":
+        print("Skipped: TEAMZ_PROJECT_TYPE=app (website-only tooling).", file=sys.stderr)
+        return 2
+
+    token_path = cfg["sc_token_file"]
+    site_url = cfg["site_property"]
+    project = cfg["google_project"]
+    data_dir: Path = cfg["data_dir"]
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    token = _refresh_token(token_path, project)
+    if not token:
+        print("ERROR: Could not refresh Search Console token.", file=sys.stderr)
+        return 1
+
+    lag = max(0, args.lag_days)
+    days = max(1, args.days)
+    end_recent = datetime.now() - timedelta(days=lag)
+    start_recent = end_recent - timedelta(days=days - 1)
+    end_prior = start_recent - timedelta(days=1)
+    start_prior = end_prior - timedelta(days=days - 1)
+
+    rs, re = start_recent.strftime("%Y-%m-%d"), end_recent.strftime("%Y-%m-%d")
+    ps, pe = start_prior.strftime("%Y-%m-%d"), end_prior.strftime("%Y-%m-%d")
+
+    if not args.json_only:
+        print("=" * 72)
+        print(f"  GSC ANOMALIES — {site_url.rstrip('/')}")
+        print(f"  Recent: {rs} .. {re}   vs   Prior: {ps} .. {pe}")
+        print("=" * 72)
+
+    if not args.json_only:
+        print("\n  Fetching prior window (page + query)...")
+    prior_map = _fetch_all_page_query(token, site_url, project, ps, pe)
+    if not args.json_only:
+        print(f"  Rows: {len(prior_map)}")
+        print("  Fetching recent window (page + query)...")
+    recent_map = _fetch_all_page_query(token, site_url, project, rs, re)
+    if not args.json_only:
+        print(f"  Rows: {len(recent_map)}")
+
+    keys = set(prior_map) | set(recent_map)
+    ctr_alerts = []
+    impr_drop = []
+    impr_spike = []
+
+    min_prior = args.min_impr
+    min_rec = args.min_impr_recent
+    ctr_ratio = args.ctr_drop_ratio
+    drop_ratio = args.impr_drop_ratio
+    spike_ratio = args.impr_spike_ratio
+
+    for k in keys:
+        page, query = k
+        pr = prior_map.get(k, {"clicks": 0, "impressions": 0, "ctr": 0.0, "position": 0.0})
+        rc = recent_map.get(k, {"clicks": 0, "impressions": 0, "ctr": 0.0, "position": 0.0})
+        ip, ir = pr["impressions"], rc["impressions"]
+        cp, cr = pr["clicks"], rc["clicks"]
+
+        if ip >= min_prior and ir >= min_rec:
+            p_ctr = _ctr(cp, ip)
+            r_ctr = _ctr(cr, ir)
+            if p_ctr >= 0.008 and r_ctr < p_ctr * ctr_ratio and r_ctr < p_ctr - 0.003:
+                ctr_alerts.append(
+                    {
+                        "page": page,
+                        "query": query,
+                        "prior_clicks": cp,
+                        "prior_impressions": ip,
+                        "prior_ctr": round(p_ctr * 100, 3),
+                        "recent_clicks": cr,
+                        "recent_impressions": ir,
+                        "recent_ctr": round(r_ctr * 100, 3),
+                        "kind": "ctr_drop",
+                    }
+                )
+
+        if ip >= min_prior:
+            if ir < ip * drop_ratio:
+                impr_drop.append(
+                    {
+                        "page": page,
+                        "query": query,
+                        "prior_impressions": ip,
+                        "recent_impressions": ir,
+                        "kind": "impression_drop",
+                    }
+                )
+            elif ir > ip * spike_ratio and ip >= min_prior:
+                impr_spike.append(
+                    {
+                        "page": page,
+                        "query": query,
+                        "prior_impressions": ip,
+                        "recent_impressions": ir,
+                        "kind": "impression_spike",
+                    }
+                )
+
+    ctr_alerts.sort(key=lambda x: (-x["prior_impressions"], x["query"]))
+    impr_drop.sort(key=lambda x: (-x["prior_impressions"], x["query"]))
+    impr_spike.sort(key=lambda x: (-x["recent_impressions"], x["query"]))
+
+    report = {
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "site": site_url,
+        "recent_start": rs,
+        "recent_end": re,
+        "prior_start": ps,
+        "prior_end": pe,
+        "window_days": days,
+        "thresholds": {
+            "min_prior_impressions": min_prior,
+            "min_recent_impressions": min_rec,
+            "ctr_drop_ratio": ctr_ratio,
+            "impression_drop_ratio": drop_ratio,
+            "impression_spike_ratio": spike_ratio,
+        },
+        "counts": {
+            "prior_keys": len(prior_map),
+            "recent_keys": len(recent_map),
+            "ctr_drop": len(ctr_alerts),
+            "impression_drop": len(impr_drop),
+            "impression_spike": len(impr_spike),
+        },
+        "alerts": {"ctr_drop": ctr_alerts[:200], "impression_drop": impr_drop[:200], "impression_spike": impr_spike[:200]},
+    }
+
+    latest = data_dir / "gsc-anomalies-latest.json"
+    dated = data_dir / f"gsc-anomalies-{datetime.now().strftime('%Y-%m-%d')}.json"
+    for path in (latest, dated):
+        path.write_text(json.dumps(report, indent=2))
+
+    if not args.json_only:
+        print(f"\n  Wrote {latest.name} and {dated.name}\n")
+
+        def _print_block(title: str, rows: List[dict], fields: List[str]) -> None:
+            print(f"  {title} ({len(rows)} shown, cap 200)")
+            print("  " + "-" * 68)
+            if not rows:
+                print("  (none)")
+                return
+            for row in rows[:40]:
+                bits = [str(row.get(f, ""))[:56] for f in fields]
+                print("  " + " | ".join(bits))
+            if len(rows) > 40:
+                print(f"  ... +{len(rows) - 40} more (see JSON)")
+
+        _print_block(
+            "CTR DROP (high prior visibility)",
+            ctr_alerts,
+            ["query", "prior_ctr", "recent_ctr", "prior_impressions", "recent_impressions"],
+        )
+        print()
+        _print_block(
+            "IMPRESSION DROP",
+            impr_drop,
+            ["query", "prior_impressions", "recent_impressions", "page"],
+        )
+        print()
+        _print_block(
+            "IMPRESSION SPIKE",
+            impr_spike,
+            ["query", "prior_impressions", "recent_impressions", "page"],
+        )
+        print("\n  Tip: tighten noise with --min-impr 50 or shorter --days 7 windows.\n")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

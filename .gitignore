@@ -2,3 +2,17 @@ __pycache__/
 *.pyc
 .DS_Store
 distribute/config.json
+
+# Generated SEO monitoring snapshots (large; regenerate locally)
+data/crawl-snapshot-latest.json
+data/crawl-snapshot-*.json
+data/crawl-diff-latest.json
+data/crawl-diff-*.json
+data/gsc-anomalies-latest.json
+data/gsc-anomalies-*.json
+data/topic-cluster-latest.json
+data/topic-cluster-*.json
+data/seo-experiments-result-*.json
+data/serp-features-log.csv
+data/brand-mentions-log.csv
+data/seo-experiments.json

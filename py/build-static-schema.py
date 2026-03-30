@@ -1,0 +1,409 @@
+#!/usr/bin/env python3
+"""
+build-static-schema.py
+Extracts schema data from each page's inline JS and injects
+static <script type="application/ld+json"> into <head>.
+Called directly by pre-commit hook and nightly/continuous build scripts.
+"""
+
+import os, re, json, html, glob, sys, subprocess
+from pathlib import Path
+from _teamz_config import load_runtime
+
+RUNTIME = load_runtime(__file__)
+BASE_DIR = Path(RUNTIME["host_site_root"])
+SITE_URL = RUNTIME["site_url"].rstrip("/")
+TEAMZ_URL = "https://teamzlab.com"
+PROJECT_TYPE = RUNTIME.get("project_type", "website")
+MARKER = "<!-- STATIC-SCHEMA -->"
+
+SKIP_DIRS = {"about", "contact", "privacy", "terms"}
+count = 0
+skip = 0
+errors = []
+
+
+def extract_breadcrumbs(content):
+    """Extract breadcrumb schema from injectBreadcrumbSchema([...]) or variable."""
+    # Pattern 1: inline array — injectBreadcrumbSchema([{...},{...}])
+    m = re.search(r'injectBreadcrumbSchema\(\[(.+?)\]\)', content, re.DOTALL)
+    if not m:
+        # Pattern 2: variable — var breadcrumbs = [...] or var BREADCRUMBS = [...]
+        for varname in ('breadcrumbs', 'BREADCRUMBS'):
+            if f'injectBreadcrumbSchema({varname})' in content:
+                m2 = re.search(rf'var {varname}\s*=\s*\[(.+?)\]', content, re.DOTALL)
+                if m2:
+                    m = m2
+                    break
+    if not m:
+        return None
+
+    arr_str = m.group(1)
+    # Normalize JS objects to JSON: {name:'X',url:'/'} -> {"name":"X","url":"/"}
+    arr_str = re.sub(r"(\w+)\s*:\s*'", r'"\1":"', arr_str)
+    arr_str = re.sub(r"'\s*([,}])", r'"\1', arr_str)
+    # Handle double-quoted JS too
+    arr_str = re.sub(r'(\w+)\s*:\s*"', r'"\1":"', arr_str)
+
+    try:
+        items = json.loads("[" + arr_str + "]")
+    except json.JSONDecodeError:
+        return None
+
+    elements = []
+    for i, item in enumerate(items):
+        entry = {"@type": "ListItem", "position": i + 1, "name": html.unescape(item["name"])}
+        if "url" in item:
+            entry["item"] = SITE_URL + item["url"]
+        elements.append(entry)
+
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": elements,
+    }
+
+
+def extract_faqs(content):
+    """Extract FAQ schema from var faqs = [...] block."""
+    if "injectFAQSchema" not in content:
+        return None
+
+    # Try all variable name patterns
+    start = -1
+    for varname in ("var faqs = [", "var faqs=[", "var FAQS = [", "var FAQS=["):
+        start = content.find(varname)
+        if start != -1:
+            break
+    if start == -1:
+        return None
+
+    bracket_start = content.index("[", start)
+    depth = 0
+    end = bracket_start
+    for i in range(bracket_start, len(content)):
+        if content[i] == "[":
+            depth += 1
+        elif content[i] == "]":
+            depth -= 1
+            if depth == 0:
+                end = i + 1
+                break
+
+    arr_str = content[bracket_start:end]
+
+    # Extract q/a pairs with regex
+    pairs = re.findall(
+        r"q\s*:\s*['\"](.+?)['\"],\s*\n?\s*a\s*:\s*['\"](.+?)['\"]\s*\n?\s*}",
+        arr_str,
+        re.DOTALL,
+    )
+
+    if not pairs:
+        return None
+
+    faqs = []
+    for q, a in pairs:
+        q = q.replace("\\'", "'").replace('\\"', '"').strip()
+        a = a.replace("\\'", "'").replace('\\"', '"').strip()
+        faqs.append(
+            {
+                "@type": "Question",
+                "name": html.unescape(q),
+                "acceptedAnswer": {"@type": "Answer", "text": html.unescape(a)},
+            }
+        )
+
+    if not faqs:
+        return None
+
+    return {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faqs}
+
+
+def extract_webapp(content, filepath=""):
+    """Extract WebApplication schema from injectWebAppSchema({...}) or variable."""
+    m = re.search(r"injectWebAppSchema\(\{(.*?)\}\)", content, re.DOTALL)
+    if not m:
+        # Try variable pattern: var TOOL_CONFIG = {...}; injectWebAppSchema(TOOL_CONFIG)
+        for varname in ("TOOL_CONFIG", "toolConfig"):
+            if f"injectWebAppSchema({varname})" in content:
+                m2 = re.search(rf"var {varname}\s*=\s*\{{(.*?)\}}", content, re.DOTALL)
+                if m2:
+                    m = m2
+                    break
+    if not m:
+        return None
+
+    block = m.group(1)
+
+    # Try inline quoted strings first
+    title_m = re.search(r"title\s*:\s*['\"](.+?)['\"]", block)
+    desc_m = re.search(r"description\s*:\s*['\"](.+?)['\"]", block)
+    slug_m = re.search(r"slug\s*:\s*['\"](.+?)['\"]", block)
+
+    # If block uses variables (title: TITLE), resolve from var declarations
+    if not title_m:
+        var_m = re.search(r"title\s*:\s*(\w+)", block)
+        if var_m:
+            varname = var_m.group(1)
+            val_m = re.search(rf"var {varname}\s*=\s*['\"](.+?)['\"]", content)
+            if val_m:
+                title_m = val_m
+
+    if not desc_m:
+        var_m = re.search(r"description\s*:\s*(\w+)", block)
+        if var_m:
+            varname = var_m.group(1)
+            val_m = re.search(rf"var {varname}\s*=\s*['\"](.+?)['\"]", content)
+            if val_m:
+                desc_m = val_m
+
+    if not slug_m:
+        var_m = re.search(r"slug\s*:\s*(\w+)", block)
+        if var_m:
+            varname = var_m.group(1)
+            val_m = re.search(rf"var {varname}\s*=\s*['\"](.+?)['\"]", content)
+            if val_m:
+                slug_m = val_m
+
+    if not title_m:
+        return None
+
+    title = title_m.group(1).replace("\\'", "'")
+    desc = desc_m.group(1).replace("\\'", "'") if desc_m else title
+
+    # Resolve slug: use extracted slug or derive from filepath
+    if slug_m:
+        slug = slug_m.group(1)
+        # If slug doesn't include directory, derive from filepath
+        if "/" not in slug and filepath:
+            dir_path = os.path.dirname(filepath).replace("\\", "/")
+            slug = dir_path
+    elif filepath:
+        slug = os.path.dirname(filepath).replace("\\", "/")
+    else:
+        return None
+
+    # Get lang from <html lang="xx">
+    lang_m = re.search(r'<html[^>]*lang="([^"]+)"', content)
+    lang = lang_m.group(1) if lang_m else "en"
+
+    return {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": html.unescape(title),
+        "description": html.unescape(desc),
+        "url": f"{SITE_URL}/{slug}/",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript",
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+        "author": {"@type": "Organization", "name": "Teamz Lab", "url": TEAMZ_URL, "foundingDate": "2023"},
+        "publisher": {"@type": "Organization", "name": "Teamz Lab", "url": TEAMZ_URL},
+        "inLanguage": lang,
+    }
+
+
+twitter_fixed = 0
+
+def fix_twitter_tags(content):
+    """Auto-inject missing twitter:title and twitter:description from OG tags."""
+    global twitter_fixed
+    changed = False
+
+    if 'twitter:card' not in content:
+        return content  # No twitter card at all — skip (likely not a tool page)
+
+    # Fix missing twitter:title
+    if 'twitter:title' not in content:
+        og_title = re.search(r'property="og:title"\s+content="([^"]*)"', content)
+        if og_title:
+            insert = f'  <meta name="twitter:title" content="{og_title.group(1)}">\n'
+            content = content.replace(
+                '<meta name="twitter:card" content="summary">',
+                '<meta name="twitter:card" content="summary">\n' + insert.rstrip(),
+            )
+            changed = True
+
+    # Fix missing twitter:description
+    if 'twitter:description' not in content:
+        og_desc = re.search(r'property="og:description"\s+content="([^"]*)"', content)
+        if og_desc:
+            desc = og_desc.group(1)[:200]  # Twitter allows 200 chars
+            insert = f'  <meta name="twitter:description" content="{desc}">'
+            # Insert after twitter:title if it exists, otherwise after twitter:card
+            if 'twitter:title' in content:
+                content = re.sub(
+                    r'(<meta name="twitter:title"[^>]*>)',
+                    r'\1\n' + insert,
+                    content,
+                    count=1,
+                )
+            else:
+                content = content.replace(
+                    '<meta name="twitter:card" content="summary">',
+                    '<meta name="twitter:card" content="summary">\n' + insert,
+                )
+            changed = True
+
+    if changed:
+        twitter_fixed += 1
+    return content
+
+
+def process_file(filepath):
+    """Process a single HTML file: extract schemas, inject static JSON-LD, fix twitter tags."""
+    global count, skip
+
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Skip redirect pages
+    if 'http-equiv="refresh"' in content:
+        return
+
+    # Auto-fix missing twitter tags
+    content = fix_twitter_tags(content)
+
+    # Extract all schemas from JS calls
+    schema_blocks = []
+
+    bc = extract_breadcrumbs(content)
+    if bc:
+        schema_blocks.append(json.dumps(bc, ensure_ascii=False))
+
+    faq = extract_faqs(content)
+    if faq:
+        schema_blocks.append(json.dumps(faq, ensure_ascii=False))
+
+    webapp = extract_webapp(content, filepath)
+    if webapp:
+        schema_blocks.append(json.dumps(webapp, ensure_ascii=False))
+
+    if not schema_blocks:
+        # No JS schema calls found — check if static schemas already exist
+        if MARKER in content:
+            marker_match = re.search(rf"{re.escape(MARKER)}(.*?){re.escape(MARKER)}", content, re.DOTALL)
+            if marker_match and 'application/ld+json' in marker_match.group(1):
+                count += 1  # Already has valid static schemas, no changes needed
+                return
+        skip += 1
+        return
+
+    # Remove old static schema blocks before injecting new ones
+    if MARKER in content:
+        content = re.sub(
+            rf"{re.escape(MARKER)}.*?{re.escape(MARKER)}\n?",
+            "",
+            content,
+            flags=re.DOTALL,
+        )
+
+    # Remove redundant runtime JS inject calls that duplicate the static schemas
+    # (Google flags "Duplicate field FAQPage" etc. when both static + runtime exist)
+    if faq:
+        content = re.sub(r'\s*TeamzTools\.injectFAQSchema\([^)]*\);?', '', content)
+        content = re.sub(r'\s*if\s*\([^)]*injectFAQSchema[^;]*;', '', content)
+    if bc:
+        content = re.sub(r'\s*TeamzTools\.injectBreadcrumbSchema\([^)]*\);?', '', content)
+    if webapp:
+        content = re.sub(r'\n?\s*TeamzTools\.injectWebAppSchema\([^;]*;', '', content)
+
+    # Build the injection block
+    lines = [MARKER]
+    for schema_json in schema_blocks:
+        lines.append(f'  <script type="application/ld+json">{schema_json}</script>')
+    lines.append(MARKER)
+    injection = "\n".join(lines) + "\n"
+
+    # Insert before </head>
+    if "</head>" in content:
+        content = content.replace("</head>", injection + "</head>", 1)
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        count += 1
+    else:
+        errors.append(filepath)
+
+
+def main():
+    if PROJECT_TYPE == "app":
+        print("INFO: build-static-schema.py is website-focused and disabled for TEAMZ_PROJECT_TYPE=app.")
+        sys.exit(2)
+
+    os.chdir(BASE_DIR)
+    print("=== Building static schema ===")
+
+    # Support targeted runs:
+    #   python3 build-static-schema.py                → all tools
+    #   python3 build-static-schema.py --staged        → only git-staged files (used by pre-commit)
+    #   python3 build-static-schema.py ai/grammar-checker  → specific tool path
+    #   python3 build-static-schema.py ai/ health/     → specific hubs
+
+    args = sys.argv[1:]
+    staged_only = "--staged" in args
+    targets = [a for a in args if a != "--staged"]
+
+    if staged_only:
+        # Only process staged index.html files
+        try:
+            result = subprocess.run(
+                ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
+                capture_output=True, text=True, timeout=10,
+            )
+            files = [f for f in result.stdout.strip().split("\n") if f.endswith("index.html")]
+        except Exception:
+            files = []
+        if not files:
+            print("  No staged index.html files — skipping")
+            print("=== Done ===")
+            return
+        print(f"  Targeted: {len(files)} staged file(s)")
+        for filepath in sorted(files):
+            parts = filepath.split("/")
+            if len(parts) < 2 or parts[0] in SKIP_DIRS:
+                continue
+            process_file(filepath)
+    elif targets:
+        # Process specific paths (tool or hub)
+        files = []
+        for t in targets:
+            t = t.rstrip("/")
+            idx = os.path.join(t, "index.html")
+            if os.path.isfile(idx):
+                files.append(idx)
+            elif os.path.isdir(t):
+                for f in sorted(glob.glob(os.path.join(t, "**/index.html"), recursive=True)):
+                    files.append(f)
+        print(f"  Targeted: {len(files)} file(s)")
+        for filepath in sorted(files):
+            parts = filepath.split("/")
+            if len(parts) < 2 or parts[0] in SKIP_DIRS:
+                continue
+            process_file(filepath)
+    else:
+        # Process all tools
+        for filepath in sorted(glob.glob("**/index.html", recursive=True)):
+            parts = filepath.split("/")
+            if len(parts) < 2:
+                continue
+            if parts[0] in SKIP_DIRS:
+                continue
+            if filepath == "404.html":
+                continue
+            process_file(filepath)
+
+    print(f"  Static schema: {count} pages updated, {skip} skipped")
+    if twitter_fixed:
+        print(f"  Twitter tags: {twitter_fixed} pages auto-fixed")
+    if errors:
+        print(f"  Errors: {len(errors)} files")
+        for e in errors:
+            print(f"    {e}")
+    print("=== Done ===")
+
+
+if __name__ == "__main__":
+    main()

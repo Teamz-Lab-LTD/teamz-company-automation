@@ -33,6 +33,7 @@ def load_runtime(script_file: str) -> dict:
         _load_env_file(host_site_root / ".teamz-automation.env")
         _load_env_file(automation_root / ".teamz-automation.env")
 
+    host_site_root = Path(os.getenv("TEAMZ_HOST_SITE_ROOT", str(host_site_root))).expanduser().resolve()
     site_url = os.getenv("TEAMZ_SITE_URL", "https://tool.teamzlab.com/").rstrip("/") + "/"
     site_property = os.getenv("TEAMZ_SITE_PROPERTY", site_url).rstrip("/") + "/"
     config_dir = Path(os.getenv("TEAMZ_CONFIG_DIR", str(Path.home() / ".config" / "teamzlab")))
@@ -48,6 +49,7 @@ def load_runtime(script_file: str) -> dict:
         "config_dir": config_dir,
         "data_dir": data_dir,
         "report_dir": report_dir,
+        "project_type": os.getenv("TEAMZ_PROJECT_TYPE", "website").strip().lower(),
         "sc_token_file": Path(os.getenv("TEAMZ_SC_TOKEN_FILE", str(config_dir / "search-console-token.json"))),
         "ga4_token_file": Path(os.getenv("TEAMZ_GA4_TOKEN_FILE", str(config_dir / "analytics-token.json"))),
         "adsense_token_file": Path(os.getenv("TEAMZ_ADSENSE_TOKEN_FILE", str(config_dir / "adsense-token.json"))),

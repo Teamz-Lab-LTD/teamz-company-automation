@@ -49,6 +49,7 @@ teamz_load_config() {
   export TEAMZ_CONFIG_DIR="${TEAMZ_CONFIG_DIR:-$HOME/.config/teamzlab}"
   export TEAMZ_GOOGLE_CLOUD_PROJECT="${TEAMZ_GOOGLE_CLOUD_PROJECT:-teamzlab-tools}"
   export TEAMZ_GA4_PROPERTY_ID="${TEAMZ_GA4_PROPERTY_ID:-528521795}"
+  export TEAMZ_PROJECT_TYPE="${TEAMZ_PROJECT_TYPE:-website}"
 
   export TEAMZ_SC_TOKEN_FILE="${TEAMZ_SC_TOKEN_FILE:-$TEAMZ_CONFIG_DIR/search-console-token.json}"
   export TEAMZ_GA4_TOKEN_FILE="${TEAMZ_GA4_TOKEN_FILE:-$TEAMZ_CONFIG_DIR/analytics-token.json}"

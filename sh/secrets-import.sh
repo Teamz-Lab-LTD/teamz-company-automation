@@ -14,10 +14,12 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+_RES="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+SCRIPT_DIR="$(cd "$(dirname "$_RES")" && pwd)"
+AUTOMATION_ROOT="$(dirname "$SCRIPT_DIR")"
+HOST_SITE_ROOT="$(dirname "$AUTOMATION_ROOT")"
 CONFIG_DIR="$HOME/.config/teamzlab"
-INPUT="${1:-$PROJECT_DIR/teamzlab-secrets.gpg}"
+INPUT="${1:-$HOST_SITE_ROOT/teamzlab-secrets.gpg}"
 
 if [ ! -f "$INPUT" ]; then
     echo ""
@@ -84,7 +86,7 @@ fi
 
 # 2. Restore distribute config
 if [ -f "$TMP_DIR/distribute/config.json" ]; then
-    DEST="$SCRIPT_DIR/distribute/config.json"
+    DEST="$AUTOMATION_ROOT/distribute/config.json"
     if [ -f "$DEST" ]; then
         echo "  ~ distribute/config.json (overwriting existing)"
     else
@@ -105,7 +107,7 @@ if [ -d "$TMP_DIR/gcloud" ]; then
                 cp "$f" "$HOME/.config/gcloud/$BASENAME"
                 echo "  + gcloud/$BASENAME"
             else
-                cp "$f" "$PROJECT_DIR/$BASENAME"
+                cp "$f" "$HOST_SITE_ROOT/$BASENAME"
                 echo "  + $BASENAME (project root)"
             fi
             COUNT=$((COUNT + 1))
@@ -123,7 +125,7 @@ echo ""
 # Verify
 echo "  Verification:"
 [ -d "$CONFIG_DIR" ] && echo "    ~/.config/teamzlab/ — $(ls "$CONFIG_DIR" | wc -l | tr -d ' ') files" || echo "    ~/.config/teamzlab/ — MISSING"
-[ -f "$SCRIPT_DIR/distribute/config.json" ] && echo "    distribute/config.json — OK" || echo "    distribute/config.json — MISSING"
+[ -f "$AUTOMATION_ROOT/distribute/config.json" ] && echo "    distribute/config.json — OK" || echo "    distribute/config.json — MISSING"
 
 echo ""
 echo "  Quick test commands:"

@@ -10,7 +10,8 @@
 #   ./build-pagespeed.sh --slow                    # Find slowest pages
 # ============================================================
 
-cd "$(dirname "$0")"
+_SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+cd "$(dirname "$_SCRIPT")"
 SITE="https://tool.teamzlab.com"
 API_KEY_FILE="$HOME/.config/teamzlab/pagespeed-api-key.txt"
 

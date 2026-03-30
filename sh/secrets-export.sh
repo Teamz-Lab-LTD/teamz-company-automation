@@ -10,12 +10,14 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-# Parent of automation repo (e.g. teamzlab-tools when this dir is a git submodule)
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+_RES="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+SCRIPT_DIR="$(cd "$(dirname "$_RES")" && pwd)"
+# sh/ → teamz-company-automation/ → parent = teamzlab-tools (submodule)
+AUTOMATION_ROOT="$(dirname "$SCRIPT_DIR")"
+HOST_SITE_ROOT="$(dirname "$AUTOMATION_ROOT")"
 CONFIG_DIR="$HOME/.config/teamzlab"
-DIST_CONFIG="$SCRIPT_DIR/distribute/config.json"
-OUTPUT="${1:-$PROJECT_DIR/teamzlab-secrets.gpg}"
+DIST_CONFIG="$AUTOMATION_ROOT/distribute/config.json"
+OUTPUT="${1:-$HOST_SITE_ROOT/teamzlab-secrets.gpg}"
 TMP_DIR=$(mktemp -d)
 
 echo ""
@@ -49,9 +51,9 @@ fi
 
 # 3. Google Cloud service account (if exists)
 for sa in "$HOME/.config/gcloud/application_default_credentials.json" \
-          "$PROJECT_DIR/service-account.json" \
-          "$PROJECT_DIR/scripts/service-account.json" \
-          "$SCRIPT_DIR/service-account.json"; do
+          "$HOST_SITE_ROOT/service-account.json" \
+          "$HOST_SITE_ROOT/scripts/service-account.json" \
+          "$AUTOMATION_ROOT/service-account.json"; do
     if [ -f "$sa" ]; then
         mkdir -p "$TMP_DIR/gcloud"
         cp "$sa" "$TMP_DIR/gcloud/$(basename "$sa")"

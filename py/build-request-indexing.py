@@ -235,7 +235,8 @@ def ping_sitemaps():
 
 def get_all_urls_from_sitemap():
     """Parse sitemap.xml to get all URLs."""
-    sitemap_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'sitemap.xml')
+    _host = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sitemap_path = os.path.join(_host, 'sitemap.xml')
     if not os.path.exists(sitemap_path):
         print(f'  ERROR: sitemap.xml not found at {sitemap_path}')
         return []
@@ -403,7 +404,8 @@ def main():
             print(f'  Go to: https://search.google.com/search-console/inspect?resource_id={urllib.parse.quote(SITE_URL + "/", safe="")}')
 
         # ─── Save report to file ────────────────────────────────────
-        report_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'docs', 'indexing-report.md')
+        _host = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        report_path = os.path.join(_host, 'docs', 'indexing-report.md')
         os.makedirs(os.path.dirname(report_path), exist_ok=True)
         from datetime import datetime
         with open(report_path, 'w') as f:

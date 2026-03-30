@@ -34,10 +34,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 # ── Config ──
-SCRIPT_DIR = Path(__file__).parent
-PROJECT_DIR = SCRIPT_DIR.parent
+# py/ → teamz-company-automation/ → parent = teamzlab-tools (when used as submodule)
+_AUTOMATION_ROOT = Path(__file__).resolve().parent.parent
+_HOST_SITE_ROOT = _AUTOMATION_ROOT.parent
+PROJECT_DIR = _HOST_SITE_ROOT
 TOKEN_FILE = Path.home() / ".config" / "teamzlab" / "search-console-token.json"
-RANK_HISTORY_FILE = SCRIPT_DIR / "rank-history.json"
+RANK_HISTORY_FILE = _AUTOMATION_ROOT / "data" / "rank-history.json"
 SITE_URL = "https://tool.teamzlab.com/"
 CTX = ssl.create_default_context()
 
@@ -460,7 +462,7 @@ def print_keyword_ideas(keyword):
     print()
     print(f"  Total ideas: {len(suggestions)}")
     print(f"  Note: Volume/difficulty require Search Console data.")
-    print(f"         Run: python3 scripts/build-keyword-intel.py --keyword \"{keyword}\"")
+    print(f"         Run: python3 py/build-keyword-intel.py --keyword \"{keyword}\"")
     print()
 
 

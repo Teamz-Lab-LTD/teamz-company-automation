@@ -11,13 +11,14 @@
 #   ./build-adsense.sh --all        # Full report
 # ============================================================
 
-cd "$(dirname "$0")"
+_SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+cd "$(dirname "$_SCRIPT")"
 
 TOKEN_FILE="$HOME/.config/teamzlab/adsense-token.json"
 
 if [ ! -f "$TOKEN_FILE" ]; then
     echo "  ERROR: No AdSense token found"
-    echo "  Run: python3 build-adsense-auth.py  (from teamz-company-automation/)"
+    echo "  Run: python3 \"$(pwd)/../py/build-adsense-auth.py\""
     exit 1
 fi
 

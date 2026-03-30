@@ -13,10 +13,11 @@
 #
 # Setup:
 #   1. Enable Analytics Data API in Google Cloud Console
-#   2. Run: python3 build-analytics-auth.py (from teamz-company-automation/)
+#   2. Run: python3 py/build-analytics-auth.py (from teamz-company-automation/)
 # ============================================================
 
-cd "$(dirname "$0")"
+_SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+cd "$(dirname "$_SCRIPT")"
 SCRIPT_DIR="$(pwd)"
 
 TOKEN_FILE="$HOME/.config/teamzlab/analytics-token.json"
@@ -31,7 +32,7 @@ NC="\033[0m"
 # Check token
 if [ ! -f "$TOKEN_FILE" ]; then
     echo -e "${RED}  ERROR: No analytics token found${NC}"
-    echo "  Run: python3 build-analytics-auth.py  (from teamz-company-automation/)"
+    echo "  Run: python3 \"$(pwd)/../py/build-analytics-auth.py\""
     exit 1
 fi
 
@@ -67,7 +68,7 @@ except:
 
 if [ -z "$ACCESS_TOKEN" ]; then
     echo -e "${RED}  ERROR: Could not get access token. Re-run auth:${NC}"
-    echo "  python3 build-analytics-auth.py  (from teamz-company-automation/)"
+    echo "  python3 \"$(pwd)/../py/build-analytics-auth.py\""
     exit 1
 fi
 

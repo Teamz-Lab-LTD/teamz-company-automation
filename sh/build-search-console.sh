@@ -7,7 +7,8 @@
 # =============================================================
 
 set -e
-cd "$(dirname "$0")"
+_SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+cd "$(dirname "$_SCRIPT")"
 
 TOKEN_FILE="$HOME/.config/teamzlab/search-console-token.json"
 SITE_URL="https://tool.teamzlab.com/"
@@ -22,7 +23,7 @@ fi
 # Check token
 if [ ! -f "$TOKEN_FILE" ]; then
   echo "ERROR: No Search Console token found."
-  echo "Run: python3 build-search-console-auth.py"
+  echo "Run: python3 \"$(pwd)/../py/build-search-console-auth.py\""
   echo "See: docs/search-console-setup.md"
   exit 1
 fi
@@ -68,7 +69,7 @@ def get_fresh_token():
     # Refresh
     refresh = token_data.get('refresh_token')
     if not refresh:
-        print("ERROR: Token expired. Re-run: python3 build-search-console-auth.py")
+        print("ERROR: Token expired. Re-run: python3 py/build-search-console-auth.py")
         sys.exit(1)
     try:
         rr = requests.post('https://oauth2.googleapis.com/token', data={
@@ -85,7 +86,7 @@ def get_fresh_token():
         with open(TOKEN_FILE, 'w') as f:
             json.dump(token_data, f, indent=2)
         return new_token
-    print("ERROR: Token refresh failed. Re-run: python3 build-search-console-auth.py")
+    print("ERROR: Token refresh failed. Re-run: python3 py/build-search-console-auth.py")
     sys.exit(1)
 
 token = get_fresh_token()

@@ -30,9 +30,9 @@ import webbrowser
 from datetime import datetime
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).parent
-HISTORY_FILE = SCRIPT_DIR / "backlinks-history.json"
-INDEXING_SCRIPT = SCRIPT_DIR / "build-request-indexing.py"
+_AUTOMATION_ROOT = Path(__file__).resolve().parent.parent
+HISTORY_FILE = _AUTOMATION_ROOT / "data" / "backlinks-history.json"
+INDEXING_SCRIPT = Path(__file__).resolve().parent / "build-request-indexing.py"
 
 # ──────────────────────────────────────────────────────────────
 # Site Details (used for submissions)

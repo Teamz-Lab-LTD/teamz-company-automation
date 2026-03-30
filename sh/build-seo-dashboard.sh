@@ -27,7 +27,9 @@
 # ============================================================
 
 set -e
-AUTOMATION_ROOT="$(cd "$(dirname "$0")" && pwd)"
+_RES="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+# sh/ → parent = teamz-company-automation repo root
+AUTOMATION_ROOT="$(cd "$(dirname "$_RES")/.." && pwd)"
 TEAMZ_HOST_SITE_ROOT="${TEAMZ_HOST_SITE_ROOT:-$AUTOMATION_ROOT/..}"
 cd "$AUTOMATION_ROOT"
 
@@ -582,7 +584,7 @@ if [[ "$MODE" == "--speed" ]]; then
     echo "│  (Ubersuggest equivalent: Site Speed)                             │"
     echo "└──────────────────────────────────────────────────────────────────┘"
     echo ""
-    "$AUTOMATION_ROOT/build-pagespeed.sh"
+    "$AUTOMATION_ROOT/sh/build-pagespeed.sh"
 fi
 
 # ─────────────────────────────────────────────────────────────

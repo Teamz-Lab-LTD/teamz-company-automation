@@ -32,8 +32,8 @@ import csv
 from datetime import datetime, timedelta
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).parent
-BACKLINKS_FILE = SCRIPT_DIR / "backlinks-data.json"
+_AUTOMATION_ROOT = Path(__file__).resolve().parent.parent
+BACKLINKS_FILE = _AUTOMATION_ROOT / "data" / "backlinks-data.json"
 TOKEN_FILE = Path.home() / ".config" / "teamzlab" / "search-console-token.json"
 SITE_URL = "https://tool.teamzlab.com/"
 CTX = ssl.create_default_context()
@@ -158,7 +158,7 @@ def save_backlinks(data):
 
 def get_known_distribution_links():
     """Get links from our distribution history."""
-    dist_history = SCRIPT_DIR / "distribute" / "history.json"
+    dist_history = _AUTOMATION_ROOT / "distribute" / "history.json"
     links = []
     if dist_history.exists():
         history = json.loads(dist_history.read_text())
@@ -207,7 +207,7 @@ def scan_backlinks(token):
 
     # 3. Directory submission links
     print("  [3/3] Checking directory submissions...")
-    dir_history = SCRIPT_DIR / "backlinks-history.json"
+    dir_history = _AUTOMATION_ROOT / "data" / "backlinks-history.json"
     dir_links = []
     if dir_history.exists():
         dh = json.loads(dir_history.read_text())
@@ -319,7 +319,7 @@ def show_report(dofollow_only=False):
 
 def export_csv_report():
     data = load_backlinks()
-    filepath = SCRIPT_DIR / f"backlinks-export-{datetime.now().strftime('%Y%m%d')}.csv"
+    filepath = _AUTOMATION_ROOT / f"backlinks-export-{datetime.now().strftime('%Y%m%d')}.csv"
     with open(filepath, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Source URL", "Platform", "Link Type", "Date", "Status", "Origin"])

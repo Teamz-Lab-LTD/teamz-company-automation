@@ -32,9 +32,9 @@ import ssl
 from datetime import datetime, timedelta
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).parent
-HISTORY_FILE = SCRIPT_DIR / "rank-history.json"
-WATCHLIST_FILE = SCRIPT_DIR / "rank-watchlist.json"
+_AUTOMATION_ROOT = Path(__file__).resolve().parent.parent
+HISTORY_FILE = _AUTOMATION_ROOT / "data" / "rank-history.json"
+WATCHLIST_FILE = _AUTOMATION_ROOT / "data" / "rank-watchlist.json"
 TOKEN_FILE = Path.home() / ".config" / "teamzlab" / "search-console-token.json"
 SITE_URL = "https://tool.teamzlab.com/"
 CTX = ssl.create_default_context()

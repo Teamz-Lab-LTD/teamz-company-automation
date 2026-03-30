@@ -28,8 +28,8 @@ import ssl
 from datetime import datetime, timedelta
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).parent
-PROJECT_DIR = SCRIPT_DIR.parent
+_AUTOMATION_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_DIR = _AUTOMATION_ROOT.parent
 TOKEN_FILE = Path.home() / ".config" / "teamzlab" / "search-console-token.json"
 SITE_URL = "https://tool.teamzlab.com/"
 CTX = ssl.create_default_context()

@@ -31,7 +31,7 @@ import urllib.parse
 import urllib.error
 from datetime import datetime
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CONSOLE_TOKEN = os.path.expanduser("~/.config/teamzlab/search-console-token.json")
 ADS_CONFIG = os.path.expanduser("~/.config/teamzlab/google-ads-config.json")
 ADS_TOKEN = os.path.expanduser("~/.config/teamzlab/google-ads-token.json")

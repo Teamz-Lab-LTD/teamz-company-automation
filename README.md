@@ -31,11 +31,18 @@ git submodule update --init --recursive
 
 Shell + Python Tier-1 scripts now read config in this order:
 
-1. `TEAMZ_AUTOMATION_ENV=/path/to/file.env` (explicit override)
-2. `<host-project>/.teamz-automation.env`
-3. `teamz-company-automation/.teamz-automation.env`
+1. `TEAMZ_BASE_ENV=/path/to/automation.base.env` (or default `~/.config/teamzlab/automation.base.env`)
+2. `TEAMZ_AUTOMATION_ENV=/path/to/file.env` (explicit project override)
+3. `<host-project>/.teamz-automation.env`
+4. `teamz-company-automation/.teamz-automation.env`
 
 This keeps site/domain/property/token differences at the **project level** while sharing one automation codebase.
+
+### Recommended setup
+
+- Put shared machine values (token paths, owner/email defaults) in `~/.config/teamzlab/automation.base.env`  
+  (starter template: `automation.base.env.example` in this repo).
+- Keep each project’s URL/property/host root in local `.teamz-automation.env`.
 
 ## Site audit (`build-seo-dashboard.sh --audit`)
 

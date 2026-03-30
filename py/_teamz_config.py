@@ -22,6 +22,10 @@ def load_runtime(script_file: str) -> dict:
     automation_root = py_dir.parent
     host_site_root = automation_root.parent
 
+    # Base machine-level config (shared across projects), then per-project override.
+    base_env = os.getenv("TEAMZ_BASE_ENV", str(Path.home() / ".config" / "teamzlab" / "automation.base.env"))
+    _load_env_file(Path(base_env))
+
     explicit_env = os.getenv("TEAMZ_AUTOMATION_ENV")
     if explicit_env:
         _load_env_file(Path(explicit_env))

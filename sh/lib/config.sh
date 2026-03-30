@@ -12,7 +12,18 @@ teamz_load_config() {
   export TEAMZ_AUTOMATION_ROOT="${TEAMZ_AUTOMATION_ROOT:-$(cd "$script_dir/.." && pwd)}"
   export TEAMZ_HOST_SITE_ROOT="${TEAMZ_HOST_SITE_ROOT:-$(cd "$TEAMZ_AUTOMATION_ROOT/.." && pwd)}"
 
-  # Optional project-level env files.
+  # Optional base config file (machine-level, shared across projects).
+  local base_env_default
+  base_env_default="$HOME/.config/teamzlab/automation.base.env"
+  if [[ -n "${TEAMZ_BASE_ENV:-}" && -f "${TEAMZ_BASE_ENV}" ]]; then
+    # shellcheck disable=SC1090
+    source "${TEAMZ_BASE_ENV}"
+  elif [[ -f "$base_env_default" ]]; then
+    # shellcheck disable=SC1090
+    source "$base_env_default"
+  fi
+
+  # Optional project-level env files (override base values).
   if [[ -n "${TEAMZ_AUTOMATION_ENV:-}" && -f "${TEAMZ_AUTOMATION_ENV}" ]]; then
     # shellcheck disable=SC1090
     source "${TEAMZ_AUTOMATION_ENV}"

@@ -11,9 +11,14 @@
 # ============================================================
 
 _SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
-cd "$(dirname "$_SCRIPT")"
-SITE="https://tool.teamzlab.com"
-API_KEY_FILE="$HOME/.config/teamzlab/pagespeed-api-key.txt"
+SCRIPT_DIR="$(cd "$(dirname "$_SCRIPT")" && pwd)"
+AUTOMATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck disable=SC1091
+source "$AUTOMATION_ROOT/sh/lib/config.sh"
+teamz_load_config "$_SCRIPT"
+cd "$SCRIPT_DIR"
+SITE="${TEAMZ_SITE_URL%/}"
+API_KEY_FILE="$TEAMZ_PAGESPEED_KEY_FILE"
 
 if [ ! -f "$API_KEY_FILE" ]; then
     echo "  ERROR: No PageSpeed API key found"
@@ -115,11 +120,11 @@ case "$MODE" in
         echo "============================================================"
         echo ""
         # Get top pages from analytics if available
-        if [ -f "$HOME/.config/teamzlab/analytics-token.json" ]; then
+        if [ -f "$TEAMZ_GA4_TOKEN_FILE" ]; then
             PAGES=$(python3 -c "
 import json, urllib.request, urllib.parse, ssl
 ctx = ssl.create_default_context()
-with open('$HOME/.config/teamzlab/analytics-token.json') as f:
+with open('$TEAMZ_GA4_TOKEN_FILE') as f:
     t = json.load(f)
 # Refresh token
 data = urllib.parse.urlencode({
@@ -142,7 +147,7 @@ body = json.dumps({
     'orderBys': [{'metric': {'metricName': 'screenPageViews'}, 'desc': True}],
     'limit': 20
 }).encode()
-req = urllib.request.Request('https://analyticsdata.googleapis.com/v1beta/properties/528521795:runReport',
+req = urllib.request.Request('https://analyticsdata.googleapis.com/v1beta/properties/$TEAMZ_GA4_PROPERTY_ID:runReport',
     data=body, headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json', 'User-Agent': 'TeamzLab/1.0'})
 with urllib.request.urlopen(req, context=ctx) as r:
     result = json.loads(r.read())

@@ -34,10 +34,34 @@ except ImportError:  # pragma: no cover - PyYAML is expected locally
     yaml = None
 
 SCRIPT_DIR = Path(__file__).parent
-CONFIG_FILE = SCRIPT_DIR / "config.json"
-HISTORY_FILE = SCRIPT_DIR / "history.json"
-EXAMPLE_CONFIG = SCRIPT_DIR / "config.example.json"
-ARTICLES_DIR = SCRIPT_DIR / "articles"
+AUTOMATION_ROOT = SCRIPT_DIR.parent
+HOST_PROJECT_ROOT = AUTOMATION_ROOT.parent
+
+
+def _load_env(path: Path) -> None:
+    if not path.exists():
+        return
+    for raw_line in path.read_text().splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        k = k.strip()
+        v = v.strip().strip('"').strip("'")
+        if k and k not in os.environ:
+            os.environ[k] = v
+
+
+if os.getenv("TEAMZ_AUTOMATION_ENV"):
+    _load_env(Path(os.environ["TEAMZ_AUTOMATION_ENV"]))
+else:
+    _load_env(HOST_PROJECT_ROOT / ".teamz-automation.env")
+    _load_env(AUTOMATION_ROOT / ".teamz-automation.env")
+
+CONFIG_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_CONFIG", str(SCRIPT_DIR / "config.json")))
+HISTORY_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_HISTORY", str(SCRIPT_DIR / "history.json")))
+EXAMPLE_CONFIG = Path(os.getenv("TEAMZ_DISTRIBUTE_EXAMPLE_CONFIG", str(SCRIPT_DIR / "config.example.json")))
+ARTICLES_DIR = Path(os.getenv("TEAMZ_DISTRIBUTE_ARTICLES_DIR", str(SCRIPT_DIR / "articles")))
 
 ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "github_discussions", "gitlab", "substack", "telegraph", "google_sites", "pinterest"]
 

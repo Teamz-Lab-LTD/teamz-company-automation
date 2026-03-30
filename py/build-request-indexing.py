@@ -23,11 +23,14 @@ import hashlib
 import urllib.request
 import urllib.parse
 import xml.etree.ElementTree as ET
+from _teamz_config import load_runtime
 
-SITE_URL = 'https://tool.teamzlab.com'
-SITE_URL_SC = 'https://tool.teamzlab.com/'  # Search Console property format (trailing slash required)
-SC_TOKEN_FILE = os.path.expanduser('~/.config/teamzlab/search-console-token.json')
-INDEXNOW_KEY = 'teamzlab-indexnow-key'  # Will create key file on site
+_CFG = load_runtime(__file__)
+
+SITE_URL_SC = _CFG["site_property"]  # Search Console property format (trailing slash required)
+SITE_URL = SITE_URL_SC.rstrip("/")
+SC_TOKEN_FILE = str(_CFG["sc_token_file"])
+INDEXNOW_KEY = os.getenv("TEAMZ_INDEXNOW_KEY", "teamzlab-indexnow-key")
 SITEMAP_URL = f'{SITE_URL}/sitemap.xml'
 
 # SSL context
@@ -66,6 +69,23 @@ TOP_PAGES = [
     '/health/screen-distance-checker/',
     '/health/time-blindness-calculator/',
 ]
+
+
+def get_top_pages():
+    custom = os.getenv("TEAMZ_TOP_PAGES_FILE")
+    if not custom:
+        return TOP_PAGES
+    p = custom if os.path.isabs(custom) else os.path.join(str(_CFG["host_site_root"]), custom)
+    if not os.path.exists(p):
+        return TOP_PAGES
+    pages = []
+    with open(p) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            pages.append(line)
+    return pages or TOP_PAGES
 
 
 def refresh_token():
@@ -235,7 +255,7 @@ def ping_sitemaps():
 
 def get_all_urls_from_sitemap():
     """Parse sitemap.xml to get all URLs."""
-    _host = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    _host = str(_CFG["host_site_root"])
     sitemap_path = os.path.join(_host, 'sitemap.xml')
     if not os.path.exists(sitemap_path):
         print(f'  ERROR: sitemap.xml not found at {sitemap_path}')
@@ -281,7 +301,7 @@ def main():
             return
         print(f'  Found {len(full_urls)} URLs in sitemap.xml')
     else:
-        full_urls = [f'{SITE_URL}{p}' for p in TOP_PAGES]
+        full_urls = [f'{SITE_URL}{p}' for p in get_top_pages()]
 
     print('=' * 66)
     print(f'  INDEXING REQUEST — {len(full_urls)} pages')
@@ -404,8 +424,7 @@ def main():
             print(f'  Go to: https://search.google.com/search-console/inspect?resource_id={urllib.parse.quote(SITE_URL + "/", safe="")}')
 
         # ─── Save report to file ────────────────────────────────────
-        _host = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        report_path = os.path.join(_host, 'docs', 'indexing-report.md')
+        report_path = os.path.join(str(_CFG["report_dir"]), 'indexing-report.md')
         os.makedirs(os.path.dirname(report_path), exist_ok=True)
         from datetime import datetime
         with open(report_path, 'w') as f:

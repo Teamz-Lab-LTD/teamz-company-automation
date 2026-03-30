@@ -17,11 +17,15 @@
 # ============================================================
 
 _SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
-cd "$(dirname "$_SCRIPT")"
-SCRIPT_DIR="$(pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$_SCRIPT")" && pwd)"
+AUTOMATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck disable=SC1091
+source "$AUTOMATION_ROOT/sh/lib/config.sh"
+teamz_load_config "$_SCRIPT"
+cd "$SCRIPT_DIR"
 
-TOKEN_FILE="$HOME/.config/teamzlab/analytics-token.json"
-PROPERTY_ID="528521795"
+TOKEN_FILE="$TEAMZ_GA4_TOKEN_FILE"
+PROPERTY_ID="$TEAMZ_GA4_PROPERTY_ID"
 
 # Colors
 GREEN="\033[0;32m"

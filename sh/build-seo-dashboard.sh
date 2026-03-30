@@ -30,15 +30,18 @@ set -e
 _RES="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
 # sh/ → parent = teamz-company-automation repo root
 AUTOMATION_ROOT="$(cd "$(dirname "$_RES")/.." && pwd)"
-TEAMZ_HOST_SITE_ROOT="${TEAMZ_HOST_SITE_ROOT:-$AUTOMATION_ROOT/..}"
+# shellcheck disable=SC1091
+source "$AUTOMATION_ROOT/sh/lib/config.sh"
+teamz_load_config "$_RES"
 cd "$AUTOMATION_ROOT"
 
 MODE="${1:---quick}"
-SITE_URL="https://tool.teamzlab.com/"
-TOKEN_FILE="$HOME/.config/teamzlab/search-console-token.json"
-GA4_TOKEN_FILE="$HOME/.config/teamzlab/analytics-token.json"
-GA4_PROPERTY_ID="528521795"
-PAGESPEED_KEY_FILE="$HOME/.config/teamzlab/pagespeed-api-key.txt"
+SITE_URL="$TEAMZ_SITE_PROPERTY"
+TOKEN_FILE="$TEAMZ_SC_TOKEN_FILE"
+GA4_TOKEN_FILE="$TEAMZ_GA4_TOKEN_FILE"
+GA4_PROPERTY_ID="$TEAMZ_GA4_PROPERTY_ID"
+PAGESPEED_KEY_FILE="$TEAMZ_PAGESPEED_KEY_FILE"
+GOOGLE_PROJECT="$TEAMZ_GOOGLE_CLOUD_PROJECT"
 
 echo ""
 echo "╔══════════════════════════════════════════════════════════════════════╗"
@@ -47,7 +50,7 @@ echo "║           (Replaces: Ubersuggest, Ahrefs, SEMrush)                 ║
 echo "╚══════════════════════════════════════════════════════════════════════╝"
 echo ""
 echo "  Date: $(date '+%Y-%m-%d %H:%M')"
-echo "  Site: tool.teamzlab.com"
+echo "  Site: ${SITE_URL%/}"
 echo ""
 
 # ─────────────────────────────────────────────────────────────
@@ -258,7 +261,7 @@ fi
 # ─────────────────────────────────────────────────────────────
 if [[ "$MODE" == "--quick" || "$MODE" == "--rank" || "$MODE" == "--keywords" ]]; then
 
-python3 - "$TOKEN_FILE" "$SITE_URL" "$MODE" << 'PYEOF'
+python3 - "$TOKEN_FILE" "$SITE_URL" "$MODE" "$GOOGLE_PROJECT" << 'PYEOF'
 import json, sys, os, requests
 from datetime import datetime, timedelta
 from urllib.parse import quote
@@ -266,6 +269,7 @@ from urllib.parse import quote
 TOKEN_FILE = sys.argv[1]
 SITE_URL = sys.argv[2]
 SHOW_MODE = sys.argv[3]
+GOOGLE_PROJECT = sys.argv[4]
 ENCODED_SITE = quote(SITE_URL, safe='')
 
 if not os.path.exists(TOKEN_FILE):
@@ -279,7 +283,7 @@ def get_token():
     token = token_data.get('token', '')
     r = requests.get(
         f'https://searchconsole.googleapis.com/webmasters/v3/sites',
-        headers={'Authorization': f'Bearer {token}', 'x-goog-user-project': 'teamzlab-tools'}
+        headers={'Authorization': f'Bearer {token}', 'x-goog-user-project': GOOGLE_PROJECT}
     )
     if r.status_code == 200:
         return token
@@ -305,7 +309,7 @@ def get_token():
 token = get_token()
 headers = {
     'Authorization': f'Bearer {token}',
-    'x-goog-user-project': 'teamzlab-tools',
+    'x-goog-user-project': GOOGLE_PROJECT,
     'Content-Type': 'application/json'
 }
 API_BASE = f'https://searchconsole.googleapis.com/webmasters/v3/sites/{ENCODED_SITE}'
@@ -423,7 +427,7 @@ if SHOW_MODE in ('--quick', '--keywords'):
         if shown >= 30:
             break
         q = row['keys'][0][:40]
-        page = row['keys'][1].replace('https://tool.teamzlab.com', '')[:35]
+        page = row['keys'][1].replace(SITE_URL.rstrip('/'), '')[:35]
         pos = row.get('position', 0)
         clicks = row.get('clicks', 0)
         impr = row.get('impressions', 0)
@@ -447,7 +451,7 @@ if SHOW_MODE in ('--quick', '--keywords'):
     print(f"  {'PAGE':<55} {'CLICKS':>7} {'IMPR':>8} {'POS':>6}")
     print("  " + "-" * 78)
     for row in page_rows[:20]:
-        page = row['keys'][0].replace('https://tool.teamzlab.com', '')[:55]
+        page = row['keys'][0].replace(SITE_URL.rstrip('/'), '')[:55]
         clicks = row.get('clicks', 0)
         impr = row.get('impressions', 0)
         pos = row.get('position', 0)

@@ -12,9 +12,14 @@
 # ============================================================
 
 _SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
-cd "$(dirname "$_SCRIPT")"
+SCRIPT_DIR="$(cd "$(dirname "$_SCRIPT")" && pwd)"
+AUTOMATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck disable=SC1091
+source "$AUTOMATION_ROOT/sh/lib/config.sh"
+teamz_load_config "$_SCRIPT"
+cd "$SCRIPT_DIR"
 
-TOKEN_FILE="$HOME/.config/teamzlab/adsense-token.json"
+TOKEN_FILE="$TEAMZ_ADSENSE_TOKEN_FILE"
 
 if [ ! -f "$TOKEN_FILE" ]; then
     echo "  ERROR: No AdSense token found"

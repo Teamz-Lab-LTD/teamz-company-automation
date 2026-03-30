@@ -29,28 +29,30 @@ import subprocess
 import webbrowser
 from datetime import datetime
 from pathlib import Path
+from _teamz_config import load_runtime
 
-_AUTOMATION_ROOT = Path(__file__).resolve().parent.parent
-HISTORY_FILE = _AUTOMATION_ROOT / "data" / "backlinks-history.json"
+_CFG = load_runtime(__file__)
+_AUTOMATION_ROOT = _CFG["automation_root"]
+HISTORY_FILE = _CFG["data_dir"] / "backlinks-history.json"
 INDEXING_SCRIPT = Path(__file__).resolve().parent / "build-request-indexing.py"
 
 # ──────────────────────────────────────────────────────────────
 # Site Details (used for submissions)
 # ──────────────────────────────────────────────────────────────
 SITE = {
-    "name": "Teamz Lab Tools",
-    "url": "https://tool.teamzlab.com",
+    "name": os.getenv("TEAMZ_SITE_NAME", "Teamz Lab Tools"),
+    "url": _CFG["site_url"].rstrip("/"),
     "tagline": "1900+ free browser-based tools — no signup, no data collection, 100% private",
     "description": "Teamz Lab Tools is a collection of 1900+ free online tools that run entirely in your browser. Calculators, converters, generators, SEO tools, developer tools, health calculators, finance tools, and more. No signup required, no data uploaded — everything stays private on your device.",
     "short_description": "1900+ free browser tools. No signup. 100% private.",
     "categories": ["Tools", "Productivity", "Developer Tools", "Calculators", "Free"],
     "tags": ["free-tools", "online-calculator", "developer-tools", "privacy", "browser-based", "no-signup"],
-    "logo": "https://tool.teamzlab.com/icons/icon-512.png",
-    "screenshot": "https://tool.teamzlab.com/og-images/home.png",
-    "owner": "Teamz Lab LTD",
-    "email": "teamz.lab.contact@gmail.com",
-    "twitter": "@teamzlab",
-    "github": "https://github.com/Teamz-Lab-LTD",
+    "logo": os.getenv("TEAMZ_SITE_LOGO", f"{_CFG['site_url'].rstrip('/')}/icons/icon-512.png"),
+    "screenshot": os.getenv("TEAMZ_SITE_SCREENSHOT", f"{_CFG['site_url'].rstrip('/')}/og-images/home.png"),
+    "owner": os.getenv("TEAMZ_SITE_OWNER", "Teamz Lab LTD"),
+    "email": os.getenv("TEAMZ_SITE_EMAIL", "teamz.lab.contact@gmail.com"),
+    "twitter": os.getenv("TEAMZ_SITE_TWITTER", "@teamzlab"),
+    "github": os.getenv("TEAMZ_SITE_GITHUB", "https://github.com/Teamz-Lab-LTD"),
 }
 
 SUBMISSION_PROFILES = {

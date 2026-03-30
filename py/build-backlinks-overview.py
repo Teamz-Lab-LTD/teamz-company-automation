@@ -31,11 +31,14 @@ import ssl
 import csv
 from datetime import datetime, timedelta
 from pathlib import Path
+from _teamz_config import load_runtime
 
-_AUTOMATION_ROOT = Path(__file__).resolve().parent.parent
-BACKLINKS_FILE = _AUTOMATION_ROOT / "data" / "backlinks-data.json"
-TOKEN_FILE = Path.home() / ".config" / "teamzlab" / "search-console-token.json"
-SITE_URL = "https://tool.teamzlab.com/"
+_CFG = load_runtime(__file__)
+_AUTOMATION_ROOT = _CFG["automation_root"]
+BACKLINKS_FILE = _CFG["data_dir"] / "backlinks-data.json"
+TOKEN_FILE = _CFG["sc_token_file"]
+SITE_URL = _CFG["site_property"]
+GOOGLE_PROJECT = _CFG["google_project"]
 CTX = ssl.create_default_context()
 
 
@@ -67,7 +70,7 @@ def sc_links(token, link_type="external"):
     links_url = f"https://searchconsole.googleapis.com/webmasters/v3/sites/{encoded}/links"
     req = urllib.request.Request(links_url, method="GET")
     req.add_header("Authorization", f"Bearer {token}")
-    req.add_header("x-goog-user-project", "teamzlab-tools")
+    req.add_header("x-goog-user-project", GOOGLE_PROJECT)
 
     try:
         resp = urllib.request.urlopen(req, context=CTX)
@@ -91,7 +94,7 @@ def sc_external_links(token):
     url = f"https://searchconsole.googleapis.com/webmasters/v3/sites/{encoded}/links"
     req = urllib.request.Request(url, method="GET")
     req.add_header("Authorization", f"Bearer {token}")
-    req.add_header("x-goog-user-project", "teamzlab-tools")
+    req.add_header("x-goog-user-project", GOOGLE_PROJECT)
 
     try:
         resp = urllib.request.urlopen(req, context=CTX)
@@ -128,7 +131,7 @@ def sc_external_links(token):
             req = urllib.request.Request(url2, data=data, method="POST")
             req.add_header("Authorization", f"Bearer {token}")
             req.add_header("Content-Type", "application/json")
-            req.add_header("x-goog-user-project", "teamzlab-tools")
+            req.add_header("x-goog-user-project", GOOGLE_PROJECT)
             resp = urllib.request.urlopen(req, context=CTX)
             page_data = json.loads(resp.read())
 
@@ -256,7 +259,7 @@ def show_report(dofollow_only=False):
 
     print()
     print("=" * 100)
-    print(f"  BACKLINKS OVERVIEW — tool.teamzlab.com")
+    print(f"  BACKLINKS OVERVIEW — {SITE_URL.rstrip('/')}")
     print(f"  Last scan: {data.get('scanned_at', 'never')}")
     print("=" * 100)
     print()

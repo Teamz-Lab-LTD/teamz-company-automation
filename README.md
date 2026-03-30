@@ -25,6 +25,17 @@ git submodule update --init --recursive
 - Copy `distribute/config.example.json` to `distribute/config.json` and add API keys (gitignored).
 - Google tokens: `~/.config/teamzlab/` (see your site’s Search Console / Analytics docs).
 - **Secrets backup:** `sh/secrets-export.sh` / `sh/secrets-import.sh` (or via `scripts/` symlinks). Default GPG output: parent of this repo (e.g. `teamzlab-tools/teamzlab-secrets.gpg`).
+- For reusable multi-project config, copy `.teamz-automation.env.example` to your host project root as `.teamz-automation.env`.
+
+## Project-level config
+
+Shell + Python Tier-1 scripts now read config in this order:
+
+1. `TEAMZ_AUTOMATION_ENV=/path/to/file.env` (explicit override)
+2. `<host-project>/.teamz-automation.env`
+3. `teamz-company-automation/.teamz-automation.env`
+
+This keeps site/domain/property/token differences at the **project level** while sharing one automation codebase.
 
 ## Site audit (`build-seo-dashboard.sh --audit`)
 

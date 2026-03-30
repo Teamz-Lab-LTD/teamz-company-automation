@@ -8,7 +8,14 @@
 # ============================================================
 set -euo pipefail
 
-TOKEN_FILE="$HOME/.config/teamzlab/clarity-token.txt"
+_SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+SCRIPT_DIR="$(cd "$(dirname "$_SCRIPT")" && pwd)"
+AUTOMATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck disable=SC1091
+source "$AUTOMATION_ROOT/sh/lib/config.sh"
+teamz_load_config "$_SCRIPT"
+
+TOKEN_FILE="$TEAMZ_CLARITY_TOKEN_FILE"
 API="https://www.clarity.ms/export-data/api/v1/project-live-insights"
 DAYS="${1:-3}"  # Default: 3 days
 

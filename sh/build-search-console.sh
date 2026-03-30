@@ -8,10 +8,15 @@
 
 set -e
 _SCRIPT="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
-cd "$(dirname "$_SCRIPT")"
+SCRIPT_DIR="$(cd "$(dirname "$_SCRIPT")" && pwd)"
+AUTOMATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck disable=SC1091
+source "$AUTOMATION_ROOT/sh/lib/config.sh"
+teamz_load_config "$_SCRIPT"
+cd "$SCRIPT_DIR"
 
-TOKEN_FILE="$HOME/.config/teamzlab/search-console-token.json"
-SITE_URL="https://tool.teamzlab.com/"
+TOKEN_FILE="$TEAMZ_SC_TOKEN_FILE"
+SITE_URL="$TEAMZ_SITE_PROPERTY"
 
 # Check dependencies
 if ! python3 -c "import requests" 2>/dev/null; then
@@ -29,8 +34,9 @@ if [ ! -f "$TOKEN_FILE" ]; then
 fi
 
 MODE="${1:---all}"
+GOOGLE_PROJECT="${TEAMZ_GOOGLE_CLOUD_PROJECT}"
 
-python3 - "$MODE" "$TOKEN_FILE" "$SITE_URL" << 'PYEOF'
+python3 - "$MODE" "$TOKEN_FILE" "$SITE_URL" "$GOOGLE_PROJECT" << 'PYEOF'
 import json, sys, requests
 from datetime import datetime, timedelta
 from requests.exceptions import RequestException
@@ -39,6 +45,7 @@ from urllib.parse import quote
 MODE = sys.argv[1]
 TOKEN_FILE = sys.argv[2]
 SITE_URL = sys.argv[3]
+GOOGLE_PROJECT = sys.argv[4]
 ENCODED_SITE = quote(SITE_URL, safe='')
 
 with open(TOKEN_FILE) as f:
@@ -59,7 +66,7 @@ def get_fresh_token():
     try:
         r = requests.get(
             'https://searchconsole.googleapis.com/webmasters/v3/sites',
-            headers={'Authorization': f'Bearer {token}', 'x-goog-user-project': 'teamzlab-tools'},
+            headers={'Authorization': f'Bearer {token}', 'x-goog-user-project': GOOGLE_PROJECT},
             timeout=20,
         )
     except RequestException as exc:
@@ -92,7 +99,7 @@ def get_fresh_token():
 token = get_fresh_token()
 headers = {
     'Authorization': f'Bearer {token}',
-    'x-goog-user-project': 'teamzlab-tools',
+    'x-goog-user-project': GOOGLE_PROJECT,
     'Content-Type': 'application/json'
 }
 API_BASE = f'https://searchconsole.googleapis.com/webmasters/v3/sites/{ENCODED_SITE}'
@@ -124,7 +131,7 @@ def query_search(dimensions, row_limit=50, start=start_date, end=end_date, filte
     return r.json().get('rows', [])
 
 print("=" * 70)
-print("  SEARCH CONSOLE REPORT — tool.teamzlab.com")
+print(f"  SEARCH CONSOLE REPORT — {SITE_URL.rstrip('/')}")
 print(f"  Period: {start_date} to {end_date}")
 print("=" * 70)
 
@@ -272,7 +279,7 @@ if MODE in ('--pages', '--all'):
         print(f"  {'Page':<55} {'Clicks':>7} {'Impr':>8} {'Pos':>6}")
         print("  " + "-" * 78)
         for row in rows:
-            page = row['keys'][0].replace('https://tool.teamzlab.com', '')[:55]
+            page = row['keys'][0].replace(SITE_URL.rstrip('/'), '')[:55]
             c = row.get('clicks', 0)
             i = row.get('impressions', 0)
             pos = row.get('position', 0)
@@ -332,7 +339,7 @@ if MODE in ('--opportunities', '--all'):
                 potential_clicks = int(impr * exp) - clicks
                 ctr_wins.append({
                     'query': row['keys'][0],
-                    'page': row['keys'][1].replace('https://tool.teamzlab.com', ''),
+                    'page': row['keys'][1].replace(SITE_URL.rstrip('/'), ''),
                     'pos': pos, 'ctr': ctr, 'impr': impr, 'clicks': clicks,
                     'expected_ctr': exp, 'potential': potential_clicks
                 })
@@ -361,7 +368,7 @@ if MODE in ('--opportunities', '--all'):
         if 11 <= pos <= 20 and impr >= 5:
             striking.append({
                 'query': row['keys'][0],
-                'page': row['keys'][1].replace('https://tool.teamzlab.com', ''),
+                'page': row['keys'][1].replace(SITE_URL.rstrip('/'), ''),
                 'pos': pos, 'impr': impr, 'clicks': row.get('clicks', 0)
             })
     striking.sort(key=lambda x: x['impr'], reverse=True)
@@ -384,7 +391,7 @@ if MODE in ('--opportunities', '--all'):
     prior_rows = query_search(['page'], row_limit=200, start=prior_start, end=prior_end)
     recent_map = {}
     for row in recent_rows:
-        page = row['keys'][0].replace('https://tool.teamzlab.com', '')
+        page = row['keys'][0].replace(SITE_URL.rstrip('/'), '')
         recent_map[page] = {
             'clicks': row.get('clicks', 0),
             'impr': row.get('impressions', 0),
@@ -392,7 +399,7 @@ if MODE in ('--opportunities', '--all'):
         }
     declines = []
     for row in prior_rows:
-        page = row['keys'][0].replace('https://tool.teamzlab.com', '')
+        page = row['keys'][0].replace(SITE_URL.rstrip('/'), '')
         prior_clicks = row.get('clicks', 0)
         prior_impr = row.get('impressions', 0)
         prior_pos = row.get('position', 0)
@@ -433,7 +440,7 @@ if MODE in ('--opportunities', '--all'):
         if impr >= 20 and clicks == 0:
             zero_click.append({
                 'query': row['keys'][0],
-                'page': row['keys'][1].replace('https://tool.teamzlab.com', ''),
+                'page': row['keys'][1].replace(SITE_URL.rstrip('/'), ''),
                 'pos': row.get('position', 0), 'impr': impr
             })
     zero_click.sort(key=lambda x: x['impr'], reverse=True)

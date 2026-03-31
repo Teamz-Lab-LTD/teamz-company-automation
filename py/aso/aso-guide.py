@@ -25,6 +25,7 @@ import os
 import re
 import sys
 from datetime import datetime, timezone
+from typing import Optional
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
@@ -420,7 +421,7 @@ def cmd_checklist(app_id: str):
     )
 
     lines.append("")
-    lines.append("### TODO next")
+    lines.append("### Next steps")
     lines.append("")
     lines.append("Work through any **FAIL** items first, then tighten copy and creative using the `--prompt` and `--landing-page` commands in this script.")
 
@@ -717,7 +718,7 @@ def _app_context_block(rec):
 """.strip()
 
 
-def cmd_prompt(task: str, app_id: str | None):
+def cmd_prompt(task: str, app_id: Optional[str]):
     rec = itunes_lookup(app_id) if app_id else None
     if app_id and not rec:
         print(f"Lookup failed for --app {app_id}; continuing without app context.", file=sys.stderr)

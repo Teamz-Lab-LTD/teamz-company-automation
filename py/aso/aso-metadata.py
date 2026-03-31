@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ASO metadata auditor and optimizer for Apple App Store listings (iTunes Lookup API).
+ASO metadata auditor and optimizer for iOS and Android listings.
 
 Uses shared helpers in aso/_aso_common.py and runtime paths from _teamz_config.
 
@@ -11,7 +11,7 @@ Examples:
   ./aso-metadata.py --optimize 284882215 --keywords "photo,editor,filter"
 
 Output is written to data/aso-metadata-latest.json (under TEAMZ_DATA_DIR / automation data).
-Requires network access for iTunes Lookup. Stdlib only.
+Requires network access for iTunes Lookup / Play listing pages. Stdlib only.
 """
 
 import argparse
@@ -38,6 +38,8 @@ _CFG = load_runtime(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..
 
 _IOS_TITLE_MAX = 30
 _IOS_SUBTITLE_MAX = 30
+_ANDROID_TITLE_MAX = 30
+_ANDROID_SHORT_DESC_MAX = 80
 _CTA_PATTERN = re.compile(
     r"\b(get|download|try|install|free|today|now|start|join|subscribe|upgrade|"
     r"discover|learn more|click|tap here)\b",
@@ -141,6 +143,7 @@ def analyze_app(app):
         devices = [devices] if devices else []
 
     return {
+        "platform": "ios",
         "bundle_id": app.get("bundleId"),
         "track_id": app.get("trackId"),
         "title": title,
@@ -172,12 +175,52 @@ def analyze_app(app):
     }
 
 
-def _score_component_title_length(char_len):
+def analyze_play_app(app):
+    """Build structured analysis dict for one Google Play listing scrape."""
+    title = app.get("title") or ""
+    desc = app.get("description") or ""
+    desc_info = _analyze_description(desc)
+    overlap_n, overlap_words = _title_keyword_overlap(title, desc_info["top_keywords"])
+    rating = float(app.get("rating") or 0.0)
+    return {
+        "platform": "android",
+        "package_id": app.get("package_id"),
+        "title": title,
+        "title_char_len": len(title),
+        "title_within_android_limit": len(title) <= _ANDROID_TITLE_MAX,
+        "short_description_note": (
+            "Google Play short description (80 chars) is not reliably exposed by public scraping. "
+            "Audit it in Play Console."
+        ),
+        "description_analysis": desc_info,
+        "title_desc_keyword_overlap_count": overlap_n,
+        "title_desc_keyword_overlap_words": overlap_words,
+        "rating": round(rating, 2),
+        "review_count": 0,
+        "screenshot_total_count": 0,
+        "iphone_screenshot_count": 0,
+        "ipad_screenshot_count": 0,
+        "last_updated": None,
+        "days_since_update": None,
+        "file_size_bytes": None,
+        "minimum_os_version": None,
+        "content_advisory_rating": None,
+        "supported_devices_sample": [],
+        "supported_devices_count": 0,
+        "version": None,
+        "primary_genre": None,
+        "artist_name": None,
+        "track_view_url": app.get("url"),
+    }
+
+
+def _score_component_title_length(char_len, platform="ios"):
     if char_len <= 0:
         return 0, "empty title"
-    if char_len <= _IOS_TITLE_MAX:
-        return 10, "title within 30 chars"
-    over = char_len - _IOS_TITLE_MAX
+    max_len = _ANDROID_TITLE_MAX if platform == "android" else _IOS_TITLE_MAX
+    if char_len <= max_len:
+        return 10, f"title within {max_len} chars"
+    over = char_len - max_len
     pts = max(0, int(10 - min(10, over * 0.8)))
     return pts, f"title over limit by {over} chars"
 
@@ -283,7 +326,8 @@ def compute_aso_score(app, analysis):
     breakdown = {}
     messages = []
 
-    p, m = _score_component_title_length(analysis["title_char_len"])
+    platform = analysis.get("platform", "ios")
+    p, m = _score_component_title_length(analysis["title_char_len"], platform=platform)
     breakdown["title_length"] = p
     messages.append(m)
 
@@ -305,6 +349,10 @@ def compute_aso_score(app, analysis):
     messages.append(m)
 
     p, m = _score_component_screenshots(analysis["screenshot_total_count"])
+    if platform == "android":
+        # Public Play scraping does not reliably expose screenshot arrays; avoid unfair penalties.
+        p = max(p, 7)
+        m = "screenshot coverage must be verified in Play Console (partial public data)"
     breakdown["screenshots"] = p
     messages.append(m)
 
@@ -324,16 +372,28 @@ def compute_aso_score(app, analysis):
 
 
 def _print_audit(analysis, score, breakdown, app=None):
-    print("=== ASO metadata audit (iTunes Lookup) ===\n")
+    platform = analysis.get("platform", "ios")
+    if platform == "android":
+        print("=== ASO metadata audit (Google Play scrape) ===\n")
+    else:
+        print("=== ASO metadata audit (iTunes Lookup) ===\n")
     print("Title:", analysis["title"])
-    print(f"  Length: {analysis['title_char_len']} chars (iOS app name limit: {_IOS_TITLE_MAX})")
-    print(f"  Within limit: {analysis['title_within_ios_limit']}")
+    if platform == "android":
+        print(f"  Length: {analysis['title_char_len']} chars (Google Play title limit: {_ANDROID_TITLE_MAX})")
+        print(f"  Within limit: {analysis['title_within_android_limit']}")
+    else:
+        print(f"  Length: {analysis['title_char_len']} chars (iOS app name limit: {_IOS_TITLE_MAX})")
+        print(f"  Within limit: {analysis['title_within_ios_limit']}")
     print(f"  Keyword overlap with description top terms: {analysis['title_desc_keyword_overlap_count']}")
     if analysis["title_desc_keyword_overlap_words"]:
         print("    Shared:", ", ".join(analysis["title_desc_keyword_overlap_words"]))
 
-    print("\nSubtitle:")
-    print(" ", analysis["subtitle_note"])
+    if platform == "android":
+        print("\nShort description:")
+        print(" ", analysis["short_description_note"])
+    else:
+        print("\nSubtitle:")
+        print(" ", analysis["subtitle_note"])
 
     da = analysis["description_analysis"]
     print("\nDescription:")
@@ -352,14 +412,18 @@ def _print_audit(analysis, score, breakdown, app=None):
     print(f"  Screenshots (API): {analysis['screenshot_total_count']} total")
     iphone_shots = analysis.get("iphone_screenshot_count", 0)
     ipad_shots = analysis.get("ipad_screenshot_count", 0)
-    print(
-        f"  Screenshot orientation: {iphone_shots} iPhone screenshot URL(s) in payload — "
-        "portrait vs landscape cannot be inferred from URLs; verify portrait/landscape mix in App Store Connect."
-    )
-    print(f"  iPad screenshots: {ipad_shots}")
-    if ipad_shots == 0:
-        print("  [!] No iPad screenshots — missing iPad App Store traffic")
-    print("  [INFO] Video preview status not available via API — verify in App Store Connect")
+    if platform == "android":
+        print("  [INFO] Screenshot and release metadata are limited in public Play scraping.")
+        print("  [INFO] Verify screenshot count, short description, and release notes in Play Console.")
+    else:
+        print(
+            f"  Screenshot orientation: {iphone_shots} iPhone screenshot URL(s) in payload — "
+            "portrait vs landscape cannot be inferred from URLs; verify portrait/landscape mix in App Store Connect."
+        )
+        print(f"  iPad screenshots: {ipad_shots}")
+        if ipad_shots == 0:
+            print("  [!] No iPad screenshots — missing iPad App Store traffic")
+        print("  [INFO] Video preview status not available via API — verify in App Store Connect")
     rn = ((app or {}).get("releaseNotes") or "").strip()
     if rn:
         preview = rn[:200] + ("…" if len(rn) > 200 else "")
@@ -370,7 +434,10 @@ def _print_audit(analysis, score, breakdown, app=None):
     if analysis["days_since_update"] is not None:
         print(f"  Days since update: {analysis['days_since_update']}")
     print(f"  File size (bytes): {analysis['file_size_bytes']}")
-    print(f"  Min iOS: {analysis['minimum_os_version']}")
+    if platform == "android":
+        print(f"  Min Android: {analysis['minimum_os_version']}")
+    else:
+        print(f"  Min iOS: {analysis['minimum_os_version']}")
     print(f"  Content rating: {analysis['content_advisory_rating']}")
     print(f"  Supported devices (count): {analysis['supported_devices_count']}")
 
@@ -403,24 +470,37 @@ def _print_compare(a1, an1, s1, a2, an2, s2):
             print(fmt.format("-" * widths[0], "-" * widths[1], "-" * widths[2]))
 
 
-def _build_optimize_prompt(app, analysis, keywords):
+def _build_optimize_prompt(app, analysis, keywords, platform):
     kws = [k.strip() for k in keywords.split(",") if k.strip()]
     da = analysis["description_analysis"]
     desc_preview = (app.get("description") or "")[:3500]
+    is_android = platform == "android"
     lines = [
-        "You are an App Store Optimization (ASO) expert. Propose improved metadata for this iOS app.",
+        (
+            "You are an App Store Optimization (ASO) expert. Propose improved metadata for this Android app."
+            if is_android
+            else "You are an App Store Optimization (ASO) expert. Propose improved metadata for this iOS app."
+        ),
         "",
         "## Constraints",
-        f"- App name on the App Store: max {_IOS_TITLE_MAX} characters.",
-        f"- Subtitle: max {_IOS_SUBTITLE_MAX} characters (not available via public API; still output a subtitle suggestion).",
-        "- Description: compelling first lines, clear features, natural keyword use (no stuffing), include a soft CTA.",
+        (
+            f"- App title on Google Play: max {_ANDROID_TITLE_MAX} characters."
+            if is_android
+            else f"- App name on the App Store: max {_IOS_TITLE_MAX} characters."
+        ),
+        (
+            f"- Short description: max {_ANDROID_SHORT_DESC_MAX} characters."
+            if is_android
+            else f"- Subtitle: max {_IOS_SUBTITLE_MAX} characters (not available via public API; still output a subtitle suggestion)."
+        ),
+        "- Long description: compelling first lines, clear features, natural keyword use (no stuffing), include a soft CTA.",
         "",
         "## Target keywords to emphasize (use naturally)",
         ", ".join(kws) if kws else "(none provided — infer from app)",
         "",
         "## Current listing (from iTunes Lookup)",
         f"Title: {app.get('trackName', '')}",
-        f"Bundle ID: {app.get('bundleId', '')}",
+        f"{'Package ID' if is_android else 'Bundle ID'}: {app.get('package_id', app.get('bundleId', ''))}",
         f"Primary genre: {app.get('primaryGenreName', '')}",
         f"Current version: {app.get('version', '')}",
         f"Average rating / reviews: {analysis['rating']} / {analysis['review_count']}",
@@ -432,9 +512,9 @@ def _build_optimize_prompt(app, analysis, keywords):
         json.dumps(da["top_keywords"][:15], indent=2),
         "",
         "## Deliverables",
-        "1. Optimized app name (≤30 chars).",
-        "2. Optimized subtitle (≤30 chars).",
-        "3. Full rewritten description (structured with short paragraphs; strong opening).",
+        "1. Optimized app title (≤30 chars).",
+        ("2. Optimized short description (≤80 chars)." if is_android else "2. Optimized subtitle (≤30 chars)."),
+        "3. Full rewritten long description (structured with short paragraphs; strong opening).",
         "4. Bullet list of changes vs current and why.",
     ]
     return "\n".join(lines)
@@ -470,17 +550,18 @@ def _save_metadata_history(data):
     )
 
 
-def _append_metadata_snapshot(app_id, title, score, rating, review_count):
+def _append_metadata_snapshot(app_id, title, score, rating, review_count, platform):
     today = date.today().isoformat()
     data = _load_metadata_history()
     snapshots = data["snapshots"]
     snapshots = [
         s for s in snapshots
-        if not (s.get("app_id") == str(app_id) and s.get("date") == today)
+        if not (s.get("app_id") == str(app_id) and s.get("date") == today and s.get("platform", "ios") == platform)
     ]
     snapshots.append({
         "date": today,
         "app_id": str(app_id),
+        "platform": platform,
         "title": title,
         "score": score,
         "rating": rating,
@@ -511,14 +592,14 @@ def _print_keyword_density_comparison(app1, app2, an1, an2):
     print(f"Shared keywords:  {', '.join(shared) if shared else '(none)'}")
 
 
-def cmd_history(app_id, country):
+def cmd_history(app_id, country, platform):
     data = _load_metadata_history()
-    entries = [s for s in data["snapshots"] if s.get("app_id") == str(app_id)]
+    entries = [s for s in data["snapshots"] if s.get("app_id") == str(app_id) and s.get("platform", "ios") == platform]
     if not entries:
-        print(f"No history snapshots for app_id={app_id}.", file=sys.stderr)
+        print(f"No history snapshots for app_id={app_id} platform={platform}.", file=sys.stderr)
         sys.exit(1)
     entries.sort(key=lambda s: s.get("date", ""))
-    print(f"=== Metadata history for app_id={app_id} ===\n")
+    print(f"=== Metadata history for app_id={app_id} ({platform}) ===\n")
     print(f"{'Date':<12} {'Score':>6} {'Rating':>7} {'Reviews':>9}  Title")
     print(f"{'-'*12} {'-'*6} {'-'*7} {'-'*9}  {'-'*30}")
     for e in entries:
@@ -530,13 +611,14 @@ def cmd_history(app_id, country):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="App Store metadata audit / compare / score / optimize (iTunes Lookup).")
-    parser.add_argument("--audit", metavar="APP_ID", help="Full audit for one Apple app id or bundle id")
+    parser = argparse.ArgumentParser(description="ASO metadata audit / compare / score / optimize (iOS + Android).")
+    parser.add_argument("--audit", metavar="APP_ID", help="Full audit for one app id (iOS) or package id (Android)")
     parser.add_argument("--compare", nargs=2, metavar=("APP_ID1", "APP_ID2"), help="Side-by-side comparison")
     parser.add_argument("--score", metavar="APP_ID", help="Print numeric ASO score with breakdown")
     parser.add_argument("--optimize", metavar="APP_ID", help="Print LLM-ready optimization prompt")
     parser.add_argument("--history", metavar="APP_ID", help="Show audit trail timeline for an app")
     parser.add_argument("--keywords", help='Comma-separated keywords for --optimize (e.g. "fitness,tracker,health")')
+    parser.add_argument("--platform", choices=["ios", "android"], default="ios", help="Target platform (default: ios)")
     parser.add_argument("--country", default="us", help="iTunes country code (default: us)")
     args = parser.parse_args()
 
@@ -547,18 +629,18 @@ def main():
     if args.optimize and not args.keywords:
         parser.error("--optimize requires --keywords")
 
-    payload = {"generated_at": _utc_now().isoformat(), "country": args.country}
+    payload = {"generated_at": _utc_now().isoformat(), "country": args.country, "platform": args.platform}
 
     if args.history:
-        cmd_history(args.history, args.country)
+        cmd_history(args.history, args.country, args.platform)
         return
 
     if args.audit:
-        app = itunes_lookup(args.audit, country=args.country)
+        app = play_store_metadata(args.audit, hl=(args.country or "us")[:2]) if args.platform == "android" else itunes_lookup(args.audit, country=args.country)
         if not app:
             print("Lookup failed: no results.", file=sys.stderr)
             sys.exit(1)
-        analysis = analyze_app(app)
+        analysis = analyze_play_app(app) if args.platform == "android" else analyze_app(app)
         score, breakdown, _ = compute_aso_score(app, analysis)
         payload["mode"] = "audit"
         payload["app"] = app
@@ -567,18 +649,18 @@ def main():
         payload["breakdown"] = breakdown
         _append_metadata_snapshot(
             args.audit, analysis["title"], score,
-            analysis["rating"], analysis["review_count"],
+            analysis["rating"], analysis["review_count"], args.platform,
         )
         _print_audit(analysis, score, breakdown, app)
         _write_output(payload)
         return
 
     if args.score:
-        app = itunes_lookup(args.score, country=args.country)
+        app = play_store_metadata(args.score, hl=(args.country or "us")[:2]) if args.platform == "android" else itunes_lookup(args.score, country=args.country)
         if not app:
             print("Lookup failed: no results.", file=sys.stderr)
             sys.exit(1)
-        analysis = analyze_app(app)
+        analysis = analyze_play_app(app) if args.platform == "android" else analyze_app(app)
         score, breakdown, _ = compute_aso_score(app, analysis)
         payload["mode"] = "score"
         payload["app"] = app
@@ -587,7 +669,7 @@ def main():
         payload["breakdown"] = breakdown
         _append_metadata_snapshot(
             args.score, analysis["title"], score,
-            analysis["rating"], analysis["review_count"],
+            analysis["rating"], analysis["review_count"], args.platform,
         )
         print(score)
         for k, v in sorted(breakdown.items()):
@@ -597,6 +679,9 @@ def main():
         return
 
     if args.compare:
+        if args.platform != "ios":
+            print("--compare currently supports iOS only. Use --audit/--score for Android package IDs.", file=sys.stderr)
+            sys.exit(2)
         id1, id2 = args.compare
         app1 = itunes_lookup(id1, country=args.country)
         app2 = itunes_lookup(id2, country=args.country)
@@ -617,13 +702,13 @@ def main():
         return
 
     if args.optimize:
-        app = itunes_lookup(args.optimize, country=args.country)
+        app = play_store_metadata(args.optimize, hl=(args.country or "us")[:2]) if args.platform == "android" else itunes_lookup(args.optimize, country=args.country)
         if not app:
             print("Lookup failed: no results.", file=sys.stderr)
             sys.exit(1)
-        analysis = analyze_app(app)
+        analysis = analyze_play_app(app) if args.platform == "android" else analyze_app(app)
         score, breakdown, _ = compute_aso_score(app, analysis)
-        prompt = _build_optimize_prompt(app, analysis, args.keywords)
+        prompt = _build_optimize_prompt(app, analysis, args.keywords, args.platform)
         payload["mode"] = "optimize"
         payload["app"] = app
         payload["analysis"] = analysis

@@ -103,7 +103,7 @@ def _get(url, timeout=20):
         return ""
     except TimeoutError:
         log_error(f"Request timed out: {url[:120]}")
-        log_fix("The server didn't respond in {timeout}s. Try again or check if the service is down.")
+        log_fix(f"The server didn't respond in {timeout}s. Try again or check if the service is down.")
         return ""
     except Exception as e:
         log_error(f"Unexpected error: {e}")
@@ -272,6 +272,9 @@ def top_keywords(text, n=30):
 _GP_TITLE_RE = re.compile(r'<h1[^>]*itemprop="name"[^>]*>([^<]+)</h1>', re.I)
 _GP_DESC_RE = re.compile(r'<div[^>]*itemprop="description"[^>]*>(.*?)</div>', re.I | re.S)
 _GP_RATING_RE = re.compile(r'<div[^>]*itemprop="starRating"[^>]*>.*?<div[^>]*>([\d.]+)</div>', re.I | re.S)
+_GP_OG_TITLE_RE = re.compile(r'<meta[^>]+property="og:title"[^>]+content="([^"]+)"', re.I)
+_GP_OG_DESC_RE = re.compile(r'<meta[^>]+property="og:description"[^>]+content="([^"]+)"', re.I)
+_GP_JSONLD_RE = re.compile(r'<script[^>]*type="application/ld\\+json"[^>]*>(.*?)</script>', re.I | re.S)
 
 
 def play_store_metadata(package_id, hl="en"):
@@ -282,19 +285,48 @@ def play_store_metadata(package_id, hl="en"):
         log_error(f"Could not fetch Google Play page for {package_id}")
         log_fix(f"Verify the package ID. Find it in the Play Store URL: play.google.com/store/apps/details?id=<PACKAGE_ID>")
         return None
-    title_m = _GP_TITLE_RE.search(html)
-    desc_m = _GP_DESC_RE.search(html)
+    title_m = _GP_TITLE_RE.search(html) or _GP_OG_TITLE_RE.search(html)
+    desc_m = _GP_DESC_RE.search(html) or _GP_OG_DESC_RE.search(html)
     rating_m = _GP_RATING_RE.search(html)
     desc_raw = desc_m.group(1) if desc_m else ""
     desc_clean = re.sub(r"<[^>]+>", " ", desc_raw).strip()
+    title = title_m.group(1).strip() if title_m else ""
+    rating = float(rating_m.group(1)) if rating_m else 0.0
+
+    # Fallback: parse application/ld+json blocks for title/description/rating.
+    if not title or not desc_clean or rating <= 0:
+        for block in _GP_JSONLD_RE.findall(html):
+            try:
+                data = json.loads(block.strip())
+            except Exception:
+                continue
+            obj = data[0] if isinstance(data, list) and data else data
+            if not isinstance(obj, dict):
+                continue
+            if not title:
+                title = (obj.get("name") or "").strip()
+            if not desc_clean:
+                desc_clean = re.sub(r"<[^>]+>", " ", (obj.get("description") or "")).strip()
+            if rating <= 0:
+                agg = obj.get("aggregateRating") or {}
+                try:
+                    rating = float(agg.get("ratingValue") or 0.0)
+                except (TypeError, ValueError):
+                    rating = 0.0
+            if title and desc_clean and rating > 0:
+                break
     if not title_m:
         log_warn(f"Could not parse title from Play Store page for {package_id}")
         log_fix("Google Play may have changed their HTML structure. The scraper regex needs updating.")
+    if not title:
+        title = package_id
+        log_warn(f"Falling back to package id as title for {package_id}")
+        log_fix("Run again later or test from another network; Google Play sometimes serves stripped HTML to automated clients.")
     return {
         "package_id": package_id,
-        "title": title_m.group(1).strip() if title_m else "",
+        "title": title,
         "description": desc_clean[:4000],
-        "rating": float(rating_m.group(1)) if rating_m else 0.0,
+        "rating": rating,
         "url": url,
     }
 

@@ -3,10 +3,20 @@
     {
       "date": "2026-03-31",
       "app_id": "284882215",
+      "platform": "ios",
       "title": "Facebook",
       "score": 93,
       "rating": 4.52,
       "reviews": 25619326
+    },
+    {
+      "date": "2026-03-31",
+      "app_id": "com.spotify.music",
+      "platform": "android",
+      "title": "Spotify: Music and Podcasts - Apps on Google Play",
+      "score": 31,
+      "rating": 4.4,
+      "reviews": 0
     }
   ]
 }

@@ -414,6 +414,11 @@ def cmd_checklist(app_id: str):
             "14. **App size** — [INFO] fileSizeBytes not available in lookup — verify download size in App Store Connect."
         )
 
+    lines.append(
+        "15. **Conversion optimization** — [INFO] Impression-to-install rate is only available in "
+        "App Store Connect > Analytics > Metrics. Check weekly and target >30% for search traffic."
+    )
+
     lines.append("")
     lines.append("### TODO next")
     lines.append("")
@@ -500,6 +505,33 @@ def cmd_content_plan(app_id: str):
             lines.append(f"**SERP keywords with app/video results:** {', '.join(f'`{k}`' for k in app_pack[:10])}")
         if unlinked:
             lines.append(f"**Unlinked brand mentions (outreach):** {len(unlinked)} recent mentions")
+
+    comps, _q = _competitors(rec, limit=5)
+    if comps:
+        lines.extend(["", "### Competitor cadence", ""])
+        update_gaps = []
+        now = datetime.now(timezone.utc)
+        for c in comps:
+            c_name = (c.get("trackName") or "Unknown")[:40]
+            raw = c.get("currentVersionReleaseDate") or c.get("releaseDate") or ""
+            if not raw:
+                lines.append(f"- **{c_name}** — release date unknown")
+                continue
+            dt = _parse_release_date(c)
+            if dt is None:
+                lines.append(f"- **{c_name}** — release date unparseable")
+                continue
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            days_ago = (now - dt).days
+            update_gaps.append(days_ago)
+            lines.append(f"- **{c_name}** — last updated ~{days_ago} days ago")
+        if update_gaps:
+            avg_gap = sum(update_gaps) // len(update_gaps)
+            lines.append(
+                f"\nTop {len(update_gaps)} competitors update every ~{avg_gap} days. "
+                "Match or exceed this cadence."
+            )
 
     body = "\n".join(lines)
     _write_md(body, f"ASO content plan — {title[:40]}")

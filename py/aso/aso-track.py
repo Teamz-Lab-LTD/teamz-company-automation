@@ -32,7 +32,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 
 from _teamz_config import load_runtime  # noqa: E402
 
-from aso._aso_common import ensure_data_dir, itunes_search  # noqa: E402
+from aso._aso_common import _get_json, ensure_data_dir, itunes_lookup, itunes_search  # noqa: E402
 
 _CFG = load_runtime(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_teamz_config.py")
@@ -387,6 +387,67 @@ def cmd_watchlist() -> int:
     return 0
 
 
+def cmd_category(app_id: str, country: str) -> int:
+    """Check app's position in its category top chart via Apple RSS."""
+    rec = itunes_lookup(app_id, country=country)
+    if not rec:
+        print(f"Lookup failed for app_id {app_id}.", file=sys.stderr)
+        return 1
+
+    genre_id = rec.get("primaryGenreId")
+    genre_name = rec.get("primaryGenreName", "Unknown")
+    app_name = rec.get("trackName", str(app_id))
+    track_id = str(rec.get("trackId", app_id))
+
+    if not genre_id:
+        print(f"No primaryGenreId found for {app_name}.", file=sys.stderr)
+        return 1
+
+    price = rec.get("price", 0)
+    chart = "topfreeapplications" if price == 0 else "toppaidapplications"
+    url = f"https://itunes.apple.com/{country}/rss/{chart}/genre={genre_id}/limit=200/json"
+    data = _get_json(url)
+    if not data:
+        print(f"Could not fetch category chart for genre {genre_id}.", file=sys.stderr)
+        return 1
+
+    entries = (data.get("feed") or {}).get("entry") or []
+    if not isinstance(entries, list):
+        entries = [entries] if entries else []
+
+    position = 0
+    for i, entry in enumerate(entries, start=1):
+        eid_obj = entry.get("id") or {}
+        eid = str((eid_obj.get("attributes") or {}).get("im:id", "")) if isinstance(eid_obj, dict) else ""
+        if eid == track_id:
+            position = i
+            break
+
+    if position:
+        print(f"App: {app_name} | Category: {genre_name} | Position: #{position}")
+    else:
+        print(f"App: {app_name} | Category: {genre_name} | Position: Not in top 200")
+
+    _, hist_path = _paths()
+    hist = _load_json(hist_path, {"records": []})
+    records = hist.get("records")
+    if not isinstance(records, list):
+        records = []
+    records.append({
+        "date": _today_iso(),
+        "app_id": str(app_id),
+        "keyword": f"category:{genre_name}",
+        "position": position,
+        "country": country,
+        "type": "category",
+        "genre_id": genre_id,
+        "genre_name": genre_name,
+    })
+    hist["records"] = records
+    _save_json(hist_path, hist)
+    return 0
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     p = argparse.ArgumentParser(description="ASO keyword rank tracking (iTunes Search, top 200).")
     p.add_argument("--record", metavar="APP_ID", help="Record today's positions for all watched keywords")
@@ -395,6 +456,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--track", nargs=2, metavar=("APP_ID", "KEYWORD"), help="Add a keyword to the watchlist")
     p.add_argument("--untrack", nargs=2, metavar=("APP_ID", "KEYWORD"), help="Remove a keyword from the watchlist")
     p.add_argument("--watchlist", action="store_true", help="List all apps and keywords")
+    p.add_argument("--category", metavar="APP_ID", help="Check position in category top chart")
     p.add_argument("--experiment", nargs=2, metavar=("APP_ID", "CHANGE_DATE"), help="Before/after rank comparison around a metadata change (YYYY-MM-DD)")
     p.add_argument(
         "--country",
@@ -417,11 +479,12 @@ def main(argv: Optional[List[str]] = None) -> int:
             args.track is not None,
             args.untrack is not None,
             args.watchlist,
+            args.category is not None,
             getattr(args, "experiment", None) is not None,
         ]
     )
     if modes != 1:
-        p.error("Specify exactly one of: --record, --report, --movers, --track, --untrack, --watchlist")
+        p.error("Specify exactly one of: --record, --report, --movers, --track, --untrack, --watchlist, --category")
 
     if args.countries_all and args.record is None:
         p.error("--countries-all is only valid with --record")
@@ -438,6 +501,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         return cmd_track(args.track[0], args.track[1])
     if args.untrack is not None:
         return cmd_untrack(args.untrack[0], args.untrack[1])
+    if args.category is not None:
+        return cmd_category(args.category, record_country)
     if getattr(args, "experiment", None) is not None:
         return cmd_experiment(args.experiment[0], args.experiment[1])
     return cmd_watchlist()

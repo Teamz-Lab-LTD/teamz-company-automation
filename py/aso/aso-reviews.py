@@ -312,6 +312,28 @@ def cmd_trends(app_id, countries):
             f"{e.get('avg_rating', 0):>12}"
         )
 
+    if len(entries) >= 2:
+        cur = entries[-1]
+        prev = entries[-2]
+        cur_count = cur.get("review_count", 0)
+        prev_count = prev.get("review_count", 0)
+        delta = cur_count - prev_count
+        cur_date = date.fromisoformat(cur["date"])
+        prev_date = date.fromisoformat(prev["date"])
+        days_gap = max(1, (cur_date - prev_date).days)
+        print(f"\nRating velocity: +{delta} new ratings since last check ({days_gap} days ago)")
+
+        if len(entries) >= 3:
+            older = entries[-3]
+            older_count = older.get("review_count", 0)
+            prior_delta = prev_count - older_count
+            older_date = date.fromisoformat(older["date"])
+            prior_days = max(1, (prev_date - older_date).days)
+            cur_rate = delta / days_gap
+            prior_rate = prior_delta / prior_days
+            if prior_rate > 0 and cur_rate < prior_rate:
+                print("[!] Rating velocity declining — consider prompting happy users to rate")
+
 
 def main():
     parser = argparse.ArgumentParser(

@@ -20,7 +20,7 @@ import math
 import os
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
@@ -447,24 +447,111 @@ def _write_output(payload):
     print(f"\nWrote {path}", file=sys.stderr)
 
 
+def _metadata_history_path():
+    return ensure_data_dir(_CFG) / "aso-metadata-history.json"
+
+
+def _load_metadata_history():
+    p = _metadata_history_path()
+    if not p.exists():
+        return {"snapshots": []}
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"snapshots": []}
+    if not isinstance(data, dict) or "snapshots" not in data:
+        return {"snapshots": []}
+    return data
+
+
+def _save_metadata_history(data):
+    _metadata_history_path().write_text(
+        json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+
+
+def _append_metadata_snapshot(app_id, title, score, rating, review_count):
+    today = date.today().isoformat()
+    data = _load_metadata_history()
+    snapshots = data["snapshots"]
+    snapshots = [
+        s for s in snapshots
+        if not (s.get("app_id") == str(app_id) and s.get("date") == today)
+    ]
+    snapshots.append({
+        "date": today,
+        "app_id": str(app_id),
+        "title": title,
+        "score": score,
+        "rating": rating,
+        "reviews": review_count,
+    })
+    snapshots.sort(key=lambda s: (s.get("app_id", ""), s.get("date", "")))
+    data["snapshots"] = snapshots
+    _save_metadata_history(data)
+
+
+def _print_keyword_density_comparison(app1, app2, an1, an2):
+    kw1 = an1["description_analysis"]["top_keywords"][:10]
+    kw2 = an2["description_analysis"]["top_keywords"][:10]
+    set1 = {row["word"] for row in kw1}
+    set2 = {row["word"] for row in kw2}
+    shared = sorted(set1 & set2)
+    only1 = sorted(set1 - set2)
+    only2 = sorted(set2 - set1)
+
+    name1 = ((app1.get("trackName") or "App1")[:30])
+    name2 = ((app2.get("trackName") or "App2")[:30])
+
+    print(f"\n=== Keyword density comparison ===\n")
+    print(f"Top 10 keywords — {name1}: {', '.join(r['word'] for r in kw1)}")
+    print(f"Top 10 keywords — {name2}: {', '.join(r['word'] for r in kw2)}")
+    print(f"\nUnique to {name1}: {', '.join(only1) if only1 else '(none)'}")
+    print(f"Unique to {name2}: {', '.join(only2) if only2 else '(none)'}")
+    print(f"Shared keywords:  {', '.join(shared) if shared else '(none)'}")
+
+
+def cmd_history(app_id, country):
+    data = _load_metadata_history()
+    entries = [s for s in data["snapshots"] if s.get("app_id") == str(app_id)]
+    if not entries:
+        print(f"No history snapshots for app_id={app_id}.", file=sys.stderr)
+        sys.exit(1)
+    entries.sort(key=lambda s: s.get("date", ""))
+    print(f"=== Metadata history for app_id={app_id} ===\n")
+    print(f"{'Date':<12} {'Score':>6} {'Rating':>7} {'Reviews':>9}  Title")
+    print(f"{'-'*12} {'-'*6} {'-'*7} {'-'*9}  {'-'*30}")
+    for e in entries:
+        print(
+            f"{e.get('date',''):<12} {e.get('score','?'):>6} "
+            f"{e.get('rating','?'):>7} {e.get('reviews','?'):>9}  "
+            f"{(e.get('title') or '')[:50]}"
+        )
+
+
 def main():
     parser = argparse.ArgumentParser(description="App Store metadata audit / compare / score / optimize (iTunes Lookup).")
     parser.add_argument("--audit", metavar="APP_ID", help="Full audit for one Apple app id or bundle id")
     parser.add_argument("--compare", nargs=2, metavar=("APP_ID1", "APP_ID2"), help="Side-by-side comparison")
     parser.add_argument("--score", metavar="APP_ID", help="Print numeric ASO score with breakdown")
     parser.add_argument("--optimize", metavar="APP_ID", help="Print LLM-ready optimization prompt")
+    parser.add_argument("--history", metavar="APP_ID", help="Show audit trail timeline for an app")
     parser.add_argument("--keywords", help='Comma-separated keywords for --optimize (e.g. "fitness,tracker,health")')
     parser.add_argument("--country", default="us", help="iTunes country code (default: us)")
     args = parser.parse_args()
 
-    modes = [args.audit, args.compare, args.score, args.optimize]
+    modes = [args.audit, args.compare, args.score, args.optimize, args.history]
     active = [m for m in modes if m]
     if len(active) != 1:
-        parser.error("Specify exactly one of: --audit, --compare, --score, --optimize")
+        parser.error("Specify exactly one of: --audit, --compare, --score, --optimize, --history")
     if args.optimize and not args.keywords:
         parser.error("--optimize requires --keywords")
 
     payload = {"generated_at": _utc_now().isoformat(), "country": args.country}
+
+    if args.history:
+        cmd_history(args.history, args.country)
+        return
 
     if args.audit:
         app = itunes_lookup(args.audit, country=args.country)
@@ -478,6 +565,10 @@ def main():
         payload["analysis"] = analysis
         payload["score"] = score
         payload["breakdown"] = breakdown
+        _append_metadata_snapshot(
+            args.audit, analysis["title"], score,
+            analysis["rating"], analysis["review_count"],
+        )
         _print_audit(analysis, score, breakdown, app)
         _write_output(payload)
         return
@@ -494,6 +585,10 @@ def main():
         payload["analysis"] = analysis
         payload["score"] = score
         payload["breakdown"] = breakdown
+        _append_metadata_snapshot(
+            args.score, analysis["title"], score,
+            analysis["rating"], analysis["review_count"],
+        )
         print(score)
         for k, v in sorted(breakdown.items()):
             if k not in ("raw_sum", "total") and isinstance(v, int):
@@ -517,6 +612,7 @@ def main():
         payload["scores"] = [s1, s2]
         payload["breakdowns"] = [b1, b2]
         _print_compare(app1, an1, s1, app2, an2, s2)
+        _print_keyword_density_comparison(app1, app2, an1, an2)
         _write_output(payload)
         return
 

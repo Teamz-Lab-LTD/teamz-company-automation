@@ -25,6 +25,7 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from aso._aso_common import (  # noqa: E402
+    _get_json,
     ensure_data_dir,
     itunes_lookup,
     itunes_search,
@@ -406,6 +407,102 @@ def cmd_release_notes(app_id):
     )
 
 
+def cmd_developer(dev_id):
+    """Show all apps by a developer (artist ID)."""
+    url = f"https://itunes.apple.com/lookup?id={dev_id}&entity=software"
+    data = _get_json(url)
+    results = (data or {}).get("results", [])
+    apps = [r for r in results if r.get("wrapperType") == "software"]
+    if not apps:
+        print(f"No apps found for developer ID {dev_id}.", file=sys.stderr)
+        _write_latest({"mode": "developer", "developer_id": str(dev_id), "apps": []})
+        return
+
+    headers = ("Name", "Rating", "Reviews", "Price", "Genre", "Updated")
+    rows = []
+    for r in apps:
+        rating = _rating(r)
+        rev = _reviews(r)
+        rows.append((
+            (r.get("trackName") or "")[:40],
+            f"{rating:.2f}" if rating is not None else "\u2014",
+            str(rev) if rev is not None else "\u2014",
+            (r.get("formattedPrice") or "\u2014")[:10],
+            (r.get("primaryGenreName") or "\u2014")[:20],
+            str(_updated(r))[:10],
+        ))
+
+    widths = [max(len(h), max((len(row[j]) for row in rows), default=0)) for j, h in enumerate(headers)]
+    print("  ".join(h.ljust(widths[j]) for j, h in enumerate(headers)))
+    print("  ".join("-" * w for w in widths))
+    for row in rows:
+        print("  ".join(row[j].ljust(widths[j]) for j in range(len(headers))))
+
+    _write_latest({
+        "mode": "developer",
+        "developer_id": str(dev_id),
+        "app_count": len(apps),
+        "apps": [{
+            "trackId": r.get("trackId"),
+            "name": r.get("trackName"),
+            "rating": _rating(r),
+            "reviews": _reviews(r),
+            "price": r.get("formattedPrice"),
+            "genre": r.get("primaryGenreName"),
+            "updated": _updated(r),
+        } for r in apps],
+    })
+
+
+def cmd_release_history(app_id):
+    """Track release history -- appends version info to aso-release-history.json."""
+    rec = itunes_lookup(app_id)
+    if not rec:
+        print(f"Lookup failed for: {app_id}", file=sys.stderr)
+        _write_latest({"mode": "release-history", "app_id": str(app_id), "error": "not_found"})
+        return
+
+    version = rec.get("version") or "unknown"
+    release_date = rec.get("currentVersionReleaseDate") or rec.get("releaseDate") or ""
+    notes = (rec.get("releaseNotes") or "").strip()
+    app_name = rec.get("trackName", str(app_id))
+
+    d = ensure_data_dir(_CFG)
+    path = d / "aso-release-history.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except (json.JSONDecodeError, OSError):
+        data = {}
+
+    aid = str(app_id)
+    if aid not in data:
+        data[aid] = {"name": app_name, "versions": []}
+
+    existing = {v.get("version") for v in data[aid].get("versions", [])}
+    if version not in existing:
+        data[aid]["versions"].append({
+            "version": version,
+            "date": release_date,
+            "notes": notes,
+            "recorded_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        })
+        data[aid]["name"] = app_name
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"Recorded version {version} for {app_name}.", file=sys.stderr)
+    else:
+        print(f"Version {version} already recorded for {app_name}.", file=sys.stderr)
+
+    print(f"\nRelease history for {app_name} ({aid}):")
+    print(f"{'Version':<12} {'Date':<24} Notes")
+    print(f"{'-' * 12} {'-' * 24} {'-' * 40}")
+    for v in data[aid].get("versions", []):
+        ver = v.get("version", "\u2014")
+        dt = v.get("date", "\u2014")[:24]
+        n = v.get("notes") or "\u2014"
+        preview = n[:60] + "\u2026" if len(n) > 60 else n
+        print(f"{ver:<12} {dt:<24} {preview}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="ASO competitor intelligence (iTunes Search / Lookup)."
@@ -435,6 +532,16 @@ def main():
         metavar="APP_ID",
         help="Print full release notes, version, and currentVersionReleaseDate for an app",
     )
+    g.add_argument(
+        "--developer",
+        metavar="DEV_ID",
+        help="List all apps by a developer (artist ID from iTunes Lookup)",
+    )
+    g.add_argument(
+        "--release-history",
+        metavar="APP_ID",
+        help="Track release versions over time (appends to aso-release-history.json)",
+    )
     args = parser.parse_args()
 
     if args.find is not None:
@@ -449,6 +556,10 @@ def main():
         cmd_matrix(args.matrix)
     elif args.release_notes is not None:
         cmd_release_notes(args.release_notes)
+    elif args.developer is not None:
+        cmd_developer(args.developer)
+    elif args.release_history is not None:
+        cmd_release_history(args.release_history)
 
 
 if __name__ == "__main__":

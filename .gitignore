@@ -16,3 +16,20 @@ data/seo-experiments-result-*.json
 data/serp-features-log.csv
 data/brand-mentions-log.csv
 data/seo-experiments.json
+
+# SEO monitoring (new scripts)
+data/uptime-latest.json
+data/schema-validation-latest.json
+data/serp-features-history.csv
+data/brand-mentions-auto.csv
+data/competitor-gaps-latest.json
+
+# ASO suite
+data/aso-keywords-latest.json
+data/aso-metadata-latest.json
+data/aso-competitors-latest.json
+data/aso-reviews-*.json
+data/aso-reviews-history.json
+data/aso-rank-history.json
+data/aso-rank-watchlist.json
+data/aso-guide-latest.md

@@ -67,6 +67,10 @@ if [[ "$MODE" == "--daily" ]]; then
     WINNERS=${WINNERS:-0}
     LOSERS=${LOSERS:-0}
 
+    # Uptime + anomalies (quick daily checks)
+    run_capture "Uptime check" python3 scripts/build-uptime-check.py > /dev/null
+    run_capture "GSC anomalies" python3 scripts/build-gsc-anomalies.py --json-only > /dev/null
+
     # Write summary for Claude health check
     {
         echo "DAILY SEO REPORT — $DATE"
@@ -104,6 +108,11 @@ if [[ "$MODE" == "--weekly" ]]; then
     # Content ideas
     run_capture "Seasonal content ideas" python3 scripts/build-content-ideas.py --seasonal > /dev/null
 
+    # Weekly monitoring
+    run_capture "Crawl diff" python3 scripts/build-crawl-diff.py > /dev/null
+    run_capture "SERP tracker" python3 scripts/build-serp-tracker.py > /dev/null
+    run_capture "Reddit scanner" python3 scripts/build-reddit-scanner.py > /dev/null
+
     # Write summary
     {
         echo "WEEKLY SEO REPORT — $DATE"
@@ -140,6 +149,11 @@ if [[ "$MODE" == "--monthly" ]]; then
 
     # Indexing check
     run_capture "Indexing check" python3 scripts/build-request-indexing.py --check > /dev/null
+
+    # Monthly deep monitoring
+    run_capture "Schema validation" python3 scripts/build-schema-validate.py > /dev/null
+    run_capture "Competitor gaps" python3 scripts/build-competitor-gaps.py > /dev/null
+    run_capture "Topic clusters" python3 scripts/build-topic-cluster-report.py > /dev/null
 
     {
         echo "MONTHLY SEO REPORT — $DATE"

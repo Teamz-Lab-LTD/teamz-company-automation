@@ -121,6 +121,66 @@ else
     echo "  [ok] Monthly audit: ${CONTENT_AGE}d ago"
 fi
 
+# ── 5b. Uptime Check ──
+UPTIME_FILE="$TEAMZ_DATA_DIR/uptime-latest.json"
+UPTIME_AGE=$(file_age_days "$UPTIME_FILE")
+if [ "$UPTIME_AGE" -ge 1 ]; then
+    echo "  [!] Uptime check: last run ${UPTIME_AGE} days ago"
+    ACTIONS+=("uptime")
+else
+    echo "  [ok] Uptime check: today"
+fi
+
+# ── 5c. Crawl Diff ──
+CRAWL_FILE="$TEAMZ_DATA_DIR/crawl-snapshot-latest.json"
+CRAWL_AGE=$(file_age_days "$CRAWL_FILE")
+if [ "$CRAWL_AGE" -ge 7 ]; then
+    echo "  [!] Crawl snapshot: last run ${CRAWL_AGE} days ago (weekly)"
+    ACTIONS+=("crawl")
+else
+    echo "  [ok] Crawl snapshot: ${CRAWL_AGE}d ago"
+fi
+
+# ── 5d. GSC Anomalies ──
+ANOMALY_FILE="$TEAMZ_DATA_DIR/gsc-anomalies-latest.json"
+ANOMALY_AGE=$(file_age_days "$ANOMALY_FILE")
+if [ "$ANOMALY_AGE" -ge 3 ]; then
+    echo "  [!] GSC anomalies: last run ${ANOMALY_AGE} days ago"
+    ACTIONS+=("anomalies")
+else
+    echo "  [ok] GSC anomalies: ${ANOMALY_AGE}d ago"
+fi
+
+# ── 5e. SERP Tracker ──
+SERP_FILE="$TEAMZ_DATA_DIR/serp-features-history.csv"
+SERP_AGE=$(file_age_days "$SERP_FILE")
+if [ "$SERP_AGE" -ge 7 ]; then
+    echo "  [!] SERP tracker: last run ${SERP_AGE} days ago (weekly)"
+    ACTIONS+=("serp")
+else
+    echo "  [ok] SERP tracker: ${SERP_AGE}d ago"
+fi
+
+# ── 5f. Reddit Scanner ──
+REDDIT_FILE="$TEAMZ_DATA_DIR/brand-mentions-auto.csv"
+REDDIT_AGE=$(file_age_days "$REDDIT_FILE")
+if [ "$REDDIT_AGE" -ge 7 ]; then
+    echo "  [!] Brand mention scan: last run ${REDDIT_AGE} days ago (weekly)"
+    ACTIONS+=("reddit")
+else
+    echo "  [ok] Brand mention scan: ${REDDIT_AGE}d ago"
+fi
+
+# ── 5g. Schema Validation ──
+SCHEMA_FILE="$TEAMZ_DATA_DIR/schema-validation-latest.json"
+SCHEMA_AGE=$(file_age_days "$SCHEMA_FILE")
+if [ "$SCHEMA_AGE" -ge 30 ]; then
+    echo "  [!] Schema validation: last run ${SCHEMA_AGE} days ago (monthly)"
+    ACTIONS+=("schema")
+else
+    echo "  [ok] Schema validation: ${SCHEMA_AGE}d ago"
+fi
+
 # ── 6. Seasonal Check ──
 MONTH=$(date +%-m)
 case $MONTH in
@@ -231,6 +291,66 @@ for action in "${ACTIONS[@]}"; do
             printf '%s\n' "$OUTPUT" | grep -E "Submitted|Pending|PRIORITY"
             echo ""
             ;;
+        uptime)
+            echo "  --> Uptime check..."
+            OUTPUT=$(python3 scripts/build-uptime-check.py 2>&1)
+            ISSUE=$(extract_health_issue "$OUTPUT")
+            if [ -n "$ISSUE" ]; then
+                record_health_alert "Uptime check: $ISSUE"
+            fi
+            printf '%s\n' "$OUTPUT" | tail -5
+            echo ""
+            ;;
+        crawl)
+            echo "  --> Crawl snapshot + diff..."
+            OUTPUT=$(python3 scripts/build-crawl-diff.py 2>&1)
+            ISSUE=$(extract_health_issue "$OUTPUT")
+            if [ -n "$ISSUE" ]; then
+                record_health_alert "Crawl diff: $ISSUE"
+            fi
+            printf '%s\n' "$OUTPUT" | tail -8
+            echo ""
+            ;;
+        anomalies)
+            echo "  --> GSC anomaly scan..."
+            OUTPUT=$(python3 scripts/build-gsc-anomalies.py 2>&1)
+            ISSUE=$(extract_health_issue "$OUTPUT")
+            if [ -n "$ISSUE" ]; then
+                record_health_alert "GSC anomalies: $ISSUE"
+            fi
+            printf '%s\n' "$OUTPUT" | tail -8
+            echo ""
+            ;;
+        serp)
+            echo "  --> SERP feature tracking..."
+            OUTPUT=$(python3 scripts/build-serp-tracker.py 2>&1)
+            ISSUE=$(extract_health_issue "$OUTPUT")
+            if [ -n "$ISSUE" ]; then
+                record_health_alert "SERP tracker: $ISSUE"
+            fi
+            printf '%s\n' "$OUTPUT" | tail -5
+            echo ""
+            ;;
+        reddit)
+            echo "  --> Reddit/Dev.to brand mention scan..."
+            OUTPUT=$(python3 scripts/build-reddit-scanner.py 2>&1)
+            ISSUE=$(extract_health_issue "$OUTPUT")
+            if [ -n "$ISSUE" ]; then
+                record_health_alert "Reddit scanner: $ISSUE"
+            fi
+            printf '%s\n' "$OUTPUT" | tail -5
+            echo ""
+            ;;
+        schema)
+            echo "  --> Schema validation..."
+            OUTPUT=$(python3 scripts/build-schema-validate.py 2>&1)
+            ISSUE=$(extract_health_issue "$OUTPUT")
+            if [ -n "$ISSUE" ]; then
+                record_health_alert "Schema validation: $ISSUE"
+            fi
+            printf '%s\n' "$OUTPUT" | tail -5
+            echo ""
+            ;;
     esac
 done
 
@@ -250,6 +370,8 @@ SUGGESTED NEXT ACTIONS:
   2. python3 scripts/build-content-ideas.py --trending  # See what to build
   3. python3 scripts/build-rank-tracker.py movers  # Check biggest rank changes
   4. python3 scripts/build-content-ideas.py --seasonal  # Seasonal tool ideas
+  5. python3 scripts/build-reddit-scanner.py --report  # Unlinked brand mentions
+  6. python3 scripts/build-competitor-gaps.py          # Keyword gap analysis
 EOF
 
 echo "============================================="

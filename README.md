@@ -123,6 +123,11 @@ Scripts load config in this order (later overrides earlier):
 | `py/build-seo-experiments.py` | Before/after GSC totals for title/meta tests |
 | `py/build-serp-features-log.py` | Manual SERP feature observations (snippet/PAA/video/AI) |
 | `py/build-brand-mentions-log.py` | Manual brand mention tracking for outreach |
+| `py/build-uptime-check.py` | HTTP health check + SSL expiry + response latency |
+| `py/build-schema-validate.py` | Local JSON-LD validation per @type required fields |
+| `py/build-serp-tracker.py` | Automated SERP feature detection (snippet/PAA/video/AI overview) |
+| `py/build-reddit-scanner.py` | Auto-scan Reddit + Dev.to for brand mentions |
+| `py/build-competitor-gaps.py` | Keyword gap analysis via GSC + Google Autocomplete |
 
 ### Build orchestration
 
@@ -159,6 +164,19 @@ Scripts load config in this order (later overrides earlier):
 | `sh/claude-sessions.sh` | List/kill stale Claude processes |
 | `py/batch-fix-display-bug.py` | Batch fix display:none bugs |
 | `py/generate-salary-cities.py` | Generate city-specific salary pages |
+
+### ASO suite (free AppTweak alternative, `py/aso/`)
+
+| Script | What it does |
+|--------|-------------|
+| `py/aso/aso-keywords.py` | Keyword research: Apple + Play autocomplete, expand, long-tail, trending |
+| `py/aso/aso-metadata.py` | Metadata audit + ASO score + LLM optimization prompts |
+| `py/aso/aso-competitors.py` | Competitor find/analyze/keyword-gaps/matrix |
+| `py/aso/aso-reviews.py` | Review fetch, keywords, sentiment, complaints, reply prompts |
+| `py/aso/aso-track.py` | Daily keyword rank tracking via iTunes Search |
+| `py/aso/aso-guide.py` | ASO crash course + personalized checklists + LLM prompts for content |
+
+Uses free public APIs only (iTunes Search, Apple/Play autocomplete, iTunes RSS reviews). No paid keys. Config: `TEAMZ_APP_IDS`, `TEAMZ_ASO_COUNTRIES`, `TEAMZ_ASO_KEYWORDS`.
 
 ## For AI assistants
 

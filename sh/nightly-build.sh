@@ -286,6 +286,12 @@ run_phase_cmd "Search index rebuild" 5 "./scripts/build-search-index.sh"
 run_phase_cmd "Orphan fix" 3 "python3 scripts/build-fix-orphans.py fix"
 run_phase_cmd "SEO auto-fix" 5 "./scripts/build-seo-audit.sh --fix"
 
+echo "  SEO monitoring..."
+run_phase_cmd "Uptime check" 3 "python3 scripts/build-uptime-check.py"
+run_phase_cmd "Schema validation" 5 "python3 scripts/build-schema-validate.py"
+run_phase_cmd "Crawl snapshot + diff" 5 "python3 scripts/build-crawl-diff.py"
+run_phase_cmd "GSC anomalies" 10 "python3 scripts/build-gsc-anomalies.py --json-only"
+
 echo "  Checking freshness (stale data)..."
 run_phase_cmd "Freshness validation" 10 "./scripts/build-validate-freshness.sh"
 

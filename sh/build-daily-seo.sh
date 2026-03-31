@@ -38,6 +38,12 @@ if [[ "$MODE" == "--daily" || "$MODE" == "--all" ]]; then
     echo "  [DAILY] Checking rank movers..."
     python3 scripts/build-rank-tracker.py movers 2>&1 | tail -10
 
+    echo "  [DAILY] Uptime check..."
+    python3 scripts/build-uptime-check.py 2>&1 | tail -5
+
+    echo "  [DAILY] GSC anomaly scan..."
+    python3 scripts/build-gsc-anomalies.py --json-only 2>&1 | tail -3
+
     echo ""
     echo "  Daily tasks complete."
     echo ""
@@ -56,6 +62,15 @@ if [[ "$MODE" == "--weekly" || "$MODE" == "--all" ]]; then
 
     echo "  [WEEKLY] Pending directory submissions..."
     python3 scripts/build-backlinks.py status 2>&1 | grep -A5 "PRIORITY 1"
+
+    echo "  [WEEKLY] Crawl snapshot + diff..."
+    python3 scripts/build-crawl-diff.py 2>&1 | tail -8
+
+    echo "  [WEEKLY] SERP feature tracking..."
+    python3 scripts/build-serp-tracker.py 2>&1 | tail -5
+
+    echo "  [WEEKLY] Reddit/Dev.to brand mentions..."
+    python3 scripts/build-reddit-scanner.py 2>&1 | tail -5
 
     echo ""
     echo "  Weekly tasks complete."
@@ -76,6 +91,15 @@ if [[ "$MODE" == "--monthly" || "$MODE" == "--all" ]]; then
 
     echo "  [MONTHLY] Requesting Google indexing for new pages..."
     python3 scripts/build-request-indexing.py --check 2>&1 | tail -10
+
+    echo "  [MONTHLY] Schema validation..."
+    python3 scripts/build-schema-validate.py 2>&1 | tail -8
+
+    echo "  [MONTHLY] Competitor keyword gaps..."
+    python3 scripts/build-competitor-gaps.py 2>&1 | tail -10
+
+    echo "  [MONTHLY] Topic cluster report..."
+    python3 scripts/build-topic-cluster-report.py 2>&1 | tail -8
 
     echo ""
     echo "  Monthly tasks complete."

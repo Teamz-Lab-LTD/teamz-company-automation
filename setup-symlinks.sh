@@ -54,6 +54,15 @@ for d in data/rank-history.json data/backlinks-data.json data/backlinks-history.
   fi
 done
 
+# ASO module — symlink as scripts/aso/ directory
+if [ -d "$SCRIPT_DIR/py/aso" ] && [ ! -L "scripts/aso" ]; then
+  rm -rf "scripts/aso" 2>/dev/null
+  ln -sf "../$SUBMOD_REL/py/aso" "scripts/aso"
+  created=$((created + 1))
+elif [ -L "scripts/aso" ]; then
+  skipped=$((skipped + 1))
+fi
+
 if [ -d "$SCRIPT_DIR/distribute" ] && [ ! -L "scripts/distribute" ]; then
   ln -sf "../$SUBMOD_REL/distribute" "scripts/distribute"
   created=$((created + 1))

@@ -16,7 +16,9 @@ Examples::
 
 Watchlist file: ``aso-rank-watchlist.json`` — ``{"apps": {"APP_ID": {"keywords": ["kw1"]}}}``
 
-History file: ``aso-rank-history.json`` — ``{"records": [{"date", "app_id", "keyword", "position"}]}``
+History file: ``aso-rank-history.json`` — ``{"records": [{"date", "app_id", "keyword", "position", "country"}]}``
+
+Set ``TEAMZ_ASO_COUNTRIES`` to a comma-separated list (e.g. ``us,gb,de``). Default single country is the first code; use ``--countries-all`` to record every code in the list.
 """
 
 import argparse
@@ -39,6 +41,28 @@ _CFG = load_runtime(
 _WATCHLIST_NAME = "aso-rank-watchlist.json"
 _HISTORY_NAME = "aso-rank-history.json"
 _BEYOND_LIMIT = 201  # sentinel when app not in top N results
+
+
+def _parse_countries_env() -> List[str]:
+    raw = os.getenv("TEAMZ_ASO_COUNTRIES", "us")
+    parts = [p.strip().lower() for p in raw.split(",") if p.strip()]
+    return parts or ["us"]
+
+
+def _default_country() -> str:
+    return _parse_countries_env()[0]
+
+
+def _norm_country(rec: dict) -> str:
+    c = (rec.get("country") or "").strip().lower()
+    return c or "us"
+
+
+def _multi_country_records(recs: List[dict]) -> bool:
+    if not recs:
+        return False
+    seen = {_norm_country(r) for r in recs}
+    return len(seen) > 1
 
 
 def _today_iso() -> str:
@@ -98,7 +122,7 @@ def _keywords_for_app(data, app_id: str) -> List[str]:
     return out
 
 
-def cmd_record(app_id: str) -> int:
+def cmd_record(app_id: str, country: str, countries_all: bool) -> int:
     wl_path, hist_path = _paths()
     wl = _load_json(wl_path, {"apps": {}})
     keywords = _keywords_for_app(wl, app_id)
@@ -106,36 +130,49 @@ def cmd_record(app_id: str) -> int:
         print(f"No keywords in watchlist for app_id {app_id}. Use --track to add some.", file=sys.stderr)
         return 1
 
+    countries = _parse_countries_env() if countries_all else [country.strip().lower()]
+
     hist = _load_json(hist_path, {"records": []})
     records = hist.get("records")
     if not isinstance(records, list):
         records = []
     today = _today_iso()
-    rows = []
+    rows: List[tuple] = []
 
-    for kw in keywords:
-        results = itunes_search(kw, limit=200)
-        pos = _position_for_app(results, app_id)
-        rec = {
-            "date": today,
-            "app_id": str(app_id),
-            "keyword": kw,
-            "position": pos,
-        }
-        records.append(rec)
-        rows.append((kw, pos))
+    for cc in countries:
+        for kw in keywords:
+            results = itunes_search(kw, country=cc, limit=200)
+            pos = _position_for_app(results, app_id)
+            rec = {
+                "date": today,
+                "app_id": str(app_id),
+                "keyword": kw,
+                "position": pos,
+                "country": cc,
+            }
+            records.append(rec)
+            rows.append((cc, kw, pos))
 
     hist["records"] = records
     _save_json(hist_path, hist)
 
     # table
-    w_kw = max(len("keyword"), max(len(k) for k, _ in rows) if rows else 8)
+    show_cc = len(countries) > 1
+    w_kw = max(len("keyword"), max(len(k) for _, k, _ in rows) if rows else 8)
     w_pos = max(len("position"), 3)
-    print(f"{'keyword'.ljust(w_kw)}  {'position'.rjust(w_pos)}")
-    print(f"{'-' * w_kw}  {'-' * w_pos}")
-    for kw, pos in rows:
-        disp = str(pos) if pos else "0 (not in top 200)"
-        print(f"{kw.ljust(w_kw)}  {disp.rjust(w_pos) if pos else disp}")
+    w_cc = max(len("country"), max(len(c) for c, _, _ in rows) if rows else 7)
+    if show_cc:
+        print(f"{'country'.ljust(w_cc)}  {'keyword'.ljust(w_kw)}  {'position'.rjust(w_pos)}")
+        print(f"{'-' * w_cc}  {'-' * w_kw}  {'-' * w_pos}")
+        for cc, kw, pos in rows:
+            disp = str(pos) if pos else "0 (not in top 200)"
+            print(f"{cc.ljust(w_cc)}  {kw.ljust(w_kw)}  {disp.rjust(w_pos) if pos else disp}")
+    else:
+        print(f"{'keyword'.ljust(w_kw)}  {'position'.rjust(w_pos)}")
+        print(f"{'-' * w_kw}  {'-' * w_pos}")
+        for _, kw, pos in rows:
+            disp = str(pos) if pos else "0 (not in top 200)"
+            print(f"{kw.ljust(w_kw)}  {disp.rjust(w_pos) if pos else disp}")
     return 0
 
 
@@ -147,18 +184,24 @@ def _records_for_app(hist, app_id: str) -> List[dict]:
     return [r for r in records if isinstance(r, dict) and str(r.get("app_id", "")) == aid]
 
 
-def _group_sorted_by_time(recs: List[dict]) -> Dict[str, List[dict]]:
-    """Group by keyword; each list sorted by date then list order."""
-    by_kw = {}
+def _group_key(rec: dict) -> tuple:
+    kw = (rec.get("keyword") or "").strip()
+    return (kw, _norm_country(rec))
+
+
+def _group_sorted_by_time(recs: List[dict]) -> Dict[tuple, List[dict]]:
+    """Group by (keyword, country); each list sorted by date then list order."""
+    by_key: Dict[tuple, list] = {}
     for i, r in enumerate(recs):
         kw = (r.get("keyword") or "").strip()
         if not kw:
             continue
-        by_kw.setdefault(kw, []).append((r.get("date") or "", i, r))
-    out: Dict[str, List[dict]] = {}
-    for kw, items in by_kw.items():
+        key = _group_key(r)
+        by_key.setdefault(key, []).append((r.get("date") or "", i, r))
+    out: Dict[tuple, List[dict]] = {}
+    for key, items in by_key.items():
         items.sort(key=lambda x: (x[0], x[1]))
-        out[kw] = [x[2] for x in items]
+        out[key] = [x[2] for x in items]
     return out
 
 
@@ -186,14 +229,23 @@ def cmd_report(app_id: str) -> int:
         return 1
 
     grouped = _group_sorted_by_time(recs)
-    w_kw = max(len("keyword"), max(len(k) for k in grouped) if grouped else 8)
+    multi_cc = _multi_country_records(recs)
+    w_kw = max(len("keyword"), max(len(k[0]) for k in grouped) if grouped else 8)
     w_pos = max(len("position"), len("prev"), 4)
     w_tr = max(len("trend"), 6)
-    print(f"{'keyword'.ljust(w_kw)}  {'position'.rjust(w_pos)}  {'prev'.rjust(w_pos)}  {'trend'.ljust(w_tr)}")
-    print(f"{'-' * w_kw}  {'-' * w_pos}  {'-' * w_pos}  {'-' * w_tr}")
+    w_cc = max(len("country"), max(len(_norm_country(grouped[key][-1])) for key in grouped) if grouped else 2)
+    if multi_cc:
+        print(
+            f"{'country'.ljust(w_cc)}  {'keyword'.ljust(w_kw)}  {'position'.rjust(w_pos)}  {'prev'.rjust(w_pos)}  {'trend'.ljust(w_tr)}"
+        )
+        print(f"{'-' * w_cc}  {'-' * w_kw}  {'-' * w_pos}  {'-' * w_pos}  {'-' * w_tr}")
+    else:
+        print(f"{'keyword'.ljust(w_kw)}  {'position'.rjust(w_pos)}  {'prev'.rjust(w_pos)}  {'trend'.ljust(w_tr)}")
+        print(f"{'-' * w_kw}  {'-' * w_pos}  {'-' * w_pos}  {'-' * w_tr}")
 
-    for kw in sorted(grouped.keys()):
-        chain = grouped[kw]
+    for key in sorted(grouped.keys(), key=lambda x: (x[1], x[0])):
+        kw, cc = key[0], key[1]
+        chain = grouped[key]
         last = chain[-1]
         curr = int(last.get("position") or 0)
         if len(chain) >= 2:
@@ -204,9 +256,12 @@ def cmd_report(app_id: str) -> int:
             trend = "new"
             p_disp = "—"
         c_disp = str(curr) if curr else "0"
-        print(
-            f"{kw.ljust(w_kw)}  {c_disp.rjust(w_pos)}  {str(p_disp).rjust(w_pos)}  {trend.ljust(w_tr)}"
-        )
+        if multi_cc:
+            print(
+                f"{cc.ljust(w_cc)}  {kw.ljust(w_kw)}  {c_disp.rjust(w_pos)}  {str(p_disp).rjust(w_pos)}  {trend.ljust(w_tr)}"
+            )
+        else:
+            print(f"{kw.ljust(w_kw)}  {c_disp.rjust(w_pos)}  {str(p_disp).rjust(w_pos)}  {trend.ljust(w_tr)}")
     return 0
 
 
@@ -224,7 +279,8 @@ def cmd_movers(app_id: str) -> int:
 
     grouped = _group_sorted_by_time(recs)
     movers = []
-    for kw, chain in grouped.items():
+    for key, chain in grouped.items():
+        kw, cc = key[0], key[1]
         if len(chain) < 2:
             continue
         old = int(chain[-2].get("position") or 0)
@@ -232,21 +288,32 @@ def cmd_movers(app_id: str) -> int:
         eff_old = _effective_rank(old)
         eff_new = _effective_rank(new)
         movement = eff_old - eff_new  # positive = improved (lower rank)
-        movers.append((abs(movement), movement, kw, old, new))
+        movers.append((abs(movement), movement, kw, cc, old, new))
 
-    movers.sort(key=lambda x: (-x[0], x[2]))
+    movers.sort(key=lambda x: (-x[0], x[3], x[2]))
     if not movers:
         print("Need at least two recordings per keyword to compute movers.")
         return 0
 
+    multi_cc = _multi_country_records(recs)
     w_kw = max(len("keyword"), max(len(x[2]) for x in movers))
-    print(f"{'keyword'.ljust(w_kw)}  {'was':>6}  {'now':>6}  {'movement':>10}")
-    print(f"{'-' * w_kw}  {'------'}  {'------'}  {'----------'}")
-    for _, mov, kw, old, new in movers:
-        o = str(old) if old else "0"
-        n = str(new) if new else "0"
-        label = f"{mov:+d}" if mov else "0"
-        print(f"{kw.ljust(w_kw)}  {o:>6}  {n:>6}  {label:>10}")
+    w_cc = max(len("country"), max(len(x[3]) for x in movers))
+    if multi_cc:
+        print(f"{'country'.ljust(w_cc)}  {'keyword'.ljust(w_kw)}  {'was':>6}  {'now':>6}  {'movement':>10}")
+        print(f"{'-' * w_cc}  {'-' * w_kw}  {'------'}  {'------'}  {'----------'}")
+        for _, mov, kw, cc, old, new in movers:
+            o = str(old) if old else "0"
+            n = str(new) if new else "0"
+            label = f"{mov:+d}" if mov else "0"
+            print(f"{cc.ljust(w_cc)}  {kw.ljust(w_kw)}  {o:>6}  {n:>6}  {label:>10}")
+    else:
+        print(f"{'keyword'.ljust(w_kw)}  {'was':>6}  {'now':>6}  {'movement':>10}")
+        print(f"{'-' * w_kw}  {'------'}  {'------'}  {'----------'}")
+        for _, mov, kw, _, old, new in movers:
+            o = str(old) if old else "0"
+            n = str(new) if new else "0"
+            label = f"{mov:+d}" if mov else "0"
+            print(f"{kw.ljust(w_kw)}  {o:>6}  {n:>6}  {label:>10}")
     return 0
 
 
@@ -328,6 +395,18 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--track", nargs=2, metavar=("APP_ID", "KEYWORD"), help="Add a keyword to the watchlist")
     p.add_argument("--untrack", nargs=2, metavar=("APP_ID", "KEYWORD"), help="Remove a keyword from the watchlist")
     p.add_argument("--watchlist", action="store_true", help="List all apps and keywords")
+    p.add_argument("--experiment", nargs=2, metavar=("APP_ID", "CHANGE_DATE"), help="Before/after rank comparison around a metadata change (YYYY-MM-DD)")
+    p.add_argument(
+        "--country",
+        default=None,
+        metavar="CC",
+        help="App Store country code for search (default: first value in TEAMZ_ASO_COUNTRIES, else us)",
+    )
+    p.add_argument(
+        "--countries-all",
+        action="store_true",
+        help="With --record: record for every country in TEAMZ_ASO_COUNTRIES (comma-separated)",
+    )
 
     args = p.parse_args(argv)
     modes = sum(
@@ -338,13 +417,19 @@ def main(argv: Optional[List[str]] = None) -> int:
             args.track is not None,
             args.untrack is not None,
             args.watchlist,
+            getattr(args, "experiment", None) is not None,
         ]
     )
     if modes != 1:
         p.error("Specify exactly one of: --record, --report, --movers, --track, --untrack, --watchlist")
 
+    if args.countries_all and args.record is None:
+        p.error("--countries-all is only valid with --record")
+
+    record_country = (args.country or _default_country()).strip().lower()
+
     if args.record is not None:
-        return cmd_record(args.record)
+        return cmd_record(args.record, record_country, args.countries_all)
     if args.report is not None:
         return cmd_report(args.report)
     if args.movers is not None:
@@ -353,7 +438,64 @@ def main(argv: Optional[List[str]] = None) -> int:
         return cmd_track(args.track[0], args.track[1])
     if args.untrack is not None:
         return cmd_untrack(args.untrack[0], args.untrack[1])
+    if getattr(args, "experiment", None) is not None:
+        return cmd_experiment(args.experiment[0], args.experiment[1])
     return cmd_watchlist()
+
+
+def cmd_experiment(app_id: str, change_date: str):
+    """Compare rank positions before vs after a metadata change date."""
+    _, hist_path = _paths()
+    history = _load_history(hist_path)
+    records = [r for r in history.get("records", []) if str(r.get("app_id")) == str(app_id)]
+    if not records:
+        print(f"No rank history for app {app_id}. Run --record first.", file=sys.stderr)
+        return 1
+
+    before = [r for r in records if r.get("date", "") < change_date]
+    after = [r for r in records if r.get("date", "") >= change_date]
+    if not before:
+        print(f"No records before {change_date}.", file=sys.stderr)
+        return 1
+    if not after:
+        print(f"No records after {change_date} yet — keep running --record daily.", file=sys.stderr)
+        return 1
+
+    def avg_pos(recs):
+        by_kw = {}
+        for r in recs:
+            kw = r.get("keyword", "")
+            pos = r.get("position", 0)
+            by_kw.setdefault(kw, []).append(pos if pos > 0 else _BEYOND_LIMIT)
+        return {kw: sum(ps) / len(ps) for kw, ps in by_kw.items()}
+
+    before_avg = avg_pos(before)
+    after_avg = avg_pos(after)
+    all_kws = sorted(set(before_avg) | set(after_avg))
+
+    print(f"\n  ASO Experiment: app {app_id}")
+    print(f"  Change date: {change_date}")
+    print(f"  Before: {len(before)} records | After: {len(after)} records\n")
+    print(f"  {'Keyword':<35} {'Before':>8} {'After':>8} {'Change':>8}")
+    print("  " + "-" * 63)
+    improved = 0
+    declined = 0
+    for kw in all_kws:
+        b = before_avg.get(kw, _BEYOND_LIMIT)
+        a = after_avg.get(kw, _BEYOND_LIMIT)
+        delta = b - a
+        sign = "+" if delta > 0 else ""
+        if delta > 0.5:
+            improved += 1
+        elif delta < -0.5:
+            declined += 1
+        b_str = f"{b:.0f}" if b < _BEYOND_LIMIT else "N/A"
+        a_str = f"{a:.0f}" if a < _BEYOND_LIMIT else "N/A"
+        d_str = f"{sign}{delta:.1f}" if b < _BEYOND_LIMIT and a < _BEYOND_LIMIT else "—"
+        print(f"  {kw:<35} {b_str:>8} {a_str:>8} {d_str:>8}")
+
+    print(f"\n  Summary: {improved} improved, {declined} declined, {len(all_kws) - improved - declined} stable")
+    return 0
 
 
 if __name__ == "__main__":

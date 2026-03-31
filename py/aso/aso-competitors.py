@@ -11,6 +11,7 @@ Usage:
   python3 py/aso/aso-competitors.py --keywords 123456789
   python3 py/aso/aso-competitors.py --gaps 111111111 222222222
   python3 py/aso/aso-competitors.py --matrix "meditation"
+  python3 py/aso/aso-competitors.py --release-notes 123456789
 
 Output is printed to stdout; latest structured run is saved to data/aso-competitors-latest.json.
 """
@@ -103,6 +104,21 @@ def _updated(rec):
     return rec.get("currentVersionReleaseDate") or rec.get("releaseDate") or "—"
 
 
+def _release_notes(rec):
+    if not rec:
+        return ""
+    return (rec.get("releaseNotes") or rec.get("release_notes") or "").strip()
+
+
+def _release_notes_preview(rec, max_len=200):
+    text = _release_notes(rec)
+    if not text:
+        return "—"
+    if len(text) <= max_len:
+        return text
+    return text[:max_len].rstrip() + "…"
+
+
 def _keyword_set_from_record(rec, n=200):
     """Distinct keywords from title + description (top-n by frequency)."""
     if not rec:
@@ -179,6 +195,7 @@ def cmd_analyze(app_ids):
             records.append({"app_id": str(aid), "error": "not_found"})
             continue
         b = _file_size_bytes(rec)
+        rn_full = _release_notes(rec)
         records.append(
             {
                 "app_id": str(aid),
@@ -193,6 +210,7 @@ def cmd_analyze(app_ids):
                 "screenshot_count": _screenshot_count(rec),
                 "file_size_bytes": b,
                 "file_size_human": _fmt_size(b),
+                "release_notes": rn_full,
             }
         )
 
@@ -228,6 +246,15 @@ def cmd_analyze(app_ids):
         print("  ".join("-" * w for w in widths))
         for row in rows:
             print("  ".join(row[j].ljust(widths[j]) for j in range(len(headers))))
+
+        print("\nRelease Notes (first 200 characters)")
+        print("-" * 40)
+        for r in ok:
+            label = (r.get("name") or str(r.get("trackId")))[:48]
+            prev = _release_notes_preview(r, 200)
+            print(f"{label}")
+            print(f"  {prev}")
+            print()
 
     _write_latest({"mode": "analyze", "app_ids": [str(x) for x in app_ids], "apps": records})
 
@@ -353,6 +380,32 @@ def cmd_matrix(keyword):
     _write_latest({"mode": "matrix", "keyword": keyword, "rows": matrix_rows})
 
 
+def cmd_release_notes(app_id):
+    rec = itunes_lookup(app_id)
+    if not rec:
+        print(f"Lookup failed for: {app_id}", file=sys.stderr)
+        _write_latest({"mode": "release-notes", "app_id": str(app_id), "error": "not_found"})
+        return
+    ver = rec.get("version") or "—"
+    rel_date = rec.get("currentVersionReleaseDate") or rec.get("releaseDate") or "—"
+    notes = _release_notes(rec) or "(none)"
+    print(f"version: {ver}")
+    print(f"currentVersionReleaseDate: {rel_date}")
+    print()
+    print(notes)
+    _write_latest(
+        {
+            "mode": "release-notes",
+            "app_id": str(app_id),
+            "trackId": rec.get("trackId"),
+            "name": rec.get("trackName"),
+            "version": rec.get("version"),
+            "currentVersionReleaseDate": rec.get("currentVersionReleaseDate"),
+            "releaseNotes": rec.get("releaseNotes"),
+        }
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="ASO competitor intelligence (iTunes Search / Lookup)."
@@ -377,6 +430,11 @@ def main():
         metavar="KEYWORD",
         help="Top 5 search results comparison matrix",
     )
+    g.add_argument(
+        "--release-notes",
+        metavar="APP_ID",
+        help="Print full release notes, version, and currentVersionReleaseDate for an app",
+    )
     args = parser.parse_args()
 
     if args.find is not None:
@@ -389,6 +447,8 @@ def main():
         cmd_gaps(args.gaps[0], args.gaps[1])
     elif args.matrix is not None:
         cmd_matrix(args.matrix)
+    elif args.release_notes is not None:
+        cmd_release_notes(args.release_notes)
 
 
 if __name__ == "__main__":

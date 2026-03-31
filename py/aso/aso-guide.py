@@ -357,6 +357,63 @@ def cmd_checklist(app_id: str):
     lines.append(
         "10. **Keyword field (iOS)** — [INFO] Public APIs do not expose your 100-character keyword list; verify in App Store Connect for duplicates and relevance."
     )
+
+    # 11 — Localization (languageCodesISO2A)
+    langs = rec.get("languageCodesISO2A") or []
+    if not isinstance(langs, list):
+        langs = [langs] if langs else []
+    n_locales = len(langs)
+    if n_locales == 0:
+        lines.append(
+            "11. **Localization** — [FAIL] languageCodesISO2A missing or empty in lookup — verify locales in App Store Connect. "
+            "Use --localize in aso-keywords.py to find keywords in other markets."
+        )
+    elif n_locales == 1:
+        lines.append(
+            "11. **Localization** — [FAIL] Only 1 locale — you're missing ~70% of global revenue. "
+            "Use --localize in aso-keywords.py to find keywords in other markets."
+        )
+    elif n_locales >= 3:
+        lines.append(f"11. **Localization** — [PASS] Supports {n_locales} locales.")
+    else:
+        lines.append(
+            "11. **Localization** — [!] Only 2 locales — consider adding more markets; "
+            "use --localize in aso-keywords.py to find keywords in other markets."
+        )
+
+    # 12 — Release notes freshness
+    rn = (rec.get("releaseNotes") or "").strip()
+    if not rn:
+        lines.append(
+            "12. **Release notes freshness** — [FAIL] No release notes — App Store editorial and users both check these."
+        )
+    else:
+        rn_wc = len(rn.split())
+        lines.append(f"12. **Release notes freshness** — [PASS] Release notes present ({rn_wc} words).")
+
+    lines.append(
+        "13. **Video preview** — [INFO] Video preview availability cannot be detected via API — verify manually in App Store Connect."
+    )
+
+    # 14 — App size (fileSizeBytes)
+    fs_b = rec.get("fileSizeBytes")
+    try:
+        fs_int = int(fs_b) if fs_b is not None else None
+    except (TypeError, ValueError):
+        fs_int = None
+    if fs_int is not None and fs_int > 0:
+        size_mb = fs_int / (1024 * 1024)
+        if size_mb > 200:
+            lines.append(
+                f"14. **App size** — [!] App is {size_mb:.1f}MB — large downloads reduce conversion on cellular. Target <150MB."
+            )
+        else:
+            lines.append(f"14. **App size** — [PASS] App size {size_mb:.1f}MB")
+    else:
+        lines.append(
+            "14. **App size** — [INFO] fileSizeBytes not available in lookup — verify download size in App Store Connect."
+        )
+
     lines.append("")
     lines.append("### TODO next")
     lines.append("")

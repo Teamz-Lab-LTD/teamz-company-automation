@@ -323,7 +323,7 @@ def compute_aso_score(app, analysis):
     return total, breakdown, messages
 
 
-def _print_audit(analysis, score, breakdown):
+def _print_audit(analysis, score, breakdown, app=None):
     print("=== ASO metadata audit (iTunes Lookup) ===\n")
     print("Title:", analysis["title"])
     print(f"  Length: {analysis['title_char_len']} chars (iOS app name limit: {_IOS_TITLE_MAX})")
@@ -350,6 +350,22 @@ def _print_audit(analysis, score, breakdown):
     print("\nOther signals:")
     print(f"  Rating: {analysis['rating']} ({analysis['review_count']} reviews)")
     print(f"  Screenshots (API): {analysis['screenshot_total_count']} total")
+    iphone_shots = analysis.get("iphone_screenshot_count", 0)
+    ipad_shots = analysis.get("ipad_screenshot_count", 0)
+    print(
+        f"  Screenshot orientation: {iphone_shots} iPhone screenshot URL(s) in payload — "
+        "portrait vs landscape cannot be inferred from URLs; verify portrait/landscape mix in App Store Connect."
+    )
+    print(f"  iPad screenshots: {ipad_shots}")
+    if ipad_shots == 0:
+        print("  [!] No iPad screenshots — missing iPad App Store traffic")
+    print("  [INFO] Video preview status not available via API — verify in App Store Connect")
+    rn = ((app or {}).get("releaseNotes") or "").strip()
+    if rn:
+        preview = rn[:200] + ("…" if len(rn) > 200 else "")
+        print(f"  Release notes (preview): {preview}")
+    else:
+        print("  Release notes: (none or empty in API payload)")
     print(f"  Last updated: {analysis['last_updated']}")
     if analysis["days_since_update"] is not None:
         print(f"  Days since update: {analysis['days_since_update']}")
@@ -462,7 +478,7 @@ def main():
         payload["analysis"] = analysis
         payload["score"] = score
         payload["breakdown"] = breakdown
-        _print_audit(analysis, score, breakdown)
+        _print_audit(analysis, score, breakdown, app)
         _write_output(payload)
         return
 

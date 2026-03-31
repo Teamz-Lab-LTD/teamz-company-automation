@@ -128,6 +128,28 @@ def _trending(category):
     return rows
 
 
+def _localize(term, countries):
+    rows = []
+    for country in countries:
+        cc = (country or "").strip().lower()
+        if not cc:
+            continue
+        results = itunes_search(term, country=cc, limit=10)
+        titles = []
+        for r in results:
+            t = (r.get("trackName") or "").strip()
+            if t:
+                titles.append(t)
+        if not titles:
+            continue
+        blob = " ".join(titles)
+        ranked = top_keywords(blob, n=40)
+        for word, freq in ranked:
+            rows.append(_row(word, cc, count=freq))
+    rows.sort(key=lambda r: (r["source"], r["keyword"].lower()))
+    return rows
+
+
 def _long_tail(term):
     base = term.strip()
     seen = set()
@@ -202,6 +224,16 @@ def main():
     mx.add_argument("--expand", metavar="TERM", help="Two-level autocomplete expansion")
     mx.add_argument("--trending", metavar="CATEGORY", help="Top title keywords from iTunes search")
     mx.add_argument("--long-tail", dest="long_tail", metavar="TERM", help="Apple autocomplete for TERM + a-z")
+    mx.add_argument(
+        "--localize",
+        metavar="TERM",
+        help="Autocomplete across multiple countries/languages for localization",
+    )
+    parser.add_argument(
+        "--countries",
+        default="",
+        help="Comma-separated country codes (default: from TEAMZ_ASO_COUNTRIES or us,gb,de,fr,es,pt,ja,ko,zh)",
+    )
     parser.add_argument(
         "--export",
         choices=["csv"],
@@ -220,6 +252,13 @@ def main():
     elif args.trending is not None:
         mode, query = "trending", args.trending
         rows = _trending(args.trending)
+    elif args.localize is not None:
+        mode, query = "localize", args.localize
+        countries_str = (args.countries or "").strip()
+        if not countries_str:
+            countries_str = os.getenv("TEAMZ_ASO_COUNTRIES", "us,gb,de,fr,es,pt,ja,ko")
+        countries = [c.strip().lower() for c in countries_str.split(",") if c.strip()]
+        rows = _localize(args.localize, countries)
     else:
         mode, query = "long-tail", args.long_tail
         rows = _long_tail(args.long_tail)

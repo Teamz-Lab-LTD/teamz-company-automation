@@ -178,6 +178,31 @@ Scripts load config in this order (later overrides earlier):
 
 Uses free public APIs only (iTunes Search, Apple/Play autocomplete, iTunes RSS reviews). No paid keys. Config: `TEAMZ_APP_IDS`, `TEAMZ_ASO_COUNTRIES`, `TEAMZ_ASO_KEYWORDS`.
 
+### ASO reliability notes (production)
+
+- `market.android.com` suggest endpoints are legacy and can return frequent `404`; ASO now treats them as **last-resort** only.
+- Primary Play suggestions come from `suggestqueries.google.com/complete/search` (chrome/firefox client variants + multiple query patterns).
+- Google suggest can return JSON prefixed with `)]}'`; parser strips this safely before JSON decode.
+- Play listing HTML fetch uses browser-like headers and retries with `&gl=us` when initial response is empty.
+- Apple hints requests use browser-like accept/referer headers and fall back to iTunes Search title extraction.
+- This is production-ready with resilient fallbacks, but external API behavior can still vary by region/rate limits over time.
+
+### LLM handoff contract (for other projects)
+
+When another project or AI agent integrates ASO scripts, keep this fallback order:
+
+1. `play_autocomplete()` -> Google suggest endpoint first.
+2. Legacy `market.android.com` suggest only if primary is empty.
+3. `apple_autocomplete()` -> hints endpoint first, iTunes Search fallback.
+4. `play_store_metadata()` -> browser-like headers, retry with `hl/gl`.
+
+Operational expectations:
+
+- Treat upstream `403/404/429` as recoverable, not fatal.
+- Keep request pacing (`_MIN_DELAY`) enabled.
+- Log actionable fix hints (`[FIX]`) for operators and LLM agents.
+- Validate JSON decode and HTML parse failures with graceful fallback, never hard crash.
+
 ## For AI assistants
 
 When working on a project that uses this submodule, run scripts via the `scripts/` symlink path:

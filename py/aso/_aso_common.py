@@ -12,6 +12,7 @@ Provides:
 """
 
 import json
+import html as html_lib
 import re
 import ssl
 import subprocess
@@ -25,9 +26,39 @@ from datetime import datetime
 from pathlib import Path
 
 _CTX = ssl.create_default_context()
-_HEADERS = {"User-Agent": "TeamzASO/1.0 (compatible; Python urllib)"}
+_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Cache-Control": "no-cache",
+}
+# Browser-like headers for HTML pages. Useful when Google Play serves limited
+# markup to generic clients.
+_HEADERS_HTML = {
+    **_HEADERS,
+    "Accept": (
+        "text/html,application/xhtml+xml,application/xml;q=0.9,"
+        "image/avif,image/webp,image/apng,*/*;q=0.8"
+    ),
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "Referer": "https://www.google.com/",
+}
+_HEADERS_APPLE_HINTS = {
+    **_HEADERS,
+    "Accept": "application/json, text/javascript, */*; q=0.01",
+    "Referer": "https://www.apple.com/",
+}
 _MIN_DELAY = 1.2
 _last_request_time = 0.0
+_PLAY_AUTOCOMPLETE_CACHE = {}
 
 
 # ---------------------------------------------------------------------------
@@ -68,14 +99,18 @@ def _throttle():
 # HTTP layer with detailed error guidance
 # ---------------------------------------------------------------------------
 
-def _get(url, timeout=20):
+def _get(url, timeout=20, suppress_http_codes=None, extra_headers=None):
     _throttle()
-    req = urllib.request.Request(url, headers=_HEADERS)
+    suppress_http_codes = suppress_http_codes or set()
+    req_headers = {**_HEADERS, **(extra_headers or {})}
+    req = urllib.request.Request(url, headers=req_headers)
     try:
         resp = urllib.request.urlopen(req, context=_CTX, timeout=timeout)
         return resp.read().decode("utf-8", errors="replace")
     except urllib.error.HTTPError as e:
         code = e.code
+        if code in suppress_http_codes:
+            return ""
         short_url = url[:120]
         if code == 403:
             log_error(f"HTTP 403 Forbidden: {short_url}")
@@ -84,8 +119,10 @@ def _get(url, timeout=20):
             log_error(f"HTTP 404 Not Found: {short_url}")
             if "itunes.apple.com" in url:
                 log_fix("Check the Apple ID — find it in the App Store URL: apps.apple.com/app/id<NUMBER>")
-            elif "market.android.com" in url or "play.google.com" in url:
-                log_fix("Google Play endpoint may have changed or is unavailable. This is a known limitation.")
+            elif "market.android.com" in url:
+                log_fix("Legacy market.android.com suggest endpoints are unreliable/retired for many queries. Use Google suggest endpoint first.")
+            elif "play.google.com" in url:
+                log_fix("Play listing endpoint unavailable for this request/region/package. Retry with browser-like headers and hl/gl fallback.")
             else:
                 log_fix("The URL doesn't exist. Double-check the ID or endpoint.")
         elif code == 429:
@@ -110,8 +147,8 @@ def _get(url, timeout=20):
         return ""
 
 
-def _get_json(url, timeout=20):
-    raw = _get(url, timeout)
+def _get_json(url, timeout=20, extra_headers=None, suppress_http_codes=None):
+    raw = _get(url, timeout, suppress_http_codes=suppress_http_codes, extra_headers=extra_headers)
     if not raw:
         return None
     try:
@@ -160,12 +197,26 @@ def itunes_lookup(app_id, country="us"):
 def apple_autocomplete(term):
     """Apple App Store autocomplete suggestions (with iTunes Search fallback)."""
     q = urllib.parse.urlencode({"term": term})
-    data = _get_json(f"https://search.itunes.apple.com/WebObjects/MZSearchHints.woa/wa/hints?{q}")
-    if data:
-        hints = data.get("hints", [])
-        results = [h.get("term", "") for h in hints if h.get("term")]
-        if results:
-            return results
+    raw = _get(
+        f"https://search.itunes.apple.com/WebObjects/MZSearchHints.woa/wa/hints?{q}",
+        extra_headers=_HEADERS_APPLE_HINTS,
+    )
+    if raw:
+        # Some regions return JSON; others return Apple plist XML.
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            data = None
+        if data:
+            hints = data.get("hints", [])
+            results = [h.get("term", "") for h in hints if h.get("term")]
+            if results:
+                return results
+        if "<plist" in raw and "<key>term</key>" in raw:
+            terms = re.findall(r"<key>term</key>\s*<string>(.*?)</string>", raw, flags=re.S)
+            cleaned = [html_lib.unescape(t).strip() for t in terms if t and t.strip()]
+            if cleaned:
+                return cleaned[:20]
 
     # Fallback: extract keywords from top iTunes Search results for this term
     log_info(f"Apple autocomplete empty for '{term}' — falling back to iTunes Search titles")
@@ -186,24 +237,122 @@ def apple_autocomplete(term):
     return fallback[:15]
 
 
-def play_autocomplete(term, hl="en"):
-    """Google Play Store autocomplete suggestions (tries two endpoints)."""
-    for url_tpl in [
-        "https://market.android.com/suggest/SuggRequest?json=1&query={q}&hl={hl}",
-        "https://market.android.com/suggest?json=1&c=3&hl={hl}&query={q}",
-    ]:
-        url = url_tpl.format(q=urllib.parse.quote(term), hl=hl)
-        raw = _get(url)
-        if raw:
+def _strip_google_jsonp(raw):
+    """Google suggest can prefix JSON with )]}' plus a newline."""
+    if not raw:
+        return raw
+    s = raw.strip()
+    if s.startswith(")]}'"):
+        s = s[4:].lstrip()
+    return s
+
+
+def _parse_google_suggest_json(data):
+    """Google suggest API returns [query, [suggestions], ...]."""
+    if not isinstance(data, list) or len(data) < 2:
+        return []
+    bucket = data[1]
+    if not isinstance(bucket, list):
+        return []
+    out = []
+    seen = set()
+    for item in bucket:
+        if not isinstance(item, str):
+            continue
+        s = item.strip()
+        if not s:
+            continue
+        low = s.lower()
+        if low in seen:
+            continue
+        seen.add(low)
+        out.append(s)
+    return out
+
+
+def _google_suggest_play(term, hl):
+    """
+    Primary: suggestqueries.google.com. Legacy market.android.com JSON endpoints
+    often return 404 for many queries.
+    """
+    hl_q = urllib.parse.quote(hl)
+    query_variants = (term + " google play", term + " app", term)
+    for client in ("chrome", "firefox"):
+        for qv in query_variants:
+            url = (
+                "https://suggestqueries.google.com/complete/search?client="
+                + client
+                + "&hl="
+                + hl_q
+                + "&q="
+                + urllib.parse.quote(qv)
+            )
+            raw = _get(url)
+            if not raw:
+                continue
             try:
-                data = json.loads(raw)
-                results = [item.get("s", "") for item in data if item.get("s")]
-                if results:
-                    return results
+                data = json.loads(_strip_google_jsonp(raw))
             except (json.JSONDecodeError, TypeError):
                 continue
+            parsed = _parse_google_suggest_json(data)
+            if parsed:
+                log_info(f"Play keyword hints via Google suggest (client={client}) for '{term}'")
+                return parsed[:25]
+    return []
+
+
+def _legacy_market_android_suggest(term, hl):
+    """Deprecated endpoint. Kept as a last-resort fallback."""
+    for url_tpl in (
+        "https://market.android.com/suggest/SuggRequest?json=1&query={q}&hl={hl}",
+        "https://market.android.com/suggest?json=1&c=3&hl={hl}&query={q}",
+    ):
+        url = url_tpl.format(q=urllib.parse.quote(term), hl=hl)
+        raw = _get(url, suppress_http_codes={404, 403})
+        if not raw:
+            continue
+        try:
+            data = json.loads(raw)
+            results = [item.get("s", "") for item in data if isinstance(item, dict) and item.get("s")]
+            if results:
+                return results
+        except (json.JSONDecodeError, TypeError):
+            continue
+    return []
+
+
+def play_autocomplete(term, hl="en"):
+    """Google Play keyword hints: Google suggest first, legacy endpoint last."""
+    key = (term.strip().lower(), hl.strip().lower())
+    if key in _PLAY_AUTOCOMPLETE_CACHE:
+        return list(_PLAY_AUTOCOMPLETE_CACHE[key])
+
+    primary = _google_suggest_play(term, hl)
+    if primary:
+        filtered = []
+        seen = set()
+        for s in primary:
+            low = s.lower()
+            if low in seen:
+                continue
+            seen.add(low)
+            if "app" in low or "play" in low or "game" in low or len(low.split()) >= 2:
+                filtered.append(s)
+        use = filtered if len(filtered) >= 3 else primary
+        _PLAY_AUTOCOMPLETE_CACHE[key] = tuple(use[:20])
+        return use[:20]
+
+    legacy = _legacy_market_android_suggest(term, hl)
+    if legacy:
+        log_info("Legacy market.android.com suggest responded (uncommon)")
+        _PLAY_AUTOCOMPLETE_CACHE[key] = tuple(legacy[:20])
+        return legacy[:20]
+
     log_warn(f"Play Store autocomplete returned no data for '{term}'")
-    log_fix("Both Google Play suggest endpoints failed. This is a known limitation — Apple autocomplete + iTunes Search still work for keyword research.")
+    log_fix(
+        "No Google suggest results for this term/locale. "
+        "Try a shorter seed or another hl= language; Apple + iTunes Search still apply."
+    )
     return []
 
 
@@ -279,8 +428,14 @@ _GP_JSONLD_RE = re.compile(r'<script[^>]*type="application/ld\\+json"[^>]*>(.*?)
 
 def play_store_metadata(package_id, hl="en"):
     """Scrape basic metadata from a Google Play listing page."""
-    url = f"https://play.google.com/store/apps/details?id={urllib.parse.quote(package_id)}&hl={hl}"
-    html = _get(url, timeout=25)
+    page_url = f"https://play.google.com/store/apps/details?id={urllib.parse.quote(package_id)}&hl={hl}"
+    html = _get(page_url, timeout=25, extra_headers=_HEADERS_HTML)
+    if not html:
+        page_url = (
+            f"https://play.google.com/store/apps/details?id={urllib.parse.quote(package_id)}"
+            f"&hl={urllib.parse.quote(hl)}&gl=us"
+        )
+        html = _get(page_url, timeout=25, extra_headers=_HEADERS_HTML)
     if not html:
         log_error(f"Could not fetch Google Play page for {package_id}")
         log_fix(f"Verify the package ID. Find it in the Play Store URL: play.google.com/store/apps/details?id=<PACKAGE_ID>")
@@ -327,7 +482,7 @@ def play_store_metadata(package_id, hl="en"):
         "title": title,
         "description": desc_clean[:4000],
         "rating": rating,
-        "url": url,
+        "url": page_url,
     }
 
 

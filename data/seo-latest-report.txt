@@ -1,15 +1,13 @@
-CATCH-UP REPORT — 2026-03-31
-Stale items fixed: 1
-Tasks run: directories monthly anomalies serp reddit
-Seasonal: Tax filing deadline, Ramadan tools, spring cleaning, Eid prep
+NIGHTLY BUILD REPORT — 2026-04-01 15:28
+Status: PARTIAL
+Repo dirty at start: yes
+New tools built: 0
+Total commits: 0
 ---
-SCRIPT HEALTH: OK
-
+SCRIPT HEALTH:
+  Skipped phases (3):
+  - git pull (repo dirty at start or github.com unavailable)
+  - Claude build (repo dirty at start)
+  - auto-fix commit and push (protecting existing local work)
 ---
-SUGGESTED NEXT ACTIONS:
-  1. python3 scripts/build-backlinks.py submit     # Submit to 5 directories (38 pending)
-  2. python3 scripts/build-content-ideas.py --trending  # See what to build
-  3. python3 scripts/build-rank-tracker.py movers  # Check biggest rank changes
-  4. python3 scripts/build-content-ideas.py --seasonal  # Seasonal tool ideas
-  5. python3 scripts/build-reddit-scanner.py --report  # Unlinked brand mentions
-  6. python3 scripts/build-competitor-gaps.py          # Keyword gap analysis
+If script health is not OK, review logs/nightly-build.log before the next automated run.

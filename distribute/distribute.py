@@ -58,7 +58,13 @@ else:
     _load_env(HOST_PROJECT_ROOT / ".teamz-automation.env")
     _load_env(AUTOMATION_ROOT / ".teamz-automation.env")
 
-CONFIG_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_CONFIG", str(SCRIPT_DIR / "config.json")))
+# Config lookup order: env var → local project → shared ~/.config/teamzlab/
+_config_candidates = [
+    os.getenv("TEAMZ_DISTRIBUTE_CONFIG", ""),
+    str(SCRIPT_DIR / "config.json"),
+    os.path.expanduser("~/.config/teamzlab/distribute-config.json"),
+]
+CONFIG_FILE = Path(next((c for c in _config_candidates if c and Path(c).exists()), _config_candidates[1]))
 HISTORY_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_HISTORY", str(SCRIPT_DIR / "history.json")))
 EXAMPLE_CONFIG = Path(os.getenv("TEAMZ_DISTRIBUTE_EXAMPLE_CONFIG", str(SCRIPT_DIR / "config.example.json")))
 ARTICLES_DIR = Path(os.getenv("TEAMZ_DISTRIBUTE_ARTICLES_DIR", str(SCRIPT_DIR / "articles")))
@@ -462,15 +468,25 @@ def post_blogger(config, title, body, tags, canonical_url):
 
 
 def post_wordpress(config, title, body, tags, canonical_url):
-    """Post article to WordPress.com via REST API (OAuth2)."""
+    """Post article to WordPress.com via REST API (OAuth2 or Basic Auth with app password)."""
     cfg = config["wordpress"]
     if not cfg.get("enabled"):
         return None, "Platform disabled in config"
 
-    # Check for OAuth2 access token (from wordpress-auth.py)
+    # Auth: OAuth2 access_token OR Basic Auth with username + app_password
     access_token = cfg.get("access_token", "")
-    if not access_token:
-        return None, "No access_token. Run: python3 scripts/distribute/wordpress-auth.py CLIENT_ID CLIENT_SECRET"
+    username = cfg.get("username", "")
+    app_password = cfg.get("app_password", "")
+
+    if not access_token and not (username and app_password):
+        return None, "No credentials. Set access_token (OAuth2) or username + app_password (Basic Auth)"
+
+    if access_token:
+        auth_header = f"Bearer {access_token}"
+    else:
+        import base64
+        creds = base64.b64encode(f"{username}:{app_password}".encode()).decode()
+        auth_header = f"Basic {creds}"
 
     post_data = {
         "title": title,
@@ -485,7 +501,7 @@ def post_wordpress(config, title, body, tags, canonical_url):
     status, resp = api_request(
         f"https://public-api.wordpress.com/rest/v1.1/sites/{site}/posts/new",
         data=post_data,
-        headers={"Authorization": f"Bearer {access_token}"}
+        headers={"Authorization": auth_header}
     )
 
     if status in (200, 201):
@@ -1653,6 +1669,7 @@ def cmd_post(title, filepath, platforms):
         "substack": post_substack,
         "telegraph": post_telegraph,
         "google_sites": post_google_sites,
+        "pinterest": post_pinterest,
     }
 
     results = {}

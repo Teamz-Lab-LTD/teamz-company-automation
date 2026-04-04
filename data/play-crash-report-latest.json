@@ -1,0 +1,33 @@
+{
+  "packageName": "com.teamz.lab.debugger",
+  "metricSet": "crashRate",
+  "query": {
+    "timelineSpec": {
+      "aggregationPeriod": "DAILY",
+      "startTime": {
+        "year": 2026,
+        "month": 3,
+        "day": 27,
+        "timeZone": {
+          "id": "America/Los_Angeles"
+        }
+      },
+      "endTime": {
+        "year": 2026,
+        "month": 4,
+        "day": 2,
+        "timeZone": {
+          "id": "America/Los_Angeles"
+        }
+      }
+    },
+    "metrics": [
+      "crashRate",
+      "userPerceivedCrashRate",
+      "distinctUsers"
+    ],
+    "dimensions": [],
+    "pageSize": 100
+  },
+  "response": {}
+}

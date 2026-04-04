@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "updated": "2026-04-05",
+    "notes": "Lead copy informed by Google Autocomplete seeds (ecommerce website development cost/services, ecommerce development company, hire ecommerce developer, Shopify migration services, Shopify development services, WooCommerce custom development, headless commerce development, multi vendor marketplace, online store development, ecommerce website design, custom ecommerce solutions) + commercial SERP intent. GSC data file (ecommerce-gsc-keywords-latest.json) was empty at time of writing — run build-keyword-intel.py --page ecommerce-development --export json to populate."
+  },
+  "leadSections": [
+    {
+      "title": "Ecommerce website development services — scope, cost, and proof",
+      "body": "People searching ecommerce website development services or ecommerce website development cost usually want two things: a clear idea of investment, and proof the team can ship. We publish reference starting prices ($290 starter storefront, $490 standard store, $990 multi-vendor marketplace) and link live, shopper-facing demo stores on this page so you can judge UX before a single call. As an ecommerce development company we deliver end-to-end: catalog, cart, checkout, payments (Stripe, PayPal, local methods), tax and shipping rules, inventory, orders, customer accounts, and admin tooling. Teamz Lab is UK-registered and works remote-first with founders and operators worldwide."
+    },
+    {
+      "title": "Hire ecommerce developers who ship stores — not only themes",
+      "body": "Search patterns around hire ecommerce developer, hire ecommerce web developers, and hire dedicated ecommerce developers reflect the same pain: you need someone who understands checkout, catalog data, webhooks, refunds, and performance — not just a pretty homepage. We operate as a product-focused ecommerce development agency: solution design, implementation, QA, and handover. You can engage us for a fixed storefront build, a platform migration, or ongoing development. Where it helps, we use AI-accelerated delivery for speed; humans own architecture, ecommerce website design, and production readiness."
+    },
+    {
+      "title": "Shopify development services — builds, migrations, and replatforming",
+      "body": "Our Shopify development services cover two tracks: new Shopify and Shopify Plus builds, and migration from other platforms. Migration demand is heavily path-specific — WooCommerce to Shopify, Magento to Shopify, Wix to Shopify, Squarespace to Shopify, Webflow to Shopify, and BigCommerce to Shopify. Brands outgrow DIY builders or legacy WordPress stacks and need clean data migration, URL redirects, collection and metafield mapping, app rationalisation, and SEO preservation. We also build new Shopify stores from scratch: theme customisation, custom Liquid sections, app integrations, and checkout extensibility. We plan the cutover or launch, test checkout and webhooks, and monitor Core Web Vitals afterwards so you do not trade platforms for a ranking collapse."
+    },
+    {
+      "title": "WooCommerce custom development — themes, plugins, and complex catalogs",
+      "body": "Queries such as WooCommerce custom plugin development, WooCommerce custom theme development, and custom WooCommerce development services usually mean WordPress is staying — but the default theme or plugin stack is not enough. We build custom WooCommerce experiences: bespoke themes, checkout customisation, subscription or membership flows, B2B price lists, ERP and fulfilment integrations, and performance tuning for large SKU counts. When WordPress is the wrong long-term home, we can instead plan a migration to Shopify or a headless stack; we recommend based on operations, not ideology."
+    },
+    {
+      "title": "Headless commerce development — composable backends and fast storefronts",
+      "body": "Headless commerce development services and what is headless commerce show up together in discovery: buyers are either learning the model or already committed. Headless separates the commerce engine (cart, payments, inventory APIs) from the storefront (often Next.js or similar) so marketing can iterate fast without replatforming the whole stack. We implement headless and composable setups with backends such as Medusa, Saleor, or custom APIs, plus storefronts optimised for LCP and SEO. Choose headless when you need omnichannel, heavy personalisation, or a mobile app sharing the same commerce APIs — not when a tight Shopify theme would ship faster."
+    },
+    {
+      "title": "Multi-vendor marketplace — build, platform choice, and operator workflows",
+      "body": "Search demand clusters on build a multi vendor marketplace, create a multi vendor marketplace website, multi vendor marketplace platform, multi vendor marketplace Shopify, and multi vendor e commerce marketplace. That maps to different builds: Shopify-style marketplaces with vendor apps and constraints, WordPress/WooCommerce multi-vendor plugins, or fully custom commission, payout, and dispute logic. Our $990 reference demo shows marketplace-style shopping on the customer side; production work adds vendor onboarding, dashboards, policies, and payout rules. We design for fraud and support load early — marketplaces fail when operations are an afterthought."
+    },
+    {
+      "title": "Online store development, mobile commerce, and ecommerce SEO",
+      "body": "Whether you need a custom online store built from scratch or improvements to an existing ecommerce website design, our process starts with how your customers actually buy. Ecommerce SEO in 2026 is not only blog posts — it is clean faceted navigation, stable product URLs, structured data where honest, fast mobile checkout, and measuring drop-off by step. For mobile-first brands we develop responsive storefronts and progressive web apps that perform on every device. We align PDP templates, cart, and payment flows with Core Web Vitals discipline and analytics events you can act on, so improvements target real abandonment causes — not guesses. If you are comparing ecommerce website development companies, ask how they measure post-launch revenue impact, not only launch dates."
+    }
+  ],
+  "faqExtras": [
+    {
+      "q": "What does ecommerce website development cost in practice?",
+      "a": "Our public reference tiers start at $290 (starter), $490 (standard), and $990 (multi-vendor demo) — each with a live storefront you can browse. Custom catalogs, integrations, B2B rules, marketplace payouts, or ERP sync are quoted after discovery. Monthly design + build + QA packages typically run about $1,000–$3,000+ depending on velocity. We prefer transparent scoping over surprise invoices."
+    },
+    {
+      "q": "Do you offer Shopify migration services from WooCommerce or other platforms?",
+      "a": "Yes. Common Shopify migration paths include WooCommerce, Wix, Squarespace, Webflow, Magento, and BigCommerce into Shopify or Shopify Plus. We migrate products, customers where allowed, URL redirects, and SEO-critical pages, then validate checkout, taxes, shipping, and apps before cutover."
+    },
+    {
+      "q": "Can you do custom WooCommerce plugin or theme development?",
+      "a": "Yes. We build custom WooCommerce plugins and themes when WordPress remains your operational hub — checkout extensions, integrations, performance work, and complex catalog rules. If WooCommerce is holding you back, we also plan migrations to Shopify or headless architectures."
+    },
+    {
+      "q": "When should I choose headless commerce development?",
+      "a": "Choose headless when you need API-first commerce shared across web, mobile, and partners; heavy customisation beyond what Shopify themes comfortably allow; or a composable roadmap with a dedicated frontend team. Stay on Shopify or WooCommerce when time-to-market and total cost of ownership matter more than maximum flexibility."
+    },
+    {
+      "q": "How do you approach building a multi-vendor marketplace?",
+      "a": "We clarify vendor onboarding, commissions, refunds, payouts, fraud rules, and support workflows before we write code. The demo on this page illustrates shopper experience; production adds operator and vendor tooling, policies, and often custom admin. Platform choice (Shopify apps vs WooCommerce vs custom) follows your constraints — not the reverse."
+    },
+    {
+      "q": "How do I validate Teamz Lab before a large ecommerce project?",
+      "a": "Use the live demo store links on this page, review our public apps (DeviceGPT, No Trace Chat) and Upwork agency history, then book a call for admin and integration depth. We are not an anonymous drop-service — we ship products you can verify."
+    },
+    {
+      "q": "Are you an ecommerce development company or freelancers?",
+      "a": "Teamz Lab is a UK-registered ecommerce development agency — not a single freelancer. We field designers, developers, and QA as a coordinated product team. You get agency accountability with the direct communication of a small studio. Check our Upwork agency profile and live demos for proof of delivery."
+    },
+    {
+      "q": "Do you offer Shopify development services beyond migration?",
+      "a": "Yes. Our Shopify development services include new store builds, theme customisation, custom Liquid sections, app development and integration, checkout extensibility (Shopify Plus), and ongoing optimisation. Migration is one track — greenfield Shopify builds are equally common."
+    },
+    {
+      "q": "Can you build a custom online store without Shopify or WooCommerce?",
+      "a": "Yes. We build custom ecommerce solutions on headless backends (Medusa, Saleor, bespoke APIs) with modern frontend frameworks. This path suits brands that need full control over UX, data, and integrations beyond what hosted platforms offer. We advise on build-vs-platform trade-offs during discovery."
+    },
+    {
+      "q": "Do you handle ecommerce website design or only development?",
+      "a": "Both. Ecommerce website design — UI/UX for product pages, collections, checkout flows, and responsive layouts — is part of every engagement unless you bring your own designs. Our designers work in Figma; you approve before we build."
+    }
+  ]
+}

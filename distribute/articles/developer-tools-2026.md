@@ -2,6 +2,7 @@
 slug: developer-tools-no-install-2026
 tags: webdev, tools, productivity, javascript, devtools
 canonical_url: https://tool.teamzlab.com/dev/
+og_image: https://tool.teamzlab.com/og-images/dev.png
 ---
 
 I built a collection of browser-based developer tools that need zero installation. No npm, no Docker, no extensions — just open and use.

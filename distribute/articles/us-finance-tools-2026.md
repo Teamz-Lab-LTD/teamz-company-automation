@@ -2,6 +2,7 @@
 slug: us-finance-tools-2026
 tags: finance, tax, calculator, tools, free
 canonical_url: https://tool.teamzlab.com/us/
+og_image: https://tool.teamzlab.com/og-images/us.png
 ---
 
 2026 brought a wave of financial changes in the US — new tax law (OBBBA), student loan plan switch (SAVE to RAP), the ACA subsidy cliff returning, and updated 401k/SS limits.

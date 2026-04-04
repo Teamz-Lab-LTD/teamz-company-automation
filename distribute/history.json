@@ -3712,7 +3712,48 @@
       "title": "How to Detect Keyloggers & Spyware on Android Without Root (Free)",
       "hash": "c5d66d96c941cfef",
       "created": "2026-04-04T13:24:37.293454+00:00",
-      "platforms": {},
+      "platforms": {
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/how-to-detect-keyloggers-spyware-on-android-without-root-free",
+          "posted_at": "2026-04-04T13:57:42.228673+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/how-to-detect-keyloggers-spyware-on.html",
+          "posted_at": "2026-04-04T13:57:47.219695+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/how-to-detect-keyloggers-spyware-on-android-without-root-free/",
+          "posted_at": "2026-04-04T13:57:57.766369+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/812972590421409792",
+          "posted_at": "2026-04-04T13:57:59.756172+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3miofdacxfz2q",
+          "posted_at": "2026-04-04T13:58:01.891484+00:00",
+          "status": "published"
+        },
+        "github_discussions": {
+          "url": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/84",
+          "posted_at": "2026-04-04T13:58:04.033529+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-193165453",
+          "posted_at": "2026-04-04T13:58:09.599856+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/How-to-Detect-Keyloggers--Spyware-on-Android-Without-Root-Free-04-04",
+          "posted_at": "2026-04-04T13:58:10.321027+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-01-spyware-keylogger-detection.md",
         "priority": "high",

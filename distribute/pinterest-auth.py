@@ -149,7 +149,7 @@ def main():
         print("  ERROR: redirect_uri must include a port, e.g. http://localhost:8085/")
         sys.exit(1)
 
-    scopes = "pins:write,boards:read,user_accounts:read"
+    scopes = "pins:write,pins:read,boards:read,boards:write,user_accounts:read"
     oauth_state = secrets.token_hex(16)
     r_uri_enc = urllib.parse.quote(redirect_uri, safe="")
     auth_url = (

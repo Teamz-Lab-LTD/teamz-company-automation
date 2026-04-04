@@ -2,6 +2,7 @@
 slug: free-health-calculators-no-signup
 tags: health, wellness, fitness, tools, free
 canonical_url: https://tool.teamzlab.com/health/
+og_image: https://tool.teamzlab.com/og-images/health.png
 ---
 
 Most health calculator sites want your email before showing results. I made 80+ health and wellness tools that work instantly — no signup, no data collection, everything runs in your browser.

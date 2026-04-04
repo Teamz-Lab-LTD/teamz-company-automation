@@ -52,6 +52,7 @@ done
 
 # Tool pages — exclude static pages, root index.html, docs, node_modules
 find "$BASE" -path "*/*/index.html" \
+  -not -path "*/.claude/*" -not -path "*/.claude-memory/*" \
   -not -path "*/about/*" -not -path "*/contact/*" \
   -not -path "*/privacy/*" -not -path "*/terms/*" \
   -not -path "*/docs/*" -not -path "*/node_modules/*" \

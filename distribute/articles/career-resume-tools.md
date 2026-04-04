@@ -2,6 +2,7 @@
 slug: free-resume-career-tools-2026
 tags: career, resume, jobs, productivity, tools
 canonical_url: https://tool.teamzlab.com/career/
+og_image: https://tool.teamzlab.com/og-images/career.png
 ---
 
 Job hunting is stressful enough without paying for resume tools, typing practice, or GPA converters. Here are free ones that run in your browser — no signup, no uploads, your resume never leaves your device.

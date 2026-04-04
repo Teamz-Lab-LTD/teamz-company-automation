@@ -2,6 +2,7 @@
 slug: 20-free-browser-tools-that-replace-paid-software
 tags: webdev, tools, productivity, free, opensource, pdf, seo, freelance
 canonical_url: https://tool.teamzlab.com/
+og_image: https://tool.teamzlab.com/og-images/tools.png
 ---
 
 I built 20 free browser tools that replace software people pay $10-99/month for. Everything runs client-side — your files never leave your device.

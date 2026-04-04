@@ -86,24 +86,29 @@ ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr"
 QUEUE_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_QUEUE", str(SCRIPT_DIR / "queue.json")))
 
 # ─── Platform Safety Limits ───────────────────────────────────────────────────
-# Posting more than these limits risks account suspension.
-# "daily" = max posts per calendar day, "min_gap_hours" = minimum hours between posts,
-# "weekly" = soft weekly cap (warning only), "queue_mode" = auto-queue instead of post
+# HARD LIMITS — exceeding these got Tumblr + Mastodon accounts banned.
+# ALL platforms now use queue_mode=True: if limit hit, auto-queue for later.
+# NEVER post if unsafe. Better to queue and post tomorrow than lose an account.
+#
+# "daily" = max posts per calendar day
+# "min_gap_hours" = minimum hours between posts on same platform
+# "weekly" = HARD weekly cap (auto-queue if exceeded)
+# "queue_mode" = True = auto-queue when blocked (ALL platforms now True)
 PLATFORM_LIMITS = {
-    "tumblr":     {"daily": 2, "min_gap_hours": 4, "weekly": 10, "queue_mode": True},
-    "bluesky":    {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
-    "mastodon":   {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
-    "devto":      {"daily": 3, "min_gap_hours": 2, "weekly": 15, "queue_mode": False},
-    "hashnode":   {"daily": 3, "min_gap_hours": 2, "weekly": 15, "queue_mode": False},
-    "blogger":    {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
-    "wordpress":  {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
-    "pinterest":  {"daily": 10, "min_gap_hours": 0.5, "weekly": 50, "queue_mode": False},
-    "medium":     {"daily": 3, "min_gap_hours": 2, "weekly": 15, "queue_mode": False},
-    "substack":   {"daily": 2, "min_gap_hours": 4, "weekly": 7, "queue_mode": False},
-    "telegraph":  {"daily": 10, "min_gap_hours": 0, "weekly": 50, "queue_mode": False},
-    "github_discussions": {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
-    "gitlab":     {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
-    "google_sites": {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
+    "tumblr":     {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
+    "bluesky":    {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
+    "mastodon":   {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
+    "devto":      {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
+    "hashnode":   {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
+    "blogger":    {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
+    "wordpress":  {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
+    "pinterest":  {"daily": 3, "min_gap_hours": 2, "weekly": 15, "queue_mode": True},
+    "medium":     {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
+    "substack":   {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
+    "telegraph":  {"daily": 3, "min_gap_hours": 2, "weekly": 20, "queue_mode": True},
+    "github_discussions": {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
+    "gitlab":     {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
+    "google_sites": {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
 }
 
 # Localized footer text — article language should match tool language
@@ -267,14 +272,19 @@ def check_safety(history, platform):
         except (ValueError, TypeError):
             pass
 
-    # Check weekly soft limit (warning but allow)
+    # Check weekly HARD limit — this got Tumblr + Mastodon banned. NEVER exceed.
     if week_count >= weekly_limit:
-        return True, f"WARNING: Weekly limit reached ({week_count}/{weekly_limit} this week) — slow down!", "post"
+        return False, f"Weekly limit reached ({week_count}/{weekly_limit} this week) — BLOCKED to protect account", "queue"
 
-    # Near daily limit — warn
+    # Near daily limit — warn but allow the last one
     if today_count >= daily_limit - 1:
         remaining = daily_limit - today_count
         return True, f"Last post allowed today ({today_count}/{daily_limit} used, {remaining} left)", "post"
+
+    # Near weekly limit — warn
+    if week_count >= weekly_limit - 2:
+        remaining = weekly_limit - week_count
+        return True, f"Almost at weekly limit ({week_count}/{weekly_limit}, {remaining} left this week)", "post"
 
     return True, "", "post"
 

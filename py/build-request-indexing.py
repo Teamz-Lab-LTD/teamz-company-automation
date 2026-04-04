@@ -29,9 +29,12 @@ _CFG = load_runtime(__file__)
 
 SITE_URL_SC = _CFG["site_property"]  # Search Console property format (trailing slash required)
 SITE_URL = SITE_URL_SC.rstrip("/")
+_GOOGLE_PROJECT = (_CFG.get("google_project") or "").strip()
 SC_TOKEN_FILE = str(_CFG["sc_token_file"])
 INDEXNOW_KEY = os.getenv("TEAMZ_INDEXNOW_KEY", "teamzlab-indexnow-key")
-SITEMAP_URL = f'{SITE_URL}/sitemap.xml'
+# Astro default is sitemap-index.xml; this repo also copies sitemap-0 → repo-root sitemap.xml after build.
+_sitemap_rel = os.getenv("TEAMZ_SITEMAP_PATH", "sitemap-index.xml").strip().lstrip("/")
+SITEMAP_URL = f"{SITE_URL}/{_sitemap_rel}"
 
 # SSL context
 ctx = ssl.create_default_context()
@@ -161,15 +164,17 @@ def inspect_url(token, url):
         'inspectionUrl': url,
         'siteUrl': SITE_URL_SC
     }).encode()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+        'User-Agent': 'TeamzLab/1.0',
+    }
+    if _GOOGLE_PROJECT:
+        headers['x-goog-user-project'] = _GOOGLE_PROJECT
     req = urllib.request.Request(
         'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect',
         data=body,
-        headers={
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
-            'x-goog-user-project': 'teamzlab-tools',
-            'User-Agent': 'TeamzLab/1.0'
-        }
+        headers=headers,
     )
     try:
         with urllib.request.urlopen(req, context=ctx, timeout=15) as r:
@@ -191,9 +196,10 @@ def submit_indexnow(urls):
     print('  INDEXNOW — Bing, DuckDuckGo, Yandex, Seznam')
     print('=' * 66)
 
+    _host = urllib.parse.urlparse(SITE_URL).hostname or "localhost"
     # IndexNow accepts batch of up to 10,000 URLs
     body = json.dumps({
-        'host': 'tool.teamzlab.com',
+        'host': _host,
         'key': INDEXNOW_KEY,
         'keyLocation': f'{SITE_URL}/{INDEXNOW_KEY}.txt',
         'urlList': urls

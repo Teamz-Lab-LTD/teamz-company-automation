@@ -35,6 +35,33 @@
       "score": 31,
       "rating": 4.4,
       "reviews": 0
+    },
+    {
+      "date": "2026-04-04",
+      "app_id": "com.teamz.lab.debugger",
+      "platform": "android",
+      "title": "DeviceGPT: AI Phone Health - Apps on Google Play",
+      "score": 39,
+      "rating": 4.8,
+      "reviews": 0
+    },
+    {
+      "date": "2026-04-04",
+      "app_id": "com.teamzlab.no_trace_code_chat",
+      "platform": "android",
+      "title": "No Trace Chat - Apps on Google Play",
+      "score": 46,
+      "rating": 5.0,
+      "reviews": 0
+    },
+    {
+      "date": "2026-04-04",
+      "app_id": "org.thoughtcrime.securesms",
+      "platform": "android",
+      "title": "Signal Private Messenger - Apps on Google Play",
+      "score": 38,
+      "rating": 4.2,
+      "reviews": 0
     }
   ]
 }

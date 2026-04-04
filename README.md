@@ -53,6 +53,8 @@ Scripts load config in this order (later overrides earlier):
 | `TEAMZ_HOST_SITE_ROOT` | `/path/to/project` | Auto-detected |
 | `TEAMZ_GOOGLE_CLOUD_PROJECT` | `my-gcp-project` | For GSC/GA4 |
 | `TEAMZ_SC_TOKEN_FILE` | `~/.config/teamzlab/search-console-token.json` | For GSC scripts |
+| `TEAMZ_PLAY_SERVICE_ACCOUNT_JSON` | path to Play SA key JSON | For `build-play-console.py` |
+| `TEAMZ_PLAY_PACKAGE_NAME` | `com.example.app` | Android applicationId |
 | `TEAMZ_GA4_PROPERTY_ID` | `528521795` | For GA4 scripts |
 
 `TEAMZ_PROJECT_TYPE=app` makes website-only scripts exit with code `2` (not an error).
@@ -73,6 +75,7 @@ Scripts load config in this order (later overrides earlier):
 | `py/build-analytics-auth.py` | OAuth setup for GA4 |
 | `py/build-adsense-auth.py` | OAuth setup for AdSense |
 | `py/build-keyword-planner-auth.py` | OAuth setup for Google Ads |
+| `py/build-play-console.py` | Play crash metrics + pull/push store listing (service account) |
 
 ### SEO & keyword tools
 
@@ -178,6 +181,26 @@ Scripts load config in this order (later overrides earlier):
 
 Uses free public APIs only (iTunes Search, Apple/Play autocomplete, iTunes RSS reviews). No paid keys. Config: `TEAMZ_APP_IDS`, `TEAMZ_ASO_COUNTRIES`, `TEAMZ_ASO_KEYWORDS`.
 
+### Google Play Console (service account, `py/build-play-console.py`)
+
+Private Play data and **publishing** store listings require a **service account** linked in Play Console (not OAuth like Search Console). The GCP project can differ from Firebase / `TEAMZ_GOOGLE_CLOUD_PROJECT`.
+
+| Step | Action |
+|------|--------|
+| 1 | In your **Play-API** GCP project: create a service account → **Keys** → JSON; enable **Google Play Android Developer API** and **Play Developer Reporting API**. |
+| 2 | **Play Console** → **Users and permissions** → invite the service account email. Grant **View app information** (reporting) and **Manage store presence** (title/descriptions/video). |
+| 3 | Set `TEAMZ_PLAY_SERVICE_ACCOUNT_JSON` and `TEAMZ_PLAY_PACKAGE_NAME` in `.teamz-automation.env`. |
+| 4 | `pip3 install google-api-python-client google-auth` |
+
+| Command | Purpose |
+|---------|---------|
+| `python3 scripts/build-play-console.py report --days 7 --out data/play-crash.json` | Crash-rate metrics (Reporting API; end date lags ~2d — override with `TEAMZ_PLAY_REPORTING_LAG_DAYS`) |
+| `python3 scripts/build-play-console.py listing-pull --language en-US` | Export listing JSON (edit draft → read → discard) |
+| `python3 scripts/build-play-console.py listing-push --file listing.json` | Validate merged listing, **discard** draft |
+| `python3 scripts/build-play-console.py listing-push --file listing.json --commit` | **Publish** listing changes (live) |
+
+Pair **listing-pull** / **listing-push** with `py/aso/` research; keep the JSON in version control only if it contains no secrets.
+
 ### ASO reliability notes (production)
 
 - `market.android.com` suggest endpoints are legacy and can return frequent `404`; ASO now treats them as **last-resort** only.
@@ -209,6 +232,7 @@ When working on a project that uses this submodule, run scripts via the `scripts
 
 ```bash
 python3 scripts/build-keyword-intel.py --opportunities
+python3 scripts/build-play-console.py listing-pull --language en-US
 python3 scripts/build-rank-tracker.py report
 ./scripts/build-seo-dashboard.sh --quick
 ./scripts/build.sh

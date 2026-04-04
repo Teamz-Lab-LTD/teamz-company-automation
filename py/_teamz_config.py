@@ -3,7 +3,13 @@ import os
 from pathlib import Path
 
 
-def _load_env_file(path: Path) -> None:
+def _optional_path(raw: str):
+    if not raw:
+        return None
+    return Path(os.path.expandvars(os.path.expanduser(raw))).resolve()
+
+
+def _load_env_file(path: Path, *, override: bool = False) -> None:
     if not path.exists():
         return
     for raw_line in path.read_text().splitlines():
@@ -13,7 +19,11 @@ def _load_env_file(path: Path) -> None:
         k, v = line.split("=", 1)
         k = k.strip()
         v = v.strip().strip('"').strip("'")
-        if k and k not in os.environ:
+        # Match shell `source`: expand $HOME and other env refs in .env values.
+        v = os.path.expandvars(os.path.expanduser(v))
+        if not k:
+            continue
+        if override or k not in os.environ:
             os.environ[k] = v
 
 
@@ -28,17 +38,28 @@ def load_runtime(script_file: str) -> dict:
 
     explicit_env = os.getenv("TEAMZ_AUTOMATION_ENV")
     if explicit_env:
-        _load_env_file(Path(explicit_env))
+        _load_env_file(Path(explicit_env), override=True)
     else:
-        _load_env_file(host_site_root / ".teamz-automation.env")
-        _load_env_file(automation_root / ".teamz-automation.env")
+        # Same as bash `source`: project .env wins over inherited process env.
+        _load_env_file(host_site_root / ".teamz-automation.env", override=True)
+        _load_env_file(automation_root / ".teamz-automation.env", override=True)
 
-    host_site_root = Path(os.getenv("TEAMZ_HOST_SITE_ROOT", str(host_site_root))).expanduser().resolve()
+    host_site_root = Path(
+        os.path.expandvars(os.path.expanduser(os.getenv("TEAMZ_HOST_SITE_ROOT", str(host_site_root))))
+    ).resolve()
     site_url = os.getenv("TEAMZ_SITE_URL", "https://tool.teamzlab.com/").rstrip("/") + "/"
     site_property = os.getenv("TEAMZ_SITE_PROPERTY", site_url).rstrip("/") + "/"
-    config_dir = Path(os.getenv("TEAMZ_CONFIG_DIR", str(Path.home() / ".config" / "teamzlab")))
-    data_dir = Path(os.getenv("TEAMZ_DATA_DIR", str(automation_root / "data")))
-    report_dir = Path(os.getenv("TEAMZ_REPORT_DIR", str(host_site_root / "docs")))
+    config_dir = Path(
+        os.path.expandvars(
+            os.path.expanduser(os.getenv("TEAMZ_CONFIG_DIR", str(Path.home() / ".config" / "teamzlab")))
+        )
+    )
+    data_dir = Path(
+        os.path.expandvars(os.path.expanduser(os.getenv("TEAMZ_DATA_DIR", str(automation_root / "data"))))
+    )
+    report_dir = Path(
+        os.path.expandvars(os.path.expanduser(os.getenv("TEAMZ_REPORT_DIR", str(host_site_root / "docs"))))
+    )
 
     return {
         "automation_root": automation_root,
@@ -50,11 +71,37 @@ def load_runtime(script_file: str) -> dict:
         "data_dir": data_dir,
         "report_dir": report_dir,
         "project_type": os.getenv("TEAMZ_PROJECT_TYPE", "website").strip().lower(),
-        "sc_token_file": Path(os.getenv("TEAMZ_SC_TOKEN_FILE", str(config_dir / "search-console-token.json"))),
-        "ga4_token_file": Path(os.getenv("TEAMZ_GA4_TOKEN_FILE", str(config_dir / "analytics-token.json"))),
-        "adsense_token_file": Path(os.getenv("TEAMZ_ADSENSE_TOKEN_FILE", str(config_dir / "adsense-token.json"))),
-        "pagespeed_key_file": Path(os.getenv("TEAMZ_PAGESPEED_KEY_FILE", str(config_dir / "pagespeed-api-key.txt"))),
-        "clarity_token_file": Path(os.getenv("TEAMZ_CLARITY_TOKEN_FILE", str(config_dir / "clarity-token.txt"))),
+        "sc_token_file": Path(
+            os.path.expandvars(
+                os.path.expanduser(
+                    os.getenv("TEAMZ_SC_TOKEN_FILE", str(config_dir / "search-console-token.json"))
+                )
+            )
+        ),
+        "ga4_token_file": Path(
+            os.path.expandvars(
+                os.path.expanduser(os.getenv("TEAMZ_GA4_TOKEN_FILE", str(config_dir / "analytics-token.json")))
+            )
+        ),
+        "adsense_token_file": Path(
+            os.path.expandvars(
+                os.path.expanduser(os.getenv("TEAMZ_ADSENSE_TOKEN_FILE", str(config_dir / "adsense-token.json")))
+            )
+        ),
+        "pagespeed_key_file": Path(
+            os.path.expandvars(
+                os.path.expanduser(os.getenv("TEAMZ_PAGESPEED_KEY_FILE", str(config_dir / "pagespeed-api-key.txt")))
+            )
+        ),
+        "clarity_token_file": Path(
+            os.path.expandvars(
+                os.path.expanduser(os.getenv("TEAMZ_CLARITY_TOKEN_FILE", str(config_dir / "clarity-token.txt")))
+            )
+        ),
         "ga4_property_id": os.getenv("TEAMZ_GA4_PROPERTY_ID", "528521795"),
+        "play_service_account_json": _optional_path(
+            os.getenv("TEAMZ_PLAY_SERVICE_ACCOUNT_JSON", "").strip()
+        ),
+        "play_package_name": os.getenv("TEAMZ_PLAY_PACKAGE_NAME", "").strip(),
     }
 

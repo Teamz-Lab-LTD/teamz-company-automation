@@ -15,8 +15,8 @@ Usage:
     python3 scripts/build-keyword-intel.py --compare "kw1" "kw2" # Compare keywords via Trends
 
 Data Sources (all FREE):
-    - Google Search Console API (real clicks, impressions, position, CTR)
-    - Google Autocomplete API (keyword suggestions)
+    - Google Search Console API (real clicks, impressions, position, CTR) — used by default modes and --opportunities
+    - Google Suggest (suggestqueries.google.com) — used only by --ideas "keyword" (not by --opportunities)
     - Google Trends (relative volume comparison)
     - Pattern-based intent classification
     - SEO difficulty estimation from position data
@@ -27,6 +27,7 @@ import os
 import sys
 import urllib.request
 import urllib.parse
+import urllib.error
 import ssl
 import csv
 import io
@@ -106,6 +107,33 @@ def refresh_token():
     except Exception as e:
         print(f"  Token refresh failed: {e}")
         return None
+
+
+def get_sc_access_token():
+    """Prefer cached bearer in the token JSON (same as build-search-console.sh); refresh if invalid."""
+    if not TOKEN_FILE.exists():
+        return None
+    try:
+        td = json.loads(TOKEN_FILE.read_text())
+    except Exception:
+        return None
+    token = (td.get("token") or "").strip()
+    if token:
+        req = urllib.request.Request(
+            "https://searchconsole.googleapis.com/webmasters/v3/sites",
+            headers={"Authorization": f"Bearer {token}", "User-Agent": "TeamzLab/1.0"},
+        )
+        if GOOGLE_PROJECT:
+            req.add_header("x-goog-user-project", GOOGLE_PROJECT)
+        try:
+            with urllib.request.urlopen(req, context=CTX, timeout=15) as resp:
+                if resp.status == 200:
+                    return token
+        except urllib.error.HTTPError:
+            pass
+        except Exception:
+            pass
+    return refresh_token()
 
 
 def search_console_query(access_token, start_date, end_date, dimensions=None, row_limit=500, dim_filter=None):
@@ -535,7 +563,7 @@ def main():
 
     # All other commands need Search Console
     print("\n  Connecting to Google Search Console...")
-    access_token = refresh_token()
+    access_token = get_sc_access_token()
     data_source = "Google Search Console (last 90 days) + estimates"
     use_fallback = False
 

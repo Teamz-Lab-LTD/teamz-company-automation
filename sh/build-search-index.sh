@@ -203,3 +203,8 @@ print(f'  llms.txt: {llms_size // 1024}KB, {hubs_count} categories (spec target:
 print(f'  llms-full.txt: {total} tools (full descriptions)')
 " 2>/dev/null
 )
+
+# === Build tools.json for mobile app ===
+echo ""
+echo "=== Building tools.json (mobile app feed) ==="
+python3 "$SCRIPTS/build-tools-json.py" 2>/dev/null

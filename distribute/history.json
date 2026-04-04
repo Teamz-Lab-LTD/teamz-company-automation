@@ -1625,6 +1625,11 @@
           "url": "https://substack.com/home/post/p-193119678",
           "posted_at": "2026-04-03T22:16:52.059793+00:00",
           "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/renovation-costs-are-up-10-this-spring/",
+          "posted_at": "2026-04-03T22:45:18.433313+00:00",
+          "status": "published"
         }
       }
     },
@@ -3206,6 +3211,11 @@
           "url": "https://teamzlab.hashnode.dev/3-free-wifi-iot-tools-every-developer-and-homeowner-needs-1",
           "posted_at": "2026-04-03T22:22:10.097929+00:00",
           "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/3-free-wifi-iot-tools-every-developer-and-homeowner-needs/",
+          "posted_at": "2026-04-03T22:45:31.727331+00:00",
+          "status": "published"
         }
       }
     },
@@ -3254,6 +3264,11 @@
           "url": "https://teamzlab.hashnode.dev/4-gratis-nederlandse-financiele-calculators-2026-btw-vakantiegeld-erfbelasting-pensioen-1",
           "posted_at": "2026-04-03T22:22:22.086828+00:00",
           "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/4-gratis-nederlandse-financiele-calculators-2026-btw-vakantiegeld-erfbelasting-pensioen/",
+          "posted_at": "2026-04-03T22:45:48.189720+00:00",
+          "status": "published"
         }
       }
     },
@@ -3295,7 +3310,13 @@
       "source_file": "scripts/distribute/articles/de-steuerrechner-2026.md",
       "created_at": "2026-04-04T00:00:00Z",
       "status": "queued",
-      "platforms": {}
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/drei-neue-kostenlose-steuerrechner-fur-deutschland-fur-freiberufler-rentner-und-erben-alles-lauf/",
+          "posted_at": "2026-04-03T22:46:35.638272+00:00",
+          "status": "published"
+        }
+      }
     },
     {
       "title": "I built a collection of browser-based developer tools that need zero installation. No npm, no Docker",
@@ -3335,7 +3356,13 @@
       "source_file": "scripts/distribute/articles/ferramentas-financeiras-portugues-2026.md",
       "created_at": "2026-04-04T00:00:00Z",
       "status": "queued",
-      "platforms": {}
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/lancei-11-calculadoras-financeiras-gratuitas-em-portugues-para-trabalhadores-investidores-e-auton/",
+          "posted_at": "2026-04-03T22:47:17.225945+00:00",
+          "status": "published"
+        }
+      }
     },
     {
       "title": "Are your savings actually earning what the bank promised? Most people don't check -- and that's cost",
@@ -3383,7 +3410,13 @@
       "source_file": "scripts/distribute/articles/herramientas-financieras-espanol-2026.md",
       "created_at": "2026-04-04T00:00:00Z",
       "status": "queued",
-      "platforms": {}
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/acabo-de-lanzar-10-calculadoras-financieras-gratuitas-en-espanol-para-autonomos-inversores-y-asal/",
+          "posted_at": "2026-04-03T22:48:05.991948+00:00",
+          "status": "published"
+        }
+      }
     },
     {
       "title": "Every iPhone photo you take is in HEIC format. Try to share it with someone on Windows or upload it ",
@@ -3415,7 +3448,13 @@
       "source_file": "scripts/distribute/articles/points-test-189-calculator-australia.md",
       "created_at": "2026-04-04T00:00:00Z",
       "status": "queued",
-      "platforms": {}
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/free-points-test-189-calculator-australia-check-your-subclass-189-score-2/",
+          "posted_at": "2026-04-03T22:48:53.110507+00:00",
+          "status": "published"
+        }
+      }
     },
     {
       "title": "Writing a research paper is hard enough without fighting with citation formats, outline structures, ",
@@ -3439,7 +3478,13 @@
       "source_file": "scripts/distribute/articles/tier-s-finance-tools-au-nz-sg-ch-2026.md",
       "created_at": "2026-04-04T00:00:00Z",
       "status": "queued",
-      "platforms": {}
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/tax-season-hits-differently-depending-on-where-you-live-i-just-built-16-free-finance-calculators-fo/",
+          "posted_at": "2026-04-03T22:49:17.608439+00:00",
+          "status": "published"
+        }
+      }
     },
     {
       "title": "We just shipped 3 new free tools based on what people are actually searching for. No signups, no tra",
@@ -3455,7 +3500,13 @@
       "source_file": "scripts/distribute/articles/uk-ca-ie-be-nl-finance-tools-2026.md",
       "created_at": "2026-04-04T00:00:00Z",
       "status": "queued",
-      "platforms": {}
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/just-shipped-14-free-finance-calculators-for-the-uk-canada-ireland-belgium-and-the-netherlands/",
+          "posted_at": "2026-04-03T22:49:47.478176+00:00",
+          "status": "published"
+        }
+      }
     },
     {
       "title": "Two new US finance calculators just dropped — both run entirely in your browser with zero data colle",
@@ -3468,7 +3519,7 @@
     {
       "title": "50 Free Browser Tools You Didn't Know Existed (No Signup, No Downloads, 100% Private)",
       "slug": "50-free-tools-you-didnt-know-existed",
-      "source_file": "scripts/distribute/drafts/50-free-tools-you-didnt-know-existed.md",
+      "source_file": "scripts/distribute/articles/50-free-tools-you-didnt-know-existed.md",
       "created_at": "2026-04-04T00:00:00Z",
       "status": "queued",
       "platforms": {}
@@ -3476,10 +3527,313 @@
     {
       "title": "9 Free Tools for Emerging Tech Trends (2026-2027): AI Agents, Post-Quantum, GreenOps & More",
       "slug": "emerging-tech-tools-2026",
-      "source_file": "scripts/distribute/drafts/emerging-tech-tools-2026.md",
+      "source_file": "scripts/distribute/articles/emerging-tech-tools-2026.md",
       "created_at": "2026-04-04T00:00:00Z",
       "status": "queued",
       "platforms": {}
+    },
+    {
+      "slug": "free-amazon-seller-tools-2026",
+      "title": "Amazon sellers keep searching for the same things over and over: \"ACoS calculator\", \"BSR to sales\", ",
+      "hash": "ccd2d918d6797854",
+      "created": "2026-04-03T22:46:00.885908+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/amazon-sellers-keep-searching-for-the-same-things-over-and-over-acos-calculator-bsr-to-sales/",
+          "posted_at": "2026-04-03T22:46:11.373349+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "we-just-launched-40-localized-finance-tools-across-5-european-countries-each-in-",
+      "title": "We just launched 40 localized finance tools across 5 European countries — each in the country's nati",
+      "hash": "ac0f6de2f3127130",
+      "created": "2026-04-03T22:46:53.547242+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/we-just-launched-40-localized-finance-tools-across-5-european-countries-each-in-the-countrys-nati/",
+          "posted_at": "2026-04-03T22:46:58.889032+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "are-your-savings-actually-earning-what-the-bank-promised-most-people-don-t-check",
+      "title": "Are your savings actually earning what the bank promised? Most people don't check -- and that's cost",
+      "hash": "c0811b286b168518",
+      "created": "2026-04-03T22:47:25.510423+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/are-your-savings-actually-earning-what-the-bank-promised-most-people-dont-check-and-thats-cost/",
+          "posted_at": "2026-04-03T22:47:31.450435+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "every-iphone-photo-you-take-is-in-heic-format-try-to-share-it-with-someone-on-wi",
+      "title": "Every iPhone photo you take is in HEIC format. Try to share it with someone on Windows or upload it ",
+      "hash": "94717d967f521127",
+      "created": "2026-04-03T22:48:13.584930+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/every-iphone-photo-you-take-is-in-heic-format-try-to-share-it-with-someone-on-windows-or-upload-it/",
+          "posted_at": "2026-04-03T22:48:19.269376+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "we-just-launched-10-browser-based-photo-and-video-editing-tools-everything-runs-",
+      "title": "We just launched 10 browser-based photo and video editing tools. Everything runs locally in your bro",
+      "hash": "d5e45341d6433ffd",
+      "created": "2026-04-03T22:48:33.224564+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/we-just-launched-10-browser-based-photo-and-video-editing-tools-everything-runs-locally-in-your-bro/",
+          "posted_at": "2026-04-03T22:48:38.664782+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "we-just-shipped-3-new-free-tools-based-on-what-people-are-actually-searching-for",
+      "title": "We just shipped 3 new free tools based on what people are actually searching for. No signups, no tra",
+      "hash": "fea4ee3f97384f57",
+      "created": "2026-04-03T22:49:25.804524+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/we-just-shipped-3-new-free-tools-based-on-what-people-are-actually-searching-for-no-signups-no-tra/",
+          "posted_at": "2026-04-03T22:49:32.393564+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "two-new-us-finance-calculators-just-dropped-both-run-entirely-in-your-browser-wi",
+      "title": "Two new US finance calculators just dropped — both run entirely in your browser with zero data colle",
+      "hash": "ea9a2caef915e235",
+      "created": "2026-04-03T22:49:56.039696+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/two-new-us-finance-calculators-just-dropped-both-run-entirely-in-your-browser-with-zero-data-colle/",
+          "posted_at": "2026-04-03T22:50:01.842296+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "50-free-browser-tools-you-didn-t-know-existed-no-signup-no-downloads-100-private",
+      "title": "50 Free Browser Tools You Didn't Know Existed (No Signup, No Downloads, 100% Private)",
+      "hash": "2ef472b1669b73f7",
+      "created": "2026-04-03T22:50:09.544453+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/50-free-browser-tools-you-didnt-know-existed-no-signup-no-downloads-100-private/",
+          "posted_at": "2026-04-03T22:50:15.664055+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "9-free-tools-for-emerging-tech-trends-2026-2027-ai-agents-post-quantum-greenops-",
+      "title": "9 Free Tools for Emerging Tech Trends (2026-2027): AI Agents, Post-Quantum, GreenOps & More",
+      "hash": "fc70d6c51d0fb60d",
+      "created": "2026-04-03T22:50:23.325935+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/9-free-tools-for-emerging-tech-trends-2026-2027-ai-agents-post-quantum-greenops-more/",
+          "posted_at": "2026-04-03T22:50:29.665212+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "devicegpt-ai-phone-health-battery-privacy-scanner",
+      "title": "Google Just Started Flagging Battery-Draining Apps — Here's How to Check Your Phone's Real Health",
+      "hash": "726fb0b8afbd0407",
+      "created": "2026-04-04T00:04:43.887526+00:00",
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Google-Just-Started-Flagging-Battery-Draining-Apps--Heres-How-to-Check-Your-Phones-Real-Health-04-04",
+          "posted_at": "2026-04-04T00:04:44.761360+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/google-just-started-flagging-battery.html",
+          "posted_at": "2026-04-04T00:04:49.303407+00:00",
+          "status": "published"
+        },
+        "github_discussions": {
+          "url": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/83",
+          "posted_at": "2026-04-04T00:04:50.550599+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/812920174231650304",
+          "posted_at": "2026-04-04T00:04:51.691453+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mimxmquvfv24",
+          "posted_at": "2026-04-04T00:20:09.047327+00:00",
+          "status": "published"
+        },
+        "mastodon": {
+          "url": "https://mastodon.social/@teamzlab/116343571046028131",
+          "posted_at": "2026-04-04T00:20:09.611005+00:00",
+          "status": "published"
+        },
+        "devto": {
+          "url": "https://dev.to/teamzlab/how-to-check-if-your-android-phone-has-spyware-battery-drain-isp-tracking-free-app-no-root-2kjl",
+          "posted_at": "2026-04-04T00:26:18.276153+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/how-to-check-if-your-android-phone-has-spyware-battery-drain-isp-tracking-free-app-no-root",
+          "posted_at": "2026-04-04T00:26:19.571212+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/04/how-to-check-if-your-android-phone-has-spyware-battery-drain-isp-tracking-free-app-no-root/",
+          "posted_at": "2026-04-04T00:26:30.789167+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-193127098",
+          "posted_at": "2026-04-04T00:26:36.605617+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "how-to-detect-keylogger-spyware-android-no-root-free",
+      "title": "How to Detect Keyloggers & Spyware on Android Without Root (Free)",
+      "hash": "c5d66d96c941cfef",
+      "created": "2026-04-04T13:24:37.293454+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-01-spyware-keylogger-detection.md",
+        "priority": "high",
+        "series": "devicegpt-deep-dives",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-04T13:24:37.293651+00:00"
+      }
+    },
+    {
+      "slug": "how-to-check-battery-health-android-samsung-pixel-xiaomi-watts",
+      "title": "How to Check Battery Health on Samsung, Pixel & Xiaomi — Real Power in Watts (Free)",
+      "hash": "fe575bbcfa32300a",
+      "created": "2026-04-04T13:24:49.051103+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-02-battery-health-samsung-pixel.md",
+        "priority": "high",
+        "series": "devicegpt-deep-dives",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-04T13:24:49.051395+00:00"
+      }
+    },
+    {
+      "slug": "is-my-isp-spying-on-me-dns-dpi-ssl-check-android",
+      "title": "Is My ISP Spying on Me? How to Check DNS Manipulation, DPI & SSL Hijacking on Android (Free)",
+      "hash": "120f083aff972779",
+      "created": "2026-04-04T13:24:49.112153+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-03-isp-privacy-check.md",
+        "priority": "high",
+        "series": "devicegpt-deep-dives",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-04T13:24:49.112353+00:00"
+      }
+    },
+    {
+      "slug": "how-to-know-if-someone-is-monitoring-your-phone-android",
+      "title": "How to Know If Someone Is Monitoring Your Phone — 8 Signs & Free Detection App (Android)",
+      "hash": "6d934d7fbf7365a2",
+      "created": "2026-04-04T13:24:49.177251+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-04-phone-monitoring-detection.md",
+        "priority": "high",
+        "series": "devicegpt-deep-dives",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-04T13:24:49.177455+00:00"
+      }
+    },
+    {
+      "slug": "free-phone-resale-value-checker-device-health-certificate-android",
+      "title": "How Much Is My Android Phone Worth? Free Resale Value Checker + Device Health Certificate",
+      "hash": "970adb67fa3bb914",
+      "created": "2026-04-04T13:24:49.237770+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-05-phone-resale-value-certificate.md",
+        "priority": "medium",
+        "series": "devicegpt-deep-dives",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-04T13:24:49.237972+00:00"
+      }
+    },
+    {
+      "slug": "devicegpt-vs-accubattery-vs-cpuz-best-battery-health-app-android-2026",
+      "title": "DeviceGPT vs AccuBattery vs CPU-Z: Best Battery Health App for Android in 2026",
+      "hash": "122b4505b82b478a",
+      "created": "2026-04-04T13:24:49.296694+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-06-vs-accubattery-comparison.md",
+        "priority": "medium",
+        "series": "devicegpt-deep-dives",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-04T13:24:49.296896+00:00"
+      }
+    },
+    {
+      "slug": "is-whatsapp-telegram-blocked-network-reachability-test-android",
+      "title": "Is WhatsApp or Telegram Blocked? How to Test Network Reachability & Internet Censorship on Android (Free)",
+      "hash": "9cb921b32e606d55",
+      "created": "2026-04-04T13:24:49.356473+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-07-blocked-apps-network-reachability.md",
+        "priority": "medium",
+        "series": "devicegpt-deep-dives",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-04T13:24:49.356679+00:00"
+      }
+    },
+    {
+      "slug": "phone-motion-detector-alert-if-someone-touches-locked-phone-android",
+      "title": "Phone Motion Detector: Get an Alert If Someone Touches Your Locked Phone (Android, Free)",
+      "hash": "5eee200d768ccbfe",
+      "created": "2026-04-04T13:24:49.415541+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-08-motion-detector-anti-snoop.md",
+        "priority": "medium",
+        "series": "devicegpt-deep-dives",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-04T13:24:49.415724+00:00"
+      }
     }
   ]
 }

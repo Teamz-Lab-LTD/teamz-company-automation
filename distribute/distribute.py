@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Teamz Lab Tools — Content Distribution Script
-Posts articles to multiple platforms with duplicate detection.
+Posts articles to multiple platforms with duplicate detection and safety rate limits.
 
 Usage:
     python3 scripts/distribute/distribute.py post "Title" content.md [--platforms devto,hashnode,...]
@@ -9,8 +9,20 @@ Usage:
     python3 scripts/distribute/distribute.py delete "slug" [--platforms devto,bluesky,...]
     python3 scripts/distribute/distribute.py list [--platform devto]          # List all posts on a platform
     python3 scripts/distribute/distribute.py status                           # Show posting history
+    python3 scripts/distribute/distribute.py safety                           # Show rate limit dashboard
+    python3 scripts/distribute/distribute.py queue                            # Show queued posts
+    python3 scripts/distribute/distribute.py flush                            # Publish safe queued posts
+    python3 scripts/distribute/distribute.py flush --clear                    # Clear the queue
+    python3 scripts/distribute/distribute.py draft content.md [--priority high] [--series name]  # Register article as draft
+    python3 scripts/distribute/distribute.py drafts                           # List unpublished drafts by priority
+    python3 scripts/distribute/distribute.py next [--count 1]                 # Auto-post next best draft to safe platforms
     python3 scripts/distribute/distribute.py setup                            # Show setup instructions
     python3 scripts/distribute/distribute.py test                             # Test API connections
+
+Safety: Auto rate-limits per platform. Tumblr auto-queues when limit reached (2/day, 4h gap).
+        Run 'safety' to see dashboard. Run 'flush' next day to publish queued posts.
+Draft:  Register articles as drafts with priority. Run 'next' to auto-post the highest
+        priority unposted article to all safe platforms — no arguments needed.
 
 Platforms: devto, hashnode, medium, blogger, wordpress, tumblr, bluesky, mastodon, github_discussions, google_sites, pinterest
 """
@@ -70,6 +82,29 @@ EXAMPLE_CONFIG = Path(os.getenv("TEAMZ_DISTRIBUTE_EXAMPLE_CONFIG", str(SCRIPT_DI
 ARTICLES_DIR = Path(os.getenv("TEAMZ_DISTRIBUTE_ARTICLES_DIR", str(SCRIPT_DIR / "articles")))
 
 ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "github_discussions", "gitlab", "substack", "telegraph", "google_sites", "pinterest"]
+
+QUEUE_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_QUEUE", str(SCRIPT_DIR / "queue.json")))
+
+# ─── Platform Safety Limits ───────────────────────────────────────────────────
+# Posting more than these limits risks account suspension.
+# "daily" = max posts per calendar day, "min_gap_hours" = minimum hours between posts,
+# "weekly" = soft weekly cap (warning only), "queue_mode" = auto-queue instead of post
+PLATFORM_LIMITS = {
+    "tumblr":     {"daily": 2, "min_gap_hours": 4, "weekly": 10, "queue_mode": True},
+    "bluesky":    {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
+    "mastodon":   {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
+    "devto":      {"daily": 3, "min_gap_hours": 2, "weekly": 15, "queue_mode": False},
+    "hashnode":   {"daily": 3, "min_gap_hours": 2, "weekly": 15, "queue_mode": False},
+    "blogger":    {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
+    "wordpress":  {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
+    "pinterest":  {"daily": 10, "min_gap_hours": 0.5, "weekly": 50, "queue_mode": False},
+    "medium":     {"daily": 3, "min_gap_hours": 2, "weekly": 15, "queue_mode": False},
+    "substack":   {"daily": 2, "min_gap_hours": 4, "weekly": 7, "queue_mode": False},
+    "telegraph":  {"daily": 10, "min_gap_hours": 0, "weekly": 50, "queue_mode": False},
+    "github_discussions": {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
+    "gitlab":     {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
+    "google_sites": {"daily": 5, "min_gap_hours": 1, "weekly": 25, "queue_mode": False},
+}
 
 # Localized footer text — article language should match tool language
 LOCALIZED_FOOTERS = {
@@ -131,6 +166,192 @@ def is_duplicate(history, slug, platform):
         if post["slug"] == slug and platform in post.get("platforms", {}):
             return post["platforms"][platform]
     return None
+
+
+# ─── Queue Management ─────────────────────────────────────────────────────────
+
+def load_queue():
+    if not QUEUE_FILE.exists():
+        return {"queued": []}
+    with open(QUEUE_FILE) as f:
+        return json.load(f)
+
+
+def save_queue(queue):
+    with open(QUEUE_FILE, "w") as f:
+        json.dump(queue, f, indent=2, ensure_ascii=False)
+
+
+def queue_post(platform, title, slug, filepath, tags, canonical_url, meta):
+    """Add a post to the queue instead of posting immediately."""
+    queue = load_queue()
+    queue["queued"].append({
+        "platform": platform,
+        "title": title,
+        "slug": slug,
+        "filepath": str(filepath),
+        "tags": tags,
+        "canonical_url": canonical_url,
+        "meta": meta,
+        "queued_at": datetime.now(timezone.utc).isoformat(),
+        "status": "pending"
+    })
+    save_queue(queue)
+
+
+# ─── Safety Rate Limiter ──────────────────────────────────────────────────────
+
+def get_platform_posts_today(history, platform):
+    """Count how many posts were made to a platform today."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    count = 0
+    last_posted_at = None
+    for post in history.get("posts", []):
+        pinfo = post.get("platforms", {}).get(platform, {})
+        posted_at = pinfo.get("posted_at", "")
+        if posted_at[:10] == today and pinfo.get("status") == "published":
+            count += 1
+            if not last_posted_at or posted_at > last_posted_at:
+                last_posted_at = posted_at
+    return count, last_posted_at
+
+
+def get_platform_posts_this_week(history, platform):
+    """Count posts in the last 7 days for a platform."""
+    now = datetime.now(timezone.utc)
+    count = 0
+    for post in history.get("posts", []):
+        pinfo = post.get("platforms", {}).get(platform, {})
+        posted_at = pinfo.get("posted_at", "")
+        if posted_at and pinfo.get("status") == "published":
+            try:
+                post_dt = datetime.fromisoformat(posted_at)
+                if (now - post_dt).days < 7:
+                    count += 1
+            except (ValueError, TypeError):
+                pass
+    return count
+
+
+def check_safety(history, platform):
+    """Check if it's safe to post to a platform.
+    Returns (safe: bool, reason: str, action: str).
+    action is one of: 'post', 'queue', 'block'
+    """
+    limits = PLATFORM_LIMITS.get(platform)
+    if not limits:
+        return True, "", "post"
+
+    today_count, last_posted_at = get_platform_posts_today(history, platform)
+    week_count = get_platform_posts_this_week(history, platform)
+
+    daily_limit = limits["daily"]
+    weekly_limit = limits["weekly"]
+    min_gap = limits["min_gap_hours"]
+    use_queue = limits["queue_mode"]
+
+    # Check daily hard limit
+    if today_count >= daily_limit:
+        action = "queue" if use_queue else "block"
+        return False, f"Daily limit reached ({today_count}/{daily_limit} today)", action
+
+    # Check minimum gap between posts
+    if last_posted_at and min_gap > 0:
+        try:
+            last_dt = datetime.fromisoformat(last_posted_at)
+            hours_since = (datetime.now(timezone.utc) - last_dt).total_seconds() / 3600
+            if hours_since < min_gap:
+                wait_mins = int((min_gap - hours_since) * 60)
+                action = "queue" if use_queue else "block"
+                return False, f"Too soon — last post {hours_since:.1f}h ago, need {min_gap}h gap (wait ~{wait_mins}min)", action
+        except (ValueError, TypeError):
+            pass
+
+    # Check weekly soft limit (warning but allow)
+    if week_count >= weekly_limit:
+        return True, f"WARNING: Weekly limit reached ({week_count}/{weekly_limit} this week) — slow down!", "post"
+
+    # Near daily limit — warn
+    if today_count >= daily_limit - 1:
+        remaining = daily_limit - today_count
+        return True, f"Last post allowed today ({today_count}/{daily_limit} used, {remaining} left)", "post"
+
+    return True, "", "post"
+
+
+def safety_report(history):
+    """Print a full safety dashboard for all platforms."""
+    config = load_config()
+    now = datetime.now(timezone.utc)
+
+    print(f"\n{'=' * 64}")
+    print(f"  DISTRIBUTION SAFETY DASHBOARD — {now.strftime('%Y-%m-%d %H:%M UTC')}")
+    print(f"{'=' * 64}\n")
+    print(f"  {'Platform':<20} {'Today':>7} {'Limit':>7} {'Week':>7} {'WkLim':>7} {'Status':<16}")
+    print(f"  {'─' * 20} {'─' * 7} {'─' * 7} {'─' * 7} {'─' * 7} {'─' * 16}")
+
+    any_warning = False
+    queued_count = 0
+    queue = load_queue()
+    platform_queue = {}
+    for item in queue.get("queued", []):
+        if item.get("status") == "pending":
+            p = item["platform"]
+            platform_queue[p] = platform_queue.get(p, 0) + 1
+            queued_count += 1
+
+    for platform in ALL_PLATFORMS:
+        if platform not in config or not config[platform].get("enabled"):
+            continue
+
+        limits = PLATFORM_LIMITS.get(platform, {})
+        daily_limit = limits.get("daily", "?")
+        weekly_limit = limits.get("weekly", "?")
+
+        today_count, last_posted = get_platform_posts_today(history, platform)
+        week_count = get_platform_posts_this_week(history, platform)
+
+        # Status
+        if isinstance(daily_limit, int) and today_count >= daily_limit:
+            status = "LIMIT REACHED"
+            any_warning = True
+        elif isinstance(weekly_limit, int) and week_count >= weekly_limit:
+            status = "WEEK LIMIT"
+            any_warning = True
+        elif isinstance(daily_limit, int) and today_count >= daily_limit - 1:
+            status = "ALMOST FULL"
+            any_warning = True
+        else:
+            status = "OK"
+
+        q = platform_queue.get(platform, 0)
+        q_str = f" (+{q}Q)" if q > 0 else ""
+
+        print(f"  {platform:<20} {today_count:>7} {str(daily_limit):>7} {week_count:>7} {str(weekly_limit):>7} {status:<16}{q_str}")
+
+    if queued_count > 0:
+        print(f"\n  Queued posts waiting: {queued_count}")
+        print(f"  Run: python3 scripts/distribute/distribute.py flush")
+
+    if any_warning:
+        print(f"\n  TIP: Spread posts across days. Bulk posting = spam flags = account bans.")
+    else:
+        print(f"\n  All platforms safe. You're good to post!")
+
+    print(f"{'=' * 64}\n")
+
+
+def print_safety_warning(platform, reason, action):
+    """Print a clear safety warning."""
+    icon = "QUEUED" if action == "queue" else "BLOCKED"
+    print(f"\n  ╔{'═' * 58}╗")
+    print(f"  ║  SAFETY {icon}: {platform.upper():<43}║")
+    print(f"  ║  {reason:<56}║")
+    if action == "queue":
+        print(f"  ║  Post saved to queue — run 'flush' later to publish.    ║")
+    else:
+        print(f"  ║  Skipping to protect your account from spam flags.      ║")
+    print(f"  ╚{'═' * 58}╝\n")
 
 
 def api_request(url, data=None, headers=None, method=None):
@@ -1691,6 +1912,24 @@ def cmd_post(title, filepath, platforms):
             results[platform] = {"status": "disabled"}
             continue
 
+        # ── Safety rate limit check ──
+        safe, reason, action = check_safety(history, platform)
+        if not safe:
+            if action == "queue":
+                print_safety_warning(platform, reason, action)
+                queue_post(platform, title, slug, filepath, tags, canonical_url, meta)
+                print(f"  [{platform}] QUEUED — will post later via 'flush' command")
+                results[platform] = {"status": "queued", "reason": reason}
+                continue
+            else:
+                print_safety_warning(platform, reason, action)
+                print(f"  [{platform}] BLOCKED — {reason}")
+                results[platform] = {"status": "blocked", "reason": reason}
+                continue
+        elif reason:
+            # Safe but with warning
+            print(f"  [{platform}] {reason}")
+
         print(f"  [{platform}] Posting...", end=" ", flush=True)
         if platform == "pinterest":
             pin_img = (meta.get("pin_image") or meta.get("og_image") or "").strip()
@@ -1721,16 +1960,416 @@ def cmd_post(title, filepath, platforms):
     ok = sum(1 for r in results.values() if r["status"] == "published")
     skip = sum(1 for r in results.values() if r["status"] in ("duplicate", "disabled"))
     fail = sum(1 for r in results.values() if r["status"] == "failed")
-    print(f"  Published: {ok}  |  Skipped: {skip}  |  Failed: {fail}")
+    queued = sum(1 for r in results.values() if r["status"] == "queued")
+    blocked = sum(1 for r in results.values() if r["status"] == "blocked")
+    print(f"  Published: {ok}  |  Queued: {queued}  |  Blocked: {blocked}  |  Skipped: {skip}  |  Failed: {fail}")
     for p, r in results.items():
-        icon = "✓" if r["status"] == "published" else "⊘" if r["status"] == "duplicate" else "—" if r["status"] == "disabled" else "✗"
-        detail = r.get("url", r.get("error", ""))
+        icon = {"published": "✓", "duplicate": "⊘", "disabled": "—", "failed": "✗", "queued": "⏳", "blocked": "🛑"}.get(r["status"], "?")
+        detail = r.get("url", r.get("error", r.get("reason", "")))
         print(f"    {icon} {p}: {detail}")
     print(f"{'=' * 60}\n")
+
+    if queued > 0:
+        print(f"  {queued} post(s) queued. Run later: python3 scripts/distribute/distribute.py flush\n")
+
+    # Auto-show remaining limits after posting
+    history = load_history()  # Reload with fresh data
+    print(f"  ─── Remaining Today ───")
+    for p in platforms:
+        if p in config and config[p].get("enabled"):
+            limits = PLATFORM_LIMITS.get(p, {})
+            daily_limit = limits.get("daily", "?")
+            if isinstance(daily_limit, int):
+                today_count, _ = get_platform_posts_today(history, p)
+                remaining = daily_limit - today_count
+                bar = "█" * today_count + "░" * max(remaining, 0)
+                warn = " ← DONE" if remaining <= 0 else " ← last one!" if remaining == 1 else ""
+                print(f"    {p:<18} [{bar}] {today_count}/{daily_limit}{warn}")
+    print()
 
     # Auto-update GitHub blog README with new article
     if ok > 0:
         update_github_blog_readme(history)
+
+
+# ─── Draft Management ──────────────────────────────────────────────────────────
+
+PRIORITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+
+
+def cmd_draft(filepath, priority="medium", series=None):
+    """Register an article as a draft in history.json for later distribution."""
+    history = load_history()
+
+    if not os.path.exists(filepath):
+        print(f"  ERROR: File not found: {filepath}")
+        sys.exit(1)
+
+    meta, body = read_markdown(filepath)
+    title = meta.get("title", "")
+    if not title:
+        print(f"  ERROR: Article has no title in frontmatter")
+        sys.exit(1)
+
+    slug = meta.get("slug", slugify(title))
+    tags = normalize_tags(meta.get("tags"))
+    canonical_url = meta.get("canonical_url", meta.get("canonical", ""))
+    language = meta.get("language", meta.get("lang", "en"))
+
+    # Check if slug already exists
+    for post in history["posts"]:
+        if post["slug"] == slug:
+            # Update existing entry with draft info
+            post["draft"] = {
+                "filepath": str(Path(filepath).resolve()),
+                "priority": priority.lower(),
+                "series": series or meta.get("series", ""),
+                "aso_keywords": meta.get("aso_keywords", []),
+                "seo_keywords": meta.get("seo_keywords", []),
+                "competition": meta.get("competition", ""),
+                "drafted_at": post.get("draft", {}).get("drafted_at", datetime.now(timezone.utc).isoformat()),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+            post["title"] = title  # Update title if changed
+            save_history(history)
+            print(f"\n  Updated draft: {title}")
+            print(f"  Slug: {slug}  |  Priority: {priority}")
+
+            # Count platforms already posted
+            posted = [p for p in post.get("platforms", {}) if post["platforms"][p].get("status") == "published"]
+            if posted:
+                print(f"  Already posted to: {', '.join(posted)}")
+            else:
+                print(f"  Not posted anywhere yet")
+            print()
+            return
+
+    # Create new entry
+    entry = {
+        "slug": slug,
+        "title": title,
+        "hash": content_hash(title, body),
+        "created": datetime.now(timezone.utc).isoformat(),
+        "platforms": {},
+        "draft": {
+            "filepath": str(Path(filepath).resolve()),
+            "priority": priority.lower(),
+            "series": series or meta.get("series", ""),
+            "aso_keywords": meta.get("aso_keywords", []),
+            "seo_keywords": meta.get("seo_keywords", []),
+            "competition": meta.get("competition", ""),
+            "drafted_at": datetime.now(timezone.utc).isoformat(),
+        }
+    }
+    history["posts"].append(entry)
+    save_history(history)
+
+    print(f"\n  Drafted: {title}")
+    print(f"  Slug: {slug}  |  Priority: {priority}  |  Series: {series or '(none)'}")
+    print(f"  File: {filepath}")
+    print(f"\n  Post with: python3 scripts/distribute/distribute.py next")
+    print()
+
+
+def cmd_drafts():
+    """List all unpublished drafts sorted by priority."""
+    history = load_history()
+    config = load_config()
+
+    # Collect enabled platforms
+    enabled = [p for p in ALL_PLATFORMS if config.get(p, {}).get("enabled")]
+
+    drafts = []
+    for post in history["posts"]:
+        draft = post.get("draft")
+        if not draft:
+            continue
+
+        # Count how many enabled platforms this is posted to
+        posted = [p for p in enabled if p in post.get("platforms", {}) and post["platforms"][p].get("status") == "published"]
+        unposted = [p for p in enabled if p not in post.get("platforms", {})]
+
+        if not unposted:
+            continue  # Fully distributed
+
+        drafts.append({
+            "slug": post["slug"],
+            "title": post["title"],
+            "priority": draft.get("priority", "medium"),
+            "series": draft.get("series", ""),
+            "competition": draft.get("competition", ""),
+            "filepath": draft.get("filepath", ""),
+            "drafted_at": draft.get("drafted_at", "")[:10],
+            "posted_count": len(posted),
+            "unposted_count": len(unposted),
+            "unposted": unposted,
+            "total": len(enabled),
+        })
+
+    if not drafts:
+        print(f"\n  No unpublished drafts. All articles fully distributed!\n")
+        return
+
+    # Sort by priority then by posted count (least posted first)
+    drafts.sort(key=lambda d: (PRIORITY_ORDER.get(d["priority"], 9), d["posted_count"]))
+
+    print(f"\n{'=' * 68}")
+    print(f"  UNPUBLISHED DRAFTS ({len(drafts)} articles need distribution)")
+    print(f"{'=' * 68}\n")
+
+    for i, d in enumerate(drafts, 1):
+        pri_icon = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢"}.get(d["priority"], "⚪")
+        bar = "█" * d["posted_count"] + "░" * d["unposted_count"]
+        series_str = f"  [{d['series']}]" if d["series"] else ""
+        comp_str = f"  Competition: {d['competition']}" if d["competition"] else ""
+
+        print(f"  {i}. {pri_icon} [{d['priority'].upper():<8}] {d['title'][:55]}")
+        print(f"     Slug: {d['slug']}")
+        print(f"     Progress: [{bar}] {d['posted_count']}/{d['total']} platforms{series_str}{comp_str}")
+        print(f"     Remaining: {', '.join(d['unposted'][:6])}{'...' if len(d['unposted']) > 6 else ''}")
+        print()
+
+    print(f"  Auto-post next best: python3 scripts/distribute/distribute.py next")
+    print(f"  Post specific draft:  python3 scripts/distribute/distribute.py next --slug SLUG")
+    print(f"{'=' * 68}\n")
+
+
+def cmd_next(count=1, target_slug=None):
+    """Auto-pick the next best draft and post to all safe platforms."""
+    history = load_history()
+    config = load_config()
+
+    enabled = [p for p in ALL_PLATFORMS if config.get(p, {}).get("enabled")]
+
+    # Find drafts with unposted platforms
+    candidates = []
+    for post in history["posts"]:
+        draft = post.get("draft")
+        if not draft:
+            continue
+
+        filepath = draft.get("filepath", "")
+        if not filepath or not os.path.exists(filepath):
+            continue
+
+        unposted = [p for p in enabled if p not in post.get("platforms", {})]
+        if not unposted:
+            continue
+
+        if target_slug and post["slug"] != target_slug:
+            continue
+
+        candidates.append({
+            "post": post,
+            "draft": draft,
+            "unposted": unposted,
+            "priority": PRIORITY_ORDER.get(draft.get("priority", "medium"), 9),
+            "posted_count": len([p for p in enabled if p in post.get("platforms", {})]),
+        })
+
+    if not candidates:
+        if target_slug:
+            print(f"\n  No unposted draft found with slug '{target_slug}'")
+        else:
+            print(f"\n  No unpublished drafts available. Run 'drafts' to check.\n")
+        return
+
+    # Sort: highest priority first, then least-posted first
+    candidates.sort(key=lambda c: (c["priority"], c["posted_count"]))
+
+    posted_total = 0
+    for pick in candidates[:count]:
+        post = pick["post"]
+        draft = pick["draft"]
+        filepath = draft["filepath"]
+        title = post["title"]
+        unposted = pick["unposted"]
+
+        # Determine which platforms are safe RIGHT NOW
+        safe_platforms = []
+        warnings = []
+        for platform in unposted:
+            safe, reason, action = check_safety(history, platform)
+            if safe:
+                safe_platforms.append(platform)
+                if reason:
+                    warnings.append(f"    {platform}: {reason}")
+            else:
+                warnings.append(f"    {platform}: SKIP — {reason}")
+
+        if not safe_platforms:
+            print(f"\n  Article: {title}")
+            print(f"  No safe platforms available right now:")
+            for w in warnings:
+                print(w)
+            print(f"  Try again later when rate limits reset.\n")
+            continue
+
+        print(f"\n{'=' * 64}")
+        print(f"  AUTO-DISTRIBUTING (next best draft)")
+        print(f"  Article: {title[:55]}")
+        print(f"  Priority: {draft.get('priority', 'medium').upper()}")
+        print(f"  Safe platforms: {', '.join(safe_platforms)}")
+        if warnings:
+            print(f"  Skipped:")
+            for w in warnings:
+                print(w)
+        print(f"{'=' * 64}\n")
+
+        # Post using cmd_post
+        cmd_post(title, filepath, safe_platforms)
+        posted_total += 1
+
+        # Reload history after posting
+        history = load_history()
+
+    if posted_total > 0:
+        print(f"\n  Distributed {posted_total} article(s). Run 'drafts' to see remaining.\n")
+
+
+def cmd_safety():
+    """Show safety dashboard — posting limits and today's usage."""
+    history = load_history()
+    safety_report(history)
+
+
+def cmd_queue_list():
+    """Show queued posts waiting to be published."""
+    queue = load_queue()
+    pending = [q for q in queue.get("queued", []) if q.get("status") == "pending"]
+
+    if not pending:
+        print(f"\n  Queue is empty — nothing waiting to post.\n")
+        return
+
+    print(f"\n{'=' * 60}")
+    print(f"  QUEUED POSTS ({len(pending)} pending)")
+    print(f"{'=' * 60}\n")
+
+    for i, item in enumerate(pending, 1):
+        print(f"  {i}. [{item['platform']}] {item['title']}")
+        print(f"     Slug: {item['slug']}  |  Queued: {item.get('queued_at', '?')[:16]}")
+        print()
+
+    print(f"  To publish safe ones: python3 scripts/distribute/distribute.py flush")
+    print(f"  To clear queue:       python3 scripts/distribute/distribute.py flush --clear\n")
+
+
+def cmd_flush(clear_only=False):
+    """Publish queued posts that are now safe to post."""
+    if clear_only:
+        save_queue({"queued": []})
+        print(f"\n  Queue cleared.\n")
+        return
+
+    queue = load_queue()
+    pending = [q for q in queue.get("queued", []) if q.get("status") == "pending"]
+
+    if not pending:
+        print(f"\n  Queue is empty — nothing to flush.\n")
+        return
+
+    config = load_config()
+    history = load_history()
+
+    print(f"\n{'=' * 60}")
+    print(f"  FLUSHING QUEUE ({len(pending)} posts)")
+    print(f"{'=' * 60}\n")
+
+    flushed = 0
+    kept = 0
+
+    for item in pending:
+        platform = item["platform"]
+        title = item["title"]
+        slug = item["slug"]
+        filepath = item["filepath"]
+
+        # Re-check safety
+        safe, reason, action = check_safety(history, platform)
+        if not safe:
+            print(f"  [{platform}] {title[:40]}... — STILL BLOCKED: {reason}")
+            kept += 1
+            continue
+
+        # Check duplicate
+        existing = is_duplicate(history, slug, platform)
+        if existing:
+            print(f"  [{platform}] {title[:40]}... — already posted, removing from queue")
+            item["status"] = "done"
+            flushed += 1
+            continue
+
+        # Read the article fresh
+        if not os.path.exists(filepath):
+            print(f"  [{platform}] {title[:40]}... — file missing: {filepath}")
+            item["status"] = "error"
+            continue
+
+        meta, body = read_markdown(filepath)
+        tags = normalize_tags(meta.get("tags"))
+        canonical_url = meta.get("canonical_url", meta.get("canonical", ""))
+        language = meta.get("language", meta.get("lang", "en"))
+
+        defaults = config.get("defaults", {})
+        site_url = defaults.get("site_url", "https://tool.teamzlab.com")
+        footer_text = LOCALIZED_FOOTERS.get(language, LOCALIZED_FOOTERS["en"])
+        body_with_footer = body + f"\n\n---\n\n*{footer_text} [{site_url}]({site_url})*"
+
+        # Post it
+        platform_funcs = {
+            "devto": post_devto, "hashnode": post_hashnode, "medium": post_medium,
+            "blogger": post_blogger, "wordpress": post_wordpress, "tumblr": post_tumblr,
+            "bluesky": post_bluesky, "mastodon": post_mastodon,
+            "github_discussions": post_github_discussions, "gitlab": post_gitlab,
+            "substack": post_substack, "telegraph": post_telegraph,
+            "google_sites": post_google_sites, "pinterest": post_pinterest,
+        }
+
+        if platform not in platform_funcs:
+            continue
+
+        print(f"  [{platform}] {title[:40]}... posting...", end=" ", flush=True)
+        if platform in ("telegraph", "substack", "gitlab", "google_sites"):
+            url, error = platform_funcs[platform](config, title, body, tags, canonical_url)
+        else:
+            url, error = platform_funcs[platform](config, title, body_with_footer, tags, canonical_url)
+
+        if url:
+            print(f"OK — {url}")
+            # Update history
+            entry = None
+            for post in history["posts"]:
+                if post["slug"] == slug:
+                    entry = post
+                    break
+            if entry is None:
+                entry = {
+                    "slug": slug, "title": title,
+                    "hash": content_hash(title, body),
+                    "created": datetime.now(timezone.utc).isoformat(),
+                    "platforms": {}
+                }
+                history["posts"].append(entry)
+            entry["platforms"][platform] = {
+                "url": url,
+                "posted_at": datetime.now(timezone.utc).isoformat(),
+                "status": "published"
+            }
+            item["status"] = "done"
+            flushed += 1
+        else:
+            print(f"FAILED — {error}")
+            item["status"] = "error"
+
+    save_history(history)
+    save_queue(queue)
+
+    print(f"\n  Flushed: {flushed}  |  Still waiting: {kept}")
+    if kept > 0:
+        print(f"  Run again later when rate limits reset.\n")
+    else:
+        print()
 
 
 def cmd_status():
@@ -2542,9 +3181,46 @@ def main():
                 break
         cmd_list(platform)
 
+    elif command == "safety":
+        cmd_safety()
+
+    elif command == "queue":
+        cmd_queue_list()
+
+    elif command == "flush":
+        clear_only = "--clear" in sys.argv
+        cmd_flush(clear_only)
+
+    elif command == "draft":
+        if len(sys.argv) < 3:
+            print('  Usage: python3 scripts/distribute/distribute.py draft content.md [--priority high] [--series name]')
+            sys.exit(1)
+        filepath = sys.argv[2]
+        priority = "medium"
+        series = None
+        for i, arg in enumerate(sys.argv[3:], 3):
+            if arg == "--priority" and i + 1 < len(sys.argv):
+                priority = sys.argv[i + 1]
+            elif arg == "--series" and i + 1 < len(sys.argv):
+                series = sys.argv[i + 1]
+        cmd_draft(filepath, priority, series)
+
+    elif command == "drafts":
+        cmd_drafts()
+
+    elif command == "next":
+        count = 1
+        target_slug = None
+        for i, arg in enumerate(sys.argv[2:], 2):
+            if arg == "--count" and i + 1 < len(sys.argv):
+                count = int(sys.argv[i + 1])
+            elif arg == "--slug" and i + 1 < len(sys.argv):
+                target_slug = sys.argv[i + 1]
+        cmd_next(count, target_slug)
+
     else:
         print(f"  Unknown command: {command}")
-        print(f"  Available: post, edit, delete, list, status, test, setup")
+        print(f"  Available: post, edit, delete, list, status, test, setup, safety, queue, flush, draft, drafts, next")
         sys.exit(1)
 
 

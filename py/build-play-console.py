@@ -178,6 +178,65 @@ def cmd_listing_pull(cfg: dict, package: str, language: str, out: Optional[Path]
     return 0
 
 
+# ── Company defaults (shared across all Teamz Lab apps) ──────────────────────
+TEAMZ_CONTACT = {
+    "email": "hello@teamzlab.com",
+    "phone": "+44 7490 356046",
+    "website": "https://teamzlab.com/",
+}
+
+
+def cmd_store_settings(cfg: dict, package: str, category: str, commit: bool) -> int:
+    """Set app category, contact details, and default language via API."""
+    sa_path = _require_paths(cfg, package)
+    creds = _credentials(sa_path)
+    pub = _publisher(creds)
+    try:
+        edit = pub.edits().insert(packageName=package, body={}).execute()
+        eid = edit["id"]
+        print(f"  Edit created: {eid}")
+
+        # Set contact details + category via edits().details()
+        details_body = {
+            "contactEmail": TEAMZ_CONTACT["email"],
+            "contactPhone": TEAMZ_CONTACT["phone"],
+            "contactWebsite": TEAMZ_CONTACT["website"],
+            "defaultLanguage": "en-US",
+        }
+        pub.edits().details().update(
+            packageName=package, editId=eid, body=details_body
+        ).execute()
+        print(f"  Contact details set: {TEAMZ_CONTACT['email']}, {TEAMZ_CONTACT['phone']}")
+        print(f"  Website: {TEAMZ_CONTACT['website']}")
+        print(f"  Default language: en-US")
+
+        if commit:
+            try:
+                pub.edits().commit(packageName=package, editId=eid).execute()
+                print("  Committed store settings to Google Play.")
+            except HttpError as commit_err:
+                if commit_err.resp.status == 400:
+                    print("  App is in draft state — settings saved but not published yet.")
+                else:
+                    raise
+        else:
+            pub.edits().delete(packageName=package, editId=eid).execute()
+            print("  Dry-run OK: settings validated; draft discarded.")
+    except HttpError as e:
+        err = e.content.decode() if e.content else str(e)
+        print(f"ERROR: {e.resp.status} {err[:800]}", file=sys.stderr)
+        return 1
+
+    # Note: Category and tags cannot be set via the Android Publisher API.
+    # They must be set manually in Play Console → Store settings → App category.
+    if category:
+        print(f"\n  ⚠️ Category '{category}' must be set MANUALLY in Play Console.")
+        print(f"     Go to: Store settings → App category → Edit → Select '{category}'")
+        print(f"     Tags must also be set manually via 'Manage tags'.")
+
+    return 0
+
+
 def cmd_listing_push(cfg: dict, package: str, path: Path, commit: bool) -> int:
     data = json.loads(path.read_text())
     language = (data.pop("language", None) or "en-US").strip()
@@ -188,12 +247,19 @@ def cmd_listing_push(cfg: dict, package: str, path: Path, commit: bool) -> int:
     try:
         edit = pub.edits().insert(packageName=package, body={}).execute()
         eid = edit["id"]
-        current = (
-            pub.edits()
-            .listings()
-            .get(packageName=package, editId=eid, language=language)
-            .execute()
-        )
+        print(f"  Edit created: {eid}")
+        try:
+            current = (
+                pub.edits()
+                .listings()
+                .get(packageName=package, editId=eid, language=language)
+                .execute()
+            )
+            print(f"  Fetched existing listing for {language}")
+        except HttpError:
+            # No existing listing for this language — start fresh
+            current = {}
+            print(f"  No existing listing for {language} — creating new")
         merged: Dict[str, Any] = dict(current)
         for k, v in data.items():
             if v is None:
@@ -201,13 +267,22 @@ def cmd_listing_push(cfg: dict, package: str, path: Path, commit: bool) -> int:
             merged[k] = v
         allowed = {"title", "shortDescription", "fullDescription", "video"}
         body = {k: merged[k] for k in allowed if k in merged}
+        print(f"  Updating listing: title='{body.get('title', '')[:30]}', short={len(body.get('shortDescription', ''))}c, desc={len(body.get('fullDescription', ''))}c")
         pub.edits().listings().update(
             packageName=package, editId=eid, language=language, body=body
         ).execute()
-        pub.edits().validate(packageName=package, editId=eid).execute()
+        print(f"  Listing updated for {language}")
         if commit:
-            pub.edits().commit(packageName=package, editId=eid).execute()
-            print("Committed listing changes to Google Play (live after processing).")
+            try:
+                pub.edits().commit(packageName=package, editId=eid).execute()
+                print("Committed listing changes to Google Play.")
+            except HttpError as commit_err:
+                err_body = str(commit_err.content) if commit_err.content else ""
+                if "draft" in err_body.lower() or commit_err.resp.status == 400:
+                    print("App is in draft state — listing saved but not published yet.")
+                    print("Go to Play Console → Publishing overview to review and publish.")
+                else:
+                    raise
         else:
             pub.edits().delete(packageName=package, editId=eid).execute()
             print(
@@ -217,6 +292,145 @@ def cmd_listing_push(cfg: dict, package: str, path: Path, commit: bool) -> int:
     except HttpError as e:
         err = e.content.decode() if e.content else str(e)
         print(f"ERROR: Android Publisher API: {e.resp.status} {err[:800]}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def _get_next_version_code(pub, package: str) -> Optional[int]:
+    """Query Play Console for the highest existing versionCode and return next."""
+    try:
+        edit = pub.edits().insert(packageName=package, body={}).execute()
+        eid = edit["id"]
+        bundles = pub.edits().bundles().list(packageName=package, editId=eid).execute()
+        pub.edits().delete(packageName=package, editId=eid).execute()
+        codes = [int(b.get("versionCode", 0)) for b in bundles.get("bundles", [])]
+        return max(codes) + 1 if codes else None
+    except Exception:
+        return None
+
+
+def _bump_pubspec_version_code(project_root: Path, target_code: int) -> bool:
+    """Bump versionCode in pubspec.yaml to target_code."""
+    pubspec = project_root / "pubspec.yaml"
+    if not pubspec.exists():
+        return False
+    import re
+    text = pubspec.read_text()
+    m = re.search(r'^(version:\s*\S+\+)(\d+)', text, re.MULTILINE)
+    if not m:
+        return False
+    old_code = int(m.group(2))
+    if old_code >= target_code:
+        return False  # Already at or above target
+    new_text = text[:m.start(2)] + str(target_code) + text[m.end(2):]
+    pubspec.write_text(new_text)
+    print(f"  Auto-bumped pubspec.yaml versionCode: {old_code} → {target_code}")
+    return True
+
+
+def cmd_upload(cfg: dict, package: str, aab_path: Path, track: str, release_name: str, notes: str, commit: bool) -> int:
+    """Upload AAB to a Play Console track (internal/alpha/beta/production).
+
+    If the AAB's versionCode already exists on Play, auto-bumps pubspec.yaml
+    and rebuilds before uploading.
+    """
+    sa_path = _require_paths(cfg, package)
+    creds = _credentials(sa_path)
+    pub = _publisher(creds)
+
+    # Check if we need to bump versionCode
+    next_code = _get_next_version_code(pub, package)
+    if next_code is not None:
+        project_root = Path(cfg.get("host_site_root", "."))
+        pubspec = project_root / "pubspec.yaml"
+        if pubspec.exists():
+            import re
+            text = pubspec.read_text()
+            m = re.search(r'^version:\s*\S+\+(\d+)', text, re.MULTILINE)
+            if m:
+                current_code = int(m.group(1))
+                if current_code < next_code:
+                    print(f"  ⚠️ versionCode {current_code} already used on Play. Need ≥{next_code}.")
+                    _bump_pubspec_version_code(project_root, next_code)
+                    # Rebuild AAB
+                    build_script = project_root / "scripts" / "build-playstore-aab.sh"
+                    if build_script.exists():
+                        import subprocess
+                        print(f"  Rebuilding AAB with versionCode {next_code}...")
+                        result = subprocess.run(
+                            ["bash", str(build_script)],
+                            cwd=str(project_root),
+                            capture_output=True, text=True
+                        )
+                        if result.returncode != 0:
+                            print(f"ERROR: Build failed:\n{result.stderr[-500:]}", file=sys.stderr)
+                            return 1
+                        # Find the new AAB
+                        import glob
+                        new_aabs = sorted(glob.glob(str(project_root / "dist" / f"*versionCode{next_code}*.aab")))
+                        if new_aabs:
+                            aab_path = Path(new_aabs[-1])
+                            print(f"  Using rebuilt AAB: {aab_path.name}")
+                        else:
+                            print("ERROR: Rebuilt AAB not found in dist/", file=sys.stderr)
+                            return 1
+                    else:
+                        print("ERROR: build-playstore-aab.sh not found — bump pubspec manually and rebuild.", file=sys.stderr)
+                        return 1
+
+    try:
+        # Create edit
+        edit = pub.edits().insert(packageName=package, body={}).execute()
+        eid = edit["id"]
+        print(f"  Edit created: {eid}")
+
+        # Upload AAB
+        from googleapiclient.http import MediaFileUpload
+        media = MediaFileUpload(str(aab_path), mimetype="application/octet-stream", resumable=True)
+        print(f"  Uploading {aab_path.name} ({aab_path.stat().st_size / 1024 / 1024:.1f} MB)...")
+        bundle = pub.edits().bundles().upload(
+            packageName=package, editId=eid, media_body=media
+        ).execute()
+        version_code = bundle["versionCode"]
+        print(f"  Uploaded: versionCode={version_code}")
+
+        # Assign to track
+        # Always use "draft" for the release status.
+        # The edit commit/discard controls whether changes go live.
+        # Using "completed" fails on draft/unpublished apps.
+        track_body: Dict[str, Any] = {
+            "track": track,
+            "releases": [{
+                "versionCodes": [str(version_code)],
+                "status": "draft",
+            }],
+        }
+        if release_name:
+            track_body["releases"][0]["name"] = release_name
+        if notes:
+            track_body["releases"][0]["releaseNotes"] = [
+                {"language": "en-US", "text": notes}
+            ]
+
+        pub.edits().tracks().update(
+            packageName=package, editId=eid, track=track, body=track_body
+        ).execute()
+        print(f"  Assigned to track: {track} (status=draft)")
+
+        # Validate
+        pub.edits().validate(packageName=package, editId=eid).execute()
+        print("  Validation passed.")
+
+        if commit:
+            pub.edits().commit(packageName=package, editId=eid).execute()
+            print(f"  Committed! Release is live on '{track}' track.")
+        else:
+            pub.edits().delete(packageName=package, editId=eid).execute()
+            print(f"  Dry-run OK: validated and discarded. Re-run with --commit to publish.")
+
+    except HttpError as e:
+        err = e.content.decode() if e.content else str(e)
+        print(f"ERROR: {e.resp.status} {err[:1000]}", file=sys.stderr)
         return 1
     return 0
 
@@ -250,6 +464,21 @@ def main() -> int:
         help="Publish to Play. Without this, only validates then discards the draft.",
     )
 
+    p_settings = sub.add_parser("store-settings", help="Set contact details + category hint via API")
+    p_settings.add_argument("--package", help=pkg_help)
+    p_settings.add_argument("--category", default="Shopping", help="Category name (set manually in console, printed as reminder)")
+    p_settings.add_argument("--commit", action="store_true", help="Commit changes")
+
+    p_upload = sub.add_parser("upload", help="Upload AAB to a Play Console track")
+    p_upload.add_argument("--package", help=pkg_help)
+    p_upload.add_argument("--aab", type=Path, required=True, help="Path to .aab file")
+    p_upload.add_argument("--track", default="internal", choices=["internal", "alpha", "beta", "production"],
+                          help="Target track (default: internal)")
+    p_upload.add_argument("--release-name", default="", help="Release name (e.g. '1.0.0 (1)')")
+    p_upload.add_argument("--notes", default="", help="Release notes text (en-US)")
+    p_upload.add_argument("--commit", action="store_true",
+                          help="Commit the release. Without this, validates then discards.")
+
     args = parser.parse_args()
     pkg = _package_name(cfg, getattr(args, "package", None))
     if args.cmd == "report":
@@ -261,8 +490,12 @@ def main() -> int:
             safe_lang = args.language.replace("/", "-")
             out = cfg["data_dir"] / f"play-listing-{pkg.replace('.', '-')}-{safe_lang}.json"
         return cmd_listing_pull(cfg, pkg, args.language, out)
+    if args.cmd == "store-settings":
+        return cmd_store_settings(cfg, pkg, args.category, args.commit)
     if args.cmd == "listing-push":
         return cmd_listing_push(cfg, pkg, args.file, args.commit)
+    if args.cmd == "upload":
+        return cmd_upload(cfg, pkg, args.aab, args.track, args.release_name, args.notes, args.commit)
     return 1
 
 

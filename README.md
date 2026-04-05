@@ -32,7 +32,7 @@ python3 scripts/build-adsense-auth.py           # AdSense (optional)
 |------|------------------|
 | `py/` | Python scripts + `_teamz_config.py` (shared config loader) |
 | `sh/` | Shell scripts + `lib/config.sh` (shared config loader) |
-| `data/` | JSON/CSV output (rank history, backlinks, snapshots) |
+| `data/` | JSON/CSV output (rank history, backlinks, snapshots). **`ecommerce-demos.json`** — demo storefront URLs + pricing. **`ecommerce-landing-seo.json`** — long-tail ecommerce copy merged into `/ecommerce-development/` via `npm run sync:ecommerce-page`. **`ecommerce-gsc-keywords-latest.json`** — optional; produced by `npm run refresh:ecommerce-keywords` (`build-keyword-intel.py --export json` for queries hitting `ecommerce-development`). |
 | `distribute/` | Multi-platform publishing (Blogger, Dev.to, Medium, etc.) |
 
 ## Config system

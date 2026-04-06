@@ -43,6 +43,7 @@
 | **Store settings (contact)** | `py/build-play-console.py store-settings --commit` | |
 | **Full store release (22 steps)** | `py/aso/aso-store-release.py` | **START HERE — orchestrates everything** |
 | **Copy-paste helper HTML** | `py/aso/aso-copy-helper.py` | For manual paste when API can't commit (draft apps) |
+| **Release notes paste file** | `py/aso/aso-copy-helper.py` | Also generates `release-notes-*-paste.txt` with `<locale>` tags (≤500 chars/locale) |
 
 ### ASO Workflow (must follow this order)
 
@@ -110,6 +111,49 @@
 
 ---
 
+## App Store (iOS) — Fastlane
+
+| When you need... | Run this |
+|---|---|
+| **Initial setup** (run once per project) | `bash appstore-fastlane/setup-appstore-fastlane.sh` |
+| **Create app on App Store Connect** | `cd fastlane && fastlane ios create_app` |
+| **Upload metadata** (all locales) | `cd fastlane && fastlane ios upload_metadata` |
+| **Upload screenshots** | `cd fastlane && fastlane ios upload_screenshots` |
+| **Upload metadata + screenshots** | `cd fastlane && fastlane ios upload_all` |
+| **Upload build to TestFlight** | `IPA_PATH=... cd fastlane && fastlane ios upload_testflight` |
+| **Distribute TestFlight to testers** | `cd fastlane && fastlane ios distribute_testflight` |
+| **Submit for App Store review** | `cd fastlane && fastlane ios submit_review` |
+| **Full release** (metadata + screenshots + submit) | `cd fastlane && fastlane ios full_release` |
+| **Download existing metadata** | `cd fastlane && fastlane ios download_metadata` |
+| **Get app info** | `cd fastlane && fastlane ios app_info` |
+
+### Config
+- API key setup: `appstore-fastlane/appstore-fastlane.env.example`
+- Project config: `.appstore-fastlane.env` (gitignored)
+- Metadata files: `fastlane/metadata/<locale>/*.txt`
+- Shared Fastfile: `appstore-fastlane/Fastfile` (symlinked into each project)
+
+---
+
+## Pre-Release Verification (Shell)
+
+| When you need... | Run this |
+|---|---|
+| **Full pre-release check** (Flutter + Firebase + iOS + Android + Fastlane) | `bash sh/pre-release-verify.sh` |
+| **Skip Flutter analyze** (faster) | `bash sh/pre-release-verify.sh --skip-flutter` |
+| **Skip Firebase checks** | `bash sh/pre-release-verify.sh --skip-firebase` |
+| **Auto-fix formatting** | `bash sh/pre-release-verify.sh --fix` |
+
+Auto-detects monetization model (ads-only / IAP / both / free) and adjusts checks. Validates:
+- Flutter code quality (format, analyze, secrets, print() calls)
+- Firebase (functions deployed, secrets, App Check, SHA fingerprints, APIs)
+- Android (key.properties, keystore, gitignore)
+- iOS (AdMob ID, ATT vs nonPersonalizedAds, PrivacyInfo.xcprivacy, dev team, test ad gating)
+- Fastlane (installed, configured, API key, metadata completeness, screenshot count)
+- Manual checklist (pricing, App Privacy, age rating, MRDP, license, content rights)
+
+---
+
 ## Anti-Patterns (NEVER do these)
 
 | ❌ DON'T | ✅ DO |
@@ -119,6 +163,8 @@
 | Guess which keywords have demand | Run `build-keyword-volume.py` — it checks Google Trends, Bing API, autocomplete rank, and GSC |
 | Skip competitor analysis | Run `aso-competitors.py --find` + `--matrix` + `--keywords` |
 | Write store listings without data | Follow the ASO Workflow (6 steps above) |
+| Write release notes >500 chars/locale | Play Console limit is 500, not 4000. Always validate with `aso-preflight.py --post` |
+| Output release notes as markdown/code blocks | Output as JSON (`release-notes-v*.json`), then run `aso-copy-helper.py` to generate paste `.txt` with `<locale>` tags |
 | Assume a tool doesn't exist | `ls packages/team_mvp_kit/teamz-company-automation/py/` first |
 | Suggest Google Trends manually | `build-keyword-volume.py` already integrates Google Trends |
 | Suggest paid tools when free ones exist | Check this registry — 48 scripts cover most needs |
@@ -134,5 +180,7 @@
 - **Monitoring**: 5 scripts (brand mentions, SERP features, GSC anomalies, uptime)
 - **QA**: 5 scripts (runtime test, schema layout, server, test suite, batch fix)
 - **Config**: 1 script
+- **App Store (iOS)**: Fastlane setup (Fastfile + setup script + env template)
+- **Pre-Release**: 1 shell script (`sh/pre-release-verify.sh`) — adaptive checks for all monetization models
 
-**Total: 48 Python scripts. All standard library (no pip install needed).**
+**Total: 48 Python scripts + Fastlane iOS automation + pre-release verification. Python scripts are all standard library (no pip install needed). Fastlane requires `brew install fastlane`.**

@@ -1,0 +1,244 @@
+# Teamz Lab — Reusable Fastlane Configuration
+# This Fastfile is shared across all Teamz projects via the kit submodule.
+# Each project provides its own config via environment variables or .env file.
+#
+# Usage:
+#   1. Run `setup-appstore-fastlane.sh` in your project root (one-time setup)
+#   2. Edit the generated `.appstore-fastlane.env` with your app details
+#   3. Run lanes via: fastlane <lane_name>
+
+require 'dotenv'
+
+# Load project-specific config
+def load_project_config
+  # Look for config in project root (one level up from fastlane/)
+  env_file = File.expand_path("../.appstore-fastlane.env", Dir.pwd)
+  # Fallback: look in current directory
+  env_file = File.expand_path(".appstore-fastlane.env", Dir.pwd) unless File.exist?(env_file)
+
+  if File.exist?(env_file)
+    Dotenv.load(env_file)
+  else
+    UI.user_error!("No .appstore-fastlane.env found. Run setup-appstore-fastlane.sh first.")
+  end
+end
+
+before_all do
+  load_project_config
+end
+
+# ─── Platform: iOS ─────────────────────────────────────────────
+
+platform :ios do
+
+  # ── Authentication ──
+
+  desc "Authenticate with App Store Connect using API Key (P8)"
+  lane :auth do
+    app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_FILEPATH"],
+      duration: 1200,
+      in_house: false
+    )
+  end
+
+  # ── App Creation ──
+
+  desc "Create a new app on App Store Connect"
+  desc "Requires: APP_NAME, APP_BUNDLE_ID, APP_SKU (optional, defaults to bundle ID)"
+  lane :create_app do
+    auth
+
+    create_app_online(
+      name: ENV["APP_NAME"],
+      language: ENV["APP_PRIMARY_LANGUAGE"] || "English",
+      bundle_identifier: ENV["APP_BUNDLE_ID"],
+      sku: ENV["APP_SKU"] || ENV["APP_BUNDLE_ID"],
+      team_id: ENV["ASC_TEAM_ID"],
+      company_name: ENV["COMPANY_NAME"] || "Teamz Lab LTD",
+      enable_services: {
+        push_notification: "on",
+        in_app_purchase: "on"
+      }
+    )
+
+    UI.success("✅ App '#{ENV['APP_NAME']}' created on App Store Connect!")
+  end
+
+  # ── Metadata Upload ──
+
+  desc "Upload metadata (descriptions, keywords, etc.) to App Store Connect"
+  desc "Reads from fastlane/metadata/<locale>/ folder structure"
+  lane :upload_metadata do
+    auth
+
+    deliver(
+      app_identifier: ENV["APP_BUNDLE_ID"],
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      force: true,
+      precheck_include_in_app_purchases: false,
+      submission_information: {
+        add_id_info_uses_idfa: false
+      }
+    )
+
+    UI.success("✅ Metadata uploaded for #{ENV['APP_BUNDLE_ID']}")
+  end
+
+  # ── Screenshots Upload ──
+
+  desc "Upload screenshots only to App Store Connect"
+  lane :upload_screenshots do
+    auth
+
+    deliver(
+      app_identifier: ENV["APP_BUNDLE_ID"],
+      skip_binary_upload: true,
+      skip_metadata: true,
+      overwrite_screenshots: true,
+      force: true,
+      precheck_include_in_app_purchases: false,
+      run_precheck_before_submit: false
+    )
+
+    UI.success("✅ Screenshots uploaded for #{ENV['APP_BUNDLE_ID']}")
+  end
+
+  # ── Full Deliver (Metadata + Screenshots) ──
+
+  desc "Upload both metadata and screenshots"
+  lane :upload_all do
+    auth
+
+    deliver(
+      app_identifier: ENV["APP_BUNDLE_ID"],
+      skip_binary_upload: true,
+      force: true,
+      overwrite_screenshots: true,
+      precheck_include_in_app_purchases: false
+    )
+
+    UI.success("✅ All metadata + screenshots uploaded for #{ENV['APP_BUNDLE_ID']}")
+  end
+
+  # ── TestFlight ──
+
+  desc "Upload a build to TestFlight"
+  desc "Requires: IPA_PATH environment variable"
+  lane :upload_testflight do
+    auth
+
+    pilot(
+      app_identifier: ENV["APP_BUNDLE_ID"],
+      ipa: ENV["IPA_PATH"],
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false
+    )
+
+    UI.success("✅ Build uploaded to TestFlight for #{ENV['APP_BUNDLE_ID']}")
+  end
+
+  desc "Distribute TestFlight build to external testers"
+  lane :distribute_testflight do |options|
+    auth
+
+    pilot(
+      app_identifier: ENV["APP_BUNDLE_ID"],
+      distribute_external: true,
+      groups: options[:groups] || ENV["TESTFLIGHT_GROUPS"] || "External Testers",
+      changelog: options[:changelog] || "Bug fixes and improvements"
+    )
+
+    UI.success("✅ TestFlight build distributed for #{ENV['APP_BUNDLE_ID']}")
+  end
+
+  # ── Submit for Review ──
+
+  desc "Submit the latest build for App Store review"
+  lane :submit_review do
+    auth
+
+    deliver(
+      app_identifier: ENV["APP_BUNDLE_ID"],
+      submit_for_review: true,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: true,
+      force: true,
+      automatic_release: ENV["AUTO_RELEASE"] == "true",
+      precheck_include_in_app_purchases: false,
+      run_precheck_before_submit: false,
+      submission_information: {
+        add_id_info_uses_idfa: ENV["USES_IDFA"] == "true",
+        add_id_info_serves_ads: ENV["SERVES_ADS"] == "true",
+        export_compliance_uses_encryption: false
+      }
+    )
+
+    UI.success("✅ Submitted for review: #{ENV['APP_BUNDLE_ID']}")
+  end
+
+  # ── Full Release (Metadata + Screenshots + Submit) ──
+
+  desc "Upload everything and submit for review"
+  lane :full_release do
+    auth
+
+    deliver(
+      app_identifier: ENV["APP_BUNDLE_ID"],
+      skip_binary_upload: true,
+      force: true,
+      overwrite_screenshots: true,
+      submit_for_review: true,
+      automatic_release: ENV["AUTO_RELEASE"] == "true",
+      precheck_include_in_app_purchases: false,
+      submission_information: {
+        add_id_info_uses_idfa: ENV["USES_IDFA"] == "true",
+        add_id_info_serves_ads: ENV["SERVES_ADS"] == "true",
+        export_compliance_uses_encryption: false
+      }
+    )
+
+    UI.success("✅ Full release submitted for #{ENV['APP_BUNDLE_ID']}")
+  end
+
+  # ── Download Existing Metadata ──
+
+  desc "Download current metadata from App Store Connect (useful for initial setup)"
+  lane :download_metadata do
+    auth
+
+    deliver(
+      app_identifier: ENV["APP_BUNDLE_ID"],
+      force: true,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      run_precheck_before_submit: false,
+      skip_metadata: false
+    )
+
+    UI.success("✅ Metadata downloaded for #{ENV['APP_BUNDLE_ID']}")
+  end
+
+  # ── App Info ──
+
+  desc "Print current app info from App Store Connect"
+  lane :app_info do
+    auth
+
+    app = Spaceship::ConnectAPI::App.find(ENV["APP_BUNDLE_ID"])
+    if app
+      UI.success("App Name: #{app.name}")
+      UI.success("Bundle ID: #{app.bundle_id}")
+      UI.success("App ID: #{app.id}")
+      UI.success("SKU: #{app.sku}")
+    else
+      UI.error("App not found: #{ENV['APP_BUNDLE_ID']}")
+    end
+  end
+
+end

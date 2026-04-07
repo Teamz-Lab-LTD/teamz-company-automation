@@ -190,16 +190,58 @@ summary {{ cursor: pointer; color: #4fc3f7; font-size: 13px; padding: 8px 0; }}
 
     # Release notes
     if release_notes:
-        rn_en = release_notes.get("en", "")
         rn_version = release_notes.get("version", "")
-        if rn_en:
+        rn_locales = {k: v for k, v in release_notes.items() if k != "version"}
+        if rn_locales:
+            # Build Play Console paste-ready text (<locale>...</locale> tags)
+            paste_lines = []
+            over_limit = []
+            for our_code in sorted(rn_locales.keys()):
+                play_code = LANG_MAP.get(our_code, our_code)
+                text = rn_locales[our_code]
+                if len(text) > 500:
+                    over_limit.append(f"{play_code} ({len(text)} chars)")
+                paste_lines.append(f"<{play_code}>\n{text}\n</{play_code}>")
+            paste_text = "\n".join(paste_lines)
+
+            warn_html = ""
+            if over_limit:
+                warn_html = f'<div style="color:#ef5350;margin-bottom:8px">⚠️ Over 500 chars: {html.escape(", ".join(over_limit))}</div>'
+
             parts.append(f"""
 <div class="section">
-  <div class="section-title">Release Notes (v{html.escape(rn_version)})</div>
-  <div class="field-value" id="release-notes">{_escape_display(rn_en)}</div>
-  <button class="copy-btn" onclick="copyField('release-notes', this)">Copy Release Notes</button>
+  <div class="section-title">Release Notes (v{html.escape(rn_version)}) — {len(rn_locales)} locales</div>
+  {warn_html}
+  <p style="color:#888;font-size:13px;margin-bottom:12px">Copy the block below and paste directly into Play Console → Release → Release notes. All locales in one paste.</p>
+  <div class="field-value" id="release-notes-paste" style="max-height:400px">{_escape_display(paste_text)}</div>
+  <button class="copy-btn" onclick="copyField('release-notes-paste', this)">Copy All Release Notes (paste into Play Console)</button>
+  <button class="copy-all-btn" onclick="downloadReleaseNotes()" style="margin-top:8px;background:#4fc3f7">Download as .txt</button>
 </div>
 """)
+
+            # Also show per-locale cards for individual copy
+            parts.append(f"""
+<div class="section">
+  <div class="section-title">Release Notes — Per Locale ({len(rn_locales)} locales)</div>
+  <div class="locale-grid" id="rn-grid">
+""")
+            for our_code in sorted(rn_locales.keys()):
+                play_code = LANG_MAP.get(our_code, our_code)
+                lang_name = LANG_NAMES.get(our_code, our_code)
+                text = rn_locales[our_code]
+                char_warn = ' style="color:#ef5350"' if len(text) > 500 else ""
+                item_id = f"rn_{our_code.replace('-', '_')}"
+                parts.append(f"""
+    <div class="locale-item" data-locale="{our_code}" data-name="{lang_name.lower()}" data-play="{play_code}">
+      <div class="locale-header">
+        <span class="locale-name">{html.escape(lang_name)}</span>
+        <span class="locale-code">{html.escape(play_code)} — <span{char_warn}>{len(text)}/500 chars</span></span>
+      </div>
+      <div class="field-value" id="{item_id}" style="max-height:200px">{_escape_display(text)}</div>
+      <button class="copy-btn" onclick="copyField('{item_id}', this)">Copy</button>
+    </div>
+""")
+            parts.append("  </div>\n</div>\n")
 
     # All locale translations
     if locales:
@@ -269,6 +311,20 @@ function copyField(id, btn) {
   });
 }
 
+function downloadReleaseNotes() {
+  const el = document.getElementById('release-notes-paste');
+  if (!el) return;
+  let text = el.innerHTML.replace(/<br\\s*\\/?>/gi, '\\n').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&nbsp;/g, ' ');
+  const tmp = document.createElement('div');
+  tmp.innerHTML = text;
+  text = tmp.textContent || tmp.innerText || '';
+  const blob = new Blob([text], {type: 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'release-notes-paste.txt';
+  a.click();
+}
+
 function filterLocales(query) {
   const q = query.toLowerCase().trim();
   document.querySelectorAll('.locale-item').forEach(item => {
@@ -287,6 +343,50 @@ function filterLocales(query) {
     return "".join(parts)
 
 
+def generate_release_notes_paste() -> str | None:
+    """Generate a Play Console paste-ready .txt with <locale> tags for release notes.
+
+    Returns the output path, or None if no release notes found.
+    Play Console format:  <en-US>\\ntext\\n</en-US>\\n<ar>\\ntext\\n</ar>...
+    Validates each locale is ≤500 chars and warns on violations.
+    """
+    release_notes = {}
+    for rn_path in _DATA_DIR.glob("release-notes-*.json"):
+        with open(rn_path) as f:
+            release_notes = json.load(f)
+        break
+
+    if not release_notes:
+        return None
+
+    version = release_notes.get("version", "")
+    rn_locales = {k: v for k, v in release_notes.items() if k != "version"}
+    if not rn_locales:
+        return None
+
+    lines = []
+    over_limit = []
+    for our_code in sorted(rn_locales.keys()):
+        play_code = LANG_MAP.get(our_code, our_code)
+        text = rn_locales[our_code]
+        if len(text) > 500:
+            over_limit.append((play_code, len(text)))
+        lines.append(f"<{play_code}>\n{text}\n</{play_code}>")
+
+    paste_text = "\n".join(lines) + "\n"
+
+    suffix = f"-v{version}" if version else ""
+    out_path = _DATA_DIR / f"release-notes{suffix}-paste.txt"
+    out_path.write_text(paste_text, encoding="utf-8")
+
+    if over_limit:
+        print(f"  ⚠️  OVER 500 CHARS (Play Console will reject):")
+        for code, chars in over_limit:
+            print(f"     {code}: {chars} chars")
+    print(f"  Release notes paste file: {out_path} ({len(rn_locales)} locales)")
+    return str(out_path)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate HTML copy helper for Play Console store listing paste")
     parser.add_argument("--no-open", action="store_true", help="Don't auto-open in browser")
@@ -297,6 +397,9 @@ def main():
     out_path = _DATA_DIR / "play-console-copy-helper.html"
     out_path.write_text(html_content, encoding="utf-8")
     print(f"Generated: {out_path}")
+
+    # Also generate release notes paste .txt
+    rn_path = generate_release_notes_paste()
 
     if not args.no_open:
         webbrowser.open(f"file://{out_path}")

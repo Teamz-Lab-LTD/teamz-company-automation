@@ -11,7 +11,7 @@ This directory contains **48 Python scripts** for SEO, ASO, keyword research, co
 **Use the orchestrator — one command does everything:**
 
 ```bash
-# Full flow: 22 steps (keywords → volume → competitors → build → upload → guide manual steps)
+# Full flow: keywords → volume → competitors → listing → release notes → build → upload → guide manual steps
 python3 py/aso/aso-store-release.py
 
 # Check what's done / what's pending
@@ -27,16 +27,47 @@ The orchestrator tracks progress in `store-release-progress.json`. It calls all 
 
 | Task | Script |
 |------|--------|
-| **Full store release** (22 steps) | `py/aso/aso-store-release.py` |
+| **Full store release** | `py/aso/aso-store-release.py` |
 | **Keyword volume** (Bing + Trends + autocomplete) | `py/build-keyword-volume.py "kw1" "kw2"` |
 | **Full ASO pipeline** (discover + score + CSV) | `py/aso/aso-keyword-pipeline.py` |
 | **Pre/post-flight validation** | `py/aso/aso-preflight.py --pre` / `--post` |
 | **Upload AAB** | `py/build-play-console.py upload --aab file.aab --track internal --commit` |
 | **Push listing** | `py/build-play-console.py listing-push --file listing.json --commit` |
-| **Copy-paste helper** | `py/aso/aso-copy-helper.py` (HTML with copy buttons for Play Console) |
+| **Copy-paste helper + release notes paste** | `py/aso/aso-copy-helper.py` (HTML + `.txt` with `<locale>` tags for Play Console) |
 | **Keyword autocomplete** | `py/aso/aso-keywords.py --suggest "term"` |
 | **Competitor analysis** | `py/aso/aso-competitors.py --find "term"` |
 | **Metadata audit** | `py/aso/aso-metadata.py --audit APP_ID` |
+
+## iOS App Store (Fastlane)
+
+```bash
+# First-time setup (creates fastlane/ dir, symlinks Fastfile, copies env template)
+bash appstore-fastlane/setup-appstore-fastlane.sh
+
+# Then from project root:
+cd fastlane && fastlane ios create_app        # Create app on App Store Connect
+cd fastlane && fastlane ios upload_metadata   # Upload 39-locale metadata
+cd fastlane && fastlane ios upload_screenshots # Upload screenshots
+cd fastlane && fastlane ios submit_review     # Submit for review
+cd fastlane && fastlane ios app_info          # Check app info
+```
+
+Config: `appstore-fastlane/appstore-fastlane.env.example` → copy to project root as `.appstore-fastlane.env`.
+Full guide: `packages/team_mvp_kit/prompts/ios-release-guide.md`.
+
+## Pre-Release Verification
+
+```bash
+# Run from project root — checks Flutter, Firebase, iOS, Android, Fastlane, metadata
+bash packages/team_mvp_kit/teamz-company-automation/sh/pre-release-verify.sh
+
+# Options:
+#   --fix            Auto-fix formatting issues
+#   --skip-flutter   Skip Flutter analyze/format
+#   --skip-firebase  Skip Firebase checks
+```
+
+Auto-detects monetization model (ads-only, IAP, both, free) and adjusts checks accordingly.
 
 ## Full Registry
 
@@ -46,6 +77,18 @@ See `automation-tool-registry.md` (this directory) for the complete mapping of e
 
 - **Pipeline CSVs** (`master_keywords.csv`, `ios_keywords.csv`) go in the **project's** `automation_data/` directory (set via `TEAMZ_DATA_DIR` in `.teamz-automation.env`), NOT in this submodule's `data/` directory.
 - **Transient script output** (`aso-keywords-latest.json`, etc.) goes in this submodule's `data/` directory.
+
+## Teamz Lab Company Info (shared across ALL projects)
+
+- **Company name:** Teamz Lab LTD
+- **Copyright:** © 2026 Teamz Lab LTD
+- **Contact email:** teamz.lab.contact@gmail.com
+- **Review phone:** +447490356046
+- **Privacy policy:** https://teamzlab.com/privacy-policy
+- **Apple Developer Team ID:** NDV83KC5LC
+- **App Store Connect API Key ID:** 559DD92MBH
+- **App Store Connect Issuer ID:** 100d6ef8-7452-4aff-85a4-990158b60b3d
+- **P8 key location:** `~/.config/teamzlab/AuthKey_559DD92MBH.p8`
 
 ## Config
 

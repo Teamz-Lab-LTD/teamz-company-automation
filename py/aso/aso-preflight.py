@@ -341,6 +341,63 @@ def check_keyword_coverage() -> list[dict]:
     return results
 
 
+def check_release_notes() -> list[dict]:
+    """Validate release notes JSON exists, all locales ≤500 chars, and paste file is generated."""
+    results = []
+
+    rn_files = list(_DATA_DIR.glob("release-notes-*.json"))
+    if not rn_files:
+        results.append({
+            "check": "Release notes JSON exists",
+            "status": "FAIL",
+            "detail": "No release-notes-*.json in automation_data/. "
+                      "AI agent must generate it with version + all locale keys, each ≤500 chars.",
+        })
+        return results
+
+    rn_path = rn_files[0]
+    with open(rn_path) as f:
+        rn = json.load(f)
+
+    version = rn.get("version", "")
+    locales = {k: v for k, v in rn.items() if k != "version"}
+
+    results.append({
+        "check": f"Release notes JSON exists (v{version})",
+        "status": "PASS",
+        "detail": f"{rn_path.name}: {len(locales)} locales",
+    })
+
+    # Check locale count
+    expected_min = 30  # at least 30 locales expected
+    results.append({
+        "check": f"Release notes locale count ≥{expected_min}",
+        "status": "PASS" if len(locales) >= expected_min else "WARN",
+        "detail": f"{len(locales)} locales" + ("" if len(locales) >= expected_min
+                  else f" — expected ≥{expected_min}. Missing translations?"),
+    })
+
+    # Check char limits (Play Console = 500 chars per locale)
+    over_limit = [(k, len(v)) for k, v in locales.items() if len(v) > 500]
+    results.append({
+        "check": "Release notes all locales ≤500 chars",
+        "status": "PASS" if not over_limit else "FAIL",
+        "detail": ("All pass" if not over_limit
+                   else "OVER LIMIT: " + ", ".join(f"{k} ({c} chars)" for k, c in over_limit)),
+    })
+
+    # Check paste file exists
+    paste_files = list(_DATA_DIR.glob("release-notes-*-paste.txt"))
+    results.append({
+        "check": "Release notes paste file (.txt with <locale> tags)",
+        "status": "PASS" if paste_files else "WARN",
+        "detail": (paste_files[0].name if paste_files
+                   else "Missing. Run: python3 py/aso/aso-copy-helper.py to generate it"),
+    })
+
+    return results
+
+
 def check_no_fabricated_scores() -> list[dict]:
     """Detect signs of fabricated/hand-written CSVs (the original sin)."""
     results = []
@@ -415,6 +472,7 @@ def run_checks(mode: str) -> list[dict]:
         all_results.append(("LISTING FILES", check_listing_exists()))
         all_results.append(("DATA RATIONALE", check_listing_has_data_rationale()))
         all_results.append(("CHARACTER LIMITS", check_char_limits()))
+        all_results.append(("RELEASE NOTES", check_release_notes()))
         all_results.append(("KEYWORD COVERAGE", check_keyword_coverage()))
 
     return all_results

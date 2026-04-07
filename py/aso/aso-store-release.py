@@ -112,6 +112,7 @@ ALL_STEPS = [
     # Phase 3: Content generation (AI agent generates, orchestrator validates)
     ("listing",         "Generate store listing content (title, short desc, full desc)"),
     ("translations",    "Generate 39 locale translations"),
+    ("release_notes",   "Generate release notes JSON + Play Console paste file (all locales, ≤500 chars each)"),
     ("data_safety_json","Generate data-safety-form.json from codebase"),
 
     # Phase 4: Build & deploy (automated)
@@ -144,7 +145,7 @@ AUTOMATED_STEPS = {
     "reviews", "seo_engine", "pipeline", "per_kw_analysis",
     "permissions", "build", "upload", "push_listings", "store_settings",
     "copy_helper", "icon", "feature_graphic", "postflight",
-    "listing", "translations", "data_safety_json",
+    "listing", "translations", "release_notes", "data_safety_json",
 }
 
 MANUAL_STEPS = {
@@ -584,6 +585,65 @@ def run_step_translations(progress: dict):
                f"Titles: {'✅' if loc_ok else '❌'}, Descriptions: {'✅' if desc_ok else '❌'}")
 
 
+def run_step_release_notes(progress: dict):
+    """Check/validate release notes JSON and generate Play Console paste file."""
+    step_n = len(ALL_STEPS)
+    print(f"\n[{step_n}] Release notes...")
+
+    # Find release notes JSON
+    rn_files = list(_DATA_DIR.glob("release-notes-*.json"))
+    if not rn_files:
+        print("  ❌ No release-notes-*.json found in automation_data/")
+        print("  👤 AI agent must generate release-notes-v{version}.json with:")
+        print("     - \"version\": \"X.Y.Z\"")
+        print("     - \"en\": \"...\", \"ar\": \"...\", etc. (all locales)")
+        print("     - Each locale ≤500 chars (Play Console limit)")
+        print("     - Use <locale> tag format for paste file")
+        _mark_step(progress, "release_notes", "failed",
+                   "Missing release-notes-*.json — AI agent must generate it")
+        return
+
+    rn_path = rn_files[0]
+    with open(rn_path) as f:
+        rn = json.load(f)
+
+    version = rn.get("version", "?")
+    locales = {k: v for k, v in rn.items() if k != "version"}
+    over_limit = [(k, len(v)) for k, v in locales.items() if len(v) > 500]
+
+    if over_limit:
+        print(f"  ⚠️  {len(over_limit)} locales OVER 500 chars:")
+        for code, chars in over_limit:
+            print(f"     {code}: {chars} chars")
+        _mark_step(progress, "release_notes", "failed",
+                   f"v{version}: {len(locales)} locales, {len(over_limit)} over 500-char limit")
+        return
+
+    print(f"  v{version}: {len(locales)} locales, all ≤500 chars ✅")
+
+    # Generate paste file (Play Console <locale> tag format)
+    _LANG_MAP = {
+        "en": "en-US", "ar": "ar", "ca": "ca", "zh-Hans": "zh-CN", "zh-Hant": "zh-TW",
+        "hr": "hr", "cs": "cs-CZ", "da": "da-DK", "nl": "nl-NL", "fi": "fi-FI",
+        "fr": "fr-FR", "fr-CA": "fr-CA", "de": "de-DE", "el": "el-GR", "he": "iw-IL",
+        "hi": "hi-IN", "hu": "hu-HU", "id": "id", "it": "it-IT", "ja": "ja-JP",
+        "ko": "ko-KR", "ms": "ms", "nb": "no-NO", "pl": "pl-PL", "pt-BR": "pt-BR",
+        "pt-PT": "pt-PT", "ro": "ro", "ru": "ru-RU", "sk": "sk", "es-MX": "es-419",
+        "es-ES": "es-ES", "sv": "sv-SE", "th": "th", "tr": "tr-TR", "uk": "uk", "vi": "vi",
+    }
+    paste_lines = []
+    for our_code in sorted(locales.keys()):
+        play_code = _LANG_MAP.get(our_code, our_code)
+        paste_lines.append(f"<{play_code}>\n{locales[our_code]}\n</{play_code}>")
+    paste_text = "\n".join(paste_lines) + "\n"
+    paste_path = _DATA_DIR / f"release-notes-v{version}-paste.txt"
+    paste_path.write_text(paste_text, encoding="utf-8")
+    print(f"  Paste file: {paste_path}")
+
+    _mark_step(progress, "release_notes", "done",
+               f"v{version}: {len(locales)} locales, paste file ready")
+
+
 def run_step_build(progress: dict):
     """Build release AAB."""
     print("\n[9/22] Building release AAB...")
@@ -787,6 +847,7 @@ def run_full(progress: dict):
     print("\n══ PHASE 3: CONTENT GENERATION ══")
     run_step_listing(progress)
     run_step_translations(progress)
+    run_step_release_notes(progress)
     # Data safety JSON
     data_safety_path = _DATA_DIR / "data-safety-form.json"
     if data_safety_path.exists():
@@ -925,6 +986,7 @@ def main():
             "trends_manual": run_step_trends_manual,
             "listing": run_step_listing,
             "translations": run_step_translations,
+            "release_notes": run_step_release_notes,
             "permissions": run_step_permissions,
             "build": run_step_build,
             "upload": run_step_upload,

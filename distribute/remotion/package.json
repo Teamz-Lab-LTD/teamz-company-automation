@@ -1,0 +1,22 @@
+{
+  "name": "remotion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "studio": "remotion studio src/index.js",
+    "render": "remotion render src/index.js ToolReel out/reel.mp4",
+    "preview": "remotion preview src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@remotion/bundler": "^4.0.447",
+    "@remotion/cli": "^4.0.447",
+    "@remotion/renderer": "^4.0.447",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "remotion": "^4.0.447"
+  }
+}

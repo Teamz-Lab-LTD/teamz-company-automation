@@ -1,10 +1,14 @@
-NIGHTLY BUILD REPORT — 2026-04-02 15:24
-Status: PARTIAL
+NIGHTLY BUILD REPORT — 2026-04-08 21:36
+Status: ALERT
 Repo dirty at start: yes
 New tools built: 0
 Total commits: 0
 ---
 SCRIPT HEALTH:
+  Alerts (3):
+  - Search index rebuild failed (exit 2)
+  - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Clarity pull:   ERROR: API request failed
+  - Internal link health failed (exit 1)
   Skipped phases (3):
   - git pull (repo dirty at start or github.com unavailable)
   - Claude build (repo dirty at start)

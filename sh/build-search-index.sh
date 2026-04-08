@@ -91,10 +91,13 @@ hub_names = {
     'shopping':'Shopping','software':'Software Cost','sports':'Sports & Fitness',
     'student':'Student Tools','text':'Text Tools','tools':'Utilities','uidesign':'UI Design',
     'video':'Video Tools','weather':'Weather & Outdoor','wedding':'Wedding','work':'Work & Payroll',
-    'ae':'UAE','au':'Australia','bd':'Bangladesh','ca':'Canada','de':'Germany','eg':'Egypt',
-    'eu':'EU Consumer','fi':'Finland','fr':'France','gh':'Ghana','id':'Indonesia','in':'India',
-    'it':'Italy','jp':'Japan','ke':'Kenya','ma':'Morocco','my':'Malaysia','ng':'Nigeria',
-    'nl':'Netherlands','no':'Norway','ph':'Philippines','sa':'Saudi Arabia','se':'Sweden',
+    'ae':'UAE','at':'Austria','au':'Australia','bd':'Bangladesh','be':'Belgium','ca':'Canada',
+    'ch':'Switzerland','cz':'Czech Republic','de':'Germany','dk':'Denmark','eg':'Egypt',
+    'es':'Spain','eu':'EU Consumer','fi':'Finland','fr':'France','gh':'Ghana',
+    'id':'Indonesia','ie':'Ireland','il':'Israel','in':'India','it':'Italy',
+    'jp':'Japan','ke':'Kenya','lu':'Luxembourg','ma':'Morocco','my':'Malaysia',
+    'ng':'Nigeria','nl':'Netherlands','no':'Norway','nz':'New Zealand',
+    'ph':'Philippines','pl':'Poland','pt':'Portugal','sa':'Saudi Arabia','se':'Sweden',
     'sg':'Singapore','uk':'United Kingdom','us':'United States','vn':'Vietnam','za':'South Africa',
 }
 

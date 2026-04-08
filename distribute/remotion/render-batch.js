@@ -192,23 +192,117 @@ if (UPLOAD && rendered.length > 0) {
   }
 }
 
+// ─── Tracking: load/save reel history ────────────────────────────────────────
+const HISTORY_FILE = path.join(REMOTION_DIR, "reel-history.json");
+
+function loadHistory() {
+  if (fs.existsSync(HISTORY_FILE)) return JSON.parse(fs.readFileSync(HISTORY_FILE, "utf-8"));
+  return { reels: [] };
+}
+
+function saveHistory(history) {
+  fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
+}
+
+const history = loadHistory();
+
+// Save each rendered reel to history with platform tracking
+for (const r of rendered) {
+  const existing = history.reels.find((h) => h.slug === r.tool.slug);
+  if (existing) {
+    existing.lastRendered = new Date().toISOString();
+    existing.video = r.video;
+    existing.caption = r.caption;
+    existing.hook = r.hook;
+  } else {
+    history.reels.push({
+      slug: r.tool.slug,
+      title: r.tool.title,
+      href: r.tool.href,
+      hub: r.tool.hub,
+      hook: r.hook,
+      audio: r.audio,
+      video: r.video,
+      caption: r.caption,
+      rendered: new Date().toISOString(),
+      lastRendered: new Date().toISOString(),
+      platforms: {
+        youtube: { posted: false, url: "", postedAt: "" },
+        instagram: { posted: false, url: "", postedAt: "" },
+        tiktok: { posted: false, url: "", postedAt: "" },
+      },
+    });
+  }
+}
+saveHistory(history);
+
+// ─── Status commands ─────────────────────────────────────────────────────────
+if (hasFlag("--status")) {
+  const h = loadHistory();
+  const total = h.reels.length;
+  const yt = h.reels.filter((r) => r.platforms.youtube.posted).length;
+  const ig = h.reels.filter((r) => r.platforms.instagram.posted).length;
+  const tt = h.reels.filter((r) => r.platforms.tiktok.posted).length;
+  console.log(`\nReel History: ${total} videos`);
+  console.log(`  YouTube:   ${yt}/${total} posted`);
+  console.log(`  Instagram: ${ig}/${total} posted`);
+  console.log(`  TikTok:    ${tt}/${total} posted`);
+
+  const unposted = h.reels.filter(
+    (r) => !r.platforms.youtube.posted || !r.platforms.instagram.posted || !r.platforms.tiktok.posted
+  );
+  if (unposted.length) {
+    console.log(`\nPending (${unposted.length}):`);
+    for (const r of unposted.slice(0, 10)) {
+      const missing = [];
+      if (!r.platforms.youtube.posted) missing.push("YT");
+      if (!r.platforms.instagram.posted) missing.push("IG");
+      if (!r.platforms.tiktok.posted) missing.push("TT");
+      console.log(`  ${r.title} — missing: ${missing.join(", ")}`);
+    }
+    if (unposted.length > 10) console.log(`  ... +${unposted.length - 10} more`);
+  }
+  process.exit(0);
+}
+
+// Mark a reel as posted: --mark slug --platform youtube --url https://...
+if (hasFlag("--mark")) {
+  const slug = getArg("--mark");
+  const platform = getArg("--platform");
+  const postUrl = getArg("--url") || "";
+  const h = loadHistory();
+  const reel = h.reels.find((r) => r.slug === slug || r.title.toLowerCase().includes(slug.toLowerCase()));
+  if (reel && platform && reel.platforms[platform]) {
+    reel.platforms[platform] = { posted: true, url: postUrl, postedAt: new Date().toISOString() };
+    saveHistory(h);
+    console.log(`Marked ${reel.title} as posted on ${platform}`);
+  } else {
+    console.log(`Not found: ${slug} / ${platform}`);
+  }
+  process.exit(0);
+}
+
+// Retry failed/missing platforms: --retry
+if (hasFlag("--retry")) {
+  const h = loadHistory();
+  const platform = getArg("--platform") || "youtube";
+  const unposted = h.reels.filter((r) => r.platforms[platform] && !r.platforms[platform].posted && r.video && fs.existsSync(r.video));
+  console.log(`\n${unposted.length} reels not posted on ${platform}:`);
+  for (const r of unposted.slice(0, 10)) {
+    console.log(`  ${r.video}`);
+    console.log(`    Caption: ${r.caption}`);
+  }
+  if (!unposted.length) console.log("  All posted!");
+  process.exit(0);
+}
+
 // Summary
 console.log("=".repeat(50));
 console.log(`Rendered: ${rendered.length}/${selected.length}`);
 console.log(`Output: ${OUTPUT_DIR}`);
+console.log(`History: ${history.reels.length} total reels tracked`);
 if (audioFiles.length) console.log(`Audio: ${audioFiles.length} tracks (randomized)`);
-
-// Manifest
-const manifest = {
-  generated: new Date().toISOString(),
-  count: rendered.length,
-  reels: rendered.map((r) => ({
-    title: r.tool.title,
-    href: r.tool.href,
-    hook: r.hook,
-    audio: r.audio,
-    video: r.video,
-    caption: r.caption,
-  })),
-};
-fs.writeFileSync(path.join(OUTPUT_DIR, "manifest.json"), JSON.stringify(manifest, null, 2));
+console.log(`\nCommands:`);
+console.log(`  --status              Show posting status across all platforms`);
+console.log(`  --mark SLUG --platform youtube --url URL   Mark as posted`);
+console.log(`  --retry --platform youtube    Show unposted reels for retry`);

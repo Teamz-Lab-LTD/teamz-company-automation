@@ -522,13 +522,37 @@ def main():
         print("\nPulling Google Trends...")
         trends = google_trends_daily()
         print(f"  Daily trends: {len(trends)}")
-        tech_keywords = ["ai", "app", "tool", "software", "code", "design", "tech", "api", "web",
-                         "data", "cloud", "security", "crypto", "finance", "calculator", "generator"]
-        tech_trends = [t for t in trends if any(kw in t.lower() for kw in tech_keywords)]
-        print(f"  Tech-relevant trends: {len(tech_trends)}")
-        for t in tech_trends[:5]:
+        # Broad filter — covers ALL product categories (tools, apps, health, finance, career, design, etc.)
+        relevant_keywords = [
+            # Tech
+            "ai", "app", "tool", "software", "code", "design", "tech", "api", "web", "data",
+            "cloud", "security", "crypto", "generator", "converter", "calculator", "browser",
+            # Finance
+            "finance", "tax", "salary", "budget", "invest", "loan", "mortgage", "interest", "saving",
+            "income", "payment", "invoice", "price", "cost", "money", "bank", "insurance",
+            # Health
+            "health", "fitness", "diet", "calorie", "bmi", "weight", "sleep", "water", "nutrition",
+            "exercise", "workout", "medical", "mental", "wellness",
+            # Career
+            "resume", "job", "career", "interview", "hiring", "salary", "remote", "freelance",
+            "linkedin", "cover letter", "work",
+            # Design
+            "color", "font", "image", "photo", "logo", "icon", "ui", "ux", "css", "gradient",
+            "mockup", "template", "canvas", "figma",
+            # Legal
+            "legal", "contract", "privacy", "gdpr", "compliance", "document",
+            # Education
+            "learn", "study", "student", "course", "education", "tutorial", "exam",
+            # Productivity
+            "productivity", "timer", "planner", "schedule", "todo", "note", "organize",
+            # General utility
+            "qr", "pdf", "text", "email", "password", "download", "upload", "scan",
+        ]
+        relevant_trends = [t for t in trends if any(kw in t.lower() for kw in relevant_keywords)]
+        print(f"  Relevant trends: {len(relevant_trends)} (from {len(trends)} total)")
+        for t in relevant_trends[:5]:
             print(f"    - {t}")
-        for trend in tech_trends:
+        for trend in relevant_trends:
             related = youtube_autocomplete(f"{trend} free tool")[:2]
             all_keywords.extend(related)
 
@@ -537,12 +561,25 @@ def main():
         keywords = research_keywords_for_niche(args.niche, tools)
         all_keywords.extend(keywords)
     else:
-        # Auto-research top niches
-        top_niches = ["pdf", "image converter", "calculator", "text tools",
-                      "ai tools", "resume", "grammar checker", "password generator",
-                      "color picker", "qr code"]
-        print("\nAuto-researching top niches...")
-        for niche in random.sample(top_niches, min(4, len(top_niches))):
+        # Auto-research across ALL product categories
+        top_niches = [
+            # High-RPM
+            "salary calculator", "tax calculator", "loan calculator", "resume builder",
+            "cover letter generator", "ats resume checker",
+            # AI tools
+            "ai text generator", "ai image generator", "grammar checker", "ai summarizer",
+            # Utility
+            "pdf compressor", "image converter", "qr code generator", "password generator",
+            "json formatter", "color picker",
+            # Health
+            "bmi calculator", "calorie calculator", "sleep calculator",
+            # Design
+            "font generator", "logo maker", "color palette generator",
+            # Productivity
+            "pomodoro timer", "invoice generator", "text counter",
+        ]
+        print("\nAuto-researching niches...")
+        for niche in random.sample(top_niches, min(5, len(top_niches))):
             keywords = research_keywords_for_niche(niche, tools)
             all_keywords.extend(keywords)
 

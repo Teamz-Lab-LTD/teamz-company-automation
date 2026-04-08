@@ -294,6 +294,52 @@ function loadHistory() {
 }
 function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null, 2)); }
 
+// ─── Post pinned comment with tool link ─────────────────────────────────────
+async function postPinnedComment(videoId, toolUrl, toolTitle) {
+  const token = await getAccessToken();
+  const comment = `Try ${toolTitle} FREE: https://${toolUrl}\n\nNo signup. No download. 100% private. Your data never leaves your browser.`;
+
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
+      snippet: {
+        videoId,
+        topLevelComment: {
+          snippet: { textOriginal: comment },
+        },
+      },
+    });
+
+    const req = https.request({
+      hostname: "www.googleapis.com",
+      path: "/youtube/v3/commentThreads?part=snippet",
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body),
+      },
+    }, (res) => {
+      let data = "";
+      res.on("data", (c) => data += c);
+      res.on("end", () => {
+        if (res.statusCode >= 400) {
+          // Comments might fail if video is still processing — not critical
+          console.log(`  Comment: failed (${res.statusCode}) — post manually later`);
+          resolve(null);
+        } else {
+          const result = JSON.parse(data);
+          const commentId = result.id;
+          console.log(`  Comment posted with tool link`);
+          resolve(commentId);
+        }
+      });
+    });
+    req.on("error", () => { console.log("  Comment: network error — post manually"); resolve(null); });
+    req.write(body);
+    req.end();
+  });
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 // MAIN
 // ═════════════════════════════════════════════════════════════════════════════
@@ -369,6 +415,19 @@ function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null,
         console.log(`  Uploaded! Video ID: ${result.videoId}`);
         console.log(`  URL: ${result.url}`);
         console.log(`  Publishes at: ${result.publishAt}`);
+
+        // Post pinned comment with tool link
+        const toolUrl = reel.video ? "" : "";
+        // Extract URL from caption or props
+        let reelUrl = "";
+        if (reel.caption && fs.existsSync(reel.caption)) {
+          const captionText = fs.readFileSync(reel.caption, "utf-8");
+          const urlMatch = captionText.match(/https?:\/\/tool\.teamzlab\.com[^\s]*/);
+          if (urlMatch) reelUrl = urlMatch[0].replace("https://", "");
+        }
+        if (!reelUrl) reelUrl = "tool.teamzlab.com";
+
+        await postPinnedComment(result.videoId, reelUrl, reel.title || title);
 
         // Update history
         reel.platforms.youtube = {

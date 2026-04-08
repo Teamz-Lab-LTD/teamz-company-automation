@@ -19,7 +19,7 @@
           "posted": false,
           "url": "",
           "postedAt": "",
-          "retries": 0
+          "retries": 1
         },
         "instagram": {
           "posted": false,
@@ -49,6 +49,76 @@
       "youtubeTitle": "Free QR Code Business Card Generator Online (No Install)",
       "rendered": "2026-04-08T23:21:55.250Z",
       "lastRendered": "2026-04-08T23:21:55.250Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "evergreen_invoice-generator",
+      "title": "Free Private Invoice Generator — No Upload, No Data Stored",
+      "hub": "evergreen",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 5,
+      "hook": "invoice generator in 10 seconds — for free",
+      "audio": "audio/beat7.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_invoice-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_invoice-generator.txt",
+      "youtubeTitle": "Free Invoice Generator — No Signup, No Install",
+      "rendered": "2026-04-08T23:28:28.523Z",
+      "lastRendered": "2026-04-08T23:28:28.524Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "uidesign_color-palette-generator",
+      "title": "Color Palette Generator",
+      "hub": "uidesign",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 2,
+      "hook": "Nobody talks about this free color palette generator",
+      "audio": "audio/beat1.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/uidesign_color-palette-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/uidesign_color-palette-generator.txt",
+      "youtubeTitle": "Free Color Palette Generator — No Signup",
+      "rendered": "2026-04-08T23:28:28.524Z",
+      "lastRendered": "2026-04-08T23:28:28.524Z",
       "platforms": {
         "youtube": {
           "posted": false,

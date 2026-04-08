@@ -12,6 +12,7 @@ Usage:
     python3 scripts/build-keyword-intel.py --gaps                # Keyword gap analysis
     python3 scripts/build-keyword-intel.py --ideas "salary"      # Get keyword ideas via Autocomplete
     python3 scripts/build-keyword-intel.py --export csv          # Export as CSV
+    python3 scripts/build-keyword-intel.py --page ecommerce --export json --output teamz-company-automation/data/ecommerce-gsc-keywords-latest.json
     python3 scripts/build-keyword-intel.py --compare "kw1" "kw2" # Compare keywords via Trends
 
 Data Sources (all FREE):
@@ -494,6 +495,22 @@ def print_keyword_ideas(keyword):
     print()
 
 
+def export_json(keywords, filepath):
+    """Export keywords to JSON (for landing pages / CI). Path relative to host project root unless absolute."""
+    path = Path(filepath)
+    if not path.is_absolute():
+        path = PROJECT_DIR / path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "generated_at": datetime.now().isoformat(),
+        "site_url": SITE_URL,
+        "keyword_count": len(keywords),
+        "keywords": keywords,
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    print(f"\n  Exported {len(keywords)} keywords to JSON: {path}\n")
+
+
 def export_csv(keywords, filename=None):
     """Export keywords to CSV."""
     if not filename:
@@ -589,6 +606,7 @@ def main():
     keyword_filter = None
     page_filter = None
     export_format = None
+    output_file = None
 
     i = 0
     while i < len(args):
@@ -600,6 +618,8 @@ def main():
             page_filter = args[i + 1]; i += 2
         elif args[i] == "--export" and i + 1 < len(args):
             export_format = args[i + 1]; i += 2
+        elif args[i] == "--output" and i + 1 < len(args):
+            output_file = args[i + 1]; i += 2
         elif args[i] in ("--opportunities", "--gaps", "--compare"):
             i += 1
         else:
@@ -667,7 +687,12 @@ def main():
         print_summary(keywords)
 
     if export_format == "csv":
-        export_csv(keywords)
+        export_csv(keywords, filename=output_file)
+    elif export_format == "json":
+        if not output_file:
+            print("\n  Usage: ... --export json --output path/to/file.json\n")
+        else:
+            export_json(keywords, output_file)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "updated": "2026-04-05",
+    "notes": "Customer-facing demo URLs only — no admin/login paths. Update meta.updated when prices or demos change (JSON-LD dateModified on /ecommerce-development/). Then: node scripts/sync-ecommerce-demos.mjs or npm run build."
+  },
+  "stores": [
+    {
+      "id": "multi-vendor",
+      "name": "Multi-vendor marketplace",
+      "tierLabel": "Top tier",
+      "priceLabel": "From $990 USD",
+      "priceFromUsd": 990,
+      "summary": "Marketplace-style shopping with multiple sellers, vendor-ready patterns, and scalable catalog structure — our flagship ecommerce reference build.",
+      "demoUrl": "https://mvecom.teamzlab.com/",
+      "seoKeywords": "multi-vendor ecommerce demo, marketplace website demo, Teamz Lab ecommerce"
+    },
+    {
+      "id": "standard",
+      "name": "Standard ecommerce",
+      "tierLabel": "Mid tier",
+      "priceLabel": "From $490 USD",
+      "priceFromUsd": 490,
+      "summary": "Full single-brand store: product catalog, cart, checkout-focused layout, and flows suited to growing brands.",
+      "demoUrl": "https://ecom.teamzlab.com/",
+      "seoKeywords": "ecommerce website demo, online store demo, Teamz Lab store"
+    },
+    {
+      "id": "starter",
+      "name": "Starter store",
+      "tierLabel": "Entry tier",
+      "priceLabel": "From $290 USD",
+      "priceFromUsd": 290,
+      "summary": "Lean storefront for small catalogs and fast launches — ideal to validate products before scaling up.",
+      "demoUrl": "https://secom.teamzlab.com/",
+      "seoKeywords": "starter ecommerce demo, simple online store demo"
+    }
+  ]
+}

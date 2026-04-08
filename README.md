@@ -32,7 +32,7 @@ python3 scripts/build-adsense-auth.py           # AdSense (optional)
 |------|------------------|
 | `py/` | Python scripts + `_teamz_config.py` (shared config loader) |
 | `sh/` | Shell scripts + `lib/config.sh` (shared config loader) |
-| `data/` | JSON/CSV output (rank history, backlinks, snapshots) |
+| `data/` | JSON/CSV output (rank history, backlinks, snapshots). **`ecommerce-demos.json`** — demo storefront URLs + pricing. **`ecommerce-landing-seo.json`** — long-tail ecommerce copy merged into `/ecommerce-development/` via `npm run sync:ecommerce-page`. **`ecommerce-gsc-keywords-latest.json`** — optional; produced by `npm run refresh:ecommerce-keywords` (`build-keyword-intel.py --export json` for queries hitting `ecommerce-development`). |
 | `distribute/` | Multi-platform publishing (Blogger, Dev.to, Medium, etc.) |
 
 ## Config system
@@ -178,8 +178,14 @@ Scripts load config in this order (later overrides earlier):
 | `py/aso/aso-reviews.py` | Review fetch, keywords, sentiment, complaints, reply prompts |
 | `py/aso/aso-track.py` | Daily keyword rank tracking via iTunes Search |
 | `py/aso/aso-guide.py` | ASO crash course + personalized checklists + LLM prompts for content |
+| `py/aso/aso-keyword-pipeline.py` | **Full pipeline**: discover → volume → compete → score → CSV. Produces `master_keywords.csv` + `ios_keywords.csv`. Integrates `build-keyword-volume.py` for real volume data. |
+| `py/aso/aso-preflight.py` | **Pre/post-flight validator**: run `--pre` before ASO work, `--post` after. Catches fabricated data, missing volume estimation, listing issues. **Mandatory for AI agents.** |
+| `py/aso/aso-store-release.py` | **Full store release orchestrator** (22 steps): keywords → volume → competitors → pipeline → build → upload → push listings → guide manual steps. Tracks progress. **Run this for any new app release.** |
+| `py/aso/aso-copy-helper.py` | Generate HTML with copy buttons for pasting listings into Play Console (fallback when API can't commit on draft apps). |
 
-Uses free public APIs only (iTunes Search, Apple/Play autocomplete, iTunes RSS reviews). No paid keys. Config: `TEAMZ_APP_IDS`, `TEAMZ_ASO_COUNTRIES`, `TEAMZ_ASO_KEYWORDS`.
+Uses free public APIs only (iTunes Search, Apple/Play autocomplete, iTunes RSS reviews, Bing Webmaster, Google Trends). No paid keys. Config: `TEAMZ_APP_IDS`, `TEAMZ_ASO_COUNTRIES`, `TEAMZ_ASO_KEYWORDS`.
+
+**AI agents: before ANY ASO task, run `python3 py/aso/aso-preflight.py --pre` first. After writing listings, run `--post`. See `automation-tool-registry.md` (this directory) for the full workflow.**
 
 ### Google Play Console (service account, `py/build-play-console.py`)
 

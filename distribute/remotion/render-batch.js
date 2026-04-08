@@ -19,7 +19,7 @@ const { execSync } = require("child_process");
 
 const REMOTION_DIR = __dirname;
 const PROJECT_ROOT = path.resolve(REMOTION_DIR, "..", "..", "..");
-const OUTPUT_DIR = path.join(REMOTION_DIR, "out");
+const OUTPUT_DIR = path.join(require("os").homedir(), "Videos", "teamzlab-reels");
 const AUDIO_DIR = path.join(REMOTION_DIR, "public", "audio");
 
 // ─── Parse args ──────────────────────────────────────────────────────────────

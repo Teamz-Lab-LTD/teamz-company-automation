@@ -1,16 +1,22 @@
 #!/usr/bin/env node
 /**
- * Teamz Lab — Batch Reel Renderer (Remotion)
+ * Teamz Lab — Batch Reel Renderer V2 (Remotion)
  *
- * Renders multiple reels with randomized audio, hooks, and tool selection.
- * Reads tool data from search-index.js, picks top tools, renders MP4s.
+ * Renders reels from SEO-optimized video plans (content-engine.py output)
+ * or auto-generates from search-index.js with full template variety.
  *
  * Usage:
- *   node render-batch.js                    # 5 reels from top tools
- *   node render-batch.js --count 20         # 20 reels
+ *   node render-batch.js                              # 5 reels from top tools (auto mode)
+ *   node render-batch.js --from-plans                 # Render from video-plans.json
+ *   node render-batch.js --from-plans --count 10      # First 10 from plans
+ *   node render-batch.js --count 20                   # 20 reels (auto mode)
  *   node render-batch.js --tool /ai/grammar-checker/  # Specific tool
- *   node render-batch.js --upload           # Render + upload to YouTube
- *   node render-batch.js --list             # List available tools
+ *   node render-batch.js --template BeforeAfter       # Force specific template
+ *   node render-batch.js --list                       # List available tools
+ *   node render-batch.js --status                     # Show posting status
+ *   node render-batch.js --mark SLUG --platform youtube --url URL
+ *   node render-batch.js --retry --platform youtube
+ *   node render-batch.js --dry-run                    # Show what would render
  */
 
 const path = require("path");
@@ -21,17 +27,41 @@ const REMOTION_DIR = __dirname;
 const PROJECT_ROOT = path.resolve(REMOTION_DIR, "..", "..", "..");
 const OUTPUT_DIR = path.join(require("os").homedir(), "Videos", "teamzlab-reels");
 const AUDIO_DIR = path.join(REMOTION_DIR, "public", "audio");
+const DATA_DIR = path.join(REMOTION_DIR, "data");
+const HISTORY_FILE = path.join(REMOTION_DIR, "reel-history.json");
+const PLANS_FILE = path.join(DATA_DIR, "video-plans.json");
 
-// ─── Parse args ──────────────────────────────────────────────────────────────
+// ─── Available templates ────────────────────────────────────────────────────
+const TEMPLATES = ["InstantFix", "BeforeAfter", "CompareThree", "ProofCase"];
+
+// ─── SAFETY LIMITS (prevents platform bans) ─────────────────────────────────
+// Based on research: YouTube 5/week, TikTok 4-5/week, Instagram 3-4/week
+// YouTube API: 10,000 units/day, videos.insert = 1600 units = max 6 uploads/day
+const PLATFORM_LIMITS = {
+  youtube:   { daily: 2, weekly: 5, minGapHours: 6 },   // Conservative — avoid spam detection
+  tiktok:    { daily: 2, weekly: 5, minGapHours: 4 },
+  instagram: { daily: 1, weekly: 4, minGapHours: 6 },
+};
+const MAX_RENDER_PER_DAY = 20;  // Don't render more than 20 in one session (stockpile limit)
+
+// ─── Parse args ─────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
 const getArg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
 const hasFlag = (n) => args.includes(n);
+
 const COUNT = parseInt(getArg("--count") || "5");
 const TOOL_PATH = getArg("--tool");
-const UPLOAD = hasFlag("--upload");
+const FROM_PLANS = hasFlag("--from-plans");
+const FORCE_TEMPLATE = getArg("--template");
 const LIST = hasFlag("--list");
+const DRY_RUN = hasFlag("--dry-run");
 
-// ─── Hook templates ──────────────────────────────────────────────────────────
+// ─── Status/Mark/Retry commands (handle first, before rendering) ────────────
+if (hasFlag("--status")) { showStatus(); process.exit(0); }
+if (hasFlag("--mark")) { markPosted(); process.exit(0); }
+if (hasFlag("--retry")) { showRetry(); process.exit(0); }
+
+// ─── Hook templates (fallback for auto mode) ────────────────────────────────
 const HOOKS = [
   "Stop paying for this",
   "This free tool is actually insane",
@@ -47,11 +77,12 @@ const HOOKS = [
   "Free tools that replaced $500/mo",
 ];
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function loadTools() {
   const idxPath = path.join(PROJECT_ROOT, "shared", "js", "search-index.js");
+  if (!fs.existsSync(idxPath)) { console.error("search-index.js not found"); return []; }
   const raw = fs.readFileSync(idxPath, "utf-8").replace(/[^\x00-\x7F]/g, "");
   const tools = [];
   const re = /\{t:'([^']*)',d:'([^']*)',h:'([^']*)'\}/g;
@@ -92,13 +123,192 @@ function pickTopTools(tools, count) {
   return scored.slice(0, count).map((s) => s.tool);
 }
 
-function generateCaption(tool, hook) {
-  const tags = ["#freetools", "#productivity", "#tech", "#lifehack", "#webapp", "#freetool", "#nosubscription", "#browsertools"];
-  const shuffled = tags.sort(() => Math.random() - 0.5).slice(0, 6);
-  return `${hook}\n\n${tool.title} — ${tool.desc.substring(0, 120)}\n\n100% free. No signup. Runs in your browser.\nYour data never leaves your device.\n\nTry it: tool.teamzlab.com${tool.href}\n\n${shuffled.join(" ")}`;
+function pickTemplate(tool) {
+  if (FORCE_TEMPLATE && TEMPLATES.includes(FORCE_TEMPLATE)) return FORCE_TEMPLATE;
+  const hub = tool.hub || "";
+  const desc = (tool.desc || "").toLowerCase();
+  // Smart template selection based on content
+  if (desc.includes("compare") || desc.includes("vs") || desc.includes("alternative")) return "CompareThree";
+  if (desc.includes("convert") || desc.includes("compress") || desc.includes("resize") || desc.includes("optimize")) return "BeforeAfter";
+  if (hub === "career" || hub === "legal" || desc.includes("review") || desc.includes("client")) return "ProofCase";
+  // Random between InstantFix (60%) and others (40%) for variety
+  return Math.random() < 0.6 ? "InstantFix" : pick(TEMPLATES);
 }
 
-// ─── Main ────────────────────────────────────────────────────────────────────
+// ─── History management ─────────────────────────────────────────────────────
+function loadHistory() {
+  if (fs.existsSync(HISTORY_FILE)) return JSON.parse(fs.readFileSync(HISTORY_FILE, "utf-8"));
+  return { reels: [] };
+}
+
+function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null, 2)); }
+
+function getUsedCombos(history) {
+  return new Set(history.reels.map((r) => `${r.slug}|${r.template}|${r.themeIndex}`));
+}
+
+function pickUniqueTheme(slug, template, usedCombos) {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const theme = Math.floor(Math.random() * 8);
+    const key = `${slug}|${template}|${theme}`;
+    if (!usedCombos.has(key)) return theme;
+  }
+  return Math.floor(Math.random() * 8); // fallback
+}
+
+// ─── Status commands ────────────────────────────────────────────────────────
+function showStatus() {
+  const h = loadHistory();
+  const total = h.reels.length;
+  if (!total) { console.log("No reels rendered yet."); return; }
+  const yt = h.reels.filter((r) => r.platforms && r.platforms.youtube && r.platforms.youtube.posted).length;
+  const ig = h.reels.filter((r) => r.platforms && r.platforms.instagram && r.platforms.instagram.posted).length;
+  const tt = h.reels.filter((r) => r.platforms && r.platforms.tiktok && r.platforms.tiktok.posted).length;
+
+  // Count by template
+  const byTemplate = {};
+  h.reels.forEach((r) => { byTemplate[r.template || "ToolReel"] = (byTemplate[r.template || "ToolReel"] || 0) + 1; });
+
+  console.log(`\n${"=".repeat(50)}`);
+  console.log(`  Reel History: ${total} videos`);
+  console.log(`${"=".repeat(50)}`);
+  console.log(`  YouTube:   ${yt}/${total} posted`);
+  console.log(`  Instagram: ${ig}/${total} posted`);
+  console.log(`  TikTok:    ${tt}/${total} posted`);
+  console.log(`\n  Templates used:`);
+  Object.entries(byTemplate).sort((a, b) => b[1] - a[1]).forEach(([t, c]) => console.log(`    ${t}: ${c}`));
+
+  const unposted = h.reels.filter(
+    (r) => r.platforms && (!r.platforms.youtube.posted || !r.platforms.instagram.posted || !r.platforms.tiktok.posted)
+  );
+  if (unposted.length) {
+    console.log(`\n  Pending (${unposted.length}):`);
+    for (const r of unposted.slice(0, 10)) {
+      const missing = [];
+      if (!r.platforms.youtube.posted) missing.push("YT");
+      if (!r.platforms.instagram.posted) missing.push("IG");
+      if (!r.platforms.tiktok.posted) missing.push("TT");
+      console.log(`    ${r.title} [${r.template || "?"}] — ${missing.join(", ")}`);
+    }
+    if (unposted.length > 10) console.log(`    ... +${unposted.length - 10} more`);
+  }
+}
+
+function markPosted() {
+  const slug = getArg("--mark");
+  const platform = getArg("--platform");
+  const postUrl = getArg("--url") || "";
+  const h = loadHistory();
+  const reel = h.reels.find((r) => r.slug === slug || (r.title || "").toLowerCase().includes((slug || "").toLowerCase()));
+  if (reel && platform && reel.platforms && reel.platforms[platform]) {
+    reel.platforms[platform] = { posted: true, url: postUrl, postedAt: new Date().toISOString() };
+    saveHistory(h);
+    console.log(`Marked "${reel.title}" as posted on ${platform}`);
+  } else {
+    console.log(`Not found: ${slug} / ${platform}`);
+  }
+}
+
+function showRetry() {
+  const h = loadHistory();
+  const platform = getArg("--platform") || "youtube";
+  const unposted = h.reels.filter(
+    (r) => r.platforms && r.platforms[platform] && !r.platforms[platform].posted && r.video && fs.existsSync(r.video)
+  );
+  console.log(`\n${unposted.length} reels not posted on ${platform}:`);
+  for (const r of unposted.slice(0, 15)) {
+    console.log(`  [${r.template || "?"}] ${r.title}`);
+    console.log(`    Video: ${r.video}`);
+    if (r.youtubeTitle) console.log(`    YT Title: ${r.youtubeTitle}`);
+  }
+  if (!unposted.length) console.log("  All posted!");
+}
+
+// ─── Safety: platform rate limit checker ────────────────────────────────────
+function isSafeToPost(platform, history) {
+  const limits = PLATFORM_LIMITS[platform];
+  if (!limits) return { safe: true };
+
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10);
+  const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+  const posted = history.reels.filter(
+    (r) => r.platforms && r.platforms[platform] && r.platforms[platform].posted
+  );
+
+  // Daily limit
+  const todayCount = posted.filter((r) => (r.platforms[platform].postedAt || "").startsWith(todayStr)).length;
+  if (todayCount >= limits.daily) {
+    return { safe: false, reason: `Daily limit reached (${todayCount}/${limits.daily}). Try tomorrow.` };
+  }
+
+  // Weekly limit
+  const weekCount = posted.filter((r) => new Date(r.platforms[platform].postedAt || 0) > weekAgo).length;
+  if (weekCount >= limits.weekly) {
+    return { safe: false, reason: `Weekly limit reached (${weekCount}/${limits.weekly}). Wait a few days.` };
+  }
+
+  // Minimum gap
+  const lastPost = posted
+    .map((r) => new Date(r.platforms[platform].postedAt || 0))
+    .sort((a, b) => b - a)[0];
+  if (lastPost) {
+    const hoursSince = (now - lastPost) / (1000 * 60 * 60);
+    if (hoursSince < limits.minGapHours) {
+      return { safe: false, reason: `Too soon — last post ${hoursSince.toFixed(1)}h ago (min ${limits.minGapHours}h gap).` };
+    }
+  }
+
+  return { safe: true, todayCount, weekCount };
+}
+
+// ─── Distribute command: show what's safe to post now ───────────────────────
+function showDistribute() {
+  const h = loadHistory();
+  console.log(`\n${"=".repeat(50)}`);
+  console.log(`  Distribution Safety Dashboard`);
+  console.log(`${"=".repeat(50)}\n`);
+
+  for (const platform of ["youtube", "tiktok", "instagram"]) {
+    const check = isSafeToPost(platform, h);
+    const limits = PLATFORM_LIMITS[platform];
+    const unposted = h.reels.filter(
+      (r) => r.platforms && r.platforms[platform] && !r.platforms[platform].posted && r.video && fs.existsSync(r.video)
+    );
+
+    const status = check.safe ? "SAFE" : "BLOCKED";
+    const icon = check.safe ? "+" : "x";
+    console.log(`  [${icon}] ${platform.toUpperCase()} — ${status}`);
+    if (!check.safe) console.log(`      Reason: ${check.reason}`);
+    console.log(`      Limits: ${limits.daily}/day, ${limits.weekly}/week, ${limits.minGapHours}h gap`);
+    console.log(`      Ready to post: ${unposted.length} videos`);
+
+    if (check.safe && unposted.length > 0) {
+      const next = unposted[0];
+      console.log(`      Next: "${next.youtubeTitle || next.title}"`);
+      console.log(`      Video: ${next.video}`);
+      console.log(`      Caption: ${next.caption}`);
+      if (platform === "tiktok" && fs.existsSync((next.caption || "").replace(".txt", ".tiktok.txt"))) {
+        console.log(`      TikTok caption: ${next.caption.replace(".txt", ".tiktok.txt")}`);
+      }
+      if (platform === "instagram" && fs.existsSync((next.caption || "").replace(".txt", ".instagram.txt"))) {
+        console.log(`      IG caption: ${next.caption.replace(".txt", ".instagram.txt")}`);
+      }
+    }
+    console.log();
+  }
+
+  console.log(`  After posting, mark done:`);
+  console.log(`    node render-batch.js --mark SLUG --platform youtube --url URL\n`);
+}
+
+if (hasFlag("--distribute") || hasFlag("--safety")) { showDistribute(); process.exit(0); }
+
+// ═════════════════════════════════════════════════════════════════════════════
+// MAIN — Build render queue
+// ═════════════════════════════════════════════════════════════════════════════
+
 const tools = loadTools();
 console.log(`Loaded ${tools.length} tools`);
 
@@ -115,194 +325,236 @@ if (LIST) {
 
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 const audioFiles = getAudioFiles();
-console.log(`Audio tracks: ${audioFiles.length}`);
+const history = loadHistory();
+const usedCombos = getUsedCombos(history);
 
-// Select tools
-let selected;
-if (TOOL_PATH) {
+// ─── Build render queue ─────────────────────────────────────────────────────
+let renderQueue = [];
+
+if (FROM_PLANS) {
+  // ── Mode 1: Render from video-plans.json (content-engine.py output) ──
+  if (!fs.existsSync(PLANS_FILE)) {
+    console.error(`\nNo video plans found. Generate them first:\n  python3 content-engine.py --count 20 --export\n`);
+    process.exit(1);
+  }
+
+  const plans = JSON.parse(fs.readFileSync(PLANS_FILE, "utf-8"));
+  console.log(`Loaded ${plans.count} video plans from content-engine`);
+  console.log(`Audio tracks: ${audioFiles.length}\n`);
+
+  const toRender = plans.plans.slice(0, COUNT);
+
+  for (const plan of toRender) {
+    const r = plan.render;
+    const template = FORCE_TEMPLATE || r.template || "InstantFix";
+    const slug = plan.id;
+    const themeIndex = r.props.themeIndex != null ? r.props.themeIndex : pickUniqueTheme(slug, template, usedCombos);
+
+    renderQueue.push({
+      slug,
+      template,
+      themeIndex,
+      outFile: path.join(OUTPUT_DIR, `${slug}.mp4`),
+      captionFile: path.join(OUTPUT_DIR, `${slug}.txt`),
+      props: { ...r.props, themeIndex },
+      // YouTube metadata from content-engine
+      youtubeTitle: plan.youtube ? plan.youtube.title : "",
+      youtubeDesc: plan.youtube ? plan.youtube.description : "",
+      youtubeTags: plan.youtube ? plan.youtube.tags : [],
+      youtubeCategoryId: plan.youtube ? plan.youtube.categoryId : 28,
+      youtubeLanguage: plan.youtube ? plan.youtube.defaultLanguage : "",
+      // Platform captions
+      tiktokCaption: plan.tiktok ? plan.tiktok.caption : "",
+      instagramCaption: plan.instagram ? plan.instagram.caption : "",
+      language: plan.language || "en",
+      hub: plan.hub || "",
+      title: r.props.title,
+      hook: r.props.hook,
+      audio: r.props.audioFile,
+    });
+  }
+
+} else if (TOOL_PATH) {
+  // ── Mode 2: Specific tool ──
   const clean = TOOL_PATH.replace(/^\/|\/$/g, "");
-  selected = tools.filter((t) => t.href.replace(/^\/|\/$/g, "") === clean);
-  if (!selected.length) { console.error(`Tool not found: ${TOOL_PATH}`); process.exit(1); }
+  const found = tools.filter((t) => t.href.replace(/^\/|\/$/g, "") === clean);
+  if (!found.length) { console.error(`Tool not found: ${TOOL_PATH}`); process.exit(1); }
+
+  for (const tool of found) {
+    const template = pickTemplate(tool);
+    const themeIndex = pickUniqueTheme(tool.slug, template, usedCombos);
+    const hook = pick(HOOKS);
+    const audio = audioFiles.length ? pick(audioFiles) : "";
+
+    renderQueue.push({
+      slug: tool.slug,
+      template,
+      themeIndex,
+      outFile: path.join(OUTPUT_DIR, `${tool.slug}.mp4`),
+      captionFile: path.join(OUTPUT_DIR, `${tool.slug}.txt`),
+      props: {
+        hook, title: tool.title, description: tool.desc.substring(0, 150),
+        url: `tool.teamzlab.com${tool.href}`,
+        audioFile: audio, themeIndex,
+        ctaText: "Try it free", ctaBadge: "LINK IN BIO", brandName: "tool.teamzlab.com",
+      },
+      youtubeTitle: `${tool.title} — Free, No Signup`,
+      title: tool.title, hook, audio, hub: tool.hub, language: "en",
+    });
+  }
+
 } else {
-  selected = pickTopTools(tools, COUNT);
+  // ── Mode 3: Auto-pick top tools ──
+  const selected = pickTopTools(tools, COUNT);
+  console.log(`Audio tracks: ${audioFiles.length}\n`);
+
+  for (const tool of selected) {
+    const template = pickTemplate(tool);
+    const themeIndex = pickUniqueTheme(tool.slug, template, usedCombos);
+    const hook = pick(HOOKS);
+    const audio = audioFiles.length ? pick(audioFiles) : "";
+
+    renderQueue.push({
+      slug: tool.slug,
+      template,
+      themeIndex,
+      outFile: path.join(OUTPUT_DIR, `${tool.slug}.mp4`),
+      captionFile: path.join(OUTPUT_DIR, `${tool.slug}.txt`),
+      props: {
+        hook, title: tool.title, description: tool.desc.substring(0, 150),
+        url: `tool.teamzlab.com${tool.href}`,
+        audioFile: audio, themeIndex,
+        ctaText: "Try it free", ctaBadge: "LINK IN BIO", brandName: "tool.teamzlab.com",
+      },
+      youtubeTitle: `${tool.title} — Free, No Signup`,
+      title: tool.title, hook, audio, hub: tool.hub, language: "en",
+    });
+  }
 }
 
-console.log(`\nRendering ${selected.length} reels...\n`);
+// ═════════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═════════════════════════════════════════════════════════════════════════════
+
+// Safety cap on renders per session
+if (renderQueue.length > MAX_RENDER_PER_DAY) {
+  console.log(`\nSafety: capping at ${MAX_RENDER_PER_DAY} renders (requested ${renderQueue.length}).`);
+  console.log(`  Reason: stockpiling too many unposted videos looks spammy if uploaded in bulk.`);
+  console.log(`  Tip: render in smaller batches, post first, then render more.\n`);
+  renderQueue = renderQueue.slice(0, MAX_RENDER_PER_DAY);
+}
+
+console.log(`Rendering ${renderQueue.length} reels...\n`);
+
+if (DRY_RUN) {
+  for (let i = 0; i < renderQueue.length; i++) {
+    const q = renderQueue[i];
+    console.log(`[${i + 1}/${renderQueue.length}] ${q.title}`);
+    console.log(`  Template: ${q.template} | Theme: ${q.themeIndex} | Lang: ${q.language || "en"}`);
+    console.log(`  Hook: "${q.hook || q.props.hook}"`);
+    console.log(`  Audio: ${q.audio || q.props.audioFile || "none"}`);
+    if (q.youtubeTitle) console.log(`  YT Title: ${q.youtubeTitle}`);
+    console.log(`  Output: ${q.outFile}`);
+    console.log();
+  }
+  console.log(`(dry run — nothing rendered)`);
+  process.exit(0);
+}
 
 const rendered = [];
 
-for (let i = 0; i < selected.length; i++) {
-  const tool = selected[i];
-  const hook = pick(HOOKS);
-  const audio = audioFiles.length ? pick(audioFiles) : "";
-  const outFile = path.join(OUTPUT_DIR, `${tool.slug}.mp4`);
-  const captionFile = path.join(OUTPUT_DIR, `${tool.slug}.txt`);
+for (let i = 0; i < renderQueue.length; i++) {
+  const q = renderQueue[i];
 
-  console.log(`[${i + 1}/${selected.length}] ${tool.title}`);
-  console.log(`  Hook: "${hook}"`);
-  console.log(`  Audio: ${audio || "none"}`);
+  console.log(`[${i + 1}/${renderQueue.length}] ${q.title}`);
+  console.log(`  Template: ${q.template} | Theme: ${q.themeIndex} | Lang: ${q.language || "en"}`);
+  console.log(`  Hook: "${q.hook || q.props.hook}"`);
+  console.log(`  Audio: ${q.audio || q.props.audioFile || "none"}`);
 
-  const props = JSON.stringify({
-    hook,
-    title: tool.title,
-    description: tool.desc.substring(0, 150),
-    url: `tool.teamzlab.com${tool.href}`,
-    audioFile: audio,
-  });
+  const propsJson = JSON.stringify(q.props);
 
   try {
     execSync(
-      `npx remotion render src/index.js ToolReel "${outFile}" --props='${props.replace(/'/g, "'\\''")}'`,
-      { cwd: REMOTION_DIR, stdio: "pipe", timeout: 120000 }
+      `npx remotion render src/index.js ${q.template} "${q.outFile}" --props='${propsJson.replace(/'/g, "'\\''")}'`,
+      { cwd: REMOTION_DIR, stdio: "pipe", timeout: 180000 }
     );
 
-    const size = (fs.statSync(outFile).size / (1024 * 1024)).toFixed(1);
+    const size = (fs.statSync(q.outFile).size / (1024 * 1024)).toFixed(1);
     console.log(`  Rendered: ${size} MB`);
 
-    // Save caption
-    const caption = generateCaption(tool, hook);
-    fs.writeFileSync(captionFile, caption);
+    // Save caption file (YouTube description or generated)
+    const caption = q.youtubeDesc || `${q.props.hook}\n\n${q.title}\n\nTry it: ${q.props.url}\n\n#freetools #shorts`;
+    fs.writeFileSync(q.captionFile, caption);
 
-    rendered.push({ tool, video: outFile, caption: captionFile, hook, audio });
+    // Save platform-specific captions if available
+    if (q.tiktokCaption) fs.writeFileSync(q.captionFile.replace(".txt", ".tiktok.txt"), q.tiktokCaption);
+    if (q.instagramCaption) fs.writeFileSync(q.captionFile.replace(".txt", ".instagram.txt"), q.instagramCaption);
+
+    rendered.push(q);
   } catch (e) {
-    console.log(`  FAILED: ${e.message.substring(0, 100)}`);
+    console.log(`  FAILED: ${e.message.substring(0, 120)}`);
   }
-  console.log("");
+  console.log();
 }
 
-// Upload to YouTube if --upload
-if (UPLOAD && rendered.length > 0) {
-  console.log("\nUploading to YouTube...\n");
-  const ytAuth = path.join(REMOTION_DIR, "..", "youtube-auth.py");
+// ═════════════════════════════════════════════════════════════════════════════
+// SAVE HISTORY
+// ═════════════════════════════════════════════════════════════════════════════
 
-  for (const r of rendered) {
-    const title = `${r.hook} | ${r.tool.title} — Free Tool`;
-    const desc = fs.readFileSync(r.caption, "utf-8");
-    const tags = `free tools,${r.tool.hub},${r.tool.title},browser tools,no signup,privacy`;
-
-    try {
-      execSync(
-        `python3 "${ytAuth}" --upload "${r.video}" --title "${title.replace(/"/g, '\\"')}" --description "${desc.replace(/"/g, '\\"').replace(/\n/g, '\\n')}" --tags "${tags}"`,
-        { stdio: "pipe", timeout: 120000 }
-      );
-      console.log(`  Uploaded: ${r.tool.title}`);
-    } catch (e) {
-      console.log(`  Upload failed: ${r.tool.title}`);
-    }
-  }
-}
-
-// ─── Tracking: load/save reel history ────────────────────────────────────────
-const HISTORY_FILE = path.join(REMOTION_DIR, "reel-history.json");
-
-function loadHistory() {
-  if (fs.existsSync(HISTORY_FILE)) return JSON.parse(fs.readFileSync(HISTORY_FILE, "utf-8"));
-  return { reels: [] };
-}
-
-function saveHistory(history) {
-  fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
-}
-
-const history = loadHistory();
-
-// Save each rendered reel to history with platform tracking
-for (const r of rendered) {
-  const existing = history.reels.find((h) => h.slug === r.tool.slug);
+for (const q of rendered) {
+  const existing = history.reels.find((h) => h.slug === q.slug && h.template === q.template);
   if (existing) {
     existing.lastRendered = new Date().toISOString();
-    existing.video = r.video;
-    existing.caption = r.caption;
-    existing.hook = r.hook;
+    existing.video = q.outFile;
+    existing.caption = q.captionFile;
+    existing.hook = q.hook || q.props.hook;
+    existing.themeIndex = q.themeIndex;
   } else {
     history.reels.push({
-      slug: r.tool.slug,
-      title: r.tool.title,
-      href: r.tool.href,
-      hub: r.tool.hub,
-      hook: r.hook,
-      audio: r.audio,
-      video: r.video,
-      caption: r.caption,
+      slug: q.slug,
+      title: q.title,
+      hub: q.hub,
+      language: q.language || "en",
+      template: q.template,
+      themeIndex: q.themeIndex,
+      hook: q.hook || q.props.hook,
+      audio: q.audio || q.props.audioFile,
+      video: q.outFile,
+      caption: q.captionFile,
+      youtubeTitle: q.youtubeTitle || "",
       rendered: new Date().toISOString(),
       lastRendered: new Date().toISOString(),
       platforms: {
-        youtube: { posted: false, url: "", postedAt: "" },
-        instagram: { posted: false, url: "", postedAt: "" },
-        tiktok: { posted: false, url: "", postedAt: "" },
+        youtube: { posted: false, url: "", postedAt: "", retries: 0 },
+        instagram: { posted: false, url: "", postedAt: "", retries: 0 },
+        tiktok: { posted: false, url: "", postedAt: "", retries: 0 },
       },
     });
   }
 }
 saveHistory(history);
 
-// ─── Status commands ─────────────────────────────────────────────────────────
-if (hasFlag("--status")) {
-  const h = loadHistory();
-  const total = h.reels.length;
-  const yt = h.reels.filter((r) => r.platforms.youtube.posted).length;
-  const ig = h.reels.filter((r) => r.platforms.instagram.posted).length;
-  const tt = h.reels.filter((r) => r.platforms.tiktok.posted).length;
-  console.log(`\nReel History: ${total} videos`);
-  console.log(`  YouTube:   ${yt}/${total} posted`);
-  console.log(`  Instagram: ${ig}/${total} posted`);
-  console.log(`  TikTok:    ${tt}/${total} posted`);
+// ═════════════════════════════════════════════════════════════════════════════
+// SUMMARY
+// ═════════════════════════════════════════════════════════════════════════════
 
-  const unposted = h.reels.filter(
-    (r) => !r.platforms.youtube.posted || !r.platforms.instagram.posted || !r.platforms.tiktok.posted
-  );
-  if (unposted.length) {
-    console.log(`\nPending (${unposted.length}):`);
-    for (const r of unposted.slice(0, 10)) {
-      const missing = [];
-      if (!r.platforms.youtube.posted) missing.push("YT");
-      if (!r.platforms.instagram.posted) missing.push("IG");
-      if (!r.platforms.tiktok.posted) missing.push("TT");
-      console.log(`  ${r.title} — missing: ${missing.join(", ")}`);
-    }
-    if (unposted.length > 10) console.log(`  ... +${unposted.length - 10} more`);
-  }
-  process.exit(0);
-}
-
-// Mark a reel as posted: --mark slug --platform youtube --url https://...
-if (hasFlag("--mark")) {
-  const slug = getArg("--mark");
-  const platform = getArg("--platform");
-  const postUrl = getArg("--url") || "";
-  const h = loadHistory();
-  const reel = h.reels.find((r) => r.slug === slug || r.title.toLowerCase().includes(slug.toLowerCase()));
-  if (reel && platform && reel.platforms[platform]) {
-    reel.platforms[platform] = { posted: true, url: postUrl, postedAt: new Date().toISOString() };
-    saveHistory(h);
-    console.log(`Marked ${reel.title} as posted on ${platform}`);
-  } else {
-    console.log(`Not found: ${slug} / ${platform}`);
-  }
-  process.exit(0);
-}
-
-// Retry failed/missing platforms: --retry
-if (hasFlag("--retry")) {
-  const h = loadHistory();
-  const platform = getArg("--platform") || "youtube";
-  const unposted = h.reels.filter((r) => r.platforms[platform] && !r.platforms[platform].posted && r.video && fs.existsSync(r.video));
-  console.log(`\n${unposted.length} reels not posted on ${platform}:`);
-  for (const r of unposted.slice(0, 10)) {
-    console.log(`  ${r.video}`);
-    console.log(`    Caption: ${r.caption}`);
-  }
-  if (!unposted.length) console.log("  All posted!");
-  process.exit(0);
-}
-
-// Summary
 console.log("=".repeat(50));
-console.log(`Rendered: ${rendered.length}/${selected.length}`);
+console.log(`Rendered: ${rendered.length}/${renderQueue.length}`);
 console.log(`Output: ${OUTPUT_DIR}`);
 console.log(`History: ${history.reels.length} total reels tracked`);
-if (audioFiles.length) console.log(`Audio: ${audioFiles.length} tracks (randomized)`);
-console.log(`\nCommands:`);
-console.log(`  --status              Show posting status across all platforms`);
-console.log(`  --mark SLUG --platform youtube --url URL   Mark as posted`);
-console.log(`  --retry --platform youtube    Show unposted reels for retry`);
+if (audioFiles.length) console.log(`Audio: ${audioFiles.length} tracks`);
+
+// Show template distribution
+const tDist = {};
+rendered.forEach((r) => { tDist[r.template] = (tDist[r.template] || 0) + 1; });
+if (Object.keys(tDist).length > 1) {
+  console.log(`Templates: ${Object.entries(tDist).map(([t, c]) => `${t}(${c})`).join(", ")}`);
+}
+
+console.log(`\nFull pipeline:`);
+console.log(`  1. python3 content-engine.py --count 20 --trending --export`);
+console.log(`  2. node render-batch.js --from-plans --count 20`);
+console.log(`  3. node render-batch.js --distribute          # What's safe to post now`);
+console.log(`  4. node render-batch.js --mark SLUG --platform youtube --url URL`);
+console.log(`  5. node render-batch.js --status              # Overall status`);
+console.log(`  6. node render-batch.js --retry --platform X  # Show unposted`);

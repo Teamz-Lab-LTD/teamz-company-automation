@@ -1,0 +1,74 @@
+{
+  "reels": [
+    {
+      "slug": "evergreen_qr-code-generator",
+      "title": "QR Code Generator",
+      "hub": "evergreen",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 5,
+      "hook": "I can't believe this qr code generator lifetime tool is free",
+      "audio": "audio/beat10.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_qr-code-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_qr-code-generator.txt",
+      "youtubeTitle": "Qr Code Generator Lifetime — Free Browser Tool",
+      "rendered": "2026-04-08T23:21:55.249Z",
+      "lastRendered": "2026-04-08T23:21:55.250Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "tools_qr-code-business-card",
+      "title": "QR Code Business Card Generator",
+      "hub": "tools",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 0,
+      "hook": "Why are you still paying for qr code?",
+      "audio": "audio/beat9.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_qr-code-business-card.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_qr-code-business-card.txt",
+      "youtubeTitle": "Free QR Code Business Card Generator Online (No Install)",
+      "rendered": "2026-04-08T23:21:55.250Z",
+      "lastRendered": "2026-04-08T23:21:55.250Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    }
+  ]
+}

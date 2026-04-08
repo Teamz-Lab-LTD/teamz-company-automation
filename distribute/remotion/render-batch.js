@@ -198,14 +198,34 @@ function markPosted() {
   const slug = getArg("--mark");
   const platform = getArg("--platform");
   const postUrl = getArg("--url") || "";
+  const force = hasFlag("--force");
   const h = loadHistory();
   const reel = h.reels.find((r) => r.slug === slug || (r.title || "").toLowerCase().includes((slug || "").toLowerCase()));
-  if (reel && platform && reel.platforms && reel.platforms[platform]) {
-    reel.platforms[platform] = { posted: true, url: postUrl, postedAt: new Date().toISOString() };
-    saveHistory(h);
-    console.log(`Marked "${reel.title}" as posted on ${platform}`);
-  } else {
+  if (!reel || !platform || !reel.platforms || !reel.platforms[platform]) {
     console.log(`Not found: ${slug} / ${platform}`);
+    return;
+  }
+
+  // Safety check — warn if posting too fast
+  const check = isSafeToPost(platform, h);
+  if (!check.safe && !force) {
+    console.log(`\n  WARNING: ${platform.toUpperCase()} rate limit hit!`);
+    console.log(`  ${check.reason}`);
+    console.log(`\n  This will likely get your account flagged or shadowbanned.`);
+    console.log(`  If you already posted anyway, use --force to override.\n`);
+    return;
+  }
+
+  reel.platforms[platform] = { posted: true, url: postUrl, postedAt: new Date().toISOString(), retries: 0 };
+  saveHistory(h);
+  console.log(`Marked "${reel.title}" as posted on ${platform}`);
+
+  // Show remaining safe capacity
+  const newCheck = isSafeToPost(platform, h);
+  if (newCheck.safe) {
+    console.log(`  ${platform}: ${newCheck.todayCount || 0}/${PLATFORM_LIMITS[platform].daily} today, ${newCheck.weekCount || 0}/${PLATFORM_LIMITS[platform].weekly} this week`);
+  } else {
+    console.log(`  ${platform}: LIMIT REACHED — wait before posting more`);
   }
 }
 
@@ -435,6 +455,23 @@ if (FROM_PLANS) {
 // ═════════════════════════════════════════════════════════════════════════════
 // RENDER
 // ═════════════════════════════════════════════════════════════════════════════
+
+// Stockpile warning — don't render if too many unposted
+const unpostedCount = history.reels.filter(
+  (r) => r.platforms && (!r.platforms.youtube.posted || !r.platforms.instagram.posted || !r.platforms.tiktok.posted) && r.video && fs.existsSync(r.video)
+).length;
+
+if (unpostedCount >= 15 && !DRY_RUN) {
+  console.log(`\n  WARNING: You have ${unpostedCount} unposted videos already!`);
+  console.log(`  Rendering more without posting = stockpiling = looks spammy when bulk-uploaded.`);
+  console.log(`  Post your existing videos first, then render more.`);
+  console.log(`\n  Run: node render-batch.js --distribute`);
+  console.log(`  to see what's safe to post now.\n`);
+  if (unpostedCount >= 30) {
+    console.log(`  BLOCKED: ${unpostedCount} unposted videos. Post at least 10 before rendering more.\n`);
+    process.exit(1);
+  }
+}
 
 // Safety cap on renders per session
 if (renderQueue.length > MAX_RENDER_PER_DAY) {

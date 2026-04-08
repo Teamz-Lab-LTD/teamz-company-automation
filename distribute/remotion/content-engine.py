@@ -45,10 +45,12 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent
 # FREE DATA SOURCES
 # ═════════════════════════════════════════════════════════════════════════════
 
-def youtube_autocomplete(query):
+def youtube_autocomplete(query, lang="en"):
     """Get YouTube search suggestions (free, no API key)"""
     try:
-        url = f"https://suggestqueries-clients6.youtube.com/complete/search?client=youtube&ds=yt&q={urllib.parse.quote(query)}"
+        hl = lang if lang != "en" else ""
+        lang_param = f"&hl={hl}&gl={hl.upper()}" if hl else ""
+        url = f"https://suggestqueries-clients6.youtube.com/complete/search?client=youtube&ds=yt&q={urllib.parse.quote(query)}{lang_param}"
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         resp = urllib.request.urlopen(req, timeout=8)
         raw = resp.read().decode("utf-8", errors="replace")
@@ -234,6 +236,212 @@ AUDIENCE_MAP = {
     "productivity": "professional",
 }
 
+# ─── Hub → Language mapping (ISO 639-1 — supported by YouTube, Android, iOS) ──
+HUB_LANGUAGE = {
+    "no": "no",   # Norwegian
+    "de": "de",   # German
+    "fr": "fr",   # French
+    "se": "sv",   # Swedish
+    "fi": "fi",   # Finnish
+    "nl": "nl",   # Dutch
+    "ae": "ar",   # Arabic (UAE)
+    "sa": "ar",   # Arabic (Saudi Arabia)
+    "eg": "ar",   # Arabic (Egypt)
+    "ma": "ar",   # Arabic (Morocco)
+    "id": "id",   # Indonesian
+    "vn": "vi",   # Vietnamese
+    "jp": "ja",   # Japanese
+    # Future hubs
+    "es": "es",   # Spanish
+    "pt": "pt",   # Portuguese
+    "it": "it",   # Italian
+    "pl": "pl",   # Polish
+    "tr": "tr",   # Turkish
+    "kr": "ko",   # Korean
+    "cn": "zh",   # Chinese
+    "ru": "ru",   # Russian
+    "th": "th",   # Thai
+    "in": "hi",   # Hindi (India)
+}
+
+# Localized hook templates (most impactful hooks in each language)
+LOCALIZED_HOOKS = {
+    "no": {
+        "pain": [
+            "Slutt å betale for {keyword}",
+            "Hvorfor betaler du fortsatt for {keyword}?",
+            "Gratis {keyword} — ingen registrering",
+            "Du trenger ikke dyre apper for {keyword}",
+        ],
+        "curiosity": [
+            "Dette gratis {keyword}-verktøyet er helt fantastisk",
+            "Kan ikke tro at dette {keyword}-verktøyet er gratis",
+            "Vent til du ser hva dette verktøyet gjør",
+        ],
+        "outcome": [
+            "Gratis {keyword} som faktisk fungerer",
+            "Beste gratis {keyword} — ingen installasjon",
+            "{keyword} på sekunder — helt gratis",
+        ],
+    },
+    "de": {
+        "pain": [
+            "Hör auf für {keyword} zu bezahlen",
+            "Warum bezahlst du noch für {keyword}?",
+            "Kostenloses {keyword} — keine Anmeldung",
+            "{keyword} sollte nicht Geld kosten",
+        ],
+        "curiosity": [
+            "Dieses kostenlose {keyword}-Tool ist der Wahnsinn",
+            "Ich kann nicht glauben, dass dieses {keyword}-Tool kostenlos ist",
+            "Warte bis du siehst was dieses Tool kann",
+        ],
+        "outcome": [
+            "Kostenloses {keyword} das wirklich funktioniert",
+            "Bestes kostenloses {keyword} — ohne Installation",
+            "{keyword} in Sekunden — komplett kostenlos",
+        ],
+    },
+    "fr": {
+        "pain": [
+            "Arrêtez de payer pour {keyword}",
+            "Pourquoi payez-vous encore pour {keyword} ?",
+            "{keyword} gratuit — sans inscription",
+        ],
+        "curiosity": [
+            "Cet outil {keyword} gratuit est incroyable",
+            "Comment cet outil {keyword} peut être gratuit ?",
+        ],
+        "outcome": [
+            "{keyword} gratuit qui fonctionne vraiment",
+            "Meilleur {keyword} gratuit — sans installation",
+        ],
+    },
+    "sv": {
+        "pain": [
+            "Sluta betala för {keyword}",
+            "Varför betalar du fortfarande för {keyword}?",
+            "Gratis {keyword} — ingen registrering",
+        ],
+        "curiosity": [
+            "Det här gratis {keyword}-verktyget är helt galet",
+            "Kan inte tro att det här {keyword}-verktyget är gratis",
+        ],
+        "outcome": [
+            "Gratis {keyword} som faktiskt fungerar",
+            "Bästa gratis {keyword} — ingen installation",
+        ],
+    },
+    "fi": {
+        "pain": [
+            "Lopeta maksaminen {keyword}-työkaluista",
+            "Miksi maksat vielä {keyword}-työkalusta?",
+            "Ilmainen {keyword} — ei rekisteröitymistä",
+        ],
+        "curiosity": [
+            "Tämä ilmainen {keyword}-työkalu on uskomaton",
+        ],
+        "outcome": [
+            "Ilmainen {keyword} joka todella toimii",
+            "Paras ilmainen {keyword} — ei asennusta",
+        ],
+    },
+    "nl": {
+        "pain": [
+            "Stop met betalen voor {keyword}",
+            "Waarom betaal je nog voor {keyword}?",
+            "Gratis {keyword} — geen registratie",
+        ],
+        "curiosity": [
+            "Deze gratis {keyword}-tool is echt geweldig",
+            "Kan niet geloven dat deze {keyword}-tool gratis is",
+        ],
+        "outcome": [
+            "Gratis {keyword} die echt werkt",
+            "Beste gratis {keyword} — geen installatie",
+        ],
+    },
+    "ar": {
+        "pain": [
+            "توقف عن الدفع مقابل {keyword}",
+            "{keyword} مجاني — بدون تسجيل",
+        ],
+        "curiosity": [
+            "أداة {keyword} المجانية هذه مذهلة",
+        ],
+        "outcome": [
+            "{keyword} مجاني يعمل فعلاً",
+        ],
+    },
+}
+
+# Localized title templates
+LOCALIZED_TITLES = {
+    "no": [
+        "{title} — Gratis, Ingen Registrering",
+        "Gratis {title} på Nett",
+        "Beste Gratis {keyword} — Norsk",
+        "{title} — 100% Privat og Gratis",
+    ],
+    "de": [
+        "{title} — Kostenlos, Keine Anmeldung",
+        "Kostenloses {title} Online",
+        "Bestes Kostenloses {keyword}",
+        "{title} — 100% Privat & Kostenlos",
+    ],
+    "fr": [
+        "{title} — Gratuit, Sans Inscription",
+        "{title} Gratuit en Ligne",
+        "Meilleur {keyword} Gratuit",
+    ],
+    "sv": [
+        "{title} — Gratis, Ingen Registrering",
+        "Gratis {title} Online",
+        "Bästa Gratis {keyword}",
+    ],
+    "fi": [
+        "{title} — Ilmainen, Ei Rekisteröitymistä",
+        "Ilmainen {title} Verkossa",
+        "Paras Ilmainen {keyword}",
+    ],
+    "nl": [
+        "{title} — Gratis, Geen Registratie",
+        "Gratis {title} Online",
+        "Beste Gratis {keyword}",
+    ],
+    "ar": [
+        "{title} — مجاني بدون تسجيل",
+        "{title} مجاني عبر الإنترنت",
+    ],
+}
+
+# Localized CTA text
+LOCALIZED_CTA = {
+    "no": {"ctaText": "Prøv nå", "ctaBadge": "LENKE I BIO", "privacy": "100% privat. Ingen registrering. Helt gratis."},
+    "de": {"ctaText": "Jetzt testen", "ctaBadge": "LINK IN BIO", "privacy": "100% privat. Keine Anmeldung. Komplett kostenlos."},
+    "fr": {"ctaText": "Essayez maintenant", "ctaBadge": "LIEN EN BIO", "privacy": "100% privé. Sans inscription. Entièrement gratuit."},
+    "sv": {"ctaText": "Prova nu", "ctaBadge": "LÄNK I BIO", "privacy": "100% privat. Ingen registrering. Helt gratis."},
+    "fi": {"ctaText": "Kokeile nyt", "ctaBadge": "LINKKI BIOSSA", "privacy": "100% yksityinen. Ei rekisteröitymistä. Täysin ilmainen."},
+    "nl": {"ctaText": "Probeer nu", "ctaBadge": "LINK IN BIO", "privacy": "100% privé. Geen registratie. Helemaal gratis."},
+    "ar": {"ctaText": "جرب الآن", "ctaBadge": "الرابط في البايو", "privacy": "خاص 100%. بدون تسجيل. مجاني تماماً."},
+}
+
+# Localized description template
+LOCALIZED_DESC = {
+    "no": "{title} — {desc}\n\nPrøv GRATIS: https://{url}\n\nIngen registrering. Ingen nedlasting.\nDataene dine forlater aldri nettleseren.\n\n100% gratis, 100% privat.\n\n---\n{title} er ett av 1800+ gratis nettleserverktøy på tool.teamzlab.com",
+    "de": "{title} — {desc}\n\nJetzt KOSTENLOS testen: https://{url}\n\nKeine Anmeldung. Kein Download.\nIhre Daten verlassen nie den Browser.\n\n100% kostenlos, 100% privat.\n\n---\n{title} ist eines von 1800+ kostenlosen Browser-Tools auf tool.teamzlab.com",
+    "fr": "{title} — {desc}\n\nEssayez GRATUITEMENT: https://{url}\n\nSans inscription. Sans téléchargement.\nVos données ne quittent jamais le navigateur.\n\n100% gratuit, 100% privé.\n\n---\n{title} fait partie de 1800+ outils gratuits sur tool.teamzlab.com",
+    "sv": "{title} — {desc}\n\nProva GRATIS: https://{url}\n\nIngen registrering. Ingen nedladdning.\nDin data lämnar aldrig webbläsaren.\n\n100% gratis, 100% privat.",
+    "fi": "{title} — {desc}\n\nKokeile ILMAISEKSI: https://{url}\n\nEi rekisteröitymistä. Ei latausta.\nTietosi eivät koskaan poistu selaimesta.\n\n100% ilmainen, 100% yksityinen.",
+    "nl": "{title} — {desc}\n\nProbeer GRATIS: https://{url}\n\nGeen registratie. Geen download.\nUw data verlaat nooit de browser.\n\n100% gratis, 100% privé.",
+    "ar": "{title} — {desc}\n\nجرب مجاناً: https://{url}\n\nبدون تسجيل. بدون تحميل.\nبياناتك لا تغادر المتصفح أبداً.\n\nمجاني 100%، خاص 100%.",
+}
+
+
+def get_language(hub):
+    """Get language code for a hub"""
+    return HUB_LANGUAGE.get(hub, "en")
+
 
 def clean_keyword(kw):
     """Strip 'free' entirely from keyword — hooks/titles add it themselves"""
@@ -348,19 +556,40 @@ def generate_video_plan(tool, keyword=None, trending_context=None):
     hub = tool.get("hub", "tools")
     kw = clean_keyword(keyword or tool["title"].lower())
     audience = AUDIENCE_MAP.get(hub, "person")
+    lang = get_language(hub)
 
     # Pick template
     template = pick_template(kw, tool)
 
-    # Pick hook
+    # Pick hook — use localized hooks for non-English tools
     hook_style = pick_hook_style(template)
-    hook_templates = HOOKS_BY_STYLE.get(hook_style, HOOKS_BY_STYLE["pain"])
-    hook = random.choice(hook_templates).format(keyword=kw, audience=audience)
+    if lang != "en" and lang in LOCALIZED_HOOKS:
+        local_hooks = LOCALIZED_HOOKS[lang].get(hook_style, LOCALIZED_HOOKS[lang].get("pain", []))
+        if local_hooks:
+            hook = random.choice(local_hooks).format(keyword=kw, audience=audience)
+        else:
+            hook = random.choice(HOOKS_BY_STYLE["pain"]).format(keyword=kw, audience=audience)
+    else:
+        hook_templates = HOOKS_BY_STYLE.get(hook_style, HOOKS_BY_STYLE["pain"])
+        hook = random.choice(hook_templates).format(keyword=kw, audience=audience)
 
-    # Generate YouTube-optimized metadata
-    title = generate_title(tool["title"], kw)
+    # Generate YouTube-optimized metadata — localized for non-English
+    if lang != "en" and lang in LOCALIZED_TITLES:
+        title_templates = LOCALIZED_TITLES[lang]
+        title = random.choice(title_templates).format(title=tool["title"], keyword=kw.title())
+        title = title[:60]
+    else:
+        title = generate_title(tool["title"], kw)
+
     url = f"tool.teamzlab.com{tool['href']}" if tool.get("href") else tool.get("url", "teamzlab.com")
-    description = generate_description(tool, kw, url)
+
+    if lang != "en" and lang in LOCALIZED_DESC:
+        description = LOCALIZED_DESC[lang].format(
+            title=tool["title"], desc=tool.get("desc", "")[:120], url=url
+        )
+    else:
+        description = generate_description(tool, kw, url)
+
     tags = generate_tags(tool, kw, hub)
     category_id = CATEGORIES.get(hub, 28)
 
@@ -371,9 +600,22 @@ def generate_video_plan(tool, keyword=None, trending_context=None):
     audio_files = [f"audio/beat{i}.mp3" for i in range(1, 11)]
     audio = random.choice(audio_files)
 
+    # Localized CTA
+    local_cta = LOCALIZED_CTA.get(lang, {"ctaText": "Try it free", "ctaBadge": "LINK IN BIO", "privacy": "100% free. No signup. 100% private."})
+
+    # Localized platform captions
+    kw_tag = kw.replace(" ", "").replace("-", "")
+    if lang != "en":
+        tt_caption = f"{hook}\n\n{local_cta['privacy']}\n\n{url}\n\n#freetools #{kw_tag} #shorts"
+        ig_caption = f"{hook}\n\n{tool['title']} — {tool.get('desc', '')[:100]}\n\n{local_cta['privacy']}\n\nLink in bio: {url}\n\n#freetools #{kw_tag} #{hub}tools #webapp"
+    else:
+        tt_caption = f"{hook}\n\nTry it: {url}\n\n#freetools #{kw_tag} #tech #lifehack #webapp"
+        ig_caption = f"{hook}\n\n{tool['title']} — {tool.get('desc', '')[:100]}\n\nFree. No signup. 100% private.\n\nLink in bio: {url}\n\n#freetools #{kw_tag} #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+
     plan = {
         "id": tool.get("href", "").strip("/").replace("/", "_") or tool["title"].lower().replace(" ", "-"),
         "type": tool.get("type", "tool"),
+        "language": lang,
 
         # Remotion render props
         "render": {
@@ -385,13 +627,13 @@ def generate_video_plan(tool, keyword=None, trending_context=None):
                 "url": url,
                 "audioFile": audio,
                 "themeIndex": theme_index,
-                "ctaText": "Try it free",
-                "ctaBadge": "LINK IN BIO",
+                "ctaText": local_cta["ctaText"],
+                "ctaBadge": local_cta["ctaBadge"],
                 "brandName": url.split("/")[0] if "/" in url else url,
             },
         },
 
-        # YouTube upload metadata
+        # YouTube upload metadata (in tool's language)
         "youtube": {
             "title": title,
             "description": description,
@@ -399,17 +641,18 @@ def generate_video_plan(tool, keyword=None, trending_context=None):
             "categoryId": category_id,
             "privacy": "public",
             "madeForKids": False,
-            "hashtags": [f"#freetools", f"#{kw.replace(' ', '')}", "#shorts"],
+            "defaultLanguage": lang if lang != "en" else "",
+            "hashtags": [f"#freetools", f"#{kw_tag}", "#shorts"],
         },
 
-        # TikTok caption
+        # TikTok caption (in tool's language)
         "tiktok": {
-            "caption": f"{hook}\n\nTry it: {url}\n\n#freetools #{kw.replace(' ', '')} #tech #lifehack #webapp",
+            "caption": tt_caption,
         },
 
-        # Instagram caption
+        # Instagram caption (in tool's language)
         "instagram": {
-            "caption": f"{hook}\n\n{tool['title']} — {tool.get('desc', '')[:100]}\n\nFree. No signup. 100% private.\n\nLink in bio: {url}\n\n#freetools #{kw.replace(' ', '')} #productivity #tech #browsertools #nosubscription #webapp #lifehack",
+            "caption": ig_caption,
         },
 
         # Metadata
@@ -588,6 +831,50 @@ def main():
     if sc_keywords:
         print(f"\nSearch Console keywords: {len(sc_keywords)}")
         all_keywords.extend(sc_keywords[:20])
+
+    # 4. Keyword Intel opportunities (build-keyword-intel.py output)
+    intel_file = SCRIPT_DIR.parent.parent / "data" / "keyword-intel-latest.json"
+    if intel_file.exists():
+        try:
+            intel = json.loads(intel_file.read_text(errors="replace"))
+            opportunities = [kw.get("query", "") for kw in intel.get("opportunities", [])[:20]]
+            if opportunities:
+                print(f"\nKeyword Intel opportunities: {len(opportunities)}")
+                all_keywords.extend(opportunities)
+        except Exception:
+            pass
+
+    # 5. Rank tracker movers (keywords gaining position)
+    rank_file = SCRIPT_DIR.parent.parent / "data" / "rank-history.json"
+    if rank_file.exists():
+        try:
+            ranks = json.loads(rank_file.read_text(errors="replace"))
+            # Get keywords that improved recently (make videos for winners)
+            improving = []
+            for kw, history in ranks.items():
+                if isinstance(history, list) and len(history) >= 2:
+                    latest = history[-1] if isinstance(history[-1], (int, float)) else 0
+                    prev = history[-2] if isinstance(history[-2], (int, float)) else 0
+                    if 0 < latest < prev:  # Position improved (lower = better)
+                        improving.append(kw)
+            if improving:
+                print(f"\nRank tracker — improving keywords: {len(improving)}")
+                all_keywords.extend(improving[:15])
+        except Exception:
+            pass
+
+    # 6. Content ideas (build-content-ideas.py output)
+    ideas_file = SCRIPT_DIR.parent.parent / "data" / "content-ideas-latest.json"
+    if ideas_file.exists():
+        try:
+            ideas_data = json.loads(ideas_file.read_text(errors="replace"))
+            for idea in ideas_data.get("ideas", [])[:15]:
+                if idea.get("keyword"):
+                    all_keywords.append(idea["keyword"])
+            if ideas_data.get("ideas"):
+                print(f"\nContent ideas engine: {min(15, len(ideas_data['ideas']))}")
+        except Exception:
+            pass
 
     # 4. YouTube trending in Tech (via API)
     print("\nPulling YouTube trending (Tech)...")

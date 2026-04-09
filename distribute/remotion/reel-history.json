@@ -16,10 +16,12 @@
       "lastRendered": "2026-04-08T23:21:55.250Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 1
+          "posted": true,
+          "url": "https://youtube.com/shorts/R7x0z_q2bt8",
+          "videoId": "R7x0z_q2bt8",
+          "postedAt": "2026-04-09T21:10:30.774Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
         },
         "instagram": {
           "posted": false,
@@ -51,9 +53,11 @@
       "lastRendered": "2026-04-08T23:21:55.250Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/3mcDSxC2zrE",
+          "videoId": "3mcDSxC2zrE",
+          "postedAt": "2026-04-09T21:10:41.112Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
           "retries": 0
         },
         "instagram": {

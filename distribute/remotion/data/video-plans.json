@@ -1,329 +1,19 @@
 {
-  "generated": "2026-04-09T05:11:17.717911",
-  "count": 8,
+  "generated": "2026-04-10T03:10:11.711872",
+  "count": 6,
   "plans": [
     {
-      "id": "evergreen_qr-code-generator",
+      "id": "evergreen_home-loan-calculator",
       "type": "tool",
+      "language": "en",
       "render": {
         "template": "InstantFix",
         "props": {
-          "hook": "I can't believe this qr code generator lifetime tool is free",
-          "title": "QR Code Generator",
-          "description": "Generate QR codes for URLs, text, WiFi, email, phone numbers, and more. Download as PNG. Free online QR code generator \u2014 no sign up, runs in your br",
-          "url": "tool.teamzlab.com/evergreen/qr-code-generator/",
-          "audioFile": "audio/beat10.mp3",
-          "themeIndex": 5,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Qr Code Generator Lifetime \u2014 Free Browser Tool",
-        "description": "QR Code Generator \u2014 Generate QR codes for URLs, text, WiFi, email, phone numbers, and more. Download as PNG. Free online QR code generator \u2014\n\nTry it FREE: https://tool.teamzlab.com/evergreen/qr-code-generator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nQR Code Generator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #qrcodegeneratorlifetime #privacy #browsertools #nosubscription",
-        "tags": [
-          "qr code generator lifetime",
-          "free qr code generator lifetime",
-          "qr code generator lifetime online",
-          "qr code generator lifetime free",
-          "best qr code generator lifetime",
-          "qr code generator lifetime no signup",
-          "qr code generator lifetime browser",
-          "qr code generator",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "evergreen",
-          "free qr code generator lifetime bangla",
-          "free qr code generator lifetime for pdf",
-          "free qr code generator lifetime tamil",
-          "free qr code generator lifetime malayalam"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "hashtags": [
-          "#freetools",
-          "#qrcodegeneratorlifetime",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "I can't believe this qr code generator lifetime tool is free\n\nTry it: tool.teamzlab.com/evergreen/qr-code-generator/\n\n#freetools #qrcodegeneratorlifetime #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "I can't believe this qr code generator lifetime tool is free\n\nQR Code Generator \u2014 Generate QR codes for URLs, text, WiFi, email, phone numbers, and more. Download as PNG. Free online\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/qr-code-generator/\n\n#freetools #qrcodegeneratorlifetime #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "qr code generator lifetime",
-      "hub": "evergreen",
-      "hookStyle": "curiosity",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-09T05:11:15.491237"
-    },
-    {
-      "id": "tools_qr-code-business-card",
-      "type": "tool",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Why are you still paying for qr code?",
-          "title": "QR Code Business Card Generator",
-          "description": "Use this free QR code business card generator using MECARD format. Create a scannable QR code with your name, phone, email, and company. Share instant",
-          "url": "tool.teamzlab.com/tools/qr-code-business-card/",
-          "audioFile": "audio/beat9.mp3",
-          "themeIndex": 0,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Free QR Code Business Card Generator Online (No Install)",
-        "description": "QR Code Business Card Generator \u2014 Use this free QR code business card generator using MECARD format. Create a scannable QR code with your name, phone, ema\n\nTry it FREE: https://tool.teamzlab.com/tools/qr-code-business-card/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nQR Code Business Card Generator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #qrcode #privacy #browsertools #nosubscription",
-        "tags": [
-          "qr code",
-          "free qr code",
-          "qr code online",
-          "qr code free",
-          "best qr code",
-          "qr code no signup",
-          "qr code browser",
-          "qr code business card generator",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "tools",
-          "free qr code generator lifetime",
-          "free qr code generator",
-          "free qr code generator lifetime bangla",
-          "free qr code scanner app"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "hashtags": [
-          "#freetools",
-          "#qrcode",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Why are you still paying for qr code?\n\nTry it: tool.teamzlab.com/tools/qr-code-business-card/\n\n#freetools #qrcode #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Why are you still paying for qr code?\n\nQR Code Business Card Generator \u2014 Use this free QR code business card generator using MECARD format. Create a scannable QR code with y\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/tools/qr-code-business-card/\n\n#freetools #qrcode #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "qr code",
-      "hub": "tools",
-      "hookStyle": "pain",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-09T05:11:15.763769"
-    },
-    {
-      "id": "diagnostic_qr-code-scanner",
-      "type": "tool",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Nobody talks about this free qr code scanner app",
-          "title": "QR Code Scanner",
-          "description": "Scan QR codes instantly with your device camera. Free online scanner with auto-detection for URLs, text, WiFi, and vCard. No app download needed \u2014 p",
-          "url": "tool.teamzlab.com/diagnostic/qr-code-scanner/",
-          "audioFile": "audio/beat1.mp3",
-          "themeIndex": 2,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Qr Code Scanner App \u2014 Free Browser Tool",
-        "description": "QR Code Scanner \u2014 Scan QR codes instantly with your device camera. Free online scanner with auto-detection for URLs, text, WiFi, and vCard\n\nTry it FREE: https://tool.teamzlab.com/diagnostic/qr-code-scanner/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nQR Code Scanner is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #qrcodescannerapp #privacy #browsertools #nosubscription",
-        "tags": [
-          "qr code scanner app",
-          "free qr code scanner app",
-          "qr code scanner app online",
-          "qr code scanner app free",
-          "best qr code scanner app",
-          "qr code scanner app no signup",
-          "qr code scanner app browser",
-          "qr code scanner",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "diagnostic",
-          "free qr code scanner app for iphone",
-          "free qr code scanner app kaise use kare",
-          "best free qr code scanner app for android",
-          "free fire qr code scanner app"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "hashtags": [
-          "#freetools",
-          "#qrcodescannerapp",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Nobody talks about this free qr code scanner app\n\nTry it: tool.teamzlab.com/diagnostic/qr-code-scanner/\n\n#freetools #qrcodescannerapp #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Nobody talks about this free qr code scanner app\n\nQR Code Scanner \u2014 Scan QR codes instantly with your device camera. Free online scanner with auto-detection for URLs, t\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/diagnostic/qr-code-scanner/\n\n#freetools #qrcodescannerapp #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "qr code scanner app",
-      "hub": "diagnostic",
-      "hookStyle": "curiosity",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-09T05:11:16.081539"
-    },
-    {
-      "id": "diagnostic_wifi-qr-code-generator",
-      "type": "tool",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Nobody talks about this free how to qr code create",
-          "title": "WiFi QR Code Generator",
-          "description": "Generate WiFi QR code generator. Create a scannable QR code for your WiFi network so guests can connect instantly without typing the password.",
-          "url": "tool.teamzlab.com/diagnostic/wifi-qr-code-generator/",
-          "audioFile": "audio/beat10.mp3",
-          "themeIndex": 0,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Free WiFi QR Code Generator Online (No Install)",
-        "description": "WiFi QR Code Generator \u2014 Generate WiFi QR code generator. Create a scannable QR code for your WiFi network so guests can connect instantly withou\n\nTry it FREE: https://tool.teamzlab.com/diagnostic/wifi-qr-code-generator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nWiFi QR Code Generator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #howtoqrcodecreate #privacy #browsertools #nosubscription",
-        "tags": [
-          "how to qr code create",
-          "free how to qr code create",
-          "how to qr code create online",
-          "how to qr code create free",
-          "best how to qr code create",
-          "how to qr code create no signup",
-          "how to qr code create browser",
-          "wifi qr code generator",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "diagnostic",
-          "how to create qr code free online",
-          "how to create free qr code for pdf",
-          "how to create free qr code for website link",
-          "how to create free qr code for location",
-          "how to create free qr code for google form"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "hashtags": [
-          "#freetools",
-          "#howtoqrcodecreate",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Nobody talks about this free how to qr code create\n\nTry it: tool.teamzlab.com/diagnostic/wifi-qr-code-generator/\n\n#freetools #howtoqrcodecreate #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Nobody talks about this free how to qr code create\n\nWiFi QR Code Generator \u2014 Generate WiFi QR code generator. Create a scannable QR code for your WiFi network so guests can conn\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/diagnostic/wifi-qr-code-generator/\n\n#freetools #howtoqrcodecreate #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "how to qr code create",
-      "hub": "diagnostic",
-      "hookStyle": "curiosity",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-09T05:11:16.456248"
-    },
-    {
-      "id": "mobile_app-icon-sizes",
-      "type": "tool",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Why are you still paying for pdf editor for android?",
-          "title": "App Icon Sizes for iOS & Android",
-          "description": "Complete list of all required app icon sizes for iOS and Android. Get exact pixel dimensions for App Store, Play Store, and home screen. Free referenc",
-          "url": "tool.teamzlab.com/mobile/app-icon-sizes/",
-          "audioFile": "audio/beat8.mp3",
-          "themeIndex": 4,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Free App Icon Sizes for iOS & Android Online (No Install)",
-        "description": "App Icon Sizes for iOS & Android \u2014 Complete list of all required app icon sizes for iOS and Android. Get exact pixel dimensions for App Store, Play Store, \n\nTry it FREE: https://tool.teamzlab.com/mobile/app-icon-sizes/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nApp Icon Sizes for iOS & Android is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #pdfeditorforandroid #privacy #browsertools #nosubscription",
-        "tags": [
-          "pdf editor for android",
-          "free pdf editor for android",
-          "pdf editor for android online",
-          "pdf editor for android free",
-          "best pdf editor for android",
-          "pdf editor for android no signup",
-          "pdf editor for android browser",
-          "app icon sizes for ios & android",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "mobile",
-          "free pdf editor for android bangla",
-          "free pdf editor for android app",
-          "free pdf editor for android mobile",
-          "free pdf editor for android phone"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "hashtags": [
-          "#freetools",
-          "#pdfeditorforandroid",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Why are you still paying for pdf editor for android?\n\nTry it: tool.teamzlab.com/mobile/app-icon-sizes/\n\n#freetools #pdfeditorforandroid #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Why are you still paying for pdf editor for android?\n\nApp Icon Sizes for iOS & Android \u2014 Complete list of all required app icon sizes for iOS and Android. Get exact pixel dimensions for App\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/mobile/app-icon-sizes/\n\n#freetools #pdfeditorforandroid #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "pdf editor for android",
-      "hub": "mobile",
-      "hookStyle": "pain",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-09T05:11:16.775193"
-    },
-    {
-      "id": "tools_image-to-pdf",
-      "type": "tool",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Free pdf editor for windows that actually works",
-          "title": "Image to PDF Converter \u2014 Free Online, No Upload",
-          "description": "Convert JPG, PNG, or WebP images to PDF instantly in your browser. Combine multiple images into one PDF. Free, private, no upload to any server.",
-          "url": "tool.teamzlab.com/tools/image-to-pdf/",
-          "audioFile": "audio/beat8.mp3",
+          "hook": "Wait till you see this loan calculator result",
+          "title": "Home Loan Calculator",
+          "description": "Calculate your home loan EMI, total interest, and amortization schedule. Compare loan terms to find the best mortgage deal. Free and private calculato",
+          "url": "tool.teamzlab.com/evergreen/home-loan-calculator/",
+          "audioFile": "audio/beat3.mp3",
           "themeIndex": 3,
           "ctaText": "Try it free",
           "ctaBadge": "LINK IN BIO",
@@ -331,61 +21,123 @@
         }
       },
       "youtube": {
-        "title": "Best Free Pdf Editor For Windows \u2014 No Signup",
-        "description": "Image to PDF Converter \u2014 Free Online, No Upload \u2014 Convert JPG, PNG, or WebP images to PDF instantly in your browser. Combine multiple images into one PDF. Free, private, \n\nTry it FREE: https://tool.teamzlab.com/tools/image-to-pdf/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nImage to PDF Converter \u2014 Free Online, No Upload is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #pdfeditorforwindows #privacy #browsertools #nosubscription",
+        "title": "Loan Calculator in Seconds \u2014 Free Tool",
+        "description": "Home Loan Calculator \u2014 Calculate your home loan EMI, total interest, and amortization schedule. Compare loan terms to find the best mortgage de\n\nTry it FREE: https://tool.teamzlab.com/evergreen/home-loan-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nHome Loan Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #loancalculator #privacy #browsertools #nosubscription",
         "tags": [
-          "pdf editor for windows",
-          "free pdf editor for windows",
-          "pdf editor for windows online",
-          "pdf editor for windows free",
-          "best pdf editor for windows",
-          "pdf editor for windows no signup",
-          "pdf editor for windows browser",
-          "image to pdf converter \u2014 free online, no upload",
+          "loan calculator",
+          "free loan calculator",
+          "loan calculator online",
+          "loan calculator free",
+          "best loan calculator",
+          "loan calculator no signup",
+          "loan calculator browser",
+          "home loan calculator",
           "free tools",
           "browser tools",
           "no signup",
           "privacy",
           "online tools",
-          "tools",
-          "free pdf editor for windows bangla",
-          "free pdf editor for windows online",
-          "free pdf editor for windows 7",
-          "free pdf editor for windows 11"
+          "evergreen",
+          "free mortgage loan calculator",
+          "free home loan calculator",
+          "free auto loan calculator",
+          "free personal loan calculator"
         ],
         "categoryId": 28,
         "privacy": "public",
         "madeForKids": false,
+        "defaultLanguage": "",
         "hashtags": [
           "#freetools",
-          "#pdfeditorforwindows",
+          "#loancalculator",
           "#shorts"
         ]
       },
       "tiktok": {
-        "caption": "Free pdf editor for windows that actually works\n\nTry it: tool.teamzlab.com/tools/image-to-pdf/\n\n#freetools #pdfeditorforwindows #tech #lifehack #webapp"
+        "caption": "Wait till you see this loan calculator result\n\nTry it: tool.teamzlab.com/evergreen/home-loan-calculator/\n\n#freetools #loancalculator #tech #lifehack #webapp"
       },
       "instagram": {
-        "caption": "Free pdf editor for windows that actually works\n\nImage to PDF Converter \u2014 Free Online, No Upload \u2014 Convert JPG, PNG, or WebP images to PDF instantly in your browser. Combine multiple images into one \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/tools/image-to-pdf/\n\n#freetools #pdfeditorforwindows #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+        "caption": "Wait till you see this loan calculator result\n\nHome Loan Calculator \u2014 Calculate your home loan EMI, total interest, and amortization schedule. Compare loan terms to find \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/home-loan-calculator/\n\n#freetools #loancalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
       },
-      "keyword": "pdf editor for windows",
-      "hub": "tools",
-      "hookStyle": "outcome",
+      "keyword": "loan calculator",
+      "hub": "evergreen",
+      "hookStyle": "curiosity",
       "template": "InstantFix",
       "trending": "",
-      "generatedAt": "2026-04-09T05:11:17.064220"
+      "generatedAt": "2026-04-10T03:10:09.970173"
     },
     {
-      "id": "tools_pdf-rotate",
+      "id": "evergreen_mortgage-calculator",
       "type": "tool",
+      "language": "en",
       "render": {
         "template": "InstantFix",
         "props": {
-          "hook": "Wait till you see this pdf editor result",
-          "title": "Rotate PDF Pages \u2014 Free Online Tool",
-          "description": "Rotate PDF pages 90, 180, or 270 degrees in your browser. Rotate all pages or select specific ones. Free, private \u2014 files never leave your device.",
-          "url": "tool.teamzlab.com/tools/pdf-rotate/",
-          "audioFile": "audio/beat10.mp3",
+          "hook": "Nobody talks about this free mortgage loan calculator",
+          "title": "Free Mortgage Calculator",
+          "description": "Calculate monthly mortgage payments, total interest, and full amortization schedule. Free mortgage calculator for 30-year, 15-year, and FHA home loans",
+          "url": "tool.teamzlab.com/evergreen/mortgage-calculator/",
+          "audioFile": "audio/beat9.mp3",
+          "themeIndex": 6,
+          "ctaText": "Try it free",
+          "ctaBadge": "LINK IN BIO",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "Free Mortgage Calculator \u2014 Free, No Signup",
+        "description": "Free Mortgage Calculator \u2014 Calculate monthly mortgage payments, total interest, and full amortization schedule. Free mortgage calculator for 30-yea\n\nTry it FREE: https://tool.teamzlab.com/evergreen/mortgage-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nFree Mortgage Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #mortgageloancalculator #privacy #browsertools #nosubscription",
+        "tags": [
+          "mortgage loan calculator",
+          "free mortgage loan calculator",
+          "mortgage loan calculator online",
+          "mortgage loan calculator free",
+          "best mortgage loan calculator",
+          "mortgage loan calculator no signup",
+          "mortgage loan calculator browser",
+          "free mortgage calculator",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "evergreen"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#mortgageloancalculator",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Nobody talks about this free mortgage loan calculator\n\nTry it: tool.teamzlab.com/evergreen/mortgage-calculator/\n\n#freetools #mortgageloancalculator #tech #lifehack #webapp"
+      },
+      "instagram": {
+        "caption": "Nobody talks about this free mortgage loan calculator\n\nFree Mortgage Calculator \u2014 Calculate monthly mortgage payments, total interest, and full amortization schedule. Free mortgage c\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/mortgage-calculator/\n\n#freetools #mortgageloancalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+      },
+      "keyword": "mortgage loan calculator",
+      "hub": "evergreen",
+      "hookStyle": "curiosity",
+      "template": "InstantFix",
+      "trending": "",
+      "generatedAt": "2026-04-10T03:10:10.295641"
+    },
+    {
+      "id": "evergreen_loan-payment-calculator",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "Best free auto loan calculator \u2014 no signup required",
+          "title": "Loan Payment Calculator",
+          "description": "Calculate monthly loan payments, total interest, and total cost for any loan. Works for personal loans, auto loans, and student loans. Free and privat",
+          "url": "tool.teamzlab.com/evergreen/loan-payment-calculator/",
+          "audioFile": "audio/beat7.mp3",
           "themeIndex": 1,
           "ctaText": "Try it free",
           "ctaBadge": "LINK IN BIO",
@@ -393,111 +145,230 @@
         }
       },
       "youtube": {
-        "title": "Stop Paying for Pdf Editor",
-        "description": "Rotate PDF Pages \u2014 Free Online Tool \u2014 Rotate PDF pages 90, 180, or 270 degrees in your browser. Rotate all pages or select specific ones. Free, private \u2014 file\n\nTry it FREE: https://tool.teamzlab.com/tools/pdf-rotate/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nRotate PDF Pages \u2014 Free Online Tool is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #pdfeditor #privacy #browsertools #nosubscription",
+        "title": "Stop Paying for Auto Loan Calculator",
+        "description": "Loan Payment Calculator \u2014 Calculate monthly loan payments, total interest, and total cost for any loan. Works for personal loans, auto loans, and \n\nTry it FREE: https://tool.teamzlab.com/evergreen/loan-payment-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nLoan Payment Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #autoloancalculator #privacy #browsertools #nosubscription",
         "tags": [
-          "pdf editor",
-          "free pdf editor",
-          "pdf editor online",
-          "pdf editor free",
-          "best pdf editor",
-          "pdf editor no signup",
-          "pdf editor browser",
-          "rotate pdf pages \u2014 free online tool",
+          "auto loan calculator",
+          "free auto loan calculator",
+          "auto loan calculator online",
+          "auto loan calculator free",
+          "best auto loan calculator",
+          "auto loan calculator no signup",
+          "auto loan calculator browser",
+          "loan payment calculator",
           "free tools",
           "browser tools",
           "no signup",
           "privacy",
           "online tools",
-          "tools",
-          "free pdf editor for android",
-          "free pdf editor for windows",
-          "free pdf editor online",
-          "free pdf editor for iphone"
+          "evergreen"
         ],
         "categoryId": 28,
         "privacy": "public",
         "madeForKids": false,
+        "defaultLanguage": "",
         "hashtags": [
           "#freetools",
-          "#pdfeditor",
+          "#autoloancalculator",
           "#shorts"
         ]
       },
       "tiktok": {
-        "caption": "Wait till you see this pdf editor result\n\nTry it: tool.teamzlab.com/tools/pdf-rotate/\n\n#freetools #pdfeditor #tech #lifehack #webapp"
+        "caption": "Best free auto loan calculator \u2014 no signup required\n\nTry it: tool.teamzlab.com/evergreen/loan-payment-calculator/\n\n#freetools #autoloancalculator #tech #lifehack #webapp"
       },
       "instagram": {
-        "caption": "Wait till you see this pdf editor result\n\nRotate PDF Pages \u2014 Free Online Tool \u2014 Rotate PDF pages 90, 180, or 270 degrees in your browser. Rotate all pages or select specific ones. \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/tools/pdf-rotate/\n\n#freetools #pdfeditor #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+        "caption": "Best free auto loan calculator \u2014 no signup required\n\nLoan Payment Calculator \u2014 Calculate monthly loan payments, total interest, and total cost for any loan. Works for personal loa\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/loan-payment-calculator/\n\n#freetools #autoloancalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
       },
-      "keyword": "pdf editor",
-      "hub": "tools",
-      "hookStyle": "curiosity",
+      "keyword": "auto loan calculator",
+      "hub": "evergreen",
+      "hookStyle": "outcome",
       "template": "InstantFix",
       "trending": "",
-      "generatedAt": "2026-04-09T05:11:17.373058"
+      "generatedAt": "2026-04-10T03:10:10.624912"
     },
     {
-      "id": "image_photo-color-editor",
+      "id": "evergreen_personal-loan-calculator",
       "type": "tool",
+      "language": "en",
       "render": {
         "template": "InstantFix",
         "props": {
-          "hook": "How is this pdf online editor and download tool free??",
-          "title": "Photo Color Editor Online Free",
-          "description": "Adjust brightness, contrast, saturation and color temperature of any photo. Free, private, AI auto-enhance. No signup needed.",
-          "url": "tool.teamzlab.com/image/photo-color-editor/",
-          "audioFile": "audio/beat1.mp3",
-          "themeIndex": 5,
+          "hook": "Best free personal loan calculator \u2014 no signup required",
+          "title": "Personal Loan Calculator",
+          "description": "Calculate personal loan payments, total interest, and amortization schedule instantly. Compare rates and plan repayment. Free, private, no signup requ",
+          "url": "tool.teamzlab.com/evergreen/personal-loan-calculator/",
+          "audioFile": "audio/beat4.mp3",
+          "themeIndex": 6,
           "ctaText": "Try it free",
           "ctaBadge": "LINK IN BIO",
           "brandName": "tool.teamzlab.com"
         }
       },
       "youtube": {
-        "title": "Best Free Pdf Online Editor And Download \u2014 No Signup",
-        "description": "Photo Color Editor Online Free \u2014 Adjust brightness, contrast, saturation and color temperature of any photo. Free, private, AI auto-enhance. No signup ne\n\nTry it FREE: https://tool.teamzlab.com/image/photo-color-editor/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nPhoto Color Editor Online Free is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #pdfonlineeditoranddownload #privacy #browsertools #nosubscription",
+        "title": "Personal Loan Calculator in Seconds \u2014 Free Tool",
+        "description": "Personal Loan Calculator \u2014 Calculate personal loan payments, total interest, and amortization schedule instantly. Compare rates and plan repayment.\n\nTry it FREE: https://tool.teamzlab.com/evergreen/personal-loan-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nPersonal Loan Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #personalloancalculator #privacy #browsertools #nosubscription",
         "tags": [
-          "pdf online editor and download",
-          "free pdf online editor and download",
-          "pdf online editor and download online",
-          "pdf online editor and download free",
-          "best pdf online editor and download",
-          "pdf online editor and download no signup",
-          "pdf online editor and download browser",
-          "photo color editor online free",
+          "personal loan calculator",
+          "free personal loan calculator",
+          "personal loan calculator online",
+          "personal loan calculator free",
+          "best personal loan calculator",
+          "personal loan calculator no signup",
+          "personal loan calculator browser",
           "free tools",
           "browser tools",
           "no signup",
           "privacy",
           "online tools",
-          "image",
-          "free online pdf editor and download",
-          "pdf editor",
-          "pdf file kivabe download korbo",
-          "pdf download"
+          "evergreen",
+          "\u09aa\u09be\u09b0\u09cd\u09b8\u09cb\u09a8\u09be\u09b2 \u09b2\u09cb\u09a8",
+          "\u09a1\u09bf\u099c\u09bf\u099f\u09be\u09b2 \u09b2\u09cb\u09a8",
+          "\u09b2\u09cb\u09a8 \u09a8\u09c7\u0993\u09af\u09bc\u09be\u09b0 \u0985\u09cd\u09af\u09be\u09aa\u09b8",
+          "\u09ae\u09cb\u09ac\u09be\u0987\u09b2 \u09b2\u09cb\u09a8"
         ],
         "categoryId": 28,
         "privacy": "public",
         "madeForKids": false,
+        "defaultLanguage": "",
         "hashtags": [
           "#freetools",
-          "#pdfonlineeditoranddownload",
+          "#personalloancalculator",
           "#shorts"
         ]
       },
       "tiktok": {
-        "caption": "How is this pdf online editor and download tool free??\n\nTry it: tool.teamzlab.com/image/photo-color-editor/\n\n#freetools #pdfonlineeditoranddownload #tech #lifehack #webapp"
+        "caption": "Best free personal loan calculator \u2014 no signup required\n\nTry it: tool.teamzlab.com/evergreen/personal-loan-calculator/\n\n#freetools #personalloancalculator #tech #lifehack #webapp"
       },
       "instagram": {
-        "caption": "How is this pdf online editor and download tool free??\n\nPhoto Color Editor Online Free \u2014 Adjust brightness, contrast, saturation and color temperature of any photo. Free, private, AI auto-e\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/image/photo-color-editor/\n\n#freetools #pdfonlineeditoranddownload #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+        "caption": "Best free personal loan calculator \u2014 no signup required\n\nPersonal Loan Calculator \u2014 Calculate personal loan payments, total interest, and amortization schedule instantly. Compare rates\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/personal-loan-calculator/\n\n#freetools #personalloancalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
       },
-      "keyword": "pdf online editor and download",
-      "hub": "image",
-      "hookStyle": "curiosity",
+      "keyword": "personal loan calculator",
+      "hub": "evergreen",
+      "hookStyle": "outcome",
       "template": "InstantFix",
       "trending": "",
-      "generatedAt": "2026-04-09T05:11:17.717872"
+      "generatedAt": "2026-04-10T03:10:10.983780"
+    },
+    {
+      "id": "evergreen_loan-amortization-calculator",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "Free online loan calculator amortization schedule that actually works",
+          "title": "Loan Amortization Calculator",
+          "description": "Generate a full loan amortization schedule showing monthly principal vs interest breakdown. Free amortization table with total interest paid.",
+          "url": "tool.teamzlab.com/evergreen/loan-amortization-calculator/",
+          "audioFile": "audio/beat3.mp3",
+          "themeIndex": 3,
+          "ctaText": "Try it free",
+          "ctaBadge": "LINK IN BIO",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "Stop Paying for Online Loan Calculator Amortization Schedule",
+        "description": "Loan Amortization Calculator \u2014 Generate a full loan amortization schedule showing monthly principal vs interest breakdown. Free amortization table with\n\nTry it FREE: https://tool.teamzlab.com/evergreen/loan-amortization-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nLoan Amortization Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #onlineloancalculatoramortizationschedule #privacy #browsertools #nosubscription",
+        "tags": [
+          "online loan calculator amortization schedule",
+          "free online loan calculator amortization schedule",
+          "online loan calculator amortization schedule online",
+          "online loan calculator amortization schedule free",
+          "best online loan calculator amortization schedule",
+          "online loan calculator amortization schedule no signup",
+          "online loan calculator amortization schedule browser",
+          "loan amortization calculator",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "evergreen"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#onlineloancalculatoramortizationschedule",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Free online loan calculator amortization schedule that actually works\n\nTry it: tool.teamzlab.com/evergreen/loan-amortization-calculator/\n\n#freetools #onlineloancalculatoramortizationschedule #tech #lifehack #webapp"
+      },
+      "instagram": {
+        "caption": "Free online loan calculator amortization schedule that actually works\n\nLoan Amortization Calculator \u2014 Generate a full loan amortization schedule showing monthly principal vs interest breakdown. Free amo\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/loan-amortization-calculator/\n\n#freetools #onlineloancalculatoramortizationschedule #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+      },
+      "keyword": "online loan calculator amortization schedule",
+      "hub": "evergreen",
+      "hookStyle": "outcome",
+      "template": "InstantFix",
+      "trending": "",
+      "generatedAt": "2026-04-10T03:10:11.349859"
+    },
+    {
+      "id": "career_student-loan-payment-calculator",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "I replaced $500/mo with this free how to loan calculator formula",
+          "title": "Student Loan Payment Calculator",
+          "description": "Calculate monthly student loan payments and total interest paid over the life of your loan. See how extra payments reduce payoff time and save money.",
+          "url": "tool.teamzlab.com/career/student-loan-payment-calculator/",
+          "audioFile": "audio/beat3.mp3",
+          "themeIndex": 0,
+          "ctaText": "Try it free",
+          "ctaBadge": "LINK IN BIO",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "How To Loan Calculator Formula \u2014 Free Browser Tool",
+        "description": "Student Loan Payment Calculator \u2014 Calculate monthly student loan payments and total interest paid over the life of your loan. See how extra payments reduc\n\nTry it FREE: https://tool.teamzlab.com/career/student-loan-payment-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nStudent Loan Payment Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #howtoloancalculatorformula #privacy #browsertools #nosubscription",
+        "tags": [
+          "how to loan calculator formula",
+          "free how to loan calculator formula",
+          "how to loan calculator formula online",
+          "how to loan calculator formula free",
+          "best how to loan calculator formula",
+          "how to loan calculator formula no signup",
+          "how to loan calculator formula browser",
+          "student loan payment calculator",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "career",
+          "free how to loan calculator formula bangla"
+        ],
+        "categoryId": 27,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#howtoloancalculatorformula",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "I replaced $500/mo with this free how to loan calculator formula\n\nTry it: tool.teamzlab.com/career/student-loan-payment-calculator/\n\n#freetools #howtoloancalculatorformula #tech #lifehack #webapp"
+      },
+      "instagram": {
+        "caption": "I replaced $500/mo with this free how to loan calculator formula\n\nStudent Loan Payment Calculator \u2014 Calculate monthly student loan payments and total interest paid over the life of your loan. See how \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/career/student-loan-payment-calculator/\n\n#freetools #howtoloancalculatorformula #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+      },
+      "keyword": "how to loan calculator formula",
+      "hub": "career",
+      "hookStyle": "outcome",
+      "template": "InstantFix",
+      "trending": "",
+      "generatedAt": "2026-04-10T03:10:11.711805"
     }
   ]
 }

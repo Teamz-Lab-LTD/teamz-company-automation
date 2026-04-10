@@ -164,9 +164,11 @@
       "lastRendered": "2026-04-10T19:35:01.896Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/V9kdJVTPbiQ",
+          "videoId": "V9kdJVTPbiQ",
+          "postedAt": "2026-04-10T19:46:47.728Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -199,9 +201,11 @@
       "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/Q_g1IhmWUxc",
+          "videoId": "Q_g1IhmWUxc",
+          "postedAt": "2026-04-10T19:46:56.143Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -234,9 +238,11 @@
       "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/URamVhvIE5I",
+          "videoId": "URamVhvIE5I",
+          "postedAt": "2026-04-10T19:47:08.438Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -269,9 +275,11 @@
       "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/HX22GuCMWmM",
+          "videoId": "HX22GuCMWmM",
+          "postedAt": "2026-04-10T19:47:17.501Z",
+          "scheduledAt": "2026-04-11T09:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -304,9 +312,11 @@
       "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/iSFO9LWLXvs",
+          "videoId": "iSFO9LWLXvs",
+          "postedAt": "2026-04-10T19:47:26.413Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -337,6 +347,376 @@
       "youtubeTitle": "Rest Home Audit Checklist — New Zealand NZS 8134",
       "rendered": "2026-04-10T19:35:01.897Z",
       "lastRendered": "2026-04-10T19:35:01.897Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/_VfRp8r8bo0",
+          "videoId": "_VfRp8r8bo0",
+          "postedAt": "2026-04-10T19:47:43.412Z",
+          "scheduledAt": "2026-04-11T07:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "evergreen_pomodoro-timer",
+      "title": "Pomodoro Timer",
+      "hub": "evergreen",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 6,
+      "hook": "Stop paying for pomodoro timer windows 10",
+      "audio": "audio/beat4.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_pomodoro-timer.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_pomodoro-timer.txt",
+      "youtubeTitle": "Free Pomodoro Timer Online (No Install)",
+      "rendered": "2026-04-10T19:45:34.461Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/VE8C6Zy_hB0",
+          "videoId": "VE8C6Zy_hB0",
+          "postedAt": "2026-04-10T19:47:53.550Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "text_word-counter",
+      "title": "Word Counter Online Free",
+      "hub": "text",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 7,
+      "hook": "Best free text counter gaan — no signup required",
+      "audio": "audio/beat1.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/text_word-counter.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/text_word-counter.txt",
+      "youtubeTitle": "Text Counter Gaan in Seconds — Free Tool",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/c0_sYx0GC2o",
+          "videoId": "c0_sYx0GC2o",
+          "postedAt": "2026-04-10T19:48:02.899Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "career_simple-resume-builder",
+      "title": "Simple Resume Builder",
+      "hub": "career",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 7,
+      "hook": "Best free resume builder websites — no signup required",
+      "audio": "audio/beat1.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/career_simple-resume-builder.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/career_simple-resume-builder.txt",
+      "youtubeTitle": "Resume Builder Websites — Free Browser Tool",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/_vTxXPOMGfg",
+          "videoId": "_vTxXPOMGfg",
+          "postedAt": "2026-04-10T19:48:12.592Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "mobile_app-icon-sizes",
+      "title": "App Icon Sizes for iOS & Android",
+      "hub": "mobile",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 2,
+      "hook": "I replaced $500/mo with this free resume builder app for android",
+      "audio": "audio/beat4.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/mobile_app-icon-sizes.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/mobile_app-icon-sizes.txt",
+      "youtubeTitle": "Resume Builder App For Android in Seconds — Free Tool",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/9k6pF5-WR9k",
+          "videoId": "9k6pF5-WR9k",
+          "postedAt": "2026-04-10T19:48:23.724Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "diagnostic_photo-booth",
+      "title": "Photo Booth Online Free",
+      "hub": "diagnostic",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 1,
+      "hook": "Stop paying for resume builder with photo",
+      "audio": "audio/beat9.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/diagnostic_photo-booth.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/diagnostic_photo-booth.txt",
+      "youtubeTitle": "Photo Booth Online Free — 100% Private & Free",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/b-J57Co6qiI",
+          "videoId": "b-J57Co6qiI",
+          "postedAt": "2026-04-10T19:48:38.370Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "tools_ai-text-summarizer",
+      "title": "Free AI Text Summarizer",
+      "hub": "tools",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 2,
+      "hook": "Wait till you see this ai summarizer result",
+      "audio": "audio/beat1.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_ai-text-summarizer.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_ai-text-summarizer.txt",
+      "youtubeTitle": "Ai Summarizer in Seconds — Free Tool",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/140zDRv-8_0",
+          "videoId": "140zDRv-8_0",
+          "postedAt": "2026-04-10T19:48:47.504Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "3d_ai-3d-prompt-generator",
+      "title": "AI 3D Prompt Generator",
+      "hub": "3d",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 3,
+      "hook": "ai tutorial in 10 seconds — for free",
+      "audio": "audio/beat8.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/3d_ai-3d-prompt-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/3d_ai-3d-prompt-generator.txt",
+      "youtubeTitle": "Ai Tutorial — Free Browser Tool",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/0pfJP-QlksM",
+          "videoId": "0pfJP-QlksM",
+          "postedAt": "2026-04-10T19:48:56.920Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "tools_image-to-pdf",
+      "title": "Image to PDF Converter — Free Online, No Upload",
+      "hub": "tools",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 5,
+      "hook": "3 free image converter tools you need right now",
+      "audio": "audio/beat3.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_image-to-pdf.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_image-to-pdf.txt",
+      "youtubeTitle": "Best Free Image Converter — No Signup",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/3DNXxcuF5t4",
+          "videoId": "3DNXxcuF5t4",
+          "postedAt": "2026-04-10T19:49:06.478Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "image_ai-image-upscaler",
+      "title": "AI Image Upscaler",
+      "hub": "image",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 5,
+      "hook": "3 free ai image converter tools you need right now",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/image_ai-image-upscaler.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/image_ai-image-upscaler.txt",
+      "youtubeTitle": "AI Image Upscaler — 100% Private & Free",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/MEP1bepRPV0",
+          "videoId": "MEP1bepRPV0",
+          "postedAt": "2026-04-10T19:49:18.137Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "design_text-on-image",
+      "title": "Add Text to Image",
+      "hub": "design",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 4,
+      "hook": "Best free image to text converter app — no signup required",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/design_text-on-image.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/design_text-on-image.txt",
+      "youtubeTitle": "Stop Paying for Image To Text Converter App",
+      "rendered": "2026-04-10T19:45:34.462Z",
+      "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
         "youtube": {
           "posted": false,

@@ -30,7 +30,8 @@ const QUOTA_FILE = path.join(__dirname, "quota-tracker.json");
 // Safe limit for Shorts: 15-20/day (YouTube creators routinely post 3-5 Shorts/day without issues).
 const QUOTA_PER_UPLOAD = 1600;
 const DAILY_QUOTA = 10000;
-const MAX_UPLOADS_PER_DAY = 15; // Shorts-safe cap (was 5 — too conservative for Shorts)
+const MAX_UPLOADS_PER_DAY = 10; // Shorts: safe for algorithm (staggered 3h apart = ~5/day publish)
+const MAX_PER_BATCH = 5; // Max uploads per single script run (forces you to spread across day)
 
 // ─── Optimal posting times (Buffer research, 1.8M Shorts analyzed) ──────────
 // Times are in the VIEWER'S local time. We schedule in UTC and offset per target audience.
@@ -179,34 +180,51 @@ function useQuota(units) {
 }
 
 // ─── Schedule: find next optimal publish time ───────────────────────────────
+// STAGGER: Each call returns a slot 3 hours after the last one used.
+// This prevents algorithm penalty from bulk publishing.
+// YouTube Shorts best practice: max 3-5 per day, spaced 3+ hours apart.
+let _lastScheduledTime = null;
+const STAGGER_HOURS = 3; // Minimum gap between scheduled publishes
+
 function getNextOptimalTime(language = "en") {
-  const tzOffset = AUDIENCE_TIMEZONE[language] || -5; // default US East
+  const tzOffset = AUDIENCE_TIMEZONE[language] || 0; // default UK (GMT)
   const now = new Date();
 
-  // Try slots for next 7 days
+  // If we already scheduled one, next must be at least STAGGER_HOURS later
+  const earliest = _lastScheduledTime
+    ? new Date(_lastScheduledTime.getTime() + STAGGER_HOURS * 60 * 60 * 1000)
+    : new Date(now.getTime() + 30 * 60 * 1000);
+
+  // Try optimal slots for next 7 days
   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
     const targetDate = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
     const dayOfWeek = targetDate.getUTCDay();
     const slots = OPTIMAL_SLOTS[dayOfWeek] || [19, 20];
 
     for (const localHour of slots) {
-      // Convert local hour to UTC
       const utcHour = (localHour - tzOffset + 24) % 24;
-
       const scheduled = new Date(targetDate);
       scheduled.setUTCHours(utcHour, 0, 0, 0);
 
-      // Must be at least 30 minutes in the future
-      if (scheduled > new Date(now.getTime() + 30 * 60 * 1000)) {
+      // Must be after earliest (respects stagger gap)
+      if (scheduled > earliest) {
+        _lastScheduledTime = scheduled;
         return scheduled;
       }
     }
   }
 
-  // Fallback: tomorrow at 7 PM target local time
-  const fallback = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-  const utcHour = (19 - tzOffset + 24) % 24;
-  fallback.setUTCHours(utcHour, 0, 0, 0);
+  // Fallback: STAGGER_HOURS after last, or tomorrow 7 PM local
+  const fallback = _lastScheduledTime
+    ? new Date(_lastScheduledTime.getTime() + STAGGER_HOURS * 60 * 60 * 1000)
+    : new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+  if (!_lastScheduledTime) {
+    const utcHour = (19 - tzOffset + 24) % 24;
+    fallback.setUTCHours(utcHour, 0, 0, 0);
+  }
+
+  _lastScheduledTime = fallback;
   return fallback;
 }
 

@@ -26,9 +26,11 @@ const HISTORY_FILE = path.join(REMOTION_DIR, "reel-history.json");
 const QUOTA_FILE = path.join(__dirname, "quota-tracker.json");
 
 // YouTube API: videos.insert = 1600 quota units. Daily limit = 10,000.
+// Shorts are treated differently — YouTube allows far more Shorts than long-form.
+// Safe limit for Shorts: 15-20/day (YouTube creators routinely post 3-5 Shorts/day without issues).
 const QUOTA_PER_UPLOAD = 1600;
 const DAILY_QUOTA = 10000;
-const MAX_UPLOADS_PER_DAY = 5; // Safety cap (not just quota — also spam prevention)
+const MAX_UPLOADS_PER_DAY = 15; // Shorts-safe cap (was 5 — too conservative for Shorts)
 
 // ─── Optimal posting times (Buffer research, 1.8M Shorts analyzed) ──────────
 // Times are in the VIEWER'S local time. We schedule in UTC and offset per target audience.
@@ -46,19 +48,24 @@ const OPTIMAL_SLOTS = {
 
 // Target timezone offset (hours from UTC) based on content language/hub
 const AUDIENCE_TIMEZONE = {
-  "en": -5,  // US East (EST) — largest English audience
-  "no": 1,   // Norway (CET)
-  "de": 1,   // Germany (CET)
-  "fr": 1,   // France (CET)
-  "sv": 1,   // Sweden (CET)
-  "fi": 2,   // Finland (EET)
-  "nl": 1,   // Netherlands (CET)
-  "ar": 4,   // UAE/Gulf (GST)
-  "id": 7,   // Indonesia (WIB)
-  "vi": 7,   // Vietnam (ICT)
-  "ja": 9,   // Japan (JST)
-  "es": -5,  // Spanish (LatAm US)
-  "pt": -3,  // Portuguese (Brazil)
+  "en": 0,     // UK (GMT) — primary care home audience
+  "en-GB": 0,  // UK explicit
+  "en-AU": 10, // Australia (AEST)
+  "en-IE": 0,  // Ireland (same as UK)
+  "en-NZ": 12, // New Zealand (NZST)
+  "en-US": -5, // US East (EST)
+  "no": 1,     // Norway (CET)
+  "de": 1,     // Germany (CET)
+  "fr": 1,     // France (CET)
+  "sv": 1,     // Sweden (CET)
+  "fi": 2,     // Finland (EET)
+  "nl": 1,     // Netherlands (CET)
+  "ar": 4,     // UAE/Gulf (GST)
+  "id": 7,     // Indonesia (WIB)
+  "vi": 7,     // Vietnam (ICT)
+  "ja": 9,     // Japan (JST)
+  "es": -5,    // Spanish (LatAm US)
+  "pt": -3,    // Portuguese (Brazil)
 };
 
 // ─── Parse args ─────────────────────────────────────────────────────────────

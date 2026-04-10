@@ -90,9 +90,11 @@
       "lastRendered": "2026-04-08T23:28:28.524Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/641v1oVjyV8",
+          "videoId": "641v1oVjyV8",
+          "postedAt": "2026-04-10T19:11:41.496Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -123,6 +125,218 @@
       "youtubeTitle": "Free Color Palette Generator — No Signup",
       "rendered": "2026-04-08T23:28:28.524Z",
       "lastRendered": "2026-04-08T23:28:28.524Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/1HWz8m987VM",
+          "videoId": "1HWz8m987VM",
+          "postedAt": "2026-04-10T19:15:27.126Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "arc-cqc-checklist",
+      "title": "CQC Inspection Checklist",
+      "hub": "",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 0,
+      "hook": "Your care home is NOT ready for CQC. Here's the proof.",
+      "audio": "audio/beat3.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-cqc-checklist.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-cqc-checklist.txt",
+      "youtubeTitle": "Is Your Care Home Ready for CQC? Free Checklist",
+      "rendered": "2026-04-10T19:04:00.073Z",
+      "lastRendered": "2026-04-10T19:35:01.896Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "arc-compliance-score",
+      "title": "Care Home Compliance Score",
+      "hub": "",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 2,
+      "hook": "Most care homes score under 60% on this compliance test",
+      "audio": "audio/beat5.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-compliance-score.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-compliance-score.txt",
+      "youtubeTitle": "What's Your Care Home Compliance Score? Free Calculator",
+      "rendered": "2026-04-10T19:04:00.074Z",
+      "lastRendered": "2026-04-10T19:35:01.897Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "arc-readiness-quiz",
+      "title": "CQC Readiness Quiz",
+      "hub": "",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 4,
+      "hook": "15 questions. Are you ACTUALLY ready for CQC?",
+      "audio": "audio/beat8.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-readiness-quiz.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-readiness-quiz.txt",
+      "youtubeTitle": "CQC Readiness Quiz — 15 Questions for Care Homes",
+      "rendered": "2026-04-10T19:04:00.074Z",
+      "lastRendered": "2026-04-10T19:35:01.897Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "arc-australia-checklist",
+      "title": "Aged Care Standards Checklist",
+      "hub": "",
+      "language": "en-AU",
+      "template": "InstantFix",
+      "themeIndex": 1,
+      "hook": "New Aged Care Act just dropped. Is YOUR facility compliant?",
+      "audio": "audio/beat9.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-australia-checklist.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-australia-checklist.txt",
+      "youtubeTitle": "Aged Care Quality Standards Checklist — Australia 2026",
+      "rendered": "2026-04-10T19:35:01.897Z",
+      "lastRendered": "2026-04-10T19:35:01.897Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "arc-hiqa-ireland",
+      "title": "HIQA Inspection Checklist",
+      "hub": "",
+      "language": "en-IE",
+      "template": "BeforeAfter",
+      "themeIndex": 3,
+      "hook": "HIQA inspectors check these 8 things. Do you have evidence for all of them?",
+      "audio": "audio/beat3.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-hiqa-ireland.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-hiqa-ireland.txt",
+      "youtubeTitle": "HIQA Inspection Checklist — Ireland Nursing Homes",
+      "rendered": "2026-04-10T19:35:01.897Z",
+      "lastRendered": "2026-04-10T19:35:01.897Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "arc-nz-rest-home",
+      "title": "Rest Home Audit Checklist NZ",
+      "hub": "",
+      "language": "en-NZ",
+      "template": "InstantFix",
+      "themeIndex": 5,
+      "hook": "2026 = proof year for NZ rest homes. Are you ready?",
+      "audio": "audio/beat5.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-nz-rest-home.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-nz-rest-home.txt",
+      "youtubeTitle": "Rest Home Audit Checklist — New Zealand NZS 8134",
+      "rendered": "2026-04-10T19:35:01.897Z",
+      "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
         "youtube": {
           "posted": false,

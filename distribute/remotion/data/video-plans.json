@@ -1,374 +1,150 @@
 {
-  "generated": "2026-04-10T03:10:11.711872",
+  "generated": "2026-04-11",
   "count": 6,
   "plans": [
     {
-      "id": "evergreen_home-loan-calculator",
+      "id": "arc-cqc-checklist",
       "type": "tool",
       "language": "en",
       "render": {
         "template": "InstantFix",
         "props": {
-          "hook": "Wait till you see this loan calculator result",
-          "title": "Home Loan Calculator",
-          "description": "Calculate your home loan EMI, total interest, and amortization schedule. Compare loan terms to find the best mortgage deal. Free and private calculato",
-          "url": "tool.teamzlab.com/evergreen/home-loan-calculator/",
-          "audioFile": "audio/beat3.mp3",
-          "themeIndex": 3,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Loan Calculator in Seconds \u2014 Free Tool",
-        "description": "Home Loan Calculator \u2014 Calculate your home loan EMI, total interest, and amortization schedule. Compare loan terms to find the best mortgage de\n\nTry it FREE: https://tool.teamzlab.com/evergreen/home-loan-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nHome Loan Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #loancalculator #privacy #browsertools #nosubscription",
-        "tags": [
-          "loan calculator",
-          "free loan calculator",
-          "loan calculator online",
-          "loan calculator free",
-          "best loan calculator",
-          "loan calculator no signup",
-          "loan calculator browser",
-          "home loan calculator",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "evergreen",
-          "free mortgage loan calculator",
-          "free home loan calculator",
-          "free auto loan calculator",
-          "free personal loan calculator"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "defaultLanguage": "",
-        "hashtags": [
-          "#freetools",
-          "#loancalculator",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Wait till you see this loan calculator result\n\nTry it: tool.teamzlab.com/evergreen/home-loan-calculator/\n\n#freetools #loancalculator #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Wait till you see this loan calculator result\n\nHome Loan Calculator \u2014 Calculate your home loan EMI, total interest, and amortization schedule. Compare loan terms to find \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/home-loan-calculator/\n\n#freetools #loancalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "loan calculator",
-      "hub": "evergreen",
-      "hookStyle": "curiosity",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-10T03:10:09.970173"
-    },
-    {
-      "id": "evergreen_mortgage-calculator",
-      "type": "tool",
-      "language": "en",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Nobody talks about this free mortgage loan calculator",
-          "title": "Free Mortgage Calculator",
-          "description": "Calculate monthly mortgage payments, total interest, and full amortization schedule. Free mortgage calculator for 30-year, 15-year, and FHA home loans",
-          "url": "tool.teamzlab.com/evergreen/mortgage-calculator/",
-          "audioFile": "audio/beat9.mp3",
-          "themeIndex": 6,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Free Mortgage Calculator \u2014 Free, No Signup",
-        "description": "Free Mortgage Calculator \u2014 Calculate monthly mortgage payments, total interest, and full amortization schedule. Free mortgage calculator for 30-yea\n\nTry it FREE: https://tool.teamzlab.com/evergreen/mortgage-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nFree Mortgage Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #mortgageloancalculator #privacy #browsertools #nosubscription",
-        "tags": [
-          "mortgage loan calculator",
-          "free mortgage loan calculator",
-          "mortgage loan calculator online",
-          "mortgage loan calculator free",
-          "best mortgage loan calculator",
-          "mortgage loan calculator no signup",
-          "mortgage loan calculator browser",
-          "free mortgage calculator",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "evergreen"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "defaultLanguage": "",
-        "hashtags": [
-          "#freetools",
-          "#mortgageloancalculator",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Nobody talks about this free mortgage loan calculator\n\nTry it: tool.teamzlab.com/evergreen/mortgage-calculator/\n\n#freetools #mortgageloancalculator #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Nobody talks about this free mortgage loan calculator\n\nFree Mortgage Calculator \u2014 Calculate monthly mortgage payments, total interest, and full amortization schedule. Free mortgage c\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/mortgage-calculator/\n\n#freetools #mortgageloancalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "mortgage loan calculator",
-      "hub": "evergreen",
-      "hookStyle": "curiosity",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-10T03:10:10.295641"
-    },
-    {
-      "id": "evergreen_loan-payment-calculator",
-      "type": "tool",
-      "language": "en",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Best free auto loan calculator \u2014 no signup required",
-          "title": "Loan Payment Calculator",
-          "description": "Calculate monthly loan payments, total interest, and total cost for any loan. Works for personal loans, auto loans, and student loans. Free and privat",
-          "url": "tool.teamzlab.com/evergreen/loan-payment-calculator/",
-          "audioFile": "audio/beat7.mp3",
-          "themeIndex": 1,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Stop Paying for Auto Loan Calculator",
-        "description": "Loan Payment Calculator \u2014 Calculate monthly loan payments, total interest, and total cost for any loan. Works for personal loans, auto loans, and \n\nTry it FREE: https://tool.teamzlab.com/evergreen/loan-payment-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nLoan Payment Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #autoloancalculator #privacy #browsertools #nosubscription",
-        "tags": [
-          "auto loan calculator",
-          "free auto loan calculator",
-          "auto loan calculator online",
-          "auto loan calculator free",
-          "best auto loan calculator",
-          "auto loan calculator no signup",
-          "auto loan calculator browser",
-          "loan payment calculator",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "evergreen"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "defaultLanguage": "",
-        "hashtags": [
-          "#freetools",
-          "#autoloancalculator",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Best free auto loan calculator \u2014 no signup required\n\nTry it: tool.teamzlab.com/evergreen/loan-payment-calculator/\n\n#freetools #autoloancalculator #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Best free auto loan calculator \u2014 no signup required\n\nLoan Payment Calculator \u2014 Calculate monthly loan payments, total interest, and total cost for any loan. Works for personal loa\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/loan-payment-calculator/\n\n#freetools #autoloancalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "auto loan calculator",
-      "hub": "evergreen",
-      "hookStyle": "outcome",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-10T03:10:10.624912"
-    },
-    {
-      "id": "evergreen_personal-loan-calculator",
-      "type": "tool",
-      "language": "en",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Best free personal loan calculator \u2014 no signup required",
-          "title": "Personal Loan Calculator",
-          "description": "Calculate personal loan payments, total interest, and amortization schedule instantly. Compare rates and plan repayment. Free, private, no signup requ",
-          "url": "tool.teamzlab.com/evergreen/personal-loan-calculator/",
-          "audioFile": "audio/beat4.mp3",
-          "themeIndex": 6,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Personal Loan Calculator in Seconds \u2014 Free Tool",
-        "description": "Personal Loan Calculator \u2014 Calculate personal loan payments, total interest, and amortization schedule instantly. Compare rates and plan repayment.\n\nTry it FREE: https://tool.teamzlab.com/evergreen/personal-loan-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nPersonal Loan Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #personalloancalculator #privacy #browsertools #nosubscription",
-        "tags": [
-          "personal loan calculator",
-          "free personal loan calculator",
-          "personal loan calculator online",
-          "personal loan calculator free",
-          "best personal loan calculator",
-          "personal loan calculator no signup",
-          "personal loan calculator browser",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "evergreen",
-          "\u09aa\u09be\u09b0\u09cd\u09b8\u09cb\u09a8\u09be\u09b2 \u09b2\u09cb\u09a8",
-          "\u09a1\u09bf\u099c\u09bf\u099f\u09be\u09b2 \u09b2\u09cb\u09a8",
-          "\u09b2\u09cb\u09a8 \u09a8\u09c7\u0993\u09af\u09bc\u09be\u09b0 \u0985\u09cd\u09af\u09be\u09aa\u09b8",
-          "\u09ae\u09cb\u09ac\u09be\u0987\u09b2 \u09b2\u09cb\u09a8"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "defaultLanguage": "",
-        "hashtags": [
-          "#freetools",
-          "#personalloancalculator",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Best free personal loan calculator \u2014 no signup required\n\nTry it: tool.teamzlab.com/evergreen/personal-loan-calculator/\n\n#freetools #personalloancalculator #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Best free personal loan calculator \u2014 no signup required\n\nPersonal Loan Calculator \u2014 Calculate personal loan payments, total interest, and amortization schedule instantly. Compare rates\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/personal-loan-calculator/\n\n#freetools #personalloancalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "personal loan calculator",
-      "hub": "evergreen",
-      "hookStyle": "outcome",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-10T03:10:10.983780"
-    },
-    {
-      "id": "evergreen_loan-amortization-calculator",
-      "type": "tool",
-      "language": "en",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "Free online loan calculator amortization schedule that actually works",
-          "title": "Loan Amortization Calculator",
-          "description": "Generate a full loan amortization schedule showing monthly principal vs interest breakdown. Free amortization table with total interest paid.",
-          "url": "tool.teamzlab.com/evergreen/loan-amortization-calculator/",
-          "audioFile": "audio/beat3.mp3",
-          "themeIndex": 3,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Stop Paying for Online Loan Calculator Amortization Schedule",
-        "description": "Loan Amortization Calculator \u2014 Generate a full loan amortization schedule showing monthly principal vs interest breakdown. Free amortization table with\n\nTry it FREE: https://tool.teamzlab.com/evergreen/loan-amortization-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nLoan Amortization Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #onlineloancalculatoramortizationschedule #privacy #browsertools #nosubscription",
-        "tags": [
-          "online loan calculator amortization schedule",
-          "free online loan calculator amortization schedule",
-          "online loan calculator amortization schedule online",
-          "online loan calculator amortization schedule free",
-          "best online loan calculator amortization schedule",
-          "online loan calculator amortization schedule no signup",
-          "online loan calculator amortization schedule browser",
-          "loan amortization calculator",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "evergreen"
-        ],
-        "categoryId": 28,
-        "privacy": "public",
-        "madeForKids": false,
-        "defaultLanguage": "",
-        "hashtags": [
-          "#freetools",
-          "#onlineloancalculatoramortizationschedule",
-          "#shorts"
-        ]
-      },
-      "tiktok": {
-        "caption": "Free online loan calculator amortization schedule that actually works\n\nTry it: tool.teamzlab.com/evergreen/loan-amortization-calculator/\n\n#freetools #onlineloancalculatoramortizationschedule #tech #lifehack #webapp"
-      },
-      "instagram": {
-        "caption": "Free online loan calculator amortization schedule that actually works\n\nLoan Amortization Calculator \u2014 Generate a full loan amortization schedule showing monthly principal vs interest breakdown. Free amo\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/evergreen/loan-amortization-calculator/\n\n#freetools #onlineloancalculatoramortizationschedule #productivity #tech #browsertools #nosubscription #webapp #lifehack"
-      },
-      "keyword": "online loan calculator amortization schedule",
-      "hub": "evergreen",
-      "hookStyle": "outcome",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-10T03:10:11.349859"
-    },
-    {
-      "id": "career_student-loan-payment-calculator",
-      "type": "tool",
-      "language": "en",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "I replaced $500/mo with this free how to loan calculator formula",
-          "title": "Student Loan Payment Calculator",
-          "description": "Calculate monthly student loan payments and total interest paid over the life of your loan. See how extra payments reduce payoff time and save money.",
-          "url": "tool.teamzlab.com/career/student-loan-payment-calculator/",
+          "hook": "Your care home is NOT ready for CQC. Here's the proof.",
+          "title": "CQC Inspection Checklist",
+          "description": "Free checklist covering all 21 CQC compliance categories. See your readiness score instantly.",
+          "url": "tool.teamzlab.com/compliance/cqc-inspection-checklist/",
           "audioFile": "audio/beat3.mp3",
           "themeIndex": 0,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
+          "ctaText": "Check your score",
+          "ctaBadge": "FREE TOOL",
           "brandName": "tool.teamzlab.com"
         }
       },
       "youtube": {
-        "title": "How To Loan Calculator Formula \u2014 Free Browser Tool",
-        "description": "Student Loan Payment Calculator \u2014 Calculate monthly student loan payments and total interest paid over the life of your loan. See how extra payments reduc\n\nTry it FREE: https://tool.teamzlab.com/career/student-loan-payment-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nStudent Loan Payment Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #howtoloancalculatorformula #privacy #browsertools #nosubscription",
-        "tags": [
-          "how to loan calculator formula",
-          "free how to loan calculator formula",
-          "how to loan calculator formula online",
-          "how to loan calculator formula free",
-          "best how to loan calculator formula",
-          "how to loan calculator formula no signup",
-          "how to loan calculator formula browser",
-          "student loan payment calculator",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "career",
-          "free how to loan calculator formula bangla"
-        ],
-        "categoryId": 27,
-        "privacy": "public",
-        "madeForKids": false,
-        "defaultLanguage": "",
-        "hashtags": [
-          "#freetools",
-          "#howtoloancalculatorformula",
-          "#shorts"
-        ]
+        "title": "Is Your Care Home Ready for CQC? Free Checklist",
+        "description": "Free CQC Inspection Checklist — check your care home's compliance across all 21 categories mapped to the 5 key questions: Safe, Effective, Caring, Responsive, Well-led.\n\nTry it FREE: https://tool.teamzlab.com/compliance/cqc-inspection-checklist/\n\nNo signup. No download. Works in your browser.\n\nAlwaysReady Care — free compliance evidence software for UK care homes.\nhttps://always-ready-care.web.app\n\n#CQC #carehome #compliance #UKcare #freetools #inspection #socialcare",
+        "tags": ["CQC inspection checklist", "care home compliance", "CQC checklist free", "care home audit", "CQC inspection", "care home software UK", "compliance checklist", "CQC 5 key questions", "social care compliance", "care home manager"]
+      }
+    },
+    {
+      "id": "arc-compliance-score",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "BeforeAfter",
+        "props": {
+          "hook": "Most care homes score under 60% on this compliance test",
+          "title": "Care Home Compliance Score",
+          "description": "10 questions. Instant CQC readiness score. Free self-assessment for UK care homes.",
+          "url": "tool.teamzlab.com/compliance/care-home-compliance-score/",
+          "audioFile": "audio/beat5.mp3",
+          "themeIndex": 2,
+          "ctaText": "Take the test",
+          "ctaBadge": "FREE",
+          "brandName": "tool.teamzlab.com"
+        }
       },
-      "tiktok": {
-        "caption": "I replaced $500/mo with this free how to loan calculator formula\n\nTry it: tool.teamzlab.com/career/student-loan-payment-calculator/\n\n#freetools #howtoloancalculatorformula #tech #lifehack #webapp"
+      "youtube": {
+        "title": "What's Your Care Home Compliance Score? Free Calculator",
+        "description": "Care Home Compliance Score Calculator — 10 questions about your compliance practices, instantly scored against CQC rating bands.\n\nTry it FREE: https://tool.teamzlab.com/compliance/care-home-compliance-score/\n\nAre you Outstanding, Good, Requires Improvement, or Inadequate?\n\nhttps://always-ready-care.web.app\n\n#CQC #carehome #compliance #score #UKsocialcare #freetools",
+        "tags": ["care home compliance score", "CQC rating", "compliance calculator", "care home audit tool", "CQC compliance", "care home software", "free compliance tool", "social care UK"]
+      }
+    },
+    {
+      "id": "arc-readiness-quiz",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "15 questions. Are you ACTUALLY ready for CQC?",
+          "title": "CQC Readiness Quiz",
+          "description": "Step-by-step quiz covering all 5 CQC key areas. Find out where you're strong and where you have gaps.",
+          "url": "tool.teamzlab.com/compliance/cqc-readiness-quiz/",
+          "audioFile": "audio/beat8.mp3",
+          "themeIndex": 4,
+          "ctaText": "Take the quiz",
+          "ctaBadge": "FREE",
+          "brandName": "tool.teamzlab.com"
+        }
       },
-      "instagram": {
-        "caption": "I replaced $500/mo with this free how to loan calculator formula\n\nStudent Loan Payment Calculator \u2014 Calculate monthly student loan payments and total interest paid over the life of your loan. See how \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/career/student-loan-payment-calculator/\n\n#freetools #howtoloancalculatorformula #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+      "youtube": {
+        "title": "CQC Readiness Quiz — 15 Questions for Care Homes",
+        "description": "Are you really ready for a CQC inspection? Take this free 15-question quiz covering Safe, Effective, Caring, Responsive, and Well-led.\n\nTry it FREE: https://tool.teamzlab.com/compliance/cqc-readiness-quiz/\n\nhttps://always-ready-care.web.app\n\n#CQC #carehome #quiz #inspection #readiness #socialcare #UKcare",
+        "tags": ["CQC readiness quiz", "CQC inspection preparation", "care home quiz", "are you ready for CQC", "CQC 5 key questions quiz", "care home compliance quiz", "social care quiz"]
+      }
+    },
+    {
+      "id": "arc-australia-checklist",
+      "type": "tool",
+      "language": "en-AU",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "New Aged Care Act just dropped. Is YOUR facility compliant?",
+          "title": "Aged Care Standards Checklist",
+          "description": "Free checklist for Australian aged care providers. All 7 strengthened quality standards under the new Aged Care Act.",
+          "url": "tool.teamzlab.com/compliance/aged-care-standards-checklist-australia/",
+          "audioFile": "audio/beat9.mp3",
+          "themeIndex": 1,
+          "ctaText": "Check your score",
+          "ctaBadge": "FREE",
+          "brandName": "tool.teamzlab.com"
+        }
       },
-      "keyword": "how to loan calculator formula",
-      "hub": "career",
-      "hookStyle": "outcome",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-10T03:10:11.711805"
+      "youtube": {
+        "title": "Aged Care Quality Standards Checklist — Australia 2026",
+        "description": "Free checklist for Australian aged care providers — all 7 strengthened quality standards under the Aged Care Act 2024.\n\nTry it FREE: https://tool.teamzlab.com/compliance/aged-care-standards-checklist-australia/\n\nhttps://always-ready-care.web.app\n\n#agedcare #australia #compliance #qualitystandards #ACQSC #freetools",
+        "tags": ["aged care quality standards", "aged care compliance Australia", "aged care checklist", "ACQSC audit", "aged care act 2024", "aged care software Australia", "free aged care tool"]
+      }
+    },
+    {
+      "id": "arc-hiqa-ireland",
+      "type": "tool",
+      "language": "en-IE",
+      "render": {
+        "template": "BeforeAfter",
+        "props": {
+          "hook": "HIQA inspectors check these 8 things. Do you have evidence for all of them?",
+          "title": "HIQA Inspection Checklist",
+          "description": "Free HIQA inspection checklist for Irish nursing homes. All 8 national standards covered.",
+          "url": "tool.teamzlab.com/compliance/hiqa-inspection-checklist-ireland/",
+          "audioFile": "audio/beat3.mp3",
+          "themeIndex": 3,
+          "ctaText": "Check your score",
+          "ctaBadge": "FREE",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "HIQA Inspection Checklist — Ireland Nursing Homes",
+        "description": "Free HIQA inspection checklist for Irish nursing homes. Check your compliance against all 8 National Standards.\n\nTry it FREE: https://tool.teamzlab.com/compliance/hiqa-inspection-checklist-ireland/\n\nhttps://always-ready-care.web.app\n\n#HIQA #nursinghome #Ireland #compliance #freetools",
+        "tags": ["HIQA inspection checklist", "nursing home Ireland", "HIQA compliance", "HIQA standards", "nursing home software Ireland", "Irish nursing home audit"]
+      }
+    },
+    {
+      "id": "arc-nz-rest-home",
+      "type": "tool",
+      "language": "en-NZ",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "2026 = proof year for NZ rest homes. Are you ready?",
+          "title": "Rest Home Audit Checklist NZ",
+          "description": "Free certification audit checklist for NZ aged care. All NZS 8134 standards covered.",
+          "url": "tool.teamzlab.com/compliance/rest-home-audit-checklist-nz/",
+          "audioFile": "audio/beat5.mp3",
+          "themeIndex": 5,
+          "ctaText": "Check your score",
+          "ctaBadge": "FREE",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "Rest Home Audit Checklist — New Zealand NZS 8134",
+        "description": "Free rest home audit checklist for NZ aged care providers. Check compliance against NZS 8134 Health and Disability Standards.\n\nTry it FREE: https://tool.teamzlab.com/compliance/rest-home-audit-checklist-nz/\n\nhttps://always-ready-care.web.app\n\n#resthome #NewZealand #agedcare #NZS8134 #compliance #freetools",
+        "tags": ["rest home audit NZ", "NZS 8134 checklist", "aged care New Zealand", "rest home compliance", "NZ aged care audit", "certification audit NZ"]
+      }
     }
   ]
 }

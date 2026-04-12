@@ -3933,6 +3933,129 @@
         "competition": "",
         "drafted_at": "2026-04-07T00:37:05.894902+00:00"
       }
+    },
+    {
+      "slug": "uk-care-home-cqc-compliance-tools-free",
+      "title": "I Built 3 Free CQC Compliance Tools for UK Care Homes",
+      "hash": "a74e32b51fe59b95",
+      "created": "2026-04-10T19:01:26.753781+00:00",
+      "platforms": {
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mj5z43luza2s",
+          "posted_at": "2026-04-10T19:01:52.824586+00:00",
+          "status": "published"
+        },
+        "devto": {
+          "url": "https://dev.to/teamzlab/i-built-3-free-cqc-compliance-tools-for-uk-care-homes-oca",
+          "posted_at": "2026-04-11T20:02:04.379736+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/i-built-3-free-cqc-compliance-tools-for-uk-care-homes",
+          "posted_at": "2026-04-11T20:02:05.548552+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "how-to-prepare-cqc-inspection-2026",
+      "title": "How to Prepare for a CQC Inspection in 2026 — Complete Checklist",
+      "hash": "fbc2870df7b73c86",
+      "created": "2026-04-10T19:01:36.472534+00:00",
+      "platforms": {
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/12/how-to-prepare-for-a-cqc-inspection-in-2026-complete-checklist/",
+          "posted_at": "2026-04-11T20:02:15.842781+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "built-care-home-compliance-app-2-weeks",
+      "title": "I Built a Care Home Compliance App in 2 Weeks — Here Is the Tech Stack",
+      "hash": "6c1a67466a1525c4",
+      "created": "2026-04-10T19:01:36.565955+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/i-built-care-home-compliance-app-in-2.html",
+          "posted_at": "2026-04-10T19:01:40.823566+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "free-aged-care-compliance-software-australia-acqs-2025",
+      "title": "Free Aged Care Compliance Software for Australia — ACQS 2025 Ready",
+      "hash": "7cf214fc6b51991e",
+      "created": "2026-04-11T20:00:46.028561+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/free-aged-care-compliance-software-for_01977709986.html",
+          "posted_at": "2026-04-11T20:02:25.059966+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/813629697394114560",
+          "posted_at": "2026-04-11T20:02:26.286833+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjamxed6rd2z",
+          "posted_at": "2026-04-11T20:02:28.624811+00:00",
+          "status": "published"
+        },
+        "github_discussions": {
+          "url": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/88",
+          "posted_at": "2026-04-11T20:02:31.014970+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Free-Aged-Care-Compliance-Software-for-Australia--ACQS-2025-Ready-04-11",
+          "posted_at": "2026-04-11T20:02:31.699663+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/au-aged-care-compliance-launch.md",
+        "priority": "critical",
+        "series": "care-compliance",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-11T20:00:46.028741+00:00"
+      }
+    },
+    {
+      "slug": "free-rest-home-compliance-software-nz-nzs-8134",
+      "title": "Free Rest Home Compliance Software for New Zealand — NZS 8134 Audit Tool",
+      "hash": "df20b4c6a2acbcac",
+      "created": "2026-04-11T20:00:46.082374+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/nz-rest-home-compliance-launch.md",
+        "priority": "critical",
+        "series": "care-compliance",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-11T20:00:46.082545+00:00"
+      }
+    },
+    {
+      "slug": "i-built-a-gen-z-slang-translator-for-parents-with-a-cringe-o-meter-and-safety-fl",
+      "title": "I Built a Gen Z Slang Translator for Parents — With a Cringe-o-Meter and Safety Flags",
+      "hash": "bf530bc72bf844de",
+      "created": "2026-04-12T12:04:09.103110+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/decode-teen-texts-gen-z-slang-translator-parents.md",
+        "priority": "medium",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-12T12:04:09.103311+00:00"
+      }
     }
   ]
 }

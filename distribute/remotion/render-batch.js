@@ -24,15 +24,18 @@ const fs = require("fs");
 const { execSync } = require("child_process");
 
 const REMOTION_DIR = __dirname;
+const CFG = require(path.join(REMOTION_DIR, "project-config.js"));
 const PROJECT_ROOT = path.resolve(REMOTION_DIR, "..", "..", "..");
 const OUTPUT_DIR = path.join(require("os").homedir(), "Videos", "teamzlab-reels");
+const SCREENSHOT_DIR = path.join(OUTPUT_DIR, "screenshots");
 const AUDIO_DIR = path.join(REMOTION_DIR, "public", "audio");
 const DATA_DIR = path.join(REMOTION_DIR, "data");
 const HISTORY_FILE = path.join(REMOTION_DIR, "reel-history.json");
 const PLANS_FILE = path.join(DATA_DIR, "video-plans.json");
 
 // ─── Available templates ────────────────────────────────────────────────────
-const TEMPLATES = ["InstantFix", "BeforeAfter", "CompareThree", "ProofCase"];
+const SHORT_TEMPLATES = ["InstantFix", "BeforeAfter", "CompareThree", "ProofCase"];
+const TEMPLATES = [...SHORT_TEMPLATES, "Tutorial"];
 
 // ─── SAFETY LIMITS (prevents platform bans) ─────────────────────────────────
 // Based on research: YouTube 5/week, TikTok 4-5/week, Instagram 3-4/week
@@ -53,6 +56,7 @@ const COUNT = parseInt(getArg("--count") || "5");
 const TOOL_PATH = getArg("--tool");
 const FROM_PLANS = hasFlag("--from-plans");
 const FORCE_TEMPLATE = getArg("--template");
+const FORMAT = getArg("--format") || "short"; // "short" or "tutorial"
 const LIST = hasFlag("--list");
 const DRY_RUN = hasFlag("--dry-run");
 
@@ -62,23 +66,86 @@ if (hasFlag("--mark")) { markPosted(); process.exit(0); }
 if (hasFlag("--retry")) { showRetry(); process.exit(0); }
 
 // ─── Hook templates (fallback for auto mode) ────────────────────────────────
-const HOOKS = [
-  "Stop paying for this",
-  "This free tool is actually insane",
-  "I can't believe this is free",
-  "Delete your paid subscription",
-  "Why are people still paying for this?",
-  "Wait till you see what this does",
-  "POV: You found a free tool that works",
-  "This just changed everything",
-  "Nobody talks about this free tool",
-  "I built 1800+ free tools — here's the best",
-  "How is this free??",
-  "Free tools that replaced $500/mo",
-];
+const HOOKS = CFG.shortHooks;
+
+const TUTORIAL_HOOKS = CFG.tutorialHooks;
+
+// Auto-generate tutorial steps from tool description
+function generateTutorialSteps(tool) {
+  const desc = (tool.desc || "").toLowerCase();
+  const title = tool.title || "";
+
+  const steps = [
+    { label: `Open ${title}`, description: "Visit the tool in your browser — no download or signup needed" },
+  ];
+
+  // Smart step generation based on tool type
+  if (desc.includes("calculat") || desc.includes("convert")) {
+    steps.push({ label: "Enter your values", description: "Type in the numbers or data you want to process" });
+    steps.push({ label: "Click Calculate", description: "Hit the button and get instant results" });
+    steps.push({ label: "Copy or download", description: "Save your results — share them or use them anywhere" });
+  } else if (desc.includes("generat") || desc.includes("creat") || desc.includes("make")) {
+    steps.push({ label: "Choose your options", description: "Pick a style, template, or format that fits your needs" });
+    steps.push({ label: "Customize your content", description: "Add your own text, colors, or details" });
+    steps.push({ label: "Generate your result", description: "Click generate — your result is ready in seconds" });
+    steps.push({ label: "Download or share", description: "Save as image or PDF — or share with a link" });
+  } else if (desc.includes("check") || desc.includes("analyz") || desc.includes("detect") || desc.includes("test")) {
+    steps.push({ label: "Paste or upload your content", description: "Enter the text, URL, or file you want to analyze" });
+    steps.push({ label: "Run the analysis", description: "The tool scans your content automatically" });
+    steps.push({ label: "Review your results", description: "See scores, issues, and recommendations instantly" });
+  } else {
+    // Generic steps
+    steps.push({ label: "Enter your information", description: "Fill in the form with your details" });
+    steps.push({ label: "Click the action button", description: "Hit the main button to process your request" });
+    steps.push({ label: "Get your results", description: "View, copy, or download your output instantly" });
+  }
+
+  return steps;
+}
+
+function getTutorialHook(tool) {
+  const action = (tool.desc || "").split(".")[0].toLowerCase().replace(/^(free |online )*/g, "").trim();
+  return CFG.getTutorialHook(tool.title, action || "do this");
+}
+
+function getTutorialProblem(tool) {
+  const problems = [
+    `Most ${tool.hub || "online"} tools charge $10-30/month`,
+    `You shouldn't need to pay for basic ${tool.hub || "online"} tools`,
+    `Paid tools want your email, credit card, and data`,
+    `Why is something this simple locked behind a paywall?`,
+  ];
+  return pick(problems);
+}
+
+// Tutorial duration: 30 seconds per step slide + 15s intro + 15s problem + 15s result + 15s CTA
+function tutorialDuration(stepCount) {
+  const baseFrames = (stepCount * 30 + 60) * 30; // seconds × 30fps
+  // Add random jitter of ±5 seconds
+  const jitter = (Math.random() * 10 - 5) * 30;
+  return Math.round((baseFrames + jitter) / 30) * 30;
+}
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// ─── Duration randomization (anti-spam: avoid identical-length Shorts) ──────
+// Each template has a base + random jitter so no two reels are the same length.
+// YouTube flags channels where all Shorts are identical duration as automated.
+const TEMPLATE_DURATION_RANGE = {
+  InstantFix:   { min: 450, max: 660 },   // 15-22 seconds
+  BeforeAfter:  { min: 540, max: 780 },   // 18-26 seconds
+  CompareThree: { min: 660, max: 840 },   // 22-28 seconds
+  ProofCase:    { min: 510, max: 720 },   // 17-24 seconds
+  Tutorial:     { min: 5400, max: 12600 }, // 3-7 minutes (based on step count)
+};
+
+function randomDuration(template) {
+  const range = TEMPLATE_DURATION_RANGE[template] || { min: 450, max: 720 };
+  // Round to nearest 30 frames (1 second) for clean cuts
+  const raw = range.min + Math.random() * (range.max - range.min);
+  return Math.round(raw / 30) * 30;
+}
 
 function loadTools() {
   const idxPath = path.join(PROJECT_ROOT, "shared", "js", "search-index.js");
@@ -132,7 +199,8 @@ function pickTemplate(tool) {
   if (desc.includes("convert") || desc.includes("compress") || desc.includes("resize") || desc.includes("optimize")) return "BeforeAfter";
   if (hub === "career" || hub === "legal" || desc.includes("review") || desc.includes("client")) return "ProofCase";
   // Random between InstantFix (60%) and others (40%) for variety
-  return Math.random() < 0.6 ? "InstantFix" : pick(TEMPLATES);
+  // Only pick from SHORT_TEMPLATES — Tutorial is a separate format
+  return Math.random() < 0.6 ? "InstantFix" : pick(SHORT_TEMPLATES);
 }
 
 // ─── History management ─────────────────────────────────────────────────────
@@ -145,6 +213,11 @@ function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null,
 
 function getUsedCombos(history) {
   return new Set(history.reels.map((r) => `${r.slug}|${r.template}|${r.themeIndex}`));
+}
+
+// Cross-run deduplication: skip tools that already have a reel (any template)
+function getRenderedSlugs(history) {
+  return new Set(history.reels.map((r) => r.slug));
 }
 
 function pickUniqueTheme(slug, template, usedCombos) {
@@ -347,6 +420,7 @@ fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 const audioFiles = getAudioFiles();
 const history = loadHistory();
 const usedCombos = getUsedCombos(history);
+const renderedSlugs = getRenderedSlugs(history);
 
 // ─── Build render queue ─────────────────────────────────────────────────────
 let renderQueue = [];
@@ -369,14 +443,16 @@ if (FROM_PLANS) {
     const template = FORCE_TEMPLATE || r.template || "InstantFix";
     const slug = plan.id;
     const themeIndex = r.props.themeIndex != null ? r.props.themeIndex : pickUniqueTheme(slug, template, usedCombos);
+    const durationInFrames = randomDuration(template);
 
     renderQueue.push({
       slug,
       template,
       themeIndex,
+      durationInFrames,
       outFile: path.join(OUTPUT_DIR, `${slug}.mp4`),
       captionFile: path.join(OUTPUT_DIR, `${slug}.txt`),
-      props: { ...r.props, themeIndex },
+      props: { ...r.props, themeIndex, durationInFrames },
       // YouTube metadata from content-engine
       youtubeTitle: plan.youtube ? plan.youtube.title : "",
       youtubeDesc: plan.youtube ? plan.youtube.description : "",
@@ -405,18 +481,20 @@ if (FROM_PLANS) {
     const themeIndex = pickUniqueTheme(tool.slug, template, usedCombos);
     const hook = pick(HOOKS);
     const audio = audioFiles.length ? pick(audioFiles) : "";
+    const durationInFrames = randomDuration(template);
 
     renderQueue.push({
       slug: tool.slug,
       template,
       themeIndex,
+      durationInFrames,
       outFile: path.join(OUTPUT_DIR, `${tool.slug}.mp4`),
       captionFile: path.join(OUTPUT_DIR, `${tool.slug}.txt`),
       props: {
         hook, title: tool.title, description: tool.desc.substring(0, 150),
-        url: `tool.teamzlab.com${tool.href}`,
-        audioFile: audio, themeIndex,
-        ctaText: "Try it free", ctaBadge: "LINK IN BIO", brandName: "tool.teamzlab.com",
+        url: CFG.buildUrl(tool),
+        audioFile: audio, themeIndex, durationInFrames,
+        ctaText: CFG.ctaText, ctaBadge: CFG.ctaBadgeShort, brandName: CFG.brandName,
       },
       youtubeTitle: `${tool.title} — Free, No Signup`,
       title: tool.title, hook, audio, hub: tool.hub, language: "en",
@@ -425,30 +503,83 @@ if (FROM_PLANS) {
 
 } else {
   // ── Mode 3: Auto-pick top tools ──
-  const selected = pickTopTools(tools, COUNT);
-  console.log(`Audio tracks: ${audioFiles.length}\n`);
+  // Filter out tools that already have a reel (cross-run dedup)
+  const freshTools = tools.filter((t) => !renderedSlugs.has(t.slug));
+  const skipped = tools.length - freshTools.length;
+  if (skipped > 0) console.log(`Skipping ${skipped} tools already rendered in previous runs`);
+  const selected = pickTopTools(freshTools.length ? freshTools : tools, COUNT);
+  console.log(`Format: ${FORMAT} | Audio tracks: ${audioFiles.length}\n`);
 
   for (const tool of selected) {
-    const template = pickTemplate(tool);
-    const themeIndex = pickUniqueTheme(tool.slug, template, usedCombos);
-    const hook = pick(HOOKS);
     const audio = audioFiles.length ? pick(audioFiles) : "";
 
-    renderQueue.push({
-      slug: tool.slug,
-      template,
-      themeIndex,
-      outFile: path.join(OUTPUT_DIR, `${tool.slug}.mp4`),
-      captionFile: path.join(OUTPUT_DIR, `${tool.slug}.txt`),
-      props: {
-        hook, title: tool.title, description: tool.desc.substring(0, 150),
-        url: `tool.teamzlab.com${tool.href}`,
-        audioFile: audio, themeIndex,
-        ctaText: "Try it free", ctaBadge: "LINK IN BIO", brandName: "tool.teamzlab.com",
-      },
-      youtubeTitle: `${tool.title} — Free, No Signup`,
-      title: tool.title, hook, audio, hub: tool.hub, language: "en",
-    });
+    if (FORMAT === "tutorial") {
+      // ── Tutorial mode: "How To" long-form videos ──
+      const template = "Tutorial";
+      const themeIndex = pickUniqueTheme(tool.slug, template, usedCombos);
+      const steps = generateTutorialSteps(tool);
+      const durationInFrames = tutorialDuration(steps.length);
+      const hook = getTutorialHook(tool);
+      const problem = getTutorialProblem(tool);
+
+      // Check if screenshots exist for this tool
+      const screenshotDir = path.join(SCREENSHOT_DIR, "screenshots", tool.slug);
+      const hasScreenshots = fs.existsSync(screenshotDir);
+      const stepScreenshots = steps.map((s, i) => {
+        const file = path.join(screenshotDir, `step-${i + 1}.png`);
+        return fs.existsSync(file) ? `screenshots/${tool.slug}/step-${i + 1}.png` : "";
+      });
+
+      // Attach screenshots to steps
+      steps.forEach((s, i) => { s.screenshot = stepScreenshots[i] || ""; });
+
+      renderQueue.push({
+        slug: tool.slug,
+        template,
+        themeIndex,
+        durationInFrames,
+        format: "tutorial",
+        outFile: path.join(OUTPUT_DIR, `tutorial-${tool.slug}.mp4`),
+        captionFile: path.join(OUTPUT_DIR, `tutorial-${tool.slug}.txt`),
+        props: {
+          hook, title: tool.title, problem, steps,
+          resultText: `${tool.title} — ${CFG.priceLine}`,
+          url: CFG.buildUrl(tool),
+          audioFile: audio, themeIndex, durationInFrames,
+          ctaText: CFG.ctaText, ctaBadge: CFG.ctaBadgeTutorial, brandName: CFG.brandName,
+        },
+        youtubeTitle: `How to ${tool.title} for Free — Step by Step Tutorial`,
+        title: tool.title, hook, audio, hub: tool.hub, language: "en",
+      });
+
+      if (!hasScreenshots) {
+        console.log(`  NOTE: No screenshots for ${tool.slug}. Run: node capture-tool.js --url ${tool.href}`);
+      }
+    } else {
+      // ── Short mode (default) ──
+      const template = pickTemplate(tool);
+      const themeIndex = pickUniqueTheme(tool.slug, template, usedCombos);
+      const hook = pick(HOOKS);
+      const durationInFrames = randomDuration(template);
+
+      renderQueue.push({
+        slug: tool.slug,
+        template,
+        themeIndex,
+        durationInFrames,
+        format: "short",
+        outFile: path.join(OUTPUT_DIR, `${tool.slug}.mp4`),
+        captionFile: path.join(OUTPUT_DIR, `${tool.slug}.txt`),
+        props: {
+          hook, title: tool.title, description: tool.desc.substring(0, 150),
+          url: CFG.buildUrl(tool),
+          audioFile: audio, themeIndex, durationInFrames,
+          ctaText: CFG.ctaText, ctaBadge: CFG.ctaBadgeShort, brandName: CFG.brandName,
+        },
+        youtubeTitle: `${tool.title} — Free, No Signup`,
+        title: tool.title, hook, audio, hub: tool.hub, language: "en",
+      });
+    }
   }
 }
 
@@ -486,8 +617,9 @@ console.log(`Rendering ${renderQueue.length} reels...\n`);
 if (DRY_RUN) {
   for (let i = 0; i < renderQueue.length; i++) {
     const q = renderQueue[i];
+    const durSec = (q.durationInFrames || 720) / 30;
     console.log(`[${i + 1}/${renderQueue.length}] ${q.title}`);
-    console.log(`  Template: ${q.template} | Theme: ${q.themeIndex} | Lang: ${q.language || "en"}`);
+    console.log(`  Template: ${q.template} | Theme: ${q.themeIndex} | Duration: ${durSec}s | Lang: ${q.language || "en"}`);
     console.log(`  Hook: "${q.hook || q.props.hook}"`);
     console.log(`  Audio: ${q.audio || q.props.audioFile || "none"}`);
     if (q.youtubeTitle) console.log(`  YT Title: ${q.youtubeTitle}`);
@@ -503,24 +635,86 @@ const rendered = [];
 for (let i = 0; i < renderQueue.length; i++) {
   const q = renderQueue[i];
 
+  const durSec = (q.durationInFrames || 720) / 30;
   console.log(`[${i + 1}/${renderQueue.length}] ${q.title}`);
-  console.log(`  Template: ${q.template} | Theme: ${q.themeIndex} | Lang: ${q.language || "en"}`);
+  console.log(`  Template: ${q.template} | Theme: ${q.themeIndex} | Duration: ${durSec}s | Lang: ${q.language || "en"}`);
   console.log(`  Hook: "${q.hook || q.props.hook}"`);
   console.log(`  Audio: ${q.audio || q.props.audioFile || "none"}`);
 
   const propsJson = JSON.stringify(q.props);
 
   try {
+    // Tutorials (3-7min) need much longer render time than shorts (15-25s)
+    const renderTimeout = q.format === "tutorial" ? 600000 : 180000;
     execSync(
       `npx remotion render src/index.js ${q.template} "${q.outFile}" --props='${propsJson.replace(/'/g, "'\\''")}'`,
-      { cwd: REMOTION_DIR, stdio: "pipe", timeout: 180000 }
+      { cwd: REMOTION_DIR, stdio: "pipe", timeout: renderTimeout }
     );
 
     const size = (fs.statSync(q.outFile).size / (1024 * 1024)).toFixed(1);
     console.log(`  Rendered: ${size} MB`);
 
-    // Save caption file (YouTube description or generated)
-    const caption = q.youtubeDesc || `${q.props.hook}\n\n${q.title}\n\nTry it: ${q.props.url}\n\n#freetools #shorts`;
+    // ── HACK 4 & 5: SEO-optimized descriptions with engagement bait ──
+    // YouTube reads descriptions for search ranking. 3 key tricks:
+    //   - First 2 lines show in search results (front-load keywords)
+    //   - Timestamps = YouTube auto-creates chapters (more click targets)
+    //   - End with a question (triggers comments = algorithm boost)
+    const ENGAGEMENT_QUESTIONS = [
+      "What tool should I cover next? Drop it in the comments! 👇",
+      "Did you know this existed? Let me know below! 👇",
+      "Would you use this? Tell me in the comments! 💬",
+      "What's your favorite free tool? Share below! 👇",
+      "Save this for later — you'll need it! ❤️ What else do you need?",
+    ];
+    const engagementQ = ENGAGEMENT_QUESTIONS[Math.floor(Math.random() * ENGAGEMENT_QUESTIONS.length)];
+
+    let caption;
+    if (q.format === "tutorial" && q.props.steps) {
+      // Tutorial: full SEO description with timestamps + cross-links
+      const stepDur = Math.round((q.durationInFrames || 5400) / 30 / (q.props.steps.length + 4));
+      const timestamps = q.props.steps.map((s, i) => {
+        const sec = stepDur * (i + 2);
+        const m = Math.floor(sec / 60);
+        const ss = String(sec % 60).padStart(2, "0");
+        return `${m}:${ss} Step ${i + 1}: ${s.label}`;
+      });
+      caption = [
+        // First 2 lines = search preview (front-load keywords)
+        CFG.resolveTemplate(CFG.tutorialDescIntro, { hook: q.props.hook, title: q.title }),
+        `${CFG.ctaText}: https://${q.props.url}`,
+        "",
+        CFG.resolveTemplate(CFG.tutorialDescBody, { title: q.title }),
+        "",
+        "⏱️ Timestamps:",
+        "0:00 Intro",
+        `0:${String(stepDur).padStart(2, "0")} The Problem`,
+        ...timestamps,
+        "",
+        "━━━━━━━━━━━━━━━━━━━",
+        CFG.resolveTemplate(CFG.descFooterLine, {}),
+        `📂 More: ${CFG.siteUrl}/${q.hub || ""}/`,
+        "",
+        `${engagementQ}`,
+        "",
+        "━━━━━━━━━━━━━━━━━━━",
+        `#${(q.hub || "freetools").replace(/[^a-z0-9]/g, "")} #tutorial #howto #free #${(q.title || "").replace(/\s+/g, "").toLowerCase().slice(0, 20)}`,
+      ].join("\n");
+    } else {
+      // Short: compact but SEO-optimized
+      caption = [
+        `${q.props.hook}`,
+        "",
+        `Try ${q.title} FREE: https://${q.props.url}`,
+        "",
+        ...CFG.sellingPoints.map((s) => `✅ ${s}`),
+        "",
+        `${engagementQ}`,
+        "",
+        CFG.resolveTemplate(CFG.descFooterLine, {}),
+        "",
+        `#${CFG.shortHashtags.join(" #")} #${(q.hub || "tools").replace(/[^a-z0-9]/g, "")} #${(q.title || "").replace(/\s+/g, "").toLowerCase().slice(0, 20)}`,
+      ].join("\n");
+    }
     fs.writeFileSync(q.captionFile, caption);
 
     // Save platform-specific captions if available
@@ -554,6 +748,8 @@ for (const q of rendered) {
       language: q.language || "en",
       template: q.template,
       themeIndex: q.themeIndex,
+      durationInFrames: q.durationInFrames || 720,
+      format: q.format || "short",
       hook: q.hook || q.props.hook,
       audio: q.audio || q.props.audioFile,
       video: q.outFile,
@@ -581,6 +777,11 @@ console.log(`Output: ${OUTPUT_DIR}`);
 console.log(`History: ${history.reels.length} total reels tracked`);
 if (audioFiles.length) console.log(`Audio: ${audioFiles.length} tracks`);
 
+// Format breakdown
+const shorts = rendered.filter((r) => r.format !== "tutorial").length;
+const tutorials = rendered.filter((r) => r.format === "tutorial").length;
+if (tutorials > 0) console.log(`Formats: ${shorts} shorts, ${tutorials} tutorials`);
+
 // Show template distribution
 const tDist = {};
 rendered.forEach((r) => { tDist[r.template] = (tDist[r.template] || 0) + 1; });
@@ -588,10 +789,16 @@ if (Object.keys(tDist).length > 1) {
   console.log(`Templates: ${Object.entries(tDist).map(([t, c]) => `${t}(${c})`).join(", ")}`);
 }
 
-console.log(`\nFull pipeline:`);
+console.log(`\nShorts pipeline:`);
 console.log(`  1. python3 content-engine.py --count 20 --trending --export`);
 console.log(`  2. node render-batch.js --from-plans --count 20`);
-console.log(`  3. node render-batch.js --distribute          # What's safe to post now`);
-console.log(`  4. node render-batch.js --mark SLUG --platform youtube --url URL`);
-console.log(`  5. node render-batch.js --status              # Overall status`);
-console.log(`  6. node render-batch.js --retry --platform X  # Show unposted`);
+console.log(`  3. node upload/youtube-upload.js --from-history --count 2`);
+console.log(`\nTutorial pipeline:`);
+console.log(`  1. node render-batch.js --format tutorial --count 5`);
+console.log(`  2. node capture-tool.js --url /hub/tool/     # Optional: real screenshots`);
+console.log(`  3. node render-batch.js --format tutorial --count 5  # Re-render with screenshots`);
+console.log(`  4. node upload/youtube-upload.js --from-history --count 1`);
+console.log(`\nShared commands:`);
+console.log(`  node render-batch.js --distribute          # What's safe to post now`);
+console.log(`  node render-batch.js --status              # Overall status`);
+console.log(`  node render-batch.js --dry-run             # Preview without rendering`);

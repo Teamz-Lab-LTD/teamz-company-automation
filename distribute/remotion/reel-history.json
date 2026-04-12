@@ -1,154 +1,6 @@
 {
   "reels": [
     {
-      "slug": "evergreen_qr-code-generator",
-      "title": "QR Code Generator",
-      "hub": "evergreen",
-      "language": "en",
-      "template": "InstantFix",
-      "themeIndex": 5,
-      "hook": "I can't believe this qr code generator lifetime tool is free",
-      "audio": "audio/beat10.mp3",
-      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_qr-code-generator.mp4",
-      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_qr-code-generator.txt",
-      "youtubeTitle": "Qr Code Generator Lifetime — Free Browser Tool",
-      "rendered": "2026-04-08T23:21:55.249Z",
-      "lastRendered": "2026-04-08T23:21:55.250Z",
-      "platforms": {
-        "youtube": {
-          "posted": true,
-          "url": "https://youtube.com/shorts/R7x0z_q2bt8",
-          "videoId": "R7x0z_q2bt8",
-          "postedAt": "2026-04-09T21:10:30.774Z",
-          "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
-        },
-        "instagram": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
-        },
-        "tiktok": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
-        }
-      }
-    },
-    {
-      "slug": "tools_qr-code-business-card",
-      "title": "QR Code Business Card Generator",
-      "hub": "tools",
-      "language": "en",
-      "template": "InstantFix",
-      "themeIndex": 0,
-      "hook": "Why are you still paying for qr code?",
-      "audio": "audio/beat9.mp3",
-      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_qr-code-business-card.mp4",
-      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_qr-code-business-card.txt",
-      "youtubeTitle": "Free QR Code Business Card Generator Online (No Install)",
-      "rendered": "2026-04-08T23:21:55.250Z",
-      "lastRendered": "2026-04-08T23:21:55.250Z",
-      "platforms": {
-        "youtube": {
-          "posted": true,
-          "url": "https://youtube.com/shorts/3mcDSxC2zrE",
-          "videoId": "3mcDSxC2zrE",
-          "postedAt": "2026-04-09T21:10:41.112Z",
-          "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
-        },
-        "instagram": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
-        },
-        "tiktok": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
-        }
-      }
-    },
-    {
-      "slug": "evergreen_invoice-generator",
-      "title": "Free Private Invoice Generator — No Upload, No Data Stored",
-      "hub": "evergreen",
-      "language": "en",
-      "template": "InstantFix",
-      "themeIndex": 5,
-      "hook": "invoice generator in 10 seconds — for free",
-      "audio": "audio/beat7.mp3",
-      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_invoice-generator.mp4",
-      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_invoice-generator.txt",
-      "youtubeTitle": "Free Invoice Generator — No Signup, No Install",
-      "rendered": "2026-04-08T23:28:28.523Z",
-      "lastRendered": "2026-04-08T23:28:28.524Z",
-      "platforms": {
-        "youtube": {
-          "posted": true,
-          "url": "https://youtube.com/shorts/641v1oVjyV8",
-          "videoId": "641v1oVjyV8",
-          "postedAt": "2026-04-10T19:11:41.496Z",
-          "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
-        },
-        "instagram": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
-        },
-        "tiktok": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
-        }
-      }
-    },
-    {
-      "slug": "uidesign_color-palette-generator",
-      "title": "Color Palette Generator",
-      "hub": "uidesign",
-      "language": "en",
-      "template": "InstantFix",
-      "themeIndex": 2,
-      "hook": "Nobody talks about this free color palette generator",
-      "audio": "audio/beat1.mp3",
-      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/uidesign_color-palette-generator.mp4",
-      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/uidesign_color-palette-generator.txt",
-      "youtubeTitle": "Free Color Palette Generator — No Signup",
-      "rendered": "2026-04-08T23:28:28.524Z",
-      "lastRendered": "2026-04-08T23:28:28.524Z",
-      "platforms": {
-        "youtube": {
-          "posted": true,
-          "url": "https://youtube.com/shorts/1HWz8m987VM",
-          "videoId": "1HWz8m987VM",
-          "postedAt": "2026-04-10T19:15:27.126Z",
-          "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
-        },
-        "instagram": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
-        },
-        "tiktok": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
-        }
-      }
-    },
-    {
       "slug": "arc-cqc-checklist",
       "title": "CQC Inspection Checklist",
       "hub": "",
@@ -354,6 +206,364 @@
           "videoId": "_VfRp8r8bo0",
           "postedAt": "2026-04-10T19:47:43.412Z",
           "scheduledAt": "2026-04-11T07:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "care_uk_cqc_compliance",
+      "title": "CQC Compliance Software",
+      "hub": "",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 1,
+      "hook": "Care homes are paying £700/mo for this. It is free.",
+      "audio": "audio/beat5.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_uk_cqc_compliance.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_uk_cqc_compliance.txt",
+      "youtubeTitle": "Free CQC Compliance Software for Care Homes #shorts",
+      "rendered": "2026-04-11T20:39:21.016Z",
+      "lastRendered": "2026-04-11T20:39:21.016Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "care_au_acqs_compliance",
+      "title": "Aged Care Compliance Software",
+      "hub": "",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 3,
+      "hook": "ACQS 2025 just changed everything. This free tool is ready.",
+      "audio": "audio/beat3.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_au_acqs_compliance.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_au_acqs_compliance.txt",
+      "youtubeTitle": "Free ACQS 2025 Compliance Software for Aged Care #shorts",
+      "rendered": "2026-04-11T20:39:21.016Z",
+      "lastRendered": "2026-04-11T20:39:21.016Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "care_nz_nzs8134_compliance",
+      "title": "Rest Home Compliance Software",
+      "hub": "",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 5,
+      "hook": "NZ rest homes pay thousands for audit software. This is free.",
+      "audio": "audio/beat7.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_nz_nzs8134_compliance.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_nz_nzs8134_compliance.txt",
+      "youtubeTitle": "Free NZS 8134 Compliance Software for Rest Homes #shorts",
+      "rendered": "2026-04-11T20:39:21.016Z",
+      "lastRendered": "2026-04-11T20:39:21.016Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "care_cqc_inspection_ready",
+      "title": "CQC Inspection Pack Generator",
+      "hub": "",
+      "language": "en",
+      "template": "ProofCase",
+      "themeIndex": 2,
+      "hook": "CQC inspection tomorrow? Generate your pack in 1 click.",
+      "audio": "audio/beat1.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_cqc_inspection_ready.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_cqc_inspection_ready.txt",
+      "youtubeTitle": "CQC Inspection? Generate Your Evidence Pack in 1 Click #shorts",
+      "rendered": "2026-04-11T20:39:21.016Z",
+      "lastRendered": "2026-04-11T20:39:21.016Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "care_sirs_reporting_au",
+      "title": "SIRS Incident Reporting",
+      "hub": "",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 4,
+      "hook": "SIRS Priority 1 has a 24-hour deadline. This template saves you.",
+      "audio": "audio/beat9.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_sirs_reporting_au.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_sirs_reporting_au.txt",
+      "youtubeTitle": "Free SIRS Reporting Tool for Aged Care — Priority 1 and 2 #shorts",
+      "rendered": "2026-04-11T20:39:21.016Z",
+      "lastRendered": "2026-04-11T20:39:21.016Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "care_60sec_evidence",
+      "title": "AI Evidence Structuring",
+      "hub": "",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 6,
+      "hook": "Care evidence in 60 seconds. AI does the rest.",
+      "audio": "audio/beat4.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_60sec_evidence.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_60sec_evidence.txt",
+      "youtubeTitle": "Record Care Evidence in 60 Seconds — AI Does the Rest #shorts",
+      "rendered": "2026-04-11T20:39:21.016Z",
+      "lastRendered": "2026-04-11T20:39:21.016Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "evergreen_qr-code-generator",
+      "title": "QR Code Generator",
+      "hub": "evergreen",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 5,
+      "hook": "I can't believe this qr code generator lifetime tool is free",
+      "audio": "audio/beat10.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_qr-code-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_qr-code-generator.txt",
+      "youtubeTitle": "Qr Code Generator Lifetime — Free Browser Tool",
+      "rendered": "2026-04-08T23:21:55.249Z",
+      "lastRendered": "2026-04-08T23:21:55.250Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/R7x0z_q2bt8",
+          "videoId": "R7x0z_q2bt8",
+          "postedAt": "2026-04-09T21:10:30.774Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "tools_qr-code-business-card",
+      "title": "QR Code Business Card Generator",
+      "hub": "tools",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 0,
+      "hook": "Why are you still paying for qr code?",
+      "audio": "audio/beat9.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_qr-code-business-card.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_qr-code-business-card.txt",
+      "youtubeTitle": "Free QR Code Business Card Generator Online (No Install)",
+      "rendered": "2026-04-08T23:21:55.250Z",
+      "lastRendered": "2026-04-08T23:21:55.250Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/3mcDSxC2zrE",
+          "videoId": "3mcDSxC2zrE",
+          "postedAt": "2026-04-09T21:10:41.112Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "evergreen_invoice-generator",
+      "title": "Free Private Invoice Generator — No Upload, No Data Stored",
+      "hub": "evergreen",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 5,
+      "hook": "invoice generator in 10 seconds — for free",
+      "audio": "audio/beat7.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_invoice-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_invoice-generator.txt",
+      "youtubeTitle": "Free Invoice Generator — No Signup, No Install",
+      "rendered": "2026-04-08T23:28:28.523Z",
+      "lastRendered": "2026-04-08T23:28:28.524Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/641v1oVjyV8",
+          "videoId": "641v1oVjyV8",
+          "postedAt": "2026-04-10T19:11:41.496Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "uidesign_color-palette-generator",
+      "title": "Color Palette Generator",
+      "hub": "uidesign",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 2,
+      "hook": "Nobody talks about this free color palette generator",
+      "audio": "audio/beat1.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/uidesign_color-palette-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/uidesign_color-palette-generator.txt",
+      "youtubeTitle": "Free Color Palette Generator — No Signup",
+      "rendered": "2026-04-08T23:28:28.524Z",
+      "lastRendered": "2026-04-08T23:28:28.524Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/1HWz8m987VM",
+          "videoId": "1HWz8m987VM",
+          "postedAt": "2026-04-10T19:15:27.126Z",
+          "scheduledAt": "2026-04-10T21:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -719,9 +929,196 @@
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
         "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/woM9QdpnKjo",
+          "videoId": "woM9QdpnKjo",
+          "postedAt": "2026-04-11T20:41:32.601Z",
+          "scheduledAt": "2026-04-12T19:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
           "posted": false,
           "url": "",
           "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "health_calorie-deficit-calculator",
+      "title": "Calorie Deficit Calculator",
+      "hub": "health",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 2,
+      "hook": "Why are people still paying for this?",
+      "audio": "audio/beat5.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_calorie-deficit-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_calorie-deficit-calculator.txt",
+      "youtubeTitle": "Calorie Deficit Calculator — Free, No Signup",
+      "rendered": "2026-04-11T20:36:41.994Z",
+      "lastRendered": "2026-04-11T20:36:41.994Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/wbfMTpOBEow",
+          "videoId": "wbfMTpOBEow",
+          "postedAt": "2026-04-11T20:41:38.062Z",
+          "scheduledAt": "2026-04-13T20:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "health_recovery-readiness-calculator",
+      "title": "Recovery Readiness Score",
+      "hub": "health",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 1,
+      "hook": "Wait till you see what this does",
+      "audio": "audio/beat10.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_recovery-readiness-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_recovery-readiness-calculator.txt",
+      "youtubeTitle": "Recovery Readiness Score — Free, No Signup",
+      "rendered": "2026-04-11T20:36:41.994Z",
+      "lastRendered": "2026-04-11T20:36:41.994Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/x3tWwCU761A",
+          "videoId": "x3tWwCU761A",
+          "postedAt": "2026-04-11T20:41:43.169Z",
+          "scheduledAt": "2026-04-14T20:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "ai_social-media-post-generator",
+      "title": "Social Media Post Generator",
+      "hub": "ai",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 1,
+      "hook": "This free tool is actually insane",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ai_social-media-post-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ai_social-media-post-generator.txt",
+      "youtubeTitle": "Social Media Post Generator — Free, No Signup",
+      "rendered": "2026-04-11T20:36:41.994Z",
+      "lastRendered": "2026-04-11T20:36:41.994Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/KnVRY4drD5o",
+          "videoId": "KnVRY4drD5o",
+          "postedAt": "2026-04-11T20:41:50.646Z",
+          "scheduledAt": "2026-04-15T19:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "health_tdee-calculator",
+      "title": "TDEE Calculator",
+      "hub": "health",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 3,
+      "hook": "This just changed everything",
+      "audio": "audio/beat3.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_tdee-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_tdee-calculator.txt",
+      "youtubeTitle": "TDEE Calculator — Free, No Signup",
+      "rendered": "2026-04-11T20:36:41.994Z",
+      "lastRendered": "2026-04-11T20:36:41.994Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/UR9hiGKEgrw",
+          "videoId": "UR9hiGKEgrw",
+          "postedAt": "2026-04-11T20:41:56.102Z",
+          "scheduledAt": "2026-04-16T19:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "health_emotional-intelligence-test",
+      "title": "EQ Test  Measure Your Emotional Intelligence",
+      "hub": "health",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 4,
+      "hook": "Wait till you see what this does",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_emotional-intelligence-test.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_emotional-intelligence-test.txt",
+      "youtubeTitle": "EQ Test  Measure Your Emotional Intelligence — Free, No Signup",
+      "rendered": "2026-04-11T20:36:41.994Z",
+      "lastRendered": "2026-04-11T20:36:41.994Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/wmbCHDtZejY",
+          "videoId": "wmbCHDtZejY",
+          "postedAt": "2026-04-11T20:42:01.607Z",
+          "scheduledAt": "2026-04-17T16:00:00.000Z",
           "retries": 0
         },
         "instagram": {

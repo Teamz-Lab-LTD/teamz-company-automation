@@ -562,6 +562,831 @@ def generate_state_page(state_slug, state_data, dry_run=False):
     return page
 
 
+# ============================================================
+# UK CARE HOME COMPLIANCE — LOCATION DATA
+# ============================================================
+# CQC-registered care homes by region/city (approximate, March 2025)
+UK_CARE_LOCATIONS = {
+    "london": {"name": "London", "region": "Greater London", "homes": 2150, "population": "8.8m"},
+    "manchester": {"name": "Manchester", "region": "Greater Manchester", "homes": 680, "population": "2.8m"},
+    "birmingham": {"name": "Birmingham", "region": "West Midlands", "homes": 520, "population": "1.1m"},
+    "leeds": {"name": "Leeds", "region": "West Yorkshire", "homes": 340, "population": "793k"},
+    "liverpool": {"name": "Liverpool", "region": "Merseyside", "homes": 310, "population": "486k"},
+    "bristol": {"name": "Bristol", "region": "South West", "homes": 280, "population": "472k"},
+    "sheffield": {"name": "Sheffield", "region": "South Yorkshire", "homes": 260, "population": "556k"},
+    "newcastle": {"name": "Newcastle", "region": "North East", "homes": 240, "population": "302k"},
+    "nottingham": {"name": "Nottingham", "region": "East Midlands", "homes": 220, "population": "323k"},
+    "brighton": {"name": "Brighton", "region": "South East", "homes": 200, "population": "290k"},
+    "leicester": {"name": "Leicester", "region": "East Midlands", "homes": 190, "population": "354k"},
+    "coventry": {"name": "Coventry", "region": "West Midlands", "homes": 170, "population": "345k"},
+    "bradford": {"name": "Bradford", "region": "West Yorkshire", "homes": 180, "population": "546k"},
+    "cardiff": {"name": "Cardiff", "region": "Wales", "homes": 160, "population": "362k"},
+    "edinburgh": {"name": "Edinburgh", "region": "Scotland", "homes": 190, "population": "527k"},
+    "glasgow": {"name": "Glasgow", "region": "Scotland", "homes": 210, "population": "635k"},
+    "southampton": {"name": "Southampton", "region": "South East", "homes": 150, "population": "252k"},
+    "plymouth": {"name": "Plymouth", "region": "South West", "homes": 130, "population": "264k"},
+    "stoke-on-trent": {"name": "Stoke-on-Trent", "region": "West Midlands", "homes": 140, "population": "256k"},
+    "wolverhampton": {"name": "Wolverhampton", "region": "West Midlands", "homes": 120, "population": "254k"},
+    "derby": {"name": "Derby", "region": "East Midlands", "homes": 110, "population": "257k"},
+    "norwich": {"name": "Norwich", "region": "East of England", "homes": 140, "population": "144k"},
+    "oxford": {"name": "Oxford", "region": "South East", "homes": 100, "population": "152k"},
+    "cambridge": {"name": "Cambridge", "region": "East of England", "homes": 90, "population": "145k"},
+    "york": {"name": "York", "region": "North Yorkshire", "homes": 110, "population": "211k"},
+    "bath": {"name": "Bath", "region": "South West", "homes": 80, "population": "90k"},
+    "exeter": {"name": "Exeter", "region": "South West", "homes": 90, "population": "131k"},
+    "cheltenham": {"name": "Cheltenham", "region": "South West", "homes": 70, "population": "117k"},
+    "reading": {"name": "Reading", "region": "South East", "homes": 85, "population": "174k"},
+    "bournemouth": {"name": "Bournemouth", "region": "South West", "homes": 160, "population": "183k"},
+    "blackpool": {"name": "Blackpool", "region": "North West", "homes": 120, "population": "140k"},
+    "sunderland": {"name": "Sunderland", "region": "North East", "homes": 100, "population": "274k"},
+    "hull": {"name": "Hull", "region": "East Yorkshire", "homes": 110, "population": "260k"},
+    "middlesbrough": {"name": "Middlesbrough", "region": "North East", "homes": 90, "population": "140k"},
+    "wigan": {"name": "Wigan", "region": "Greater Manchester", "homes": 100, "population": "326k"},
+    "kent": {"name": "Kent", "region": "South East", "homes": 480, "population": "1.8m"},
+    "essex": {"name": "Essex", "region": "East of England", "homes": 520, "population": "1.5m"},
+    "surrey": {"name": "Surrey", "region": "South East", "homes": 380, "population": "1.2m"},
+    "hampshire": {"name": "Hampshire", "region": "South East", "homes": 420, "population": "1.4m"},
+    "devon": {"name": "Devon", "region": "South West", "homes": 350, "population": "795k"},
+}
+
+
+def generate_uk_care_page(slug, data):
+    """Generate a UK care home compliance tool page for a specific location."""
+    import html as html_module
+    name = data["name"]
+    region = data["region"]
+    homes = data["homes"]
+    pop = data["population"]
+
+    title = f"Care Home Compliance Software {name} — Free CQC Tool"
+    meta_desc = f"Free care home compliance software for {name}, {region}. Track CQC readiness across 21 categories for {homes}+ care homes in {name}. Record evidence in 60 seconds, generate inspection packs."
+    h1 = f"Care Home Compliance Software for {name}"
+    canonical = f"{SITE_URL}/uk-care/care-home-compliance-{slug}/"
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — Teamz Lab Tools</title>
+<meta name="description" content="{meta_desc}">
+<link rel="canonical" href="{canonical}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{meta_desc}">
+<meta property="og:url" content="{canonical}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Teamz Lab Tools">
+<meta property="og:image" content="{SITE_URL}/og-images/uk-care.png">
+<link rel="stylesheet" href="/branding/css/teamz-branding.css">
+<link rel="stylesheet" href="/shared/css/tools.css">
+</head>
+<body>
+<script src="/branding/js/theme.js"></script>
+
+<div class="site-main">
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+
+<article class="tool-article">
+<h1>{h1}</h1>
+<p class="tool-intro">Free CQC compliance evidence software for the {homes}+ registered care homes in {name}, {region}. AlwaysReady Care helps care homes capture, structure, review, and export inspection-ready evidence — mapped to CQC's 5 key questions and 21 compliance categories.</p>
+
+<div class="tool-calculator" id="tool-calculator">
+  <div class="tool-calculator-section">
+    <h2>Try AlwaysReady Care for {name}</h2>
+    <p>Record care evidence in 60 seconds. AI structures your notes. Generate CQC inspection packs in one click. No rip-and-replace — works alongside your existing care planning system.</p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0;">
+      <a href="https://always-ready-care.web.app/" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;background:#D9FE06;color:#12151A;font-weight:600;text-decoration:none;font-size:15px;">
+        Get Started Free
+      </a>
+      <a href="https://wa.me/447490356046?text=Hi%2C%20I%20run%20a%20care%20home%20in%20{name}%20and%20I%27d%20like%20a%20demo%20of%20AlwaysReady%20Care." class="btn-secondary" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;border:1px solid;text-decoration:none;font-size:15px;" target="_blank" rel="noopener">
+        Book a Demo
+      </a>
+    </div>
+
+    <div class="tool-result" id="tool-result">
+      <h3>CQC Compliance Categories Tracked</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:16px 0;">
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Safe</strong><br>Medication, Safeguarding, Incidents, Infection Control, Risk Assessment, Falls</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Effective</strong><br>Care Planning, Nutrition, Health Monitoring, MCA/DoLS, Staff Training</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Caring</strong><br>Personal Care, Activities, Communication &amp; Engagement</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Responsive</strong><br>Complaints, End of Life, Person-Centred Care</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Well-led</strong><br>Governance, Supervision, Night Care, Duty of Candour</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ad-slot">Ad Space</div>
+
+<section class="tool-content">
+
+<h2>CQC Compliance for Care Homes in {name}</h2>
+<p>{name} in {region} has approximately {homes} CQC-registered care homes serving a population of {pop}. These include care homes with and without nursing, domiciliary care providers, and supported living services. Every one of these locations must maintain continuous compliance evidence across CQC's 5 key questions: Safe, Effective, Caring, Responsive, and Well-led.</p>
+<p>AlwaysReady Care is a free compliance evidence layer designed specifically for UK care homes in {name} and across England. It doesn't replace your existing care planning system — it works alongside Person Centred Software, Nourish Care, Log my Care, Care Control, Birdie, and any other platform you already use.</p>
+
+<h2>How {name} Care Homes Use AlwaysReady Care</h2>
+<p>Care workers in {name} use AlwaysReady Care to record evidence during or immediately after providing care. With 12 pre-built templates covering medication administration, personal care, meals, incidents, safeguarding, night care, staff supervision, and more, recording takes under 60 seconds. AI automatically structures messy handover notes into CQC-ready format, suggests compliance tags, flags risks, and recommends follow-up actions.</p>
+<p>Managers and deputy managers see a live compliance readiness dashboard showing which of the 21 CQC categories have gaps. When CQC inspects a {name} care home, the manager generates a professional inspection pack in one click — filtered by date range, evidence type, or compliance area.</p>
+
+<h2>Why Care Homes in {name} Need Digital Compliance</h2>
+<p>The most common reason CQC rates care homes in {name} as "Requires Improvement" is weak governance under Regulation 17 — specifically, poor record-keeping and scattered evidence across paper notes, WhatsApp messages, and Excel spreadsheets. AlwaysReady Care solves this by centralising all compliance evidence in one searchable, auditable, inspection-ready system.</p>
+<p>For multi-site operators in {region}, the platform provides group-level visibility so nominated individuals and quality directors can spot compliance gaps before inspectors do.</p>
+
+<h2>Get Started in {name}</h2>
+<p>AlwaysReady Care is free to start. No credit card required. No installation — it works in your browser and can be installed as an app on your phone. Your team can be recording CQC-ready evidence within 5 minutes.</p>
+
+</section>
+
+<div id="tool-faqs"></div>
+<div id="related-tools"></div>
+</article>
+</div>
+
+<script src="/shared/js/common.js"></script>
+<script>
+TeamzTools.renderBreadcrumbs([
+  {{ name: 'Home', url: '/' }},
+  {{ name: 'UK Care', url: '/uk-care/' }},
+  {{ name: '{name}' }}
+]);
+
+TeamzTools.renderFAQs([
+  {{ q: 'How many CQC-registered care homes are in {name}?', a: 'There are approximately {homes} CQC-registered care home and care service locations in {name}, {region}. This includes residential care homes, nursing homes, domiciliary care agencies, and supported living services.' }},
+  {{ q: 'What is the best compliance software for care homes in {name}?', a: 'AlwaysReady Care is a free compliance evidence layer designed for UK care homes. It tracks 21 CQC categories mapped to the 5 key questions, with AI-assisted evidence structuring, follow-up action tracking, and one-click inspection pack generation.' }},
+  {{ q: 'How do I prepare my {name} care home for a CQC inspection?', a: 'Start by ensuring you have recent evidence across all compliance categories: medication, personal care, safeguarding, incidents, nutrition, activities, health monitoring, and governance. AlwaysReady Care shows your readiness score in real-time and highlights gaps before an inspector finds them.' }},
+  {{ q: 'Does AlwaysReady Care work with other care home software?', a: 'Yes. AlwaysReady Care works alongside Person Centred Software, Nourish Care, Log my Care, Care Control, Birdie, CareDocs, StoriiCare, and any care planning system. It is not a replacement — it is a compliance evidence layer on top of your existing tools.' }},
+  {{ q: 'Is this care home software free?', a: 'AlwaysReady Care is free to start with evidence capture, compliance tracking, and inspection pack generation for up to 3 staff. Pro plans with all 12 templates, AI structuring, and unlimited staff start from \\u00a379 per care home per month.' }}
+]);
+TeamzTools.injectFAQSchema();
+
+TeamzTools.renderRelatedTools([
+  {{ slug: '/uk-care/', name: 'All UK Care Home Tools', description: 'Browse all care home compliance tools by region' }},
+  {{ slug: '/compliance/', name: 'Compliance Tools', description: 'Audit checklists, risk assessments, and policy generators' }},
+  {{ slug: '/eldercare/', name: 'Elder Care Tools', description: 'Calculators and tools for elderly care providers' }},
+  {{ slug: '/health/', name: 'Health Tools', description: 'Health calculators, BMI, medication, and wellness tools' }},
+  {{ slug: '/career/', name: 'Career Tools', description: 'Resume builders, interview prep, and job search tools' }},
+  {{ slug: '/tools/', name: 'All Tools', description: 'Browse 2000+ free browser-based tools' }}
+]);
+
+TeamzTools.injectWebAppSchema({{
+  slug: 'uk-care/care-home-compliance-{slug}',
+  title: '{title}',
+  description: '{meta_desc}'
+}});
+</script>
+</body>
+</html>"""
+
+
+def generate_uk_care_hub():
+    """Generate the /uk-care/ hub page listing all location pages."""
+    locations_html = ""
+    for slug, data in sorted(UK_CARE_LOCATIONS.items(), key=lambda x: -x[1]["homes"]):
+        locations_html += f'        <a href="/uk-care/care-home-compliance-{slug}/" class="hub-card"><h3>{data["name"]}</h3><p>{data["region"]} · {data["homes"]}+ care homes</p></a>\n'
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UK Care Home Compliance Software by Region — Free CQC Tools — Teamz Lab Tools</title>
+<meta name="description" content="Free CQC compliance evidence software for UK care homes. Find care home compliance tools for your region — London, Manchester, Birmingham, Bristol, Leeds, and 35+ more UK locations.">
+<link rel="canonical" href="{SITE_URL}/uk-care/">
+<meta property="og:title" content="UK Care Home Compliance Software by Region">
+<meta property="og:description" content="Free CQC compliance tools for care homes across the UK. 40 locations covered.">
+<meta property="og:url" content="{SITE_URL}/uk-care/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Teamz Lab Tools">
+<link rel="stylesheet" href="/branding/css/teamz-branding.css">
+<link rel="stylesheet" href="/shared/css/tools.css">
+</head>
+<body>
+<script src="/branding/js/theme.js"></script>
+<div class="site-main">
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+<h1>UK Care Home Compliance Software</h1>
+<p class="hub-intro">Free CQC compliance evidence software for care homes across the UK. Choose your region to see local care home data and get started with AlwaysReady Care.</p>
+<div class="hub-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:24px 0;">
+{locations_html}
+</div>
+</div>
+<script src="/shared/js/common.js"></script>
+<script>
+TeamzTools.renderBreadcrumbs([
+  {{ name: 'Home', url: '/' }},
+  {{ name: 'UK Care' }}
+]);
+</script>
+</body>
+</html>"""
+
+
+# ============================================================
+# AUSTRALIA — AGED CARE COMPLIANCE — LOCATION DATA
+# ============================================================
+AU_CARE_LOCATIONS = {
+    "sydney": {"name": "Sydney", "region": "New South Wales", "homes": 420, "population": "5.3m"},
+    "melbourne": {"name": "Melbourne", "region": "Victoria", "homes": 380, "population": "5.1m"},
+    "brisbane": {"name": "Brisbane", "region": "Queensland", "homes": 280, "population": "2.6m"},
+    "perth": {"name": "Perth", "region": "Western Australia", "homes": 180, "population": "2.1m"},
+    "adelaide": {"name": "Adelaide", "region": "South Australia", "homes": 160, "population": "1.4m"},
+    "gold-coast": {"name": "Gold Coast", "region": "Queensland", "homes": 120, "population": "680k"},
+    "canberra": {"name": "Canberra", "region": "ACT", "homes": 40, "population": "460k"},
+    "hobart": {"name": "Hobart", "region": "Tasmania", "homes": 45, "population": "240k"},
+    "darwin": {"name": "Darwin", "region": "Northern Territory", "homes": 15, "population": "150k"},
+    "newcastle-au": {"name": "Newcastle", "region": "New South Wales", "homes": 80, "population": "320k"},
+    "wollongong": {"name": "Wollongong", "region": "New South Wales", "homes": 50, "population": "300k"},
+    "geelong": {"name": "Geelong", "region": "Victoria", "homes": 45, "population": "270k"},
+    "townsville": {"name": "Townsville", "region": "Queensland", "homes": 35, "population": "180k"},
+    "cairns": {"name": "Cairns", "region": "Queensland", "homes": 30, "population": "160k"},
+    "toowoomba": {"name": "Toowoomba", "region": "Queensland", "homes": 25, "population": "140k"},
+    "ballarat": {"name": "Ballarat", "region": "Victoria", "homes": 25, "population": "110k"},
+    "bendigo": {"name": "Bendigo", "region": "Victoria", "homes": 20, "population": "100k"},
+    "launceston": {"name": "Launceston", "region": "Tasmania", "homes": 20, "population": "90k"},
+    "new-south-wales": {"name": "New South Wales", "region": "NSW", "homes": 870, "population": "8.2m"},
+    "victoria": {"name": "Victoria", "region": "VIC", "homes": 780, "population": "6.7m"},
+}
+
+
+def generate_au_care_page(slug, data):
+    """Generate an Australian aged care compliance tool page for a specific location."""
+    name = data["name"]
+    region = data["region"]
+    homes = data["homes"]
+    pop = data["population"]
+
+    title = f"Aged Care Compliance Software {name} — Free ACQSC Tool"
+    meta_desc = f"Free aged care compliance software for {name}, {region}. Track ACQSC readiness across 7 strengthened quality standards for {homes}+ aged care homes in {name}. Record evidence in 60 seconds."
+    if len(meta_desc) > 155:
+        meta_desc = meta_desc[:152] + "..."
+    h1 = f"Aged Care Compliance Software for {name}"
+    canonical = f"{SITE_URL}/au-care/aged-care-compliance-{slug}/"
+
+    return f"""<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — Teamz Lab Tools</title>
+<meta name="description" content="{meta_desc}">
+<link rel="canonical" href="{canonical}">
+<link rel="alternate" hreflang="en-AU" href="{canonical}">
+<link rel="alternate" hreflang="x-default" href="{canonical}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{meta_desc}">
+<meta property="og:url" content="{canonical}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Teamz Lab Tools">
+<meta property="og:image" content="{SITE_URL}/og-images/au-care.png">
+<link rel="stylesheet" href="/branding/css/teamz-branding.css">
+<link rel="stylesheet" href="/shared/css/tools.css">
+</head>
+<body>
+<script src="/branding/js/theme.js"></script>
+
+<div class="site-main">
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+
+<article class="tool-article">
+<h1>{h1}</h1>
+<p class="tool-intro">Free ACQSC compliance evidence software for the {homes}+ registered aged care homes in {name}, {region}. AlwaysReady Care helps aged care providers capture, structure, review, and export audit-ready evidence — mapped to the 7 strengthened aged care quality standards introduced under the Aged Care Act 2024.</p>
+
+<div class="tool-calculator" id="tool-calculator">
+  <div class="tool-calculator-section">
+    <h2>Try AlwaysReady Care for {name}</h2>
+    <p>Record care evidence in 60 seconds. AI structures your notes. Generate compliance audit packs in one click. Works alongside your existing aged care software — no rip-and-replace required.</p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0;">
+      <a href="https://always-ready-care.web.app/" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;background:#D9FE06;color:#12151A;font-weight:600;text-decoration:none;font-size:15px;">
+        Get Started Free
+      </a>
+      <a href="https://wa.me/447490356046?text=Hi%2C%20I%20run%20an%20aged%20care%20home%20in%20{name}%20and%20I%27d%20like%20a%20demo%20of%20AlwaysReady%20Care." class="btn-secondary" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;border:1px solid;text-decoration:none;font-size:15px;" target="_blank" rel="noopener">
+        Book a Demo
+      </a>
+    </div>
+
+    <div class="tool-result" id="tool-result">
+      <h3>7 Strengthened Quality Standards Tracked</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:16px 0;">
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 1</strong><br>The Person — dignity, identity, culture, diversity</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 2</strong><br>The Organisation — governance, leadership, workforce</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 3</strong><br>The Care and Services — safe, effective, person-centred</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 4</strong><br>The Environment — safe, comfortable, homelike</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 5</strong><br>Clinical Care — medication, health monitoring, allied health</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 6</strong><br>Food and Nutrition — meals, hydration, dietary needs</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 7</strong><br>The Residential Community — activities, social connections, feedback</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ad-slot">Ad Space</div>
+
+<section class="tool-content">
+
+<h2>Aged Care Compliance for Providers in {name}</h2>
+<p>{name} in {region} has approximately {homes} registered aged care homes and services serving a population of {pop}. Under the Aged Care Act 2024, every aged care provider must demonstrate continuous compliance with the 7 strengthened quality standards enforced by the Aged Care Quality and Safety Commission (ACQSC). These standards, effective from 1 July 2025, replace the previous 8 Aged Care Quality Standards and place stronger emphasis on the rights of older Australians.</p>
+<p>AlwaysReady Care is a free compliance evidence layer designed for Australian aged care providers in {name} and nationwide. It does not replace your existing aged care software — it works alongside AlayaCare, iCare, Leecare, Person Centred Software, and any other system you use.</p>
+
+<h2>How {name} Aged Care Providers Use AlwaysReady Care</h2>
+<p>Care workers in {name} use AlwaysReady Care to record evidence during or immediately after providing care. With pre-built templates covering medication administration, personal care, meals, incidents, clinical observations, and more, recording takes under 60 seconds. AI automatically structures messy handover notes into ACQSC-ready format, suggests compliance tags, flags risks, and recommends follow-up actions.</p>
+<p>Managers and quality leads see a live compliance readiness dashboard showing which of the 7 strengthened standards have gaps. When the Aged Care Quality and Safety Commission conducts a quality review of your {name} service, the manager generates a professional audit pack in one click — filtered by date range, evidence type, or quality standard.</p>
+
+<h2>Why Aged Care Providers in {name} Need Digital Compliance</h2>
+<p>The most common reason the ACQSC finds non-compliance in {name} aged care homes is weak governance and poor record-keeping — scattered evidence across paper notes, WhatsApp messages, and spreadsheets. The strengthened standards under the Aged Care Act 2024 require providers to demonstrate outcomes-based compliance, not just policies. AlwaysReady Care solves this by centralising all compliance evidence in one searchable, auditable, inspection-ready system.</p>
+<p>For multi-site operators in {region}, the platform provides group-level visibility so approved providers and quality directors can spot compliance gaps before the Commission does.</p>
+
+<h2>Get Started in {name}</h2>
+<p>AlwaysReady Care is free to start. No credit card required. No installation — it works in your browser and can be installed as an app on your phone. Your team can be recording ACQSC-ready evidence within 5 minutes.</p>
+
+</section>
+
+<div id="tool-faqs"></div>
+<div id="related-tools"></div>
+</article>
+</div>
+
+<script src="/shared/js/common.js"></script>
+<script>
+TeamzTools.renderBreadcrumbs([
+  {{ name: 'Home', url: '/' }},
+  {{ name: 'AU Aged Care', url: '/au-care/' }},
+  {{ name: '{name}' }}
+]);
+
+TeamzTools.renderFAQs([
+  {{ q: 'How many registered aged care homes are in {name}?', a: 'There are approximately {homes} registered aged care homes and services in {name}, {region}. This includes residential aged care facilities, home care providers, and flexible care services regulated by the Aged Care Quality and Safety Commission.' }},
+  {{ q: 'What are the 7 strengthened aged care quality standards?', a: 'The 7 strengthened quality standards under the Aged Care Act 2024 cover: (1) The Person, (2) The Organisation, (3) The Care and Services, (4) The Environment, (5) Clinical Care, (6) Food and Nutrition, and (7) The Residential Community. They replace the previous 8 standards from 1 July 2025.' }},
+  {{ q: 'What is the best compliance software for aged care in {name}?', a: 'AlwaysReady Care is a free compliance evidence layer designed for Australian aged care providers. It tracks evidence against all 7 strengthened quality standards, with AI-assisted structuring, follow-up tracking, and one-click audit pack generation.' }},
+  {{ q: 'Does AlwaysReady Care work with other aged care software?', a: 'Yes. AlwaysReady Care works alongside AlayaCare, iCare, Leecare, Person Centred Software, and any other aged care platform. It is a compliance evidence layer, not a replacement for your existing care management system.' }},
+  {{ q: 'Is this aged care compliance software free?', a: 'AlwaysReady Care is free to start with evidence capture, compliance tracking, and audit pack generation for up to 3 staff. Pro plans with all templates, AI structuring, and unlimited staff are available for larger services.' }}
+]);
+TeamzTools.injectFAQSchema();
+
+TeamzTools.renderRelatedTools([
+  {{ slug: '/au-care/', name: 'All AU Aged Care Tools', description: 'Browse all aged care compliance tools by region' }},
+  {{ slug: '/uk-care/', name: 'UK Care Home Tools', description: 'CQC compliance tools for UK care homes' }},
+  {{ slug: '/nz-care/', name: 'NZ Rest Home Tools', description: 'NZS 8134 compliance tools for New Zealand rest homes' }},
+  {{ slug: '/ie-care/', name: 'Ireland Nursing Home Tools', description: 'HIQA compliance tools for Irish nursing homes' }},
+  {{ slug: '/health/', name: 'Health Tools', description: 'Health calculators, BMI, medication, and wellness tools' }},
+  {{ slug: '/tools/', name: 'All Tools', description: 'Browse 2000+ free browser-based tools' }}
+]);
+
+TeamzTools.injectWebAppSchema({{
+  slug: 'au-care/aged-care-compliance-{slug}',
+  title: '{title}',
+  description: '{meta_desc}'
+}});
+</script>
+</body>
+</html>"""
+
+
+def generate_au_care_hub():
+    """Generate the /au-care/ hub page listing all location pages."""
+    locations_html = ""
+    for slug, data in sorted(AU_CARE_LOCATIONS.items(), key=lambda x: -x[1]["homes"]):
+        locations_html += f'        <a href="/au-care/aged-care-compliance-{slug}/" class="hub-card"><h3>{data["name"]}</h3><p>{data["region"]} · {data["homes"]}+ aged care homes</p></a>\n'
+
+    return f"""<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Australian Aged Care Compliance Software by Region — Free ACQSC Tools — Teamz Lab Tools</title>
+<meta name="description" content="Free ACQSC compliance evidence software for Australian aged care providers. Find aged care compliance tools for your region — Sydney, Melbourne, Brisbane, Perth, Adelaide, and 15+ more locations.">
+<link rel="canonical" href="{SITE_URL}/au-care/">
+<link rel="alternate" hreflang="en-AU" href="{SITE_URL}/au-care/">
+<link rel="alternate" hreflang="x-default" href="{SITE_URL}/au-care/">
+<meta property="og:title" content="Australian Aged Care Compliance Software by Region">
+<meta property="og:description" content="Free ACQSC compliance tools for aged care providers across Australia. 20 locations covered.">
+<meta property="og:url" content="{SITE_URL}/au-care/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Teamz Lab Tools">
+<link rel="stylesheet" href="/branding/css/teamz-branding.css">
+<link rel="stylesheet" href="/shared/css/tools.css">
+</head>
+<body>
+<script src="/branding/js/theme.js"></script>
+<div class="site-main">
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+<h1>Australian Aged Care Compliance Software</h1>
+<p class="hub-intro">Free ACQSC compliance evidence software for aged care providers across Australia. Choose your region to see local aged care data and get started with AlwaysReady Care.</p>
+<div class="hub-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:24px 0;">
+{locations_html}
+</div>
+</div>
+<script src="/shared/js/common.js"></script>
+<script>
+TeamzTools.renderBreadcrumbs([
+  {{ name: 'Home', url: '/' }},
+  {{ name: 'AU Aged Care' }}
+]);
+</script>
+</body>
+</html>"""
+
+
+# ============================================================
+# IRELAND — NURSING HOME COMPLIANCE — LOCATION DATA
+# ============================================================
+IE_CARE_LOCATIONS = {
+    "dublin": {"name": "Dublin", "region": "Leinster", "homes": 120, "population": "1.4m"},
+    "cork": {"name": "Cork", "region": "Munster", "homes": 60, "population": "210k"},
+    "galway": {"name": "Galway", "region": "Connacht", "homes": 30, "population": "83k"},
+    "limerick": {"name": "Limerick", "region": "Munster", "homes": 25, "population": "100k"},
+    "waterford": {"name": "Waterford", "region": "Munster", "homes": 18, "population": "54k"},
+    "kilkenny": {"name": "Kilkenny", "region": "Leinster", "homes": 12, "population": "27k"},
+    "drogheda": {"name": "Drogheda", "region": "Leinster", "homes": 10, "population": "41k"},
+    "dundalk": {"name": "Dundalk", "region": "Leinster", "homes": 10, "population": "40k"},
+    "kerry": {"name": "Kerry", "region": "Munster", "homes": 18, "population": "155k"},
+    "wexford": {"name": "Wexford", "region": "Leinster", "homes": 14, "population": "150k"},
+    "mayo": {"name": "Mayo", "region": "Connacht", "homes": 12, "population": "130k"},
+    "donegal": {"name": "Donegal", "region": "Ulster", "homes": 15, "population": "160k"},
+    "tipperary": {"name": "Tipperary", "region": "Munster", "homes": 16, "population": "160k"},
+    "clare": {"name": "Clare", "region": "Munster", "homes": 10, "population": "120k"},
+    "wicklow": {"name": "Wicklow", "region": "Leinster", "homes": 12, "population": "155k"},
+}
+
+
+def generate_ie_care_page(slug, data):
+    """Generate an Irish nursing home compliance tool page for a specific location."""
+    name = data["name"]
+    region = data["region"]
+    homes = data["homes"]
+    pop = data["population"]
+
+    title = f"Nursing Home Compliance Software {name} — Free HIQA Tool"
+    meta_desc = f"Free nursing home compliance software for {name}, {region}. Track HIQA readiness across 8 national standards for {homes}+ nursing homes in {name}. Record evidence in 60 seconds."
+    if len(meta_desc) > 155:
+        meta_desc = meta_desc[:152] + "..."
+    h1 = f"Nursing Home Compliance Software for {name}"
+    canonical = f"{SITE_URL}/ie-care/nursing-home-compliance-{slug}/"
+
+    return f"""<!DOCTYPE html>
+<html lang="en-IE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — Teamz Lab Tools</title>
+<meta name="description" content="{meta_desc}">
+<link rel="canonical" href="{canonical}">
+<link rel="alternate" hreflang="en-IE" href="{canonical}">
+<link rel="alternate" hreflang="x-default" href="{canonical}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{meta_desc}">
+<meta property="og:url" content="{canonical}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Teamz Lab Tools">
+<meta property="og:image" content="{SITE_URL}/og-images/ie-care.png">
+<link rel="stylesheet" href="/branding/css/teamz-branding.css">
+<link rel="stylesheet" href="/shared/css/tools.css">
+</head>
+<body>
+<script src="/branding/js/theme.js"></script>
+
+<div class="site-main">
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+
+<article class="tool-article">
+<h1>{h1}</h1>
+<p class="tool-intro">Free HIQA compliance evidence software for the {homes}+ registered nursing homes in {name}, {region}. AlwaysReady Care helps nursing homes capture, structure, review, and export inspection-ready evidence — mapped to the 8 National Standards for Residential Care Settings for Older People in Ireland.</p>
+
+<div class="tool-calculator" id="tool-calculator">
+  <div class="tool-calculator-section">
+    <h2>Try AlwaysReady Care for {name}</h2>
+    <p>Record care evidence in 60 seconds. AI structures your notes. Generate HIQA inspection packs in one click. Works alongside your existing nursing home software — no rip-and-replace required.</p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0;">
+      <a href="https://always-ready-care.web.app/" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;background:#D9FE06;color:#12151A;font-weight:600;text-decoration:none;font-size:15px;">
+        Get Started Free
+      </a>
+      <a href="https://wa.me/447490356046?text=Hi%2C%20I%20run%20a%20nursing%20home%20in%20{name}%20and%20I%27d%20like%20a%20demo%20of%20AlwaysReady%20Care." class="btn-secondary" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;border:1px solid;text-decoration:none;font-size:15px;" target="_blank" rel="noopener">
+        Book a Demo
+      </a>
+    </div>
+
+    <div class="tool-result" id="tool-result">
+      <h3>8 National Standards Tracked</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:16px 0;">
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 1</strong><br>Person-Centred Care and Support</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 2</strong><br>Effective Care and Support</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 3</strong><br>Safe Care and Support</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 4</strong><br>Health and Wellbeing</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 5</strong><br>Use of Resources</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 6</strong><br>Workforce</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 7</strong><br>Use of Information</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Standard 8</strong><br>Governance, Leadership and Management</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ad-slot">Ad Space</div>
+
+<section class="tool-content">
+
+<h2>HIQA Compliance for Nursing Homes in {name}</h2>
+<p>{name} in {region} has approximately {homes} HIQA-registered nursing homes and residential care centres serving a population of {pop}. The Health Information and Quality Authority (HIQA) regulates all designated centres for older people in Ireland under the Health Act 2007 and the Care and Welfare Regulations 2013. Every nursing home must demonstrate continuous compliance with the 8 National Standards for Residential Care Settings for Older People.</p>
+<p>AlwaysReady Care is a free compliance evidence layer designed for Irish nursing homes in {name} and nationwide. It does not replace your existing nursing home software — it works alongside any care management platform you already use.</p>
+
+<h2>How {name} Nursing Homes Use AlwaysReady Care</h2>
+<p>Care staff in {name} use AlwaysReady Care to record evidence during or immediately after providing care. With pre-built templates covering medication administration, personal care, meals, incidents, safeguarding, health monitoring, and more, recording takes under 60 seconds. AI automatically structures handover notes into HIQA-ready format, suggests compliance tags, flags risks, and recommends follow-up actions.</p>
+<p>Persons in charge and registered providers see a live compliance readiness dashboard showing which of the 8 National Standards have gaps. When HIQA inspects a {name} nursing home, the person in charge generates a professional inspection pack in one click — filtered by date range, evidence type, or regulation area.</p>
+
+<h2>Why Nursing Homes in {name} Need Digital Compliance</h2>
+<p>The most common reason HIQA finds non-compliance in {name} nursing homes is poor governance under Regulation 23 — specifically, weak oversight systems and scattered evidence across paper records. The National Standards require nursing homes to demonstrate outcomes for residents, not just policies. AlwaysReady Care solves this by centralising all compliance evidence in one searchable, auditable, inspection-ready system.</p>
+<p>For nursing home groups operating across {region} and Ireland, the platform provides group-level visibility so registered providers and quality managers can identify compliance gaps before inspectors do.</p>
+
+<h2>Get Started in {name}</h2>
+<p>AlwaysReady Care is free to start. No credit card required. No installation — it works in your browser and can be installed as an app on your phone. Your team can be recording HIQA-ready evidence within 5 minutes.</p>
+
+</section>
+
+<div id="tool-faqs"></div>
+<div id="related-tools"></div>
+</article>
+</div>
+
+<script src="/shared/js/common.js"></script>
+<script>
+TeamzTools.renderBreadcrumbs([
+  {{ name: 'Home', url: '/' }},
+  {{ name: 'IE Nursing Homes', url: '/ie-care/' }},
+  {{ name: '{name}' }}
+]);
+
+TeamzTools.renderFAQs([
+  {{ q: 'How many HIQA-registered nursing homes are in {name}?', a: 'There are approximately {homes} HIQA-registered nursing homes and designated centres for older people in {name}, {region}. These are regulated under the Health Act 2007 and must comply with the National Standards for Residential Care Settings.' }},
+  {{ q: 'What are the 8 National Standards for nursing homes in Ireland?', a: 'The 8 National Standards cover: (1) Person-Centred Care and Support, (2) Effective Care and Support, (3) Safe Care and Support, (4) Health and Wellbeing, (5) Use of Resources, (6) Workforce, (7) Use of Information, and (8) Governance, Leadership and Management.' }},
+  {{ q: 'What is the best compliance software for nursing homes in {name}?', a: 'AlwaysReady Care is a free compliance evidence layer designed for Irish nursing homes. It tracks evidence against all 8 National Standards, with AI-assisted structuring, follow-up tracking, and one-click inspection pack generation.' }},
+  {{ q: 'Does AlwaysReady Care work with other nursing home software?', a: 'Yes. AlwaysReady Care works alongside any care management system used in Irish nursing homes. It is a compliance evidence layer, not a replacement for your existing software.' }},
+  {{ q: 'Is this nursing home compliance software free?', a: 'AlwaysReady Care is free to start with evidence capture, compliance tracking, and inspection pack generation for up to 3 staff. Pro plans with all templates, AI structuring, and unlimited staff are available for larger nursing homes.' }}
+]);
+TeamzTools.injectFAQSchema();
+
+TeamzTools.renderRelatedTools([
+  {{ slug: '/ie-care/', name: 'All Ireland Nursing Home Tools', description: 'Browse all nursing home compliance tools by county' }},
+  {{ slug: '/uk-care/', name: 'UK Care Home Tools', description: 'CQC compliance tools for UK care homes' }},
+  {{ slug: '/au-care/', name: 'AU Aged Care Tools', description: 'ACQSC compliance tools for Australian aged care' }},
+  {{ slug: '/nz-care/', name: 'NZ Rest Home Tools', description: 'NZS 8134 compliance tools for New Zealand rest homes' }},
+  {{ slug: '/health/', name: 'Health Tools', description: 'Health calculators, BMI, medication, and wellness tools' }},
+  {{ slug: '/tools/', name: 'All Tools', description: 'Browse 2000+ free browser-based tools' }}
+]);
+
+TeamzTools.injectWebAppSchema({{
+  slug: 'ie-care/nursing-home-compliance-{slug}',
+  title: '{title}',
+  description: '{meta_desc}'
+}});
+</script>
+</body>
+</html>"""
+
+
+def generate_ie_care_hub():
+    """Generate the /ie-care/ hub page listing all location pages."""
+    locations_html = ""
+    for slug, data in sorted(IE_CARE_LOCATIONS.items(), key=lambda x: -x[1]["homes"]):
+        locations_html += f'        <a href="/ie-care/nursing-home-compliance-{slug}/" class="hub-card"><h3>{data["name"]}</h3><p>{data["region"]} · {data["homes"]}+ nursing homes</p></a>\n'
+
+    return f"""<!DOCTYPE html>
+<html lang="en-IE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ireland Nursing Home Compliance Software by County — Free HIQA Tools — Teamz Lab Tools</title>
+<meta name="description" content="Free HIQA compliance evidence software for Irish nursing homes. Find nursing home compliance tools for your county — Dublin, Cork, Galway, Limerick, and 11+ more Irish locations.">
+<link rel="canonical" href="{SITE_URL}/ie-care/">
+<link rel="alternate" hreflang="en-IE" href="{SITE_URL}/ie-care/">
+<link rel="alternate" hreflang="x-default" href="{SITE_URL}/ie-care/">
+<meta property="og:title" content="Ireland Nursing Home Compliance Software by County">
+<meta property="og:description" content="Free HIQA compliance tools for nursing homes across Ireland. 15 locations covered.">
+<meta property="og:url" content="{SITE_URL}/ie-care/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Teamz Lab Tools">
+<link rel="stylesheet" href="/branding/css/teamz-branding.css">
+<link rel="stylesheet" href="/shared/css/tools.css">
+</head>
+<body>
+<script src="/branding/js/theme.js"></script>
+<div class="site-main">
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+<h1>Ireland Nursing Home Compliance Software</h1>
+<p class="hub-intro">Free HIQA compliance evidence software for nursing homes across Ireland. Choose your county to see local nursing home data and get started with AlwaysReady Care.</p>
+<div class="hub-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:24px 0;">
+{locations_html}
+</div>
+</div>
+<script src="/shared/js/common.js"></script>
+<script>
+TeamzTools.renderBreadcrumbs([
+  {{ name: 'Home', url: '/' }},
+  {{ name: 'IE Nursing Homes' }}
+]);
+</script>
+</body>
+</html>"""
+
+
+# ============================================================
+# NEW ZEALAND — REST HOME COMPLIANCE — LOCATION DATA
+# ============================================================
+NZ_CARE_LOCATIONS = {
+    "auckland": {"name": "Auckland", "region": "Auckland", "homes": 180, "population": "1.7m"},
+    "wellington": {"name": "Wellington", "region": "Wellington", "homes": 60, "population": "215k"},
+    "christchurch": {"name": "Christchurch", "region": "Canterbury", "homes": 70, "population": "390k"},
+    "hamilton": {"name": "Hamilton", "region": "Waikato", "homes": 35, "population": "180k"},
+    "tauranga": {"name": "Tauranga", "region": "Bay of Plenty", "homes": 30, "population": "155k"},
+    "dunedin": {"name": "Dunedin", "region": "Otago", "homes": 25, "population": "135k"},
+    "palmerston-north": {"name": "Palmerston North", "region": "Manawatū", "homes": 15, "population": "90k"},
+    "napier": {"name": "Napier", "region": "Hawke's Bay", "homes": 15, "population": "67k"},
+    "nelson": {"name": "Nelson", "region": "Nelson", "homes": 12, "population": "54k"},
+    "rotorua": {"name": "Rotorua", "region": "Bay of Plenty", "homes": 12, "population": "75k"},
+    "new-plymouth": {"name": "New Plymouth", "region": "Taranaki", "homes": 10, "population": "58k"},
+    "invercargill": {"name": "Invercargill", "region": "Southland", "homes": 10, "population": "55k"},
+}
+
+
+def generate_nz_care_page(slug, data):
+    """Generate a New Zealand rest home compliance tool page for a specific location."""
+    name = data["name"]
+    region = data["region"]
+    homes = data["homes"]
+    pop = data["population"]
+
+    title = f"Rest Home Compliance Software {name} — Free NZS 8134 Tool"
+    meta_desc = f"Free rest home compliance software for {name}, {region}. Track NZS 8134 readiness for {homes}+ aged residential care facilities in {name}. Record evidence in 60 seconds."
+    if len(meta_desc) > 155:
+        meta_desc = meta_desc[:152] + "..."
+    h1 = f"Rest Home Compliance Software for {name}"
+    canonical = f"{SITE_URL}/nz-care/rest-home-compliance-{slug}/"
+
+    return f"""<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — Teamz Lab Tools</title>
+<meta name="description" content="{meta_desc}">
+<link rel="canonical" href="{canonical}">
+<link rel="alternate" hreflang="en-NZ" href="{canonical}">
+<link rel="alternate" hreflang="x-default" href="{canonical}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{meta_desc}">
+<meta property="og:url" content="{canonical}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Teamz Lab Tools">
+<meta property="og:image" content="{SITE_URL}/og-images/nz-care.png">
+<link rel="stylesheet" href="/branding/css/teamz-branding.css">
+<link rel="stylesheet" href="/shared/css/tools.css">
+</head>
+<body>
+<script src="/branding/js/theme.js"></script>
+
+<div class="site-main">
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+
+<article class="tool-article">
+<h1>{h1}</h1>
+<p class="tool-intro">Free NZS 8134 compliance evidence software for the {homes}+ registered aged residential care facilities in {name}, {region}. AlwaysReady Care helps rest homes capture, structure, review, and export audit-ready evidence — mapped to the Health and Disability Services Standards (NZS 8134:2021) enforced by the Ministry of Health.</p>
+
+<div class="tool-calculator" id="tool-calculator">
+  <div class="tool-calculator-section">
+    <h2>Try AlwaysReady Care for {name}</h2>
+    <p>Record care evidence in 60 seconds. AI structures your notes. Generate certification audit packs in one click. Works alongside your existing rest home software — no rip-and-replace required.</p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0;">
+      <a href="https://always-ready-care.web.app/" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;background:#D9FE06;color:#12151A;font-weight:600;text-decoration:none;font-size:15px;">
+        Get Started Free
+      </a>
+      <a href="https://wa.me/447490356046?text=Hi%2C%20I%20run%20a%20rest%20home%20in%20{name}%20and%20I%27d%20like%20a%20demo%20of%20AlwaysReady%20Care." class="btn-secondary" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;border:1px solid;text-decoration:none;font-size:15px;" target="_blank" rel="noopener">
+        Book a Demo
+      </a>
+    </div>
+
+    <div class="tool-result" id="tool-result">
+      <h3>NZS 8134 Standards Tracked</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:16px 0;">
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">NZS 8134.1</strong><br>Health and Disability Services (Core) Standards</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">NZS 8134.2</strong><br>Health and Disability Services (Restraint Minimisation and Safe Practice)</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">NZS 8134.3</strong><br>Health and Disability Services (Infection Prevention and Control)</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Consumer Rights</strong><br>Code of Health and Disability Services Consumers' Rights</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Governance</strong><br>Organisation management, quality improvement, risk management</div>
+        <div style="padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;"><strong style="color:var(--heading);">Continuum of Service</strong><br>Entry, assessment, care planning, review, exit</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ad-slot">Ad Space</div>
+
+<section class="tool-content">
+
+<h2>NZS 8134 Compliance for Rest Homes in {name}</h2>
+<p>{name} in {region} has approximately {homes} registered aged residential care facilities serving a population of {pop}. Under the Health and Disability Services (Safety) Act 2001, every aged residential care provider must hold a current certification audit against the NZS 8134:2021 standards. The Ministry of Health, through designated auditing agencies, certifies rest homes, continuing care hospitals, dementia units, and psychogeriatric facilities.</p>
+<p>AlwaysReady Care is a free compliance evidence layer designed for New Zealand rest homes in {name} and nationwide. It does not replace your existing rest home software — it works alongside any care management platform you already use.</p>
+
+<h2>How {name} Rest Homes Use AlwaysReady Care</h2>
+<p>Care workers in {name} use AlwaysReady Care to record evidence during or immediately after providing care. With pre-built templates covering medication administration, personal care, meals, incidents, restraint documentation, infection control, and more, recording takes under 60 seconds. AI automatically structures handover notes into NZS 8134-ready format, suggests compliance tags, flags risks, and recommends follow-up actions.</p>
+<p>Facility managers see a live compliance readiness dashboard showing which NZS 8134 criteria have gaps. When a designated auditing agency conducts a certification audit of your {name} rest home, the manager generates a professional audit pack in one click — filtered by date range, evidence type, or standard area.</p>
+
+<h2>Why Rest Homes in {name} Need Digital Compliance</h2>
+<p>The most common reason rest homes in {name} receive corrective action requests during certification audits is poor documentation and scattered evidence. NZS 8134 requires rest homes to demonstrate outcomes for residents across core standards, restraint minimisation, and infection control. AlwaysReady Care solves this by centralising all compliance evidence in one searchable, auditable, certification-ready system.</p>
+<p>For multi-site operators across {region} and New Zealand, the platform provides group-level visibility so managers and quality leads can spot compliance gaps before auditors do.</p>
+
+<h2>Get Started in {name}</h2>
+<p>AlwaysReady Care is free to start. No credit card required. No installation — it works in your browser and can be installed as an app on your phone. Your team can be recording NZS 8134-ready evidence within 5 minutes.</p>
+
+</section>
+
+<div id="tool-faqs"></div>
+<div id="related-tools"></div>
+</article>
+</div>
+
+<script src="/shared/js/common.js"></script>
+<script>
+TeamzTools.renderBreadcrumbs([
+  {{ name: 'Home', url: '/' }},
+  {{ name: 'NZ Rest Homes', url: '/nz-care/' }},
+  {{ name: '{name}' }}
+]);
+
+TeamzTools.renderFAQs([
+  {{ q: 'How many registered rest homes are in {name}?', a: 'There are approximately {homes} registered aged residential care facilities in {name}, {region}. This includes rest homes, continuing care hospitals, dementia units, and psychogeriatric facilities certified under NZS 8134.' }},
+  {{ q: 'What is NZS 8134?', a: 'NZS 8134 is the New Zealand Health and Disability Services Standards. It includes core standards (8134.1), restraint minimisation (8134.2), and infection prevention and control (8134.3). All aged residential care facilities must be certified against these standards by a designated auditing agency.' }},
+  {{ q: 'What is the best compliance software for rest homes in {name}?', a: 'AlwaysReady Care is a free compliance evidence layer designed for New Zealand rest homes. It tracks evidence against NZS 8134 standards, with AI-assisted structuring, follow-up tracking, and one-click audit pack generation.' }},
+  {{ q: 'Does AlwaysReady Care work with other rest home software?', a: 'Yes. AlwaysReady Care works alongside any care management system used in New Zealand rest homes. It is a compliance evidence layer, not a replacement for your existing software.' }},
+  {{ q: 'Is this rest home compliance software free?', a: 'AlwaysReady Care is free to start with evidence capture, compliance tracking, and audit pack generation for up to 3 staff. Pro plans with all templates, AI structuring, and unlimited staff are available for larger facilities.' }}
+]);
+TeamzTools.injectFAQSchema();
+
+TeamzTools.renderRelatedTools([
+  {{ slug: '/nz-care/', name: 'All NZ Rest Home Tools', description: 'Browse all rest home compliance tools by region' }},
+  {{ slug: '/au-care/', name: 'AU Aged Care Tools', description: 'ACQSC compliance tools for Australian aged care' }},
+  {{ slug: '/uk-care/', name: 'UK Care Home Tools', description: 'CQC compliance tools for UK care homes' }},
+  {{ slug: '/ie-care/', name: 'Ireland Nursing Home Tools', description: 'HIQA compliance tools for Irish nursing homes' }},
+  {{ slug: '/health/', name: 'Health Tools', description: 'Health calculators, BMI, medication, and wellness tools' }},
+  {{ slug: '/tools/', name: 'All Tools', description: 'Browse 2000+ free browser-based tools' }}
+]);
+
+TeamzTools.injectWebAppSchema({{
+  slug: 'nz-care/rest-home-compliance-{slug}',
+  title: '{title}',
+  description: '{meta_desc}'
+}});
+</script>
+</body>
+</html>"""
+
+
+def generate_nz_care_hub():
+    """Generate the /nz-care/ hub page listing all location pages."""
+    locations_html = ""
+    for slug, data in sorted(NZ_CARE_LOCATIONS.items(), key=lambda x: -x[1]["homes"]):
+        locations_html += f'        <a href="/nz-care/rest-home-compliance-{slug}/" class="hub-card"><h3>{data["name"]}</h3><p>{data["region"]} · {data["homes"]}+ rest homes</p></a>\n'
+
+    return f"""<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Zealand Rest Home Compliance Software by Region — Free NZS 8134 Tools — Teamz Lab Tools</title>
+<meta name="description" content="Free NZS 8134 compliance evidence software for New Zealand rest homes. Find rest home compliance tools for your region — Auckland, Wellington, Christchurch, Hamilton, and 8+ more locations.">
+<link rel="canonical" href="{SITE_URL}/nz-care/">
+<link rel="alternate" hreflang="en-NZ" href="{SITE_URL}/nz-care/">
+<link rel="alternate" hreflang="x-default" href="{SITE_URL}/nz-care/">
+<meta property="og:title" content="New Zealand Rest Home Compliance Software by Region">
+<meta property="og:description" content="Free NZS 8134 compliance tools for rest homes across New Zealand. 12 locations covered.">
+<meta property="og:url" content="{SITE_URL}/nz-care/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Teamz Lab Tools">
+<link rel="stylesheet" href="/branding/css/teamz-branding.css">
+<link rel="stylesheet" href="/shared/css/tools.css">
+</head>
+<body>
+<script src="/branding/js/theme.js"></script>
+<div class="site-main">
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+<h1>New Zealand Rest Home Compliance Software</h1>
+<p class="hub-intro">Free NZS 8134 compliance evidence software for rest homes across New Zealand. Choose your region to see local rest home data and get started with AlwaysReady Care.</p>
+<div class="hub-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:24px 0;">
+{locations_html}
+</div>
+</div>
+<script src="/shared/js/common.js"></script>
+<script>
+TeamzTools.renderBreadcrumbs([
+  {{ name: 'Home', url: '/' }},
+  {{ name: 'NZ Rest Homes' }}
+]);
+</script>
+</body>
+</html>"""
+
+
 def main():
     args = sys.argv[1:]
 
@@ -571,7 +1396,11 @@ def main():
 
     if "--list" in args:
         print("Available templates:")
-        print("  us-income-tax  — US state income tax calculators (50 states + DC)")
+        print("  us-income-tax        — US state income tax calculators (50 states + DC)")
+        print("  uk-care-compliance   — UK care home compliance pages (40 cities/regions)")
+        print("  au-aged-care         — Australian aged care compliance pages (20 cities/states)")
+        print("  ie-nursing-home      — Ireland nursing home compliance pages (15 cities/counties)")
+        print("  nz-aged-care         — New Zealand rest home compliance pages (12 cities)")
         return
 
     dry_run = "--dry-run" in args
@@ -583,7 +1412,40 @@ def main():
 
     template = template[0]
 
-    if template == "us-income-tax":
+    if template == "uk-care-compliance":
+        print(f"{'[DRY RUN] ' if dry_run else ''}Generating UK care home compliance pages...")
+        count = 0
+        for loc_slug, loc_data in sorted(UK_CARE_LOCATIONS.items()):
+            page_dir = os.path.join(PROJECT_ROOT, "uk-care", f"care-home-compliance-{loc_slug}")
+            page_path = os.path.join(page_dir, "index.html")
+
+            if dry_run:
+                print(f"  Would create: /uk-care/care-home-compliance-{loc_slug}/")
+            else:
+                os.makedirs(page_dir, exist_ok=True)
+                page_content = generate_uk_care_page(loc_slug, loc_data)
+                with open(page_path, "w", encoding="utf-8") as f:
+                    f.write(page_content)
+                print(f"  Created: /uk-care/care-home-compliance-{loc_slug}/")
+            count += 1
+
+        # Create hub page
+        if not dry_run:
+            hub_dir = os.path.join(PROJECT_ROOT, "uk-care")
+            hub_path = os.path.join(hub_dir, "index.html")
+            hub_content = generate_uk_care_hub()
+            with open(hub_path, "w", encoding="utf-8") as f:
+                f.write(hub_content)
+            print(f"  Created: /uk-care/index.html (hub page)")
+
+        print(f"\n{'Would create' if dry_run else 'Created'} {count} UK care home compliance pages + hub.")
+        if not dry_run:
+            print("\nNext steps:")
+            print("  1. Run: python3 build-static-schema.py")
+            print("  2. Run: ./build-search-index.sh")
+            print("  3. Run: ./build.sh")
+
+    elif template == "us-income-tax":
         print(f"{'[DRY RUN] ' if dry_run else ''}Generating US state income tax calculator pages...")
         count = 0
         for state_slug, state_data in sorted(US_STATES.items()):
@@ -607,6 +1469,108 @@ def main():
             print("  2. Run: python3 build-static-schema.py")
             print("  3. Run: ./build-search-index.sh")
             print("  4. Run: ./build.sh")
+    elif template == "au-aged-care":
+        print(f"{'[DRY RUN] ' if dry_run else ''}Generating Australian aged care compliance pages...")
+        count = 0
+        for loc_slug, loc_data in sorted(AU_CARE_LOCATIONS.items()):
+            page_dir = os.path.join(PROJECT_ROOT, "au-care", f"aged-care-compliance-{loc_slug}")
+            page_path = os.path.join(page_dir, "index.html")
+
+            if dry_run:
+                print(f"  Would create: /au-care/aged-care-compliance-{loc_slug}/")
+            else:
+                os.makedirs(page_dir, exist_ok=True)
+                page_content = generate_au_care_page(loc_slug, loc_data)
+                with open(page_path, "w", encoding="utf-8") as f:
+                    f.write(page_content)
+                print(f"  Created: /au-care/aged-care-compliance-{loc_slug}/")
+            count += 1
+
+        # Create hub page
+        if not dry_run:
+            hub_dir = os.path.join(PROJECT_ROOT, "au-care")
+            os.makedirs(hub_dir, exist_ok=True)
+            hub_path = os.path.join(hub_dir, "index.html")
+            hub_content = generate_au_care_hub()
+            with open(hub_path, "w", encoding="utf-8") as f:
+                f.write(hub_content)
+            print(f"  Created: /au-care/index.html (hub page)")
+
+        print(f"\n{'Would create' if dry_run else 'Created'} {count} Australian aged care compliance pages + hub.")
+        if not dry_run:
+            print("\nNext steps:")
+            print("  1. Run: python3 build-static-schema.py")
+            print("  2. Run: ./build-search-index.sh")
+            print("  3. Run: ./build.sh")
+
+    elif template == "ie-nursing-home":
+        print(f"{'[DRY RUN] ' if dry_run else ''}Generating Ireland nursing home compliance pages...")
+        count = 0
+        for loc_slug, loc_data in sorted(IE_CARE_LOCATIONS.items()):
+            page_dir = os.path.join(PROJECT_ROOT, "ie-care", f"nursing-home-compliance-{loc_slug}")
+            page_path = os.path.join(page_dir, "index.html")
+
+            if dry_run:
+                print(f"  Would create: /ie-care/nursing-home-compliance-{loc_slug}/")
+            else:
+                os.makedirs(page_dir, exist_ok=True)
+                page_content = generate_ie_care_page(loc_slug, loc_data)
+                with open(page_path, "w", encoding="utf-8") as f:
+                    f.write(page_content)
+                print(f"  Created: /ie-care/nursing-home-compliance-{loc_slug}/")
+            count += 1
+
+        # Create hub page
+        if not dry_run:
+            hub_dir = os.path.join(PROJECT_ROOT, "ie-care")
+            os.makedirs(hub_dir, exist_ok=True)
+            hub_path = os.path.join(hub_dir, "index.html")
+            hub_content = generate_ie_care_hub()
+            with open(hub_path, "w", encoding="utf-8") as f:
+                f.write(hub_content)
+            print(f"  Created: /ie-care/index.html (hub page)")
+
+        print(f"\n{'Would create' if dry_run else 'Created'} {count} Ireland nursing home compliance pages + hub.")
+        if not dry_run:
+            print("\nNext steps:")
+            print("  1. Run: python3 build-static-schema.py")
+            print("  2. Run: ./build-search-index.sh")
+            print("  3. Run: ./build.sh")
+
+    elif template == "nz-aged-care":
+        print(f"{'[DRY RUN] ' if dry_run else ''}Generating New Zealand rest home compliance pages...")
+        count = 0
+        for loc_slug, loc_data in sorted(NZ_CARE_LOCATIONS.items()):
+            page_dir = os.path.join(PROJECT_ROOT, "nz-care", f"rest-home-compliance-{loc_slug}")
+            page_path = os.path.join(page_dir, "index.html")
+
+            if dry_run:
+                print(f"  Would create: /nz-care/rest-home-compliance-{loc_slug}/")
+            else:
+                os.makedirs(page_dir, exist_ok=True)
+                page_content = generate_nz_care_page(loc_slug, loc_data)
+                with open(page_path, "w", encoding="utf-8") as f:
+                    f.write(page_content)
+                print(f"  Created: /nz-care/rest-home-compliance-{loc_slug}/")
+            count += 1
+
+        # Create hub page
+        if not dry_run:
+            hub_dir = os.path.join(PROJECT_ROOT, "nz-care")
+            os.makedirs(hub_dir, exist_ok=True)
+            hub_path = os.path.join(hub_dir, "index.html")
+            hub_content = generate_nz_care_hub()
+            with open(hub_path, "w", encoding="utf-8") as f:
+                f.write(hub_content)
+            print(f"  Created: /nz-care/index.html (hub page)")
+
+        print(f"\n{'Would create' if dry_run else 'Created'} {count} New Zealand rest home compliance pages + hub.")
+        if not dry_run:
+            print("\nNext steps:")
+            print("  1. Run: python3 build-static-schema.py")
+            print("  2. Run: ./build-search-index.sh")
+            print("  3. Run: ./build.sh")
+
     else:
         print(f"Unknown template: {template}")
         print("Use --list to see available templates.")

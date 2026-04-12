@@ -735,6 +735,202 @@ def match_keyword_to_tool(keyword, tools):
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# TUTORIAL PLAN GENERATOR
+# ═════════════════════════════════════════════════════════════════════════════
+
+TUTORIAL_STEP_TEMPLATES = {
+    "calculator": [
+        {"label": "Open the tool", "description": "Visit {title} in your browser — completely free, no signup"},
+        {"label": "Enter your values", "description": "Type in the numbers you want to calculate"},
+        {"label": "Adjust the settings", "description": "Choose the options that fit your situation"},
+        {"label": "Get your results", "description": "Click calculate — instant results with full breakdown"},
+        {"label": "Save or share", "description": "Copy your results or share with a link"},
+    ],
+    "generator": [
+        {"label": "Open the tool", "description": "Visit {title} in your browser — no download needed"},
+        {"label": "Choose your style", "description": "Pick a template, format, or style that works for you"},
+        {"label": "Add your content", "description": "Enter your text, images, or data"},
+        {"label": "Generate your result", "description": "Click generate — your {output} is ready in seconds"},
+        {"label": "Download or copy", "description": "Save as an image, PDF, or copy to clipboard"},
+    ],
+    "checker": [
+        {"label": "Open the tool", "description": "Visit {title} in your browser — 100% private"},
+        {"label": "Paste your content", "description": "Enter the text, URL, or file you want to check"},
+        {"label": "Run the analysis", "description": "The tool scans everything automatically"},
+        {"label": "Review the results", "description": "See scores, issues, and what needs fixing"},
+        {"label": "Apply the fixes", "description": "Follow the suggestions to improve your {subject}"},
+    ],
+    "converter": [
+        {"label": "Open the tool", "description": "Visit {title} — works right in your browser"},
+        {"label": "Upload your file", "description": "Drag and drop or select the file to convert"},
+        {"label": "Choose output format", "description": "Select the format you need"},
+        {"label": "Convert instantly", "description": "Your file is processed locally — nothing uploaded to any server"},
+        {"label": "Download the result", "description": "Save the converted file to your device"},
+    ],
+    "generic": [
+        {"label": "Open the tool", "description": "Visit {title} in your browser — free, no signup"},
+        {"label": "Enter your information", "description": "Fill in the form with your details"},
+        {"label": "Process your request", "description": "Click the main button — results appear instantly"},
+        {"label": "Use your results", "description": "Copy, download, or share what you created"},
+    ],
+}
+
+
+def detect_tool_type(tool):
+    """Detect tool type from title/description for tutorial step selection"""
+    text = f"{tool.get('title', '')} {tool.get('desc', '')}".lower()
+    if any(w in text for w in ["calculat", "compute", "estimate"]):
+        return "calculator"
+    if any(w in text for w in ["generat", "creat", "make", "build"]):
+        return "generator"
+    if any(w in text for w in ["check", "analyz", "detect", "test", "audit", "scan", "valid"]):
+        return "checker"
+    if any(w in text for w in ["convert", "compress", "resize", "transform"]):
+        return "converter"
+    return "generic"
+
+
+def generate_tutorial_plan(tool, keyword=None):
+    """Generate a tutorial video plan with steps, problem, and SEO title"""
+    hub = tool.get("hub", "tools")
+    kw = clean_keyword(keyword or tool["title"].lower())
+    tool_type = detect_tool_type(tool)
+    lang = get_language(hub)
+
+    # Get step template
+    steps_template = TUTORIAL_STEP_TEMPLATES.get(tool_type, TUTORIAL_STEP_TEMPLATES["generic"])
+    steps = []
+    for st in steps_template:
+        label = st["label"].format(title=tool["title"])
+        desc = st["description"].format(
+            title=tool["title"],
+            output=kw.split()[-1] if kw else "result",
+            subject=kw or "content",
+        )
+        steps.append({"label": label, "description": desc, "screenshot": ""})
+
+    # Tutorial-specific YouTube title (search-optimized, "How to" format)
+    title_options = [
+        f"How to {tool['title']} for Free — Step by Step",
+        f"Free {tool['title']} — No Signup Tutorial",
+        f"{tool['title']} Tutorial — Free Online Tool ({datetime.now().year})",
+        f"How to {kw.title()} Online for Free",
+        f"Best Free {tool['title']} — Full Tutorial",
+    ]
+    yt_title = random.choice(title_options)[:60]
+
+    # Problem text
+    problems = [
+        f"Most {hub} tools charge $10-30/month for basic features",
+        f"You shouldn't need to pay for a simple {kw}",
+        f"Paid {kw} tools want your email, credit card, and data",
+        f"Why is something this simple locked behind a paywall?",
+    ]
+    problem = random.choice(problems)
+
+    # Hook
+    hooks = [
+        f"How to {kw} for free — step by step",
+        f"Free {tool['title']} — no signup, no download",
+        f"The easiest way to {kw} online",
+        f"Stop paying for {kw} tools",
+    ]
+    hook = random.choice(hooks)
+
+    url = f"tool.teamzlab.com{tool['href']}" if tool.get("href") else "tool.teamzlab.com"
+    theme_index = random.randint(0, 7)
+    audio_files = [f"audio/beat{i}.mp3" for i in range(1, 11)]
+    audio = random.choice(audio_files)
+
+    # Duration: ~30s per step + 60s for intro/problem/result/CTA
+    step_seconds = len(steps) * 30 + 60
+    # Add jitter
+    jitter = random.randint(-5, 5)
+    duration_frames = (step_seconds + jitter) * 30
+
+    # YouTube description with timestamps
+    timestamps = []
+    sec_offset = 0
+    timestamps.append("0:00 Intro")
+    sec_offset += 15
+    timestamps.append(f"0:{sec_offset:02d} The Problem")
+    sec_offset += 15
+    for i, step in enumerate(steps):
+        m = sec_offset // 60
+        s = sec_offset % 60
+        timestamps.append(f"{m}:{s:02d} Step {i+1}: {step['label']}")
+        sec_offset += 30
+    m = sec_offset // 60
+    s = sec_offset % 60
+    timestamps.append(f"{m}:{s:02d} Results")
+
+    yt_desc = (
+        f"{hook}\n\n"
+        f"Try {tool['title']} FREE: https://{url}\n\n"
+        f"In this tutorial, I'll show you how to {kw} completely free, "
+        f"right in your browser. No signup, no download, 100% private.\n\n"
+        f"Timestamps:\n" + "\n".join(timestamps) + "\n\n"
+        f"No signup. No download. 100% private — your data never leaves your browser.\n\n"
+        f"#freetools #tutorial #howto #{kw.replace(' ', '')} #{hub}"
+    )
+
+    tags = [kw, tool["title"].lower(), f"free {kw}", f"how to {kw}", f"{kw} tutorial",
+            f"free {kw} online", hub, "free tools", "no signup", "browser tools", "tutorial"]
+
+    category_id = CATEGORIES.get(hub, 28)
+
+    plan = {
+        "id": tool.get("href", "").strip("/").replace("/", "_") or tool["title"].lower().replace(" ", "-"),
+        "type": "tutorial",
+        "format": "tutorial",
+        "language": lang,
+        "hub": hub,
+        "slug": tool.get("href", "").strip("/").split("/")[-1] if tool.get("href") else tool["title"].lower().replace(" ", "-"),
+        "toolPath": tool.get("href", ""),
+        "title": tool["title"],
+
+        "render": {
+            "template": "Tutorial",
+            "props": {
+                "hook": hook,
+                "title": tool["title"],
+                "problem": problem,
+                "steps": steps,
+                "resultText": f"{tool['title']} — completely free, no signup required",
+                "url": url,
+                "audioFile": audio,
+                "themeIndex": theme_index,
+                "ctaText": "Try it free",
+                "ctaBadge": "LINK IN DESCRIPTION",
+                "brandName": "tool.teamzlab.com",
+                "durationInFrames": duration_frames,
+            },
+        },
+
+        "youtube": {
+            "title": yt_title,
+            "description": yt_desc,
+            "tags": tags,
+            "categoryId": category_id,
+            "privacy": "public",
+            "madeForKids": False,
+            "defaultLanguage": lang if lang != "en" else "",
+        },
+
+        "tiktok": {"caption": ""},
+        "instagram": {"caption": ""},
+
+        "keyword": kw,
+        "steps": steps,
+        "hookStyle": "tutorial",
+        "template": "Tutorial",
+        "generatedAt": datetime.now().isoformat(),
+    }
+
+    return plan
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # MAIN
 # ═════════════════════════════════════════════════════════════════════════════
 
@@ -747,6 +943,7 @@ def main():
     parser.add_argument("--app", type=str, help="App name for ASO-optimized plans")
     parser.add_argument("--export", action="store_true", help="Export as products.json")
     parser.add_argument("--ideas", action="store_true", help="Just show ideas")
+    parser.add_argument("--format", type=str, default="short", choices=["short", "tutorial"], help="Video format: short (15-25s) or tutorial (3-7min)")
     args = parser.parse_args()
 
     print("=" * 60)
@@ -906,6 +1103,9 @@ def main():
     plans = []
     used_tools = set()
 
+    # Select plan generator based on format
+    plan_generator = generate_tutorial_plan if args.format == "tutorial" else generate_video_plan
+
     # Match keywords to tools
     for kw in unique_keywords:
         if len(plans) >= args.count:
@@ -913,7 +1113,7 @@ def main():
         tool = match_keyword_to_tool(kw, tools)
         if tool and tool["href"] not in used_tools:
             used_tools.add(tool["href"])
-            plan = generate_video_plan(tool, keyword=kw)
+            plan = plan_generator(tool, keyword=kw)
             plans.append(plan)
 
     # If not enough, pick top tools by category
@@ -924,7 +1124,7 @@ def main():
         for tool in remaining:
             if len(plans) >= args.count:
                 break
-            plan = generate_video_plan(tool)
+            plan = plan_generator(tool)
             plans.append(plan)
             used_tools.add(tool["href"])
 
@@ -951,10 +1151,14 @@ def main():
     for i, plan in enumerate(plans, 1):
         yt = plan["youtube"]
         r = plan["render"]
-        print(f"#{i} [{r['template']}] Theme {r['props']['themeIndex']}")
+        fmt = plan.get("format", "short")
+        dur_sec = r["props"].get("durationInFrames", 720) / 30
+        print(f"#{i} [{r['template']}] Theme {r['props']['themeIndex']} | {fmt} | {dur_sec:.0f}s")
         print(f"  YT Title: {yt['title']}")
         print(f"  Hook: {r['props']['hook']}")
         print(f"  Keyword: {plan['keyword']}")
+        if fmt == "tutorial" and plan.get("steps"):
+            print(f"  Steps: {len(plan['steps'])} ({', '.join(s['label'] for s in plan['steps'][:3])}...)")
         print(f"  Tags: {', '.join(yt['tags'][:6])}")
         print(f"  Category: {yt['categoryId']}")
         if not args.ideas:
@@ -971,7 +1175,13 @@ def main():
         }
         output_file.write_text(json.dumps(output, indent=2))
         print(f"Saved to {output_file}")
-        print(f"\nNext step: node render-batch.js --from-plans")
+        if args.format == "tutorial":
+            print(f"\nNext steps:")
+            print(f"  1. node capture-tool.js --from-plans          # Take screenshots")
+            print(f"  2. node render-batch.js --from-plans           # Render tutorials")
+            print(f"  3. node upload/youtube-upload.js --from-history # Upload to YouTube")
+        else:
+            print(f"\nNext step: node render-batch.js --from-plans")
 
     # Also export as products.json for render-batch compatibility
     if args.export:

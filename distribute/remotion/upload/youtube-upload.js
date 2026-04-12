@@ -20,6 +20,7 @@ const fs = require("fs");
 const https = require("https");
 
 const REMOTION_DIR = path.resolve(__dirname, "..");
+const CFG = require(path.join(REMOTION_DIR, "project-config.js"));
 const TOKEN_FILE = path.join(require("os").homedir(), ".config", "teamzlab", "youtube-token.json");
 const OAUTH_CONFIG = path.join(require("os").homedir(), ".config", "teamzlab", "oauth-client-config.json");
 const HISTORY_FILE = path.join(REMOTION_DIR, "reel-history.json");
@@ -33,18 +34,22 @@ const DAILY_QUOTA = 10000;
 const MAX_UPLOADS_PER_DAY = 10; // Shorts: safe for algorithm (staggered 3h apart = ~5/day publish)
 const MAX_PER_BATCH = 5; // Max uploads per single script run (forces you to spread across day)
 
-// ─── Optimal posting times (Buffer research, 1.8M Shorts analyzed) ──────────
-// Times are in the VIEWER'S local time. We schedule in UTC and offset per target audience.
-// Peak: evenings 6-9 PM local time. Best days: Friday > Saturday > Thursday.
+// ─── Consistent posting time (trains YouTube algorithm) ─────────────────────
+// YouTube algorithm learns your posting schedule and pre-loads feeds for subscribers.
+// Strategy: ONE consistent time per day + tiny ±10 min jitter (looks human, not bot).
+// Consistency > optimization. Posting at 7 PM daily beats random "optimal" times.
+//
+// Slots are ordered by priority: first slot = default daily post time.
+// Second/third slots = only used when staggering multiple uploads in one day.
 const OPTIMAL_SLOTS = {
-  // day: [hour, hour, hour] — local time of target audience
-  0: [19, 20, 17],  // Sunday
-  1: [20, 17, 18],  // Monday
-  2: [20, 21, 19],  // Tuesday
-  3: [19, 20, 21],  // Wednesday
-  4: [19, 20, 21],  // Thursday
-  5: [16, 18, 19],  // Friday (BEST day)
-  6: [19, 11, 18],  // Saturday
+  // day: [primary, secondary, tertiary] — local time of target audience
+  0: [19, 12, 16],  // Sunday:   7 PM (main), noon, 4 PM
+  1: [19, 12, 16],  // Monday:   7 PM (main), noon, 4 PM
+  2: [19, 12, 16],  // Tuesday:  7 PM (main), noon, 4 PM
+  3: [19, 12, 16],  // Wednesday: 7 PM (main), noon, 4 PM
+  4: [19, 12, 16],  // Thursday: 7 PM (main), noon, 4 PM
+  5: [19, 12, 16],  // Friday:   7 PM (main), noon, 4 PM
+  6: [19, 12, 16],  // Saturday: 7 PM (main), noon, 4 PM
 };
 
 // Target timezone offset (hours from UTC) based on content language/hub
@@ -204,7 +209,10 @@ function getNextOptimalTime(language = "en") {
     for (const localHour of slots) {
       const utcHour = (localHour - tzOffset + 24) % 24;
       const scheduled = new Date(targetDate);
-      scheduled.setUTCHours(utcHour, 0, 0, 0);
+      // Add tiny jitter: ±10 minutes so it looks human, not bot.
+      // Keep it small — consistency trains the algorithm, wild randomness breaks it.
+      const jitterMinutes = Math.floor(Math.random() * 20) - 10; // -10 to +10
+      scheduled.setUTCHours(utcHour, Math.max(0, jitterMinutes + 0), 0, 0);
 
       // Must be after earliest (respects stagger gap)
       if (scheduled > earliest) {
@@ -221,7 +229,8 @@ function getNextOptimalTime(language = "en") {
 
   if (!_lastScheduledTime) {
     const utcHour = (19 - tzOffset + 24) % 24;
-    fallback.setUTCHours(utcHour, 0, 0, 0);
+    const jitterMinutes = Math.floor(Math.random() * 20) - 10;
+    fallback.setUTCHours(utcHour, Math.max(0, jitterMinutes + 0), 0, 0);
   }
 
   _lastScheduledTime = fallback;
@@ -319,21 +328,24 @@ function loadHistory() {
 }
 function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null, 2)); }
 
-// ─── Post pinned comment with tool link ─────────────────────────────────────
-async function postPinnedComment(videoId, toolUrl, toolTitle) {
-  const token = await getAccessToken();
-  const comment = `Try ${toolTitle} FREE: https://${toolUrl}\n\nNo signup. No download. 100% private. Your data never leaves your browser.`;
+// ─── HACK 1: Engagement-bait pinned comment ─────────────────────────────────
+// Plain link comments get ignored. Engagement-bait comments get replies,
+// which boosts comment count, which boosts algorithm ranking.
+// Pattern: question + value + link (not link-first).
 
-  return new Promise((resolve, reject) => {
+function buildComment(title, url, hub) {
+  return CFG.buildComment(title, url, hub);
+}
+
+async function postComment(videoId, text) {
+  const token = await getAccessToken();
+  return new Promise((resolve) => {
     const body = JSON.stringify({
       snippet: {
         videoId,
-        topLevelComment: {
-          snippet: { textOriginal: comment },
-        },
+        topLevelComment: { snippet: { textOriginal: text } },
       },
     });
-
     const req = https.request({
       hostname: "www.googleapis.com",
       path: "/youtube/v3/commentThreads?part=snippet",
@@ -348,18 +360,169 @@ async function postPinnedComment(videoId, toolUrl, toolTitle) {
       res.on("data", (c) => data += c);
       res.on("end", () => {
         if (res.statusCode >= 400) {
-          // Comments might fail if video is still processing — not critical
           console.log(`  Comment: failed (${res.statusCode}) — post manually later`);
           resolve(null);
         } else {
           const result = JSON.parse(data);
-          const commentId = result.id;
-          console.log(`  Comment posted with tool link`);
-          resolve(commentId);
+          console.log(`  Comment posted (engagement-bait)`);
+          resolve(result.id);
         }
       });
     });
-    req.on("error", () => { console.log("  Comment: network error — post manually"); resolve(null); });
+    req.on("error", () => { console.log("  Comment: network error"); resolve(null); });
+    req.write(body);
+    req.end();
+  });
+}
+
+// ─── HACK 2: Auto-reply to own comment (doubles comment count) ──────────────
+// YouTube counts replies as separate comments. Self-replying to your own pinned
+// comment immediately gives you 2 comments instead of 1, which looks more active.
+
+const SELF_REPLY_TEMPLATES = [
+  "Drop a ❤️ if you found this useful!",
+  `More on the channel — subscribe to never miss one!`,
+  "Bookmark this — you'll thank yourself later 🔖",
+  "Let me know if you want a tutorial on this 👇",
+  `${CFG.subscribeLine || "Like & Subscribe for more!"}`,
+];
+
+async function postSelfReply(parentCommentId) {
+  if (!parentCommentId) return;
+  const token = await getAccessToken();
+  const reply = SELF_REPLY_TEMPLATES[Math.floor(Math.random() * SELF_REPLY_TEMPLATES.length)];
+
+  return new Promise((resolve) => {
+    const body = JSON.stringify({
+      snippet: {
+        parentId: parentCommentId,
+        textOriginal: reply,
+      },
+    });
+    const req = https.request({
+      hostname: "www.googleapis.com",
+      path: "/youtube/v3/comments?part=snippet",
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body),
+      },
+    }, (res) => {
+      let data = "";
+      res.on("data", (c) => data += c);
+      res.on("end", () => {
+        if (res.statusCode < 400) console.log(`  Self-reply posted (comment count hack)`);
+        resolve();
+      });
+    });
+    req.on("error", () => resolve());
+    req.write(body);
+    req.end();
+  });
+}
+
+// ─── HACK 3: Auto-create playlist (groups videos = more watch time) ─────────
+// Playlists increase session watch time — YouTube's #1 ranking signal.
+// Auto-create one playlist per hub (e.g., "Free Finance Tools", "Free AI Tools").
+// Adding a video to a playlist also triggers a "new content" signal to subscribers.
+
+const _playlistCache = {};
+
+async function getOrCreatePlaylist(hub, language) {
+  const cacheKey = `${hub}-${language}`;
+  if (_playlistCache[cacheKey]) return _playlistCache[cacheKey];
+
+  const token = await getAccessToken();
+  const hubName = hub.charAt(0).toUpperCase() + hub.slice(1);
+  const playlistTitle = CFG.resolveTemplate(CFG.playlistTemplate, { hub: hubName });
+
+  // Search existing playlists
+  try {
+    const searchResult = await apiGet(
+      `/youtube/v3/playlists?part=snippet&mine=true&maxResults=50`,
+      token
+    );
+    if (searchResult.items) {
+      const existing = searchResult.items.find(
+        (p) => p.snippet.title.toLowerCase().includes(hub.toLowerCase())
+      );
+      if (existing) {
+        _playlistCache[cacheKey] = existing.id;
+        return existing.id;
+      }
+    }
+  } catch (e) {
+    // Non-critical — continue without playlist
+  }
+
+  // Create new playlist
+  return new Promise((resolve) => {
+    const body = JSON.stringify({
+      snippet: {
+        title: playlistTitle,
+        description: CFG.resolveTemplate(CFG.playlistDescription, { hub: hubName }),
+      },
+      status: { privacyStatus: "public" },
+    });
+    const req = https.request({
+      hostname: "www.googleapis.com",
+      path: "/youtube/v3/playlists?part=snippet,status",
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body),
+      },
+    }, (res) => {
+      let data = "";
+      res.on("data", (c) => data += c);
+      res.on("end", () => {
+        if (res.statusCode < 400) {
+          const result = JSON.parse(data);
+          _playlistCache[cacheKey] = result.id;
+          console.log(`  Playlist created: "${playlistTitle}"`);
+          resolve(result.id);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+    req.on("error", () => resolve(null));
+    req.write(body);
+    req.end();
+  });
+}
+
+async function addToPlaylist(playlistId, videoId) {
+  if (!playlistId || !videoId) return;
+  const token = await getAccessToken();
+
+  return new Promise((resolve) => {
+    const body = JSON.stringify({
+      snippet: {
+        playlistId,
+        resourceId: { kind: "youtube#video", videoId },
+      },
+    });
+    const req = https.request({
+      hostname: "www.googleapis.com",
+      path: "/youtube/v3/playlistItems?part=snippet",
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body),
+      },
+    }, (res) => {
+      let data = "";
+      res.on("data", (c) => data += c);
+      res.on("end", () => {
+        if (res.statusCode < 400) console.log(`  Added to playlist`);
+        resolve();
+      });
+    });
+    req.on("error", () => resolve());
     req.write(body);
     req.end();
   });
@@ -405,6 +568,14 @@ async function postPinnedComment(videoId, toolUrl, toolTitle) {
     console.log(`\nUploading ${toUpload.length} video(s) to YouTube...\n`);
 
     for (let i = 0; i < toUpload.length; i++) {
+      // Anti-spam: wait 45-90 seconds between uploads to avoid bulk-upload detection.
+      // YouTube flags channels that upload 16 videos in 80 seconds as automated spam.
+      if (i > 0) {
+        const delaySec = 45 + Math.floor(Math.random() * 45); // 45-90s
+        console.log(`  Waiting ${delaySec}s before next upload (anti-spam delay)...`);
+        await new Promise((r) => setTimeout(r, delaySec * 1000));
+      }
+
       const reel = toUpload[i];
       const lang = reel.language || "en";
       const scheduledTime = getNextOptimalTime(lang);
@@ -416,7 +587,7 @@ async function postPinnedComment(videoId, toolUrl, toolTitle) {
       }
 
       // Parse tags from caption or use defaults
-      const tags = ["free tools", reel.hub, reel.title, "browser tools", "no signup", "privacy"].filter(Boolean);
+      const tags = [...CFG.defaultTags, reel.hub, reel.title].filter(Boolean);
 
       const title = reel.youtubeTitle || `${reel.title} — Free, No Signup`;
 
@@ -441,18 +612,29 @@ async function postPinnedComment(videoId, toolUrl, toolTitle) {
         console.log(`  URL: ${result.url}`);
         console.log(`  Publishes at: ${result.publishAt}`);
 
-        // Post pinned comment with tool link
-        const toolUrl = reel.video ? "" : "";
-        // Extract URL from caption or props
+        // Extract tool URL from caption
         let reelUrl = "";
         if (reel.caption && fs.existsSync(reel.caption)) {
           const captionText = fs.readFileSync(reel.caption, "utf-8");
           const urlMatch = captionText.match(/https?:\/\/tool\.teamzlab\.com[^\s]*/);
           if (urlMatch) reelUrl = urlMatch[0].replace("https://", "");
         }
-        if (!reelUrl) reelUrl = "tool.teamzlab.com";
+        if (!reelUrl) reelUrl = CFG.domain;
 
-        await postPinnedComment(result.videoId, reelUrl, reel.title || title);
+        // HACK 1: Engagement-bait pinned comment (not just a link)
+        const commentText = buildComment(reel.title || title, reelUrl, reel.hub || "");
+        const commentId = await postComment(result.videoId, commentText);
+
+        // HACK 2: Self-reply to double comment count
+        if (commentId) {
+          await postSelfReply(commentId);
+        }
+
+        // HACK 3: Auto-add to hub playlist (increases session watch time)
+        if (reel.hub) {
+          const playlistId = await getOrCreatePlaylist(reel.hub, lang);
+          await addToPlaylist(playlistId, result.videoId);
+        }
 
         // Update history
         reel.platforms.youtube = {
@@ -482,7 +664,7 @@ async function postPinnedComment(videoId, toolUrl, toolTitle) {
   const filePath = getArg("--file");
   const title = getArg("--title") || "Free Tool — No Signup";
   const description = getArg("--description") || "";
-  const tags = (getArg("--tags") || "free tools").split(",");
+  const tags = (getArg("--tags") || CFG.defaultTags.join(",")).split(",");
   const lang = getArg("--lang") || "en";
 
   if (!filePath || !fs.existsSync(filePath)) {

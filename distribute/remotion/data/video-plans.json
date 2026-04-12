@@ -1,150 +1,61 @@
 {
-  "generated": "2026-04-11",
-  "count": 6,
+  "generated": "2026-04-12T18:04:57.211944",
+  "count": 1,
   "plans": [
     {
-      "id": "arc-cqc-checklist",
+      "id": "kids_decode-teen-texts",
       "type": "tool",
       "language": "en",
       "render": {
         "template": "InstantFix",
         "props": {
-          "hook": "Your care home is NOT ready for CQC. Here's the proof.",
-          "title": "CQC Inspection Checklist",
-          "description": "Free checklist covering all 21 CQC compliance categories. See your readiness score instantly.",
-          "url": "tool.teamzlab.com/compliance/cqc-inspection-checklist/",
-          "audioFile": "audio/beat3.mp3",
-          "themeIndex": 0,
-          "ctaText": "Check your score",
-          "ctaBadge": "FREE TOOL",
+          "hook": "I can't believe this decode teen texts tool is free",
+          "title": "Decode Teen Texts",
+          "description": "Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with a cringe-o-meter. Flags concerning terms. 100% pri",
+          "url": "tool.teamzlab.com/kids/decode-teen-texts/",
+          "audioFile": "audio/beat2.mp3",
+          "themeIndex": 6,
+          "ctaText": "Try it free",
+          "ctaBadge": "LINK IN BIO",
           "brandName": "tool.teamzlab.com"
         }
       },
       "youtube": {
-        "title": "Is Your Care Home Ready for CQC? Free Checklist",
-        "description": "Free CQC Inspection Checklist — check your care home's compliance across all 21 categories mapped to the 5 key questions: Safe, Effective, Caring, Responsive, Well-led.\n\nTry it FREE: https://tool.teamzlab.com/compliance/cqc-inspection-checklist/\n\nNo signup. No download. Works in your browser.\n\nAlwaysReady Care — free compliance evidence software for UK care homes.\nhttps://always-ready-care.web.app\n\n#CQC #carehome #compliance #UKcare #freetools #inspection #socialcare",
-        "tags": ["CQC inspection checklist", "care home compliance", "CQC checklist free", "care home audit", "CQC inspection", "care home software UK", "compliance checklist", "CQC 5 key questions", "social care compliance", "care home manager"]
-      }
-    },
-    {
-      "id": "arc-compliance-score",
-      "type": "tool",
-      "language": "en",
-      "render": {
-        "template": "BeforeAfter",
-        "props": {
-          "hook": "Most care homes score under 60% on this compliance test",
-          "title": "Care Home Compliance Score",
-          "description": "10 questions. Instant CQC readiness score. Free self-assessment for UK care homes.",
-          "url": "tool.teamzlab.com/compliance/care-home-compliance-score/",
-          "audioFile": "audio/beat5.mp3",
-          "themeIndex": 2,
-          "ctaText": "Take the test",
-          "ctaBadge": "FREE",
-          "brandName": "tool.teamzlab.com"
-        }
+        "title": "Decode Teen Texts \u2014 Free Browser Tool",
+        "description": "Decode Teen Texts \u2014 Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with a cringe-o-meter. Fl\n\nTry it FREE: https://tool.teamzlab.com/kids/decode-teen-texts/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nDecode Teen Texts is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #decodeteentexts#privacy #browsertools #nosubscription",
+        "tags": [
+          "decode teen texts",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "kids",
+          "decoder",
+          "\u09a8\u09be\u099f\u0995 copy paste"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#decodeteentextsnatok",
+          "#shorts"
+        ]
       },
-      "youtube": {
-        "title": "What's Your Care Home Compliance Score? Free Calculator",
-        "description": "Care Home Compliance Score Calculator — 10 questions about your compliance practices, instantly scored against CQC rating bands.\n\nTry it FREE: https://tool.teamzlab.com/compliance/care-home-compliance-score/\n\nAre you Outstanding, Good, Requires Improvement, or Inadequate?\n\nhttps://always-ready-care.web.app\n\n#CQC #carehome #compliance #score #UKsocialcare #freetools",
-        "tags": ["care home compliance score", "CQC rating", "compliance calculator", "care home audit tool", "CQC compliance", "care home software", "free compliance tool", "social care UK"]
-      }
-    },
-    {
-      "id": "arc-readiness-quiz",
-      "type": "tool",
-      "language": "en",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "15 questions. Are you ACTUALLY ready for CQC?",
-          "title": "CQC Readiness Quiz",
-          "description": "Step-by-step quiz covering all 5 CQC key areas. Find out where you're strong and where you have gaps.",
-          "url": "tool.teamzlab.com/compliance/cqc-readiness-quiz/",
-          "audioFile": "audio/beat8.mp3",
-          "themeIndex": 4,
-          "ctaText": "Take the quiz",
-          "ctaBadge": "FREE",
-          "brandName": "tool.teamzlab.com"
-        }
+      "tiktok": {
+        "caption": "I can't believe this decode teen texts natok tool is free\n\nTry it: tool.teamzlab.com/kids/decode-teen-texts/\n\n#freetools #decodeteentextsnatok #tech #lifehack #webapp"
       },
-      "youtube": {
-        "title": "CQC Readiness Quiz — 15 Questions for Care Homes",
-        "description": "Are you really ready for a CQC inspection? Take this free 15-question quiz covering Safe, Effective, Caring, Responsive, and Well-led.\n\nTry it FREE: https://tool.teamzlab.com/compliance/cqc-readiness-quiz/\n\nhttps://always-ready-care.web.app\n\n#CQC #carehome #quiz #inspection #readiness #socialcare #UKcare",
-        "tags": ["CQC readiness quiz", "CQC inspection preparation", "care home quiz", "are you ready for CQC", "CQC 5 key questions quiz", "care home compliance quiz", "social care quiz"]
-      }
-    },
-    {
-      "id": "arc-australia-checklist",
-      "type": "tool",
-      "language": "en-AU",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "New Aged Care Act just dropped. Is YOUR facility compliant?",
-          "title": "Aged Care Standards Checklist",
-          "description": "Free checklist for Australian aged care providers. All 7 strengthened quality standards under the new Aged Care Act.",
-          "url": "tool.teamzlab.com/compliance/aged-care-standards-checklist-australia/",
-          "audioFile": "audio/beat9.mp3",
-          "themeIndex": 1,
-          "ctaText": "Check your score",
-          "ctaBadge": "FREE",
-          "brandName": "tool.teamzlab.com"
-        }
+      "instagram": {
+        "caption": "I can't believe this decode teen texts natok tool is free\n\nDecode Teen Texts \u2014 Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/kids/decode-teen-texts/\n\n#freetools #decodeteentextsnatok #productivity #tech #browsertools #nosubscription #webapp #lifehack"
       },
-      "youtube": {
-        "title": "Aged Care Quality Standards Checklist — Australia 2026",
-        "description": "Free checklist for Australian aged care providers — all 7 strengthened quality standards under the Aged Care Act 2024.\n\nTry it FREE: https://tool.teamzlab.com/compliance/aged-care-standards-checklist-australia/\n\nhttps://always-ready-care.web.app\n\n#agedcare #australia #compliance #qualitystandards #ACQSC #freetools",
-        "tags": ["aged care quality standards", "aged care compliance Australia", "aged care checklist", "ACQSC audit", "aged care act 2024", "aged care software Australia", "free aged care tool"]
-      }
-    },
-    {
-      "id": "arc-hiqa-ireland",
-      "type": "tool",
-      "language": "en-IE",
-      "render": {
-        "template": "BeforeAfter",
-        "props": {
-          "hook": "HIQA inspectors check these 8 things. Do you have evidence for all of them?",
-          "title": "HIQA Inspection Checklist",
-          "description": "Free HIQA inspection checklist for Irish nursing homes. All 8 national standards covered.",
-          "url": "tool.teamzlab.com/compliance/hiqa-inspection-checklist-ireland/",
-          "audioFile": "audio/beat3.mp3",
-          "themeIndex": 3,
-          "ctaText": "Check your score",
-          "ctaBadge": "FREE",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "HIQA Inspection Checklist — Ireland Nursing Homes",
-        "description": "Free HIQA inspection checklist for Irish nursing homes. Check your compliance against all 8 National Standards.\n\nTry it FREE: https://tool.teamzlab.com/compliance/hiqa-inspection-checklist-ireland/\n\nhttps://always-ready-care.web.app\n\n#HIQA #nursinghome #Ireland #compliance #freetools",
-        "tags": ["HIQA inspection checklist", "nursing home Ireland", "HIQA compliance", "HIQA standards", "nursing home software Ireland", "Irish nursing home audit"]
-      }
-    },
-    {
-      "id": "arc-nz-rest-home",
-      "type": "tool",
-      "language": "en-NZ",
-      "render": {
-        "template": "InstantFix",
-        "props": {
-          "hook": "2026 = proof year for NZ rest homes. Are you ready?",
-          "title": "Rest Home Audit Checklist NZ",
-          "description": "Free certification audit checklist for NZ aged care. All NZS 8134 standards covered.",
-          "url": "tool.teamzlab.com/compliance/rest-home-audit-checklist-nz/",
-          "audioFile": "audio/beat5.mp3",
-          "themeIndex": 5,
-          "ctaText": "Check your score",
-          "ctaBadge": "FREE",
-          "brandName": "tool.teamzlab.com"
-        }
-      },
-      "youtube": {
-        "title": "Rest Home Audit Checklist — New Zealand NZS 8134",
-        "description": "Free rest home audit checklist for NZ aged care providers. Check compliance against NZS 8134 Health and Disability Standards.\n\nTry it FREE: https://tool.teamzlab.com/compliance/rest-home-audit-checklist-nz/\n\nhttps://always-ready-care.web.app\n\n#resthome #NewZealand #agedcare #NZS8134 #compliance #freetools",
-        "tags": ["rest home audit NZ", "NZS 8134 checklist", "aged care New Zealand", "rest home compliance", "NZ aged care audit", "certification audit NZ"]
-      }
+      "keyword": "decode teen texts natok",
+      "hub": "kids",
+      "hookStyle": "curiosity",
+      "template": "InstantFix",
+      "trending": "",
+      "generatedAt": "2026-04-12T18:04:56.533565"
     }
   ]
 }

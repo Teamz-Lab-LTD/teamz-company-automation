@@ -99,7 +99,7 @@ PLATFORM_LIMITS = {
     "bluesky":    {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
     "mastodon":   {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
     "devto":      {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
-    "hashnode":   {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
+    "hashnode":   {"daily": 1, "min_gap_hours": 24, "weekly": 3,  "queue_mode": True},
     "blogger":    {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
     "wordpress":  {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
     "pinterest":  {"daily": 3, "min_gap_hours": 2, "weekly": 15, "queue_mode": True},
@@ -558,7 +558,25 @@ def post_hashnode(config, title, body, tags, canonical_url):
 
     if status == 200 and "data" in resp:
         post_data = resp.get("data", {}).get("publishPost", {}).get("post", {})
-        return post_data.get("url", "posted"), None
+        post_url = post_data.get("url", "")
+        post_id = post_data.get("id", "")
+        if not post_url:
+            return None, "API returned 200 but no post URL — likely spam-filtered"
+
+        # Verify post is actually live (Hashnode silently removes spam)
+        import time
+        time.sleep(2)
+        verify_query = '{ post(id: "%s") { title url } }' % post_id
+        v_status, v_resp = api_request(
+            "https://gql.hashnode.com",
+            data={"query": verify_query},
+            headers={"Authorization": cfg["api_key"]}
+        )
+        if v_status == 200 and v_resp.get("data", {}).get("post"):
+            return post_url, None
+        else:
+            return None, "Post created but removed by Hashnode spam filter — try posting manually or reduce frequency"
+
     errors = resp.get("errors", [{}])
     err_msg = errors[0].get("message", json.dumps(resp)[:200]) if errors else json.dumps(resp)[:200]
     return None, f"HTTP {status}: {err_msg}"

@@ -210,4 +210,10 @@ print(f'  llms-full.txt: {total} tools (full descriptions)')
 # === Build tools.json for mobile app ===
 echo ""
 echo "=== Building tools.json (mobile app feed) ==="
-python3 "$SCRIPTS/build-tools-json.py" 2>/dev/null
+python3 "$BASE/scripts/build-tools-json.py" 2>/dev/null || \
+  python3 "$SCRIPTS/build-tools-json.py" 2>/dev/null || true
+
+# === Build webview-incompat.json (mobile app auto-redirect list) ===
+echo ""
+echo "=== Scanning tools for mobile-WebView incompatibilities ==="
+python3 "$BASE/scripts/build-webview-incompat.py" || true

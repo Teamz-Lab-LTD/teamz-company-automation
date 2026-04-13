@@ -138,6 +138,35 @@ async function getAccessToken() {
   }
 }
 
+// ─── SCOPE GUARD — prevents silent "upload-but-no-comment" failures ─────────
+// Checks the live token has every scope needed for upload + comment.
+// If a scope is missing, aborts BEFORE uploading so you never end up with
+// another batch of commentless Shorts (the bug that got shipped once).
+let _scopeChecked = false;
+async function assertScopes() {
+  if (_scopeChecked) return;
+  const tokens = loadTokens();
+  // tokens.scope is a space-separated string per OAuth2 spec
+  const granted = new Set((tokens.scope || "").split(/\s+/).filter(Boolean));
+  const required = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",  // comments, playlists
+  ];
+  const missing = required.filter((s) => !granted.has(s));
+  if (missing.length) {
+    console.error(`\n  ERROR: OAuth token is missing required scope(s):`);
+    missing.forEach((s) => console.error(`    - ${s}`));
+    console.error(`\n  Without these, uploads would silently skip pinned comments, playlists, etc.`);
+    console.error(`  Fix (one time):`);
+    console.error(`    rm ~/.config/teamzlab/youtube-token.json`);
+    console.error(`    python3 scripts/distribute/youtube-auth.py`);
+    console.error(`\n  Aborting upload to prevent broken posts.\n`);
+    process.exit(1);
+  }
+  _scopeChecked = true;
+}
+
 function apiGet(path, token) {
   return new Promise((resolve, reject) => {
     const req = https.request({
@@ -239,6 +268,7 @@ function getNextOptimalTime(language = "en") {
 
 // ─── Upload video ───────────────────────────────────────────────────────────
 async function uploadVideo({ filePath, title, description, tags, categoryId, language, scheduledTime }) {
+  await assertScopes();  // Abort if token can't comment/manage playlists — never ship a commentless Short again.
   const token = await getAccessToken();
   const fileSize = fs.statSync(filePath).size;
 
@@ -628,6 +658,14 @@ async function addToPlaylist(playlistId, videoId) {
         // HACK 2: Self-reply to double comment count
         if (commentId) {
           await postSelfReply(commentId);
+          // Mark commented so comment-catchup.js skips on re-run
+          reel.platforms.youtube.commented = true;
+          reel.platforms.youtube.commentId = commentId;
+        } else {
+          // Comment failed — queue for catch-up so the video doesn't end up commentless forever
+          reel.platforms.youtube.commented = false;
+          reel.platforms.youtube.commentPending = true;
+          console.log(`  Queued for comment catch-up: node upload/comment-catchup.js --go`);
         }
 
         // HACK 3: Auto-add to hub playlist (increases session watch time)

@@ -4056,6 +4056,86 @@
         "competition": "",
         "drafted_at": "2026-04-12T12:04:09.103311+00:00"
       }
+    },
+    {
+      "slug": "cqc-inspection-checklist-2026-the-complete-care-home-prep-guide",
+      "title": "CQC Inspection Checklist 2026: The Complete Care Home Prep Guide",
+      "hash": "85009a97c65e4dc5",
+      "created": "2026-04-13T21:53:57.504262+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/cqc-checklist-article-uk.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-13T21:53:57.504416+00:00"
+      }
+    },
+    {
+      "slug": "acqs-2024-how-to-be-quality-assessment-ready-under-the-7-strengthened-standards",
+      "title": "ACQS 2024: How to Be Quality Assessment Ready Under the 7 Strengthened Standards",
+      "hash": "bd5d79997414d99d",
+      "created": "2026-04-13T21:53:57.562878+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/acqs-standards-article-au.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-13T21:53:57.563057+00:00"
+      }
+    },
+    {
+      "slug": "nzs-8134-ng-paerewa-the-complete-rest-home-certification-guide-2026",
+      "title": "NZS 8134 Ngā Paerewa: The Complete Rest Home Certification Guide 2026",
+      "hash": "c47b07693a27444b",
+      "created": "2026-04-13T21:53:57.621940+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/nzs-8134-article-nz.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-13T21:53:57.622117+00:00"
+      }
+    },
+    {
+      "slug": "hiqa-inspection-guide-2026-designated-centre-prep-for-irish-nursing-homes",
+      "title": "HIQA Inspection Guide 2026: Designated Centre Prep for Irish Nursing Homes",
+      "hash": "9e691bb269ad6a03",
+      "created": "2026-04-13T21:53:57.679941+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/hiqa-inspection-article-ie.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-13T21:53:57.680104+00:00"
+      }
+    },
+    {
+      "slug": "md-pr-fung-2026-der-komplette-vorbereitungsleitfaden-f-r-pflegeeinrichtungen",
+      "title": "MD-Prüfung 2026: Der komplette Vorbereitungsleitfaden für Pflegeeinrichtungen",
+      "hash": "06ea4d1f5e976faa",
+      "created": "2026-04-13T21:53:57.739954+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/md-pruefung-article-de.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-13T21:53:57.740123+00:00"
+      }
     }
   ]
 }

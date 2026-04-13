@@ -58,7 +58,9 @@ async function refreshToken() {
     process.exit(1);
   }
   const tok = JSON.parse(fs.readFileSync(TOKEN_FILE, "utf-8"));
-  const cfg = JSON.parse(fs.readFileSync(OAUTH_CFG_FILE, "utf-8"));
+  const cfgRaw = JSON.parse(fs.readFileSync(OAUTH_CFG_FILE, "utf-8"));
+  // Google's oauth-client-config.json wraps creds under "installed" or "web"
+  const cfg = cfgRaw.installed || cfgRaw.web || cfgRaw;
   const body = new URLSearchParams({
     client_id: cfg.client_id,
     client_secret: cfg.client_secret,
@@ -85,6 +87,34 @@ async function refreshToken() {
     req.on("error", reject);
     req.write(body); req.end();
   });
+}
+
+async function fetchPrivacyStatuses(token, videoIds) {
+  // YouTube API refuses commentThreads.insert on private/scheduled videos.
+  // Batch-fetch privacyStatus so we can skip those cleanly.
+  const map = {};
+  const chunks = [];
+  for (let i = 0; i < videoIds.length; i += 50) chunks.push(videoIds.slice(i, i + 50));
+  for (const chunk of chunks) {
+    const url = `/youtube/v3/videos?part=status&id=${chunk.join(",")}`;
+    await new Promise((resolve) => {
+      const req = https.request({
+        hostname: "www.googleapis.com", path: url, method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }, (res) => {
+        let data = ""; res.on("data", (c) => data += c);
+        res.on("end", () => {
+          try {
+            const j = JSON.parse(data);
+            (j.items || []).forEach((i) => { map[i.id] = i.status && i.status.privacyStatus; });
+          } catch (e) {}
+          resolve();
+        });
+      });
+      req.on("error", resolve); req.end();
+    });
+  }
+  return map;
 }
 
 async function postComment(token, videoId, text) {
@@ -144,7 +174,7 @@ const SELF_REPLY_TEMPLATES = [
 
 (async () => {
   const h = loadHistory();
-  const targets = (h.reels || []).filter((r) => {
+  let targets = (h.reels || []).filter((r) => {
     const yt = r.platforms && r.platforms.youtube;
     return yt && yt.posted && yt.videoId && !yt.commented;
   }).slice(0, COUNT);
@@ -161,8 +191,24 @@ const SELF_REPLY_TEMPLATES = [
 
   let token = null;
   if (!DRY_RUN) {
-    try { token = await refreshToken(); }
-    catch (e) { console.error(`  Token refresh failed: ${e.message}\n  Try: python3 scripts/distribute/youtube-auth.py\n`); process.exit(1); }
+    // Prefer the existing access_token (fresh tokens last ~1h). Only refresh if needed.
+    try {
+      const tok = JSON.parse(fs.readFileSync(TOKEN_FILE, "utf-8"));
+      token = tok.access_token || (await refreshToken());
+    } catch (e) {
+      console.error(`  Token load failed: ${e.message}\n  Try: python3 scripts/distribute/youtube-auth.py\n`);
+      process.exit(1);
+    }
+  }
+
+  // Filter out private / scheduled videos — YouTube API can't comment on them.
+  if (!DRY_RUN) {
+    const statuses = await fetchPrivacyStatuses(token, targets.map((t) => t.platforms.youtube.videoId));
+    const privateN = targets.filter((t) => statuses[t.platforms.youtube.videoId] === "private").length;
+    targets = targets.filter((t) => statuses[t.platforms.youtube.videoId] !== "private");
+    if (privateN) {
+      console.log(`  Skipping ${privateN} still-private/scheduled video(s) — they'll be picked up on a future run after they auto-publish.\n  Commenting on ${targets.length} currently-public video(s).\n`);
+    }
   }
 
   let posted = 0, failed = 0;
@@ -190,12 +236,17 @@ const SELF_REPLY_TEMPLATES = [
       await new Promise((r) => setTimeout(r, waitSec * 1000));
     }
 
-    const res = await postComment(token, vid, text);
+    let res = await postComment(token, vid, text);
+    // Auto-refresh once on 401 (expired token) then retry
+    if (!res.ok && res.status === 401) {
+      console.log(`  Token expired — refreshing...`);
+      try { token = await refreshToken(); res = await postComment(token, vid, text); } catch (e) { /* fall through */ }
+    }
     if (!res.ok) {
       failed++;
       console.log(`  FAILED: HTTP ${res.status} — ${String(res.body).slice(0, 180)}`);
       if (res.status === 401 || res.status === 403) {
-        console.log(`\n  STOPPING. Likely token-scope issue. Re-auth: python3 scripts/distribute/youtube-auth.py\n`);
+        console.log(`\n  STOPPING. Scope or auth issue. Re-auth: python3 scripts/distribute/youtube-auth.py\n`);
         break;
       }
       console.log();

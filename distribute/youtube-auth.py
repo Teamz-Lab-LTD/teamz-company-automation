@@ -22,12 +22,15 @@ CONFIG_DIR = Path.home() / ".config" / "teamzlab"
 OAUTH_CONFIG = CONFIG_DIR / "oauth-client-config.json"
 TOKEN_FILE = CONFIG_DIR / "youtube-token.json"
 
-# YouTube scopes: upload, manage, read analytics
+# YouTube scopes: upload, manage, read analytics, comments write
 SCOPES = [
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube",
     "https://www.googleapis.com/auth/youtube.readonly",
     "https://www.googleapis.com/auth/yt-analytics.readonly",
+    # Required for commentThreads.insert — the pinned first-comment hack
+    # in youtube-upload.js. Without this, comment posts return HTTP 403.
+    "https://www.googleapis.com/auth/youtube.force-ssl",
 ]
 
 REDIRECT_PORT = 8888

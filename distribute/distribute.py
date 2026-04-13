@@ -81,7 +81,7 @@ HISTORY_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_HISTORY", str(SCRIPT_DIR / "hist
 EXAMPLE_CONFIG = Path(os.getenv("TEAMZ_DISTRIBUTE_EXAMPLE_CONFIG", str(SCRIPT_DIR / "config.example.json")))
 ARTICLES_DIR = Path(os.getenv("TEAMZ_DISTRIBUTE_ARTICLES_DIR", str(SCRIPT_DIR / "articles")))
 
-ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "github_discussions", "gitlab", "substack", "telegraph", "google_sites", "pinterest"]
+ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "github_discussions", "gitlab", "substack", "telegraph", "google_sites", "pinterest", "youtube"]
 
 QUEUE_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_QUEUE", str(SCRIPT_DIR / "queue.json")))
 
@@ -109,6 +109,10 @@ PLATFORM_LIMITS = {
     "github_discussions": {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
     "gitlab":     {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
     "google_sites": {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
+    # YouTube: 1 Short kicked off per distribute run. YouTube's own API quota
+    # (10k units/day, upload=1600) naturally limits anything bigger. 12h gap
+    # prevents back-to-back uploads looking spammy to the algorithm.
+    "youtube":    {"daily": 1, "min_gap_hours": 12, "weekly": 5,  "queue_mode": True},
 }
 
 # Localized footer text — article language should match tool language
@@ -1488,6 +1492,67 @@ def post_pinterest(config, title, body, tags, canonical_url, pin_image_url=""):
     return None, f"HTTP {status}: {json.dumps(resp)[:350]}"
 
 
+def post_youtube(config, title, body, tags, canonical_url):
+    """
+    Trigger the YouTube autopilot (Remotion render + YouTube upload) as a
+    non-blocking background job. Renders take minutes, so we detach and
+    return immediately with a "scheduled" status. You can check progress
+    later with:
+        node scripts/distribute/remotion/youtube-autopilot.js --status
+
+    The autopilot picks the best high-RPM tools itself (via content-engine.py)
+    — it does not use the article body/title. Distribution to YouTube is
+    therefore fire-and-forget: one Short per distribute call.
+
+    Returns: (url_or_label, error)
+    """
+    cfg = config.get("youtube", {})
+    if not cfg.get("enabled"):
+        return None, "Platform disabled in config"
+
+    # Validate node + autopilot script exist before scheduling
+    import subprocess, shutil
+    autopilot = SCRIPT_DIR / "remotion" / "youtube-autopilot.js"
+    if not autopilot.exists():
+        return None, f"Autopilot not found: {autopilot}"
+    if not shutil.which("node"):
+        return None, "node not on PATH — install Node.js"
+
+    # Optional per-call overrides from config
+    shorts = int(cfg.get("shorts_per_call", 1))
+    tutorials = int(cfg.get("tutorials_per_call", 0))
+    dry_run = bool(cfg.get("dry_run", False))
+
+    cmd = ["node", str(autopilot), "--shorts", str(shorts), "--tutorials", str(tutorials)]
+    if dry_run:
+        cmd.append("--dry-run")
+
+    log_dir = SCRIPT_DIR / "remotion"
+    log_dir.mkdir(exist_ok=True)
+    log_path = log_dir / "autopilot.log"
+
+    try:
+        # Detach so render doesn't block distribute.py. Output goes to log file.
+        with open(log_path, "ab") as logf:
+            logf.write(
+                ("\n\n=== " + datetime.now(timezone.utc).isoformat()
+                 + " — distribute.py invoked autopilot ===\n").encode("utf-8")
+            )
+            proc = subprocess.Popen(
+                cmd, cwd=str(SCRIPT_DIR / "remotion"),
+                stdout=logf, stderr=subprocess.STDOUT,
+                start_new_session=True
+            )
+        # Return a "scheduled" pseudo-URL — the real YouTube URL is written
+        # to reel-history.json by the autopilot after upload.
+        label = f"scheduled:pid={proc.pid}:shorts={shorts}:tutorials={tutorials}"
+        if dry_run:
+            label += ":dry-run"
+        return label, None
+    except Exception as e:
+        return None, f"Failed to launch autopilot: {str(e)[:180]}"
+
+
 # ─── Markdown to HTML (basic) ─────────────────────────────────────────────────
 
 def markdown_to_html(md):
@@ -1919,6 +1984,7 @@ def cmd_post(title, filepath, platforms):
         "telegraph": post_telegraph,
         "google_sites": post_google_sites,
         "pinterest": post_pinterest,
+        "youtube": post_youtube,
     }
 
     results = {}
@@ -2352,6 +2418,7 @@ def cmd_flush(clear_only=False):
             "github_discussions": post_github_discussions, "gitlab": post_gitlab,
             "substack": post_substack, "telegraph": post_telegraph,
             "google_sites": post_google_sites, "pinterest": post_pinterest,
+            "youtube": post_youtube,
         }
 
         if platform not in platform_funcs:

@@ -67,6 +67,14 @@
     "secret_key": "YOUR_SECRET_KEY"
   },
 
+  "youtube": {
+    "enabled": false,
+    "_comment": "Run scripts/distribute/youtube-auth.py once to authenticate. Renders a Short via Remotion + uploads to YouTube. Non-blocking (detached subprocess). Check progress: node scripts/distribute/remotion/youtube-autopilot.js --status",
+    "shorts_per_call": 1,
+    "tutorials_per_call": 0,
+    "dry_run": false
+  },
+
   "defaults": {
     "site_url": "https://tool.teamzlab.com",
     "author": "Teamz Lab",

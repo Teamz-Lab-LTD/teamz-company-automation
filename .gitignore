@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .DS_Store
 distribute/config.json
+distribute/remotion/autopilot.log
 
 # Generated SEO monitoring snapshots (large; regenerate locally)
 data/crawl-snapshot-latest.json

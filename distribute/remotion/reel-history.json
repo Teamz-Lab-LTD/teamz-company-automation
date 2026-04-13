@@ -58,7 +58,10 @@
           "videoId": "Q_g1IhmWUxc",
           "postedAt": "2026-04-10T19:46:56.143Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgyoZQhJ9Jfn5Rqm_1p4AaABAg",
+          "commentedAt": "2026-04-13T21:41:24.391Z"
         },
         "instagram": {
           "posted": false,
@@ -132,7 +135,10 @@
           "videoId": "HX22GuCMWmM",
           "postedAt": "2026-04-10T19:47:17.501Z",
           "scheduledAt": "2026-04-11T09:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgxyD4AJ468s7-Ai4zh4AaABAg",
+          "commentedAt": "2026-04-13T21:42:18.930Z"
         },
         "instagram": {
           "posted": false,
@@ -206,7 +212,10 @@
           "videoId": "_VfRp8r8bo0",
           "postedAt": "2026-04-10T19:47:43.412Z",
           "scheduledAt": "2026-04-11T07:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugwtrj0eFWWuwyh6thZ4AaABAg",
+          "commentedAt": "2026-04-13T21:42:53.312Z"
         },
         "instagram": {
           "posted": false,
@@ -238,9 +247,11 @@
       "lastRendered": "2026-04-11T20:39:21.016Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/UIiV_iWpbVI",
+          "videoId": "UIiV_iWpbVI",
+          "postedAt": "2026-04-13T21:21:41.876Z",
+          "scheduledAt": "2026-04-14T19:01:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -490,7 +501,10 @@
           "videoId": "3mcDSxC2zrE",
           "postedAt": "2026-04-09T21:10:41.112Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgyBdOHHoWsk8gc7fzJ4AaABAg",
+          "commentedAt": "2026-04-13T21:43:45.230Z"
         },
         "instagram": {
           "posted": false,
@@ -527,7 +541,10 @@
           "videoId": "641v1oVjyV8",
           "postedAt": "2026-04-10T19:11:41.496Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgysuDv_BBFRok5G70x4AaABAg",
+          "commentedAt": "2026-04-13T21:44:25.593Z"
         },
         "instagram": {
           "posted": false,
@@ -712,7 +729,10 @@
           "videoId": "9k6pF5-WR9k",
           "postedAt": "2026-04-10T19:48:23.724Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugy6kPw8c09eROrKXlx4AaABAg",
+          "commentedAt": "2026-04-13T21:45:03.144Z"
         },
         "instagram": {
           "posted": false,
@@ -823,7 +843,10 @@
           "videoId": "0pfJP-QlksM",
           "postedAt": "2026-04-10T19:48:56.920Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugyy8HRYkddCQ1KgAjB4AaABAg",
+          "commentedAt": "2026-04-13T21:45:57.708Z"
         },
         "instagram": {
           "posted": false,
@@ -897,7 +920,10 @@
           "videoId": "MEP1bepRPV0",
           "postedAt": "2026-04-10T19:49:18.137Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugwy0THBrzVvMGJjjh94AaABAg",
+          "commentedAt": "2026-04-13T21:46:45.983Z"
         },
         "instagram": {
           "posted": false,
@@ -934,7 +960,10 @@
           "videoId": "woM9QdpnKjo",
           "postedAt": "2026-04-11T20:41:32.601Z",
           "scheduledAt": "2026-04-12T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugz_mfQbIHhhWsy7V9J4AaABAg",
+          "commentedAt": "2026-04-13T21:47:40.702Z"
         },
         "instagram": {
           "posted": false,
@@ -971,7 +1000,10 @@
           "videoId": "wbfMTpOBEow",
           "postedAt": "2026-04-11T20:41:38.062Z",
           "scheduledAt": "2026-04-13T20:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugy2pf6e5VOKVc81WEV4AaABAg",
+          "commentedAt": "2026-04-13T21:48:26.885Z"
         },
         "instagram": {
           "posted": false,

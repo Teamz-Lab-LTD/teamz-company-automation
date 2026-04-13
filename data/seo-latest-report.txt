@@ -1,4 +1,4 @@
-NIGHTLY BUILD REPORT — 2026-04-12 21:17
+NIGHTLY BUILD REPORT — 2026-04-13 21:21
 Status: ALERT
 Repo dirty at start: yes
 New tools built: 0
@@ -7,7 +7,7 @@ Total commits: 0
 SCRIPT HEALTH:
   Alerts (5):
   - GSC anomalies failed (exit 1)
-  - Freshness validation:   - Freshness validation:   - Rank tracker record:   ERROR: No Search Console token. Run: python3 build-search-console-auth.py
+  - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Rank tracker record:   ERROR: No Search Console token. Run: python3 build-search-console-auth.py
   - Internal link health failed (exit 1)
   - Indexing request:   ERROR: Token expired and refresh failed. Re-auth needed.
   - Search Console pull failed (exit 1)

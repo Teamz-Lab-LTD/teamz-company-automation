@@ -202,6 +202,76 @@ for hub in main + country:
     F.append('')
 with open('llms-full.txt','w') as f: f.write('\n'.join(F))
 
+# ─── AlwaysReady Care — append international hub (NOT scanned as standard /hub/tool/ pattern) ───
+ARC_BASE = 'https://tool.teamzlab.com/apps/always-ready-care'
+ARC_REGIONS = [
+    ('UK / England', '/', 'CQC compliance for UK care homes — 5 Key Questions, KLOEs, Reg 17 evidence tracking'),
+    ('Australia', '/au/', 'ACQS Aged Care Quality Standards readiness, 8 Standards, Quality Indicators'),
+    ('New Zealand', '/nz/', 'Ngā Paerewa NZS 8134:2021 audit readiness, 4 Pae quality domains'),
+    ('Ireland', '/ie/', 'HIQA inspection readiness for designated centres, 13 most-flagged areas'),
+    ('Germany (Deutsch)', '/de/', 'MD-Prüfung & Pflegegrad, 24.700+ Qualitätsprüfungen, Expertenstandards, SIS'),
+    ('Germany (English)', '/de-en/', 'MD audit prep + QPR framework support for German care providers in English'),
+    ('United States', '/us/', 'CMS Five-Star Quality Rating + state survey F-tag evidence tracking — waitlist'),
+    ('France', '/fr/', 'HAS Qualiscope évaluation externe, 157 critères dont 18 impératifs — liste d attente'),
+    ('Japan', '/jp/', 'MHLW介護保険・実地指導/運営指導対応のエビデンス管理 — ウェイティングリスト'),
+    ('UAE', '/ae/', 'DoH Abu Dhabi + MoHAP healthcare facility licensing & compliance — waitlist'),
+    ('Netherlands', '/nl/', 'IGJ verpleeghuiszorg toezicht + Kwaliteitskader Verpleeghuiszorg — wachtlijst'),
+    ('Sweden', '/se/', 'IVO tillsyn äldreomsorg + SoL/LSS-stöd för SÄBO och hemtjänst — väntelista'),
+    ('Canada', '/ca/', 'Provincial LTC inspection (Ontario CARES, BC, Alberta, Quebec) — bilingual EN/FR — waitlist'),
+    ('Spain', '/es/', 'IMSERSO + 17 comunidades autónomas inspecciones residencias mayores — lista de espera'),
+]
+ARC_TOOLS = [
+    ('CQC Inspection Checklist', '/inspection-checklist/', 'Free interactive 30-item CQC inspection checklist with live scoring'),
+    ('CQC Inspection Countdown', '/cqc-inspection-countdown/', 'Predict your next CQC inspection window from your last rating + concerns'),
+    ('Inspection Statistics 2025', '/inspection-statistics/', 'CQC, ACQS, MD, HIQA, HealthCERT 2025 stats compared in one page with sources'),
+    ('5 Key Questions Framework', '/framework/', 'CQC Single Assessment Framework guide — Safe, Effective, Caring, Responsive, Well-led'),
+]
+
+arc_llms = ['', '## AlwaysReady Care — Care Home Compliance SaaS', '',
+    'Free care home compliance software covering 14 countries and 13 regulatory frameworks (CQC, ACQS, NZS 8134, HIQA, MD/QPR, CMS, HAS, MHLW, DoH/MoHAP, IGJ, IVO, Provincial CA, IMSERSO). Continuous evidence capture, real-time readiness scoring, inspection pack generation. AI-tagged to regulator criteria.',
+    '']
+for name, path, desc in ARC_REGIONS:
+    arc_llms.append(f'- [AlwaysReady Care — {name}]({ARC_BASE}{path}): {desc}')
+arc_llms.append('')
+arc_llms.append('### AlwaysReady Care — Free Tools & Resources')
+arc_llms.append('')
+for name, path, desc in ARC_TOOLS:
+    arc_llms.append(f'- [{name}]({ARC_BASE}{path}): {desc}')
+with open('llms.txt','a') as f: f.write('\n'.join(arc_llms))
+
+arc_full = ['', '## AlwaysReady Care — Care Home Compliance Across 14 Countries', '',
+    'AlwaysReady Care is a free care home compliance SaaS supporting 14 countries and 13 regulatory frameworks. Built for care managers, registered managers, deputy managers, quality leads, and PDLs. Captures evidence in 60 seconds, AI-tags to regulator criteria, generates inspection packs in one click. Works alongside existing systems (no rip-and-replace).',
+    '',
+    '### Live Regional Hubs (full product available)', '']
+for name, path, desc in ARC_REGIONS[:6]:
+    arc_full.append(f'- [AlwaysReady Care — {name}]({ARC_BASE}{path}): {desc}')
+arc_full.append('')
+arc_full.append('### Waitlist Regions (launching soon, regulator-specific framework support)')
+arc_full.append('')
+for name, path, desc in ARC_REGIONS[6:]:
+    arc_full.append(f'- [AlwaysReady Care — {name}]({ARC_BASE}{path}): {desc}')
+arc_full.append('')
+arc_full.append('### Free Tools & Reference Resources')
+arc_full.append('')
+for name, path, desc in ARC_TOOLS:
+    arc_full.append(f'- [{name}]({ARC_BASE}{path}): {desc}')
+arc_full.append('')
+arc_full.append('### Key Statistics (Cited from Official Regulator Reports)')
+arc_full.append('')
+arc_full.append('- UK: 47% of CQC Requires Improvement providers fail to improve on re-inspection (CQC State of Care 2024/25)')
+arc_full.append('- Australia: 19% of residential aged care providers were non-compliant in Q3 2024-25 (ACQS Sector Performance)')
+arc_full.append('- Germany: 24,700+ unannounced MD quality audits in 2023, 167,000+ residents directly assessed (MD Bund 8. Pflege-Qualitätsbericht)')
+arc_full.append('- Ireland: 840 HIQA inspections in 2024, 84% unannounced (HIQA 15 Years of Regulating Nursing Homes)')
+arc_full.append('- New Zealand: 100% of rest home audit summaries published publicly on health.govt.nz (Ngā Paerewa NZS 8134:2021)')
+arc_full.append('- USA: CMS uses only 2 most recent surveys for star rating (tightened July 2025); F-tags publicly posted on Care Compare')
+arc_full.append('- France: 34.7% of EHPAD reach top grade A; 23% public sector vs 53% private commercial (HAS Qualiscope)')
+arc_full.append('- UAE: DoH Abu Dhabi conducted 4,540 licensing audits in 2025, +31% YoY')
+arc_full.append('- Sweden: IVO closed 58 facilities in 2024 (47 care + 11 healthcare)')
+arc_full.append('')
+with open('llms-full.txt','a') as f: f.write('\n'.join(arc_full))
+
+print(f'  AlwaysReady Care: 14 country pages + 4 tools appended to both llms files')
+
 print(f'  llms.txt: {llms_size // 1024}KB, {hubs_count} categories (spec target: <10KB)')
 print(f'  llms-full.txt: {total} tools (full descriptions)')
 " 2>/dev/null

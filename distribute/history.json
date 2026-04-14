@@ -4013,6 +4013,11 @@
           "url": "https://telegra.ph/Free-Aged-Care-Compliance-Software-for-Australia--ACQS-2025-Ready-04-11",
           "posted_at": "2026-04-11T20:02:31.699663+00:00",
           "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-194170551",
+          "posted_at": "2026-04-14T10:17:13.906659+00:00",
+          "status": "published"
         }
       },
       "draft": {
@@ -4230,6 +4235,13 @@
         "competition": "",
         "drafted_at": "2026-04-14T09:29:55.637342+00:00"
       }
+    },
+    {
+      "slug": "care-home-inspection-statistics-2025-uk-au-de-ie-nz-compared",
+      "title": "Care Home Inspection Statistics 2025: UK, AU, DE, IE & NZ Compared",
+      "hash": "d66954628c57c6e6",
+      "created": "2026-04-14T10:47:32.095787+00:00",
+      "platforms": {}
     }
   ]
 }

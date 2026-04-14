@@ -1195,9 +1195,11 @@
       "lastRendered": "2026-04-14T10:13:02.611Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/5qbx6yxSY2U",
+          "videoId": "5qbx6yxSY2U",
+          "postedAt": "2026-04-14T10:15:15.019Z",
+          "scheduledAt": "2026-04-14T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {

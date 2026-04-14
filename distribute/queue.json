@@ -149,6 +149,66 @@
       },
       "queued_at": "2026-04-10T19:01:36.567001+00:00",
       "status": "pending"
+    },
+    {
+      "platform": "devto",
+      "title": "Care Home Inspection Statistics 2025: UK, AU, DE, IE & NZ Compared",
+      "slug": "care-home-inspection-statistics-2025-uk-au-de-ie-nz-compared",
+      "filepath": "scripts/distribute/articles/care-home-inspection-statistics-2025-uk-au-de-ie-nz.md",
+      "tags": [
+        "tools",
+        "free",
+        "web"
+      ],
+      "canonical_url": "",
+      "meta": {},
+      "queued_at": "2026-04-14T10:47:32.096233+00:00",
+      "status": "pending"
+    },
+    {
+      "platform": "bluesky",
+      "title": "Care Home Inspection Statistics 2025: UK, AU, DE, IE & NZ Compared",
+      "slug": "care-home-inspection-statistics-2025-uk-au-de-ie-nz-compared",
+      "filepath": "scripts/distribute/articles/care-home-inspection-statistics-2025-uk-au-de-ie-nz.md",
+      "tags": [
+        "tools",
+        "free",
+        "web"
+      ],
+      "canonical_url": "",
+      "meta": {},
+      "queued_at": "2026-04-14T10:47:32.096811+00:00",
+      "status": "pending"
+    },
+    {
+      "platform": "wordpress",
+      "title": "Care Home Inspection Statistics 2025: UK, AU, DE, IE & NZ Compared",
+      "slug": "care-home-inspection-statistics-2025-uk-au-de-ie-nz-compared",
+      "filepath": "scripts/distribute/articles/care-home-inspection-statistics-2025-uk-au-de-ie-nz.md",
+      "tags": [
+        "tools",
+        "free",
+        "web"
+      ],
+      "canonical_url": "",
+      "meta": {},
+      "queued_at": "2026-04-14T10:47:32.652417+00:00",
+      "status": "pending"
+    },
+    {
+      "platform": "tumblr",
+      "title": "Care Home Inspection Statistics 2025: UK, AU, DE, IE & NZ Compared",
+      "slug": "care-home-inspection-statistics-2025-uk-au-de-ie-nz-compared",
+      "filepath": "scripts/distribute/articles/care-home-inspection-statistics-2025-uk-au-de-ie-nz.md",
+      "tags": [
+        "tools",
+        "free",
+        "web"
+      ],
+      "canonical_url": "",
+      "meta": {},
+      "queued_at": "2026-04-14T10:47:32.652782+00:00",
+      "status": "pending"
     }
   ]
 }

@@ -37,6 +37,7 @@ The orchestrator tracks progress in `store-release-progress.json`. It calls all 
 | **Keyword autocomplete** | `py/aso/aso-keywords.py --suggest "term"` |
 | **Competitor analysis** | `py/aso/aso-competitors.py --find "term"` |
 | **Metadata audit** | `py/aso/aso-metadata.py --audit APP_ID` |
+| **AdMob accounts/apps/units/reports** | `py/admob.py {auth\|accounts\|apps\|ad-units\|report}` |
 
 ## iOS App Store (Fastlane)
 
@@ -54,6 +55,24 @@ cd fastlane && fastlane ios app_info          # Check app info
 
 Config: `appstore-fastlane/appstore-fastlane.env.example` → copy to project root as `.appstore-fastlane.env`.
 Full guide: `packages/team_mvp_kit/prompts/ios-release-guide.md`.
+
+## AdMob (REST API, cross-project)
+
+```bash
+# One-time OAuth (saves refresh token to ~/.config/teamzlab/admob-token.json)
+python3 py/admob.py auth
+
+# Then from any project:
+python3 py/admob.py accounts                         # List publisher accounts
+python3 py/admob.py apps                             # List apps
+python3 py/admob.py ad-units --app APP_ID            # List ad units for an app
+python3 py/admob.py find-unit --app APP_ID --format NATIVE
+python3 py/admob.py report --days 7                  # Network report (last 7 days)
+python3 py/admob.py report --app APP_ID --days 30
+```
+
+Stdlib-only (no pip deps). Reuses `~/.config/teamzlab/oauth-client-config.json`.
+Token refresh is automatic.
 
 ## Pre-Release Verification
 

@@ -4030,7 +4030,53 @@
       "title": "Free Rest Home Compliance Software for New Zealand — NZS 8134 Audit Tool",
       "hash": "df20b4c6a2acbcac",
       "created": "2026-04-11T20:00:46.082374+00:00",
-      "platforms": {},
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/free-rest-home-compliance-software-for-new-zealand-nzs-8134-audit-tool-2dn6",
+          "posted_at": "2026-04-14T09:30:04.888029+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/free-rest-home-compliance-software-for-new-zealand-nzs-8134-audit-tool-1",
+          "posted_at": "2026-04-14T09:30:09.233779+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/free-rest-home-compliance-software-for.html",
+          "posted_at": "2026-04-14T09:30:12.697396+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/14/free-rest-home-compliance-software-for-new-zealand-nzs-8134-audit-tool/",
+          "posted_at": "2026-04-14T09:30:22.179957+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/813861723464482816",
+          "posted_at": "2026-04-14T09:30:23.029310+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjh2zvulrg2m",
+          "posted_at": "2026-04-14T09:30:24.916090+00:00",
+          "status": "published"
+        },
+        "github_discussions": {
+          "url": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/89",
+          "posted_at": "2026-04-14T09:30:26.507426+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Free-Rest-Home-Compliance-Software-for-New-Zealand--NZS-8134-Audit-Tool-04-14",
+          "posted_at": "2026-04-14T09:30:27.297570+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=56579:shorts=1:tutorials=0",
+          "posted_at": "2026-04-14T09:30:27.816658+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/nz-rest-home-compliance-launch.md",
         "priority": "critical",
@@ -4135,6 +4181,54 @@
         "seo_keywords": [],
         "competition": "",
         "drafted_at": "2026-04-13T21:53:57.740123+00:00"
+      }
+    },
+    {
+      "slug": "free-csrd-tools-eu-sme-2026",
+      "title": "Free CSRD & Carbon Reporting Tools for EU SMEs (2026)",
+      "hash": "aa1eb6677e9d5f67",
+      "created": "2026-04-14T09:29:55.519884+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/free-csrd-tools-eu-sme-2026.md",
+        "priority": "high",
+        "series": "high-velocity-2026-04",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-14T09:29:55.520056+00:00"
+      }
+    },
+    {
+      "slug": "tcja-2027-tax-sunset-calculator",
+      "title": "2027 Tax Bracket Sunset: How TCJA Expiring Hits Your Paycheck (Free Calculator)",
+      "hash": "81aec74e032efdae",
+      "created": "2026-04-14T09:29:55.577944+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/tcja-2027-tax-sunset-calculator.md",
+        "priority": "high",
+        "series": "high-velocity-2026-04",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-14T09:29:55.578193+00:00"
+      }
+    },
+    {
+      "slug": "biological-age-calculator-phenoage-free",
+      "title": "Your Body Has Two Ages. A Free PhenoAge Calculator Shows the Gap",
+      "hash": "21a823ee4e1f1310",
+      "created": "2026-04-14T09:29:55.637115+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/biological-age-calculator-phenoage-free.md",
+        "priority": "high",
+        "series": "high-velocity-2026-04",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-14T09:29:55.637342+00:00"
       }
     }
   ]

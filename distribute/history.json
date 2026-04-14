@@ -3811,7 +3811,23 @@
       "title": "Is My ISP Spying on Me? How to Check DNS Manipulation, DPI & SSL Hijacking on Android (Free)",
       "hash": "120f083aff972779",
       "created": "2026-04-04T13:24:49.112153+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/is-my-isp-spying-on-me-how-to-check-dns.html",
+          "posted_at": "2026-04-14T19:36:20.219681+00:00",
+          "status": "published"
+        },
+        "github_discussions": {
+          "url": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/90",
+          "posted_at": "2026-04-14T19:36:22.962745+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Is-My-ISP-Spying-on-Me-How-to-Check-DNS-Manipulation-DPI--SSL-Hijacking-on-Android-Free-04-14",
+          "posted_at": "2026-04-14T19:36:23.742796+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-03-isp-privacy-check.md",
         "priority": "high",
@@ -4241,7 +4257,98 @@
       "title": "Care Home Inspection Statistics 2025: UK, AU, DE, IE & NZ Compared",
       "hash": "d66954628c57c6e6",
       "created": "2026-04-14T10:47:32.095787+00:00",
-      "platforms": {}
+      "platforms": {
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mji4uvjszl24",
+          "posted_at": "2026-04-14T19:36:04.036759+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/15/care-home-inspection-statistics-2025-uk-au-de-ie-nz-compared/",
+          "posted_at": "2026-04-14T19:36:10.317385+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "nz-mortgage-rate-rise-calculator",
+      "title": "Your NZ Mortgage Rate Is About to Reset — Here's a Free Calculator That Shows the Damage",
+      "hash": "e7c1d4a225097fba",
+      "created": "2026-04-14T19:35:39.688181+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/nz-mortgage-rate-rise-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-14T19:35:39.688434+00:00"
+      }
+    },
+    {
+      "slug": "sg-rental-income-tax-calculator",
+      "title": "Renting Out Your HDB or Condo in Singapore? Here's a Free IRAS Tax Calculator",
+      "hash": "10b913770058a2e8",
+      "created": "2026-04-14T19:35:39.751808+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/sg-rental-income-tax-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-14T19:35:39.751985+00:00"
+      }
+    },
+    {
+      "slug": "ie-auto-enrolment-pension-calculator",
+      "title": "Ireland's Auto-Enrolment Pension Launches Soon — Here's a Free Calculator That Actually Explains It",
+      "hash": "aed9560471f810fc",
+      "created": "2026-04-14T19:35:39.813556+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/ie-auto-enrolment-pension-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-14T19:35:39.813769+00:00"
+      }
+    },
+    {
+      "slug": "remote-worker-burnout-risk-score",
+      "title": "86% of Remote Workers Report Burnout — Here's a Free Risk Score That Takes 3 Minutes",
+      "hash": "313952fc5bc3e7d6",
+      "created": "2026-04-14T19:35:39.875059+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/remote-worker-burnout-risk-score.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-14T19:35:39.875265+00:00"
+      }
+    },
+    {
+      "slug": "uk-employment-rights-bill-checker",
+      "title": "The UK Employment Rights Bill 2025 Changes Your Job — Here's a Free Checker That Shows How",
+      "hash": "69dc9d6cc93d61ad",
+      "created": "2026-04-14T19:35:39.934981+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/uk-employment-rights-bill-checker.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-14T19:35:39.935159+00:00"
+      }
     }
   ]
 }

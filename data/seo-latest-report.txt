@@ -1,20 +1,14 @@
-NIGHTLY BUILD REPORT — 2026-04-14 15:18
+NIGHTLY BUILD REPORT — 2026-04-15 00:54
 Status: ALERT
-Repo dirty at start: yes
-New tools built: 0
-Total commits: 0
+Repo dirty at start: no
+New tools built: 1
+Total commits: 4
 ---
 SCRIPT HEALTH:
-  Alerts (6):
+  Alerts (4):
   - Static schema rebuild failed (exit 1)
-  - GSC anomalies failed (exit 1)
-  - Freshness validation:   - Rank tracker record:   ERROR: No Search Console token. Run: python3 build-search-console-auth.py
+  - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Rank tracker record:   ERROR: No Search Console token. Run: python3 build-search-console-auth.py
   - Internal link health failed (exit 1)
-  - Indexing request:   ERROR: Token expired and refresh failed. Re-auth needed.
-  - Search Console pull failed (exit 1)
-  Skipped phases (3):
-  - git pull (repo dirty at start or github.com unavailable)
-  - Claude build (repo dirty at start)
-  - auto-fix commit and push (protecting existing local work)
+  - Clarity pull:   ERROR: API request failed
 ---
 If script health is not OK, review logs/nightly-build.log before the next automated run.

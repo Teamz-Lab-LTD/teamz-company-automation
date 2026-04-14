@@ -178,7 +178,7 @@
       "canonical_url": "",
       "meta": {},
       "queued_at": "2026-04-14T10:47:32.096811+00:00",
-      "status": "pending"
+      "status": "done"
     },
     {
       "platform": "wordpress",
@@ -193,7 +193,7 @@
       "canonical_url": "",
       "meta": {},
       "queued_at": "2026-04-14T10:47:32.652417+00:00",
-      "status": "pending"
+      "status": "done"
     },
     {
       "platform": "tumblr",

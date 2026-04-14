@@ -1,61 +1,124 @@
 {
-  "generated": "2026-04-12T18:04:57.211944",
-  "count": 1,
+  "generated": "2026-04-14T04:20:00",
+  "count": 3,
+  "batch": "high-velocity-2026-04",
   "plans": [
     {
-      "id": "kids_decode-teen-texts",
+      "id": "csrd-scope-1-2-calculator-eu-sme",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "CompareThree",
+        "props": {
+          "hook": "EU SMEs: CSRD reporting costs 10K per year. This is free.",
+          "title": "Free CSRD Scope 1+2 Calculator",
+          "description": "DEFRA 2026 + IEA factors. 27 EU countries. PDF export. Runs in your browser.",
+          "url": "tool.teamzlab.com/eu/csrd/scope-1-2-calculator-sme/",
+          "audioFile": "audio/beat2.mp3",
+          "themeIndex": 2,
+          "ctaText": "Try free \u2192",
+          "ctaBadge": "NO SIGNUP",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "Free CSRD Scope 1+2 Calculator — EU SMEs, No Signup",
+        "description": "EU SMEs under CSRD wave 2 need Scope 1+2 emissions reporting by 2026. Enterprise tools cost €10-30K/year. I built a free one.\n\nTry it FREE: https://tool.teamzlab.com/eu/csrd/scope-1-2-calculator-sme/\n\n✓ DEFRA 2026 + IEA 2025 factors\n✓ All 27 EU countries\n✓ Location + market-based methods\n✓ PDF export for your sustainability report\n✓ Year-over-year comparison\n✓ 100% private, runs in your browser\n\nCompanion tools:\n• vSME Report Generator: https://tool.teamzlab.com/eu/csrd/vsme-report-generator/\n• EU Grid Carbon Factor Lookup: https://tool.teamzlab.com/eu/csrd/carbon-factor-by-country/\n\nNo signup. No ads collecting your data. 100% free.\n\n#CSRD #ESG #EU #sustainability #carbonfootprint #SME",
+        "tags": ["csrd", "scope 1 2 calculator", "eu sme sustainability", "esg reporting free", "carbon footprint calculator", "vsme generator", "efrag", "defra emissions factors", "iea grid carbon", "csrd wave 2"],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "en",
+        "hashtags": ["#CSRD", "#ESG", "#sustainability", "#shorts"]
+      },
+      "tiktok": {
+        "caption": "EU SMEs: CSRD tools cost 10K/year. This one is free 🌱\n\ntool.teamzlab.com/eu/csrd/scope-1-2-calculator-sme/\n\n#CSRD #ESG #SME #sustainability #EU #carbonfootprint"
+      },
+      "instagram": {
+        "caption": "CSRD wave 2 is hitting EU SMEs. Sweep, Coolset, Persefoni all charge €10-30K/year.\n\nI built a free alternative: Scope 1+2 emissions calculator using DEFRA 2026 + IEA 2025 factors. 27 EU countries, PDF export, 100% private.\n\nLink in bio.\n\n#CSRD #ESG #sustainability #EU #SME #carbonfootprint #freetools"
+      },
+      "keyword": "csrd scope 1 2 calculator",
+      "hub": "eu/csrd",
+      "hookStyle": "contrast",
+      "series": "high-velocity-2026-04"
+    },
+    {
+      "id": "tcja-2027-tax-bracket-sunset-calculator",
       "type": "tool",
       "language": "en",
       "render": {
         "template": "InstantFix",
         "props": {
-          "hook": "I can't believe this decode teen texts tool is free",
-          "title": "Decode Teen Texts",
-          "description": "Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with a cringe-o-meter. Flags concerning terms. 100% pri",
-          "url": "tool.teamzlab.com/kids/decode-teen-texts/",
-          "audioFile": "audio/beat2.mp3",
-          "themeIndex": 6,
-          "ctaText": "Try it free",
-          "ctaBadge": "LINK IN BIO",
+          "hook": "Your 2027 taxes are going up. Here is how much.",
+          "title": "TCJA 2027 Sunset Calculator",
+          "description": "Compare 2026 vs 2027 brackets side-by-side. See your exact dollar impact when TCJA expires.",
+          "url": "tool.teamzlab.com/us/tcja-bracket-2027/",
+          "audioFile": "audio/beat4.mp3",
+          "themeIndex": 0,
+          "ctaText": "See the gap \u2192",
+          "ctaBadge": "FREE",
           "brandName": "tool.teamzlab.com"
         }
       },
       "youtube": {
-        "title": "Decode Teen Texts \u2014 Free Browser Tool",
-        "description": "Decode Teen Texts \u2014 Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with a cringe-o-meter. Fl\n\nTry it FREE: https://tool.teamzlab.com/kids/decode-teen-texts/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nDecode Teen Texts is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #decodeteentexts#privacy #browsertools #nosubscription",
-        "tags": [
-          "decode teen texts",
-          "free tools",
-          "browser tools",
-          "no signup",
-          "privacy",
-          "online tools",
-          "kids",
-          "decoder",
-          "\u09a8\u09be\u099f\u0995 copy paste"
-        ],
-        "categoryId": 28,
+        "title": "Your 2027 Taxes Are Going UP — Free TCJA Sunset Calculator",
+        "description": "TCJA sunsets December 31, 2026. Your tax brackets revert. Your standard deduction halves. I built a free calculator that shows your exact 2026 vs 2027 dollar impact.\n\nTry it FREE: https://tool.teamzlab.com/us/tcja-bracket-2027/\n\n✓ 2026 vs 2027 brackets side-by-side\n✓ All 4 filing statuses\n✓ Standard deduction reversion shown\n✓ Shareable result card for social\n✓ 100% private, no signup\n\nWhat's changing on Jan 1, 2027:\n• Brackets: 10/12/22/24/32/35/37 → 10/15/25/28/33/35/39.6\n• Standard deduction: MFJ $30K → $16.5K\n• Estate exemption halves (~$13.9M → ~$7M)\n• Pass-through 20% QBI deduction expires\n\nPlanning opportunities (consult a CPA): Roth conversions, income acceleration into 2026, gifting strategies.\n\nNot tax advice. Consult a qualified tax pro.\n\n#TCJA #taxes #US #2027 #taxplanning #finance",
+        "tags": ["tcja sunset", "2027 tax brackets", "tax calculator", "tax cuts jobs act", "us taxes 2027", "tax planning", "standard deduction 2027", "estate tax 2027", "qbi deduction expiring", "tax reversion"],
+        "categoryId": 25,
         "privacy": "public",
         "madeForKids": false,
-        "defaultLanguage": "",
-        "hashtags": [
-          "#freetools",
-          "#decodeteentextsnatok",
-          "#shorts"
-        ]
+        "defaultLanguage": "en",
+        "hashtags": ["#TCJA", "#taxes", "#finance", "#shorts"]
       },
       "tiktok": {
-        "caption": "I can't believe this decode teen texts natok tool is free\n\nTry it: tool.teamzlab.com/kids/decode-teen-texts/\n\n#freetools #decodeteentextsnatok #tech #lifehack #webapp"
+        "caption": "Your 2027 taxes are going UP. TCJA sunsets Dec 31, 2026.\n\nFree calculator shows your exact 2026 vs 2027 dollar impact 💰\n\ntool.teamzlab.com/us/tcja-bracket-2027/\n\n#TCJA #taxes #2027 #finance #taxplanning #fyp"
       },
       "instagram": {
-        "caption": "I can't believe this decode teen texts natok tool is free\n\nDecode Teen Texts \u2014 Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/kids/decode-teen-texts/\n\n#freetools #decodeteentextsnatok #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+        "caption": "TCJA sunsets December 31, 2026. Your tax brackets revert. Standard deduction halves. Estate exemption halves.\n\nI built a free calculator that compares your 2026 vs 2027 tax dollar-for-dollar.\n\nLink in bio. Not tax advice.\n\n#TCJA #taxes #US #2027 #personalfinance #taxplanning #finance"
       },
-      "keyword": "decode teen texts natok",
-      "hub": "kids",
+      "keyword": "tcja 2027 sunset calculator",
+      "hub": "us",
+      "hookStyle": "warning",
+      "series": "high-velocity-2026-04"
+    },
+    {
+      "id": "phenoage-biological-age-calculator",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "Your body has two ages. Only one is on your birth certificate.",
+          "title": "Free PhenoAge Calculator",
+          "description": "Levine 2018 formula + 9 biomarkers from a standard blood panel. Runs in your browser.",
+          "url": "tool.teamzlab.com/longevity/bio-vs-chrono-age-gap/",
+          "audioFile": "audio/beat3.mp3",
+          "themeIndex": 4,
+          "ctaText": "Find out \u2192",
+          "ctaBadge": "SCIENCE-BASED",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "Your Body Has Two Ages — Free PhenoAge Calculator (Levine 2018)",
+        "description": "Your chrono age is on your birth certificate. Your biological age is in your blood. The Levine PhenoAge formula (Aging US 2018, PMID 29676998) predicts mortality better than chrono age alone.\n\nTry it FREE: https://tool.teamzlab.com/longevity/bio-vs-chrono-age-gap/\n\n✓ 9 biomarkers from a standard blood panel (CBC + CMP + CRP)\n✓ Peer-reviewed formula from NHANES data\n✓ Bio vs chrono age gap visualization\n✓ 10-year mortality ratio estimate\n✓ AI-personalized interventions (runs locally)\n✓ Pinterest-ready share card\n✓ 100% private — blood data never leaves your browser\n\n3 interventions that actually move PhenoAge:\n• Zone 2 cardio (3-4 hrs/week)\n• Protein 1.6g/kg bodyweight\n• 7-8h consistent sleep\n\nEducational tool only. Not a medical device. Not diagnostic. Consult a licensed clinician.\n\n#longevity #phenoage #biohacking #biologicalage #health",
+        "tags": ["phenoage calculator", "biological age test", "levine phenoage", "longevity", "biohacking", "bryan johnson", "peter attia", "biomarkers", "function health", "insidetracker"],
+        "categoryId": 26,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "en",
+        "hashtags": ["#longevity", "#biohacking", "#PhenoAge", "#shorts"]
+      },
+      "tiktok": {
+        "caption": "Your body has TWO ages. Your blood tells the real one.\n\nFree PhenoAge calculator — Levine 2018 formula, 9 biomarkers, runs in your browser.\n\ntool.teamzlab.com/longevity/bio-vs-chrono-age-gap/\n\nNot medical advice. #longevity #biohacking #phenoage #peterattia"
+      },
+      "instagram": {
+        "caption": "Your body has two ages.\n\nYour birth certificate shows one.\nYour blood shows the other.\n\nThe Levine PhenoAge formula (peer-reviewed, 2018) predicts mortality better than chronological age alone. Based on 9 biomarkers from a standard blood panel.\n\nI built a free calculator. Your data never leaves your browser.\n\nLink in bio. Educational tool only — not medical advice.\n\n#longevity #biohacking #phenoage #biologicalage #health #peterattia"
+      },
+      "keyword": "biological age calculator phenoage",
+      "hub": "longevity",
       "hookStyle": "curiosity",
-      "template": "InstantFix",
-      "trending": "",
-      "generatedAt": "2026-04-12T18:04:56.533565"
+      "series": "high-velocity-2026-04"
     }
   ]
 }

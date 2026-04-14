@@ -599,8 +599,13 @@ if (unpostedCount >= 15 && !DRY_RUN) {
   console.log(`\n  Run: node render-batch.js --distribute`);
   console.log(`  to see what's safe to post now.\n`);
   if (unpostedCount >= 30) {
-    console.log(`  BLOCKED: ${unpostedCount} unposted videos. Post at least 10 before rendering more.\n`);
-    process.exit(1);
+    if (hasFlag("--force")) {
+      console.log(`  --force: overriding stockpile block. Queue will grow to ${unpostedCount + renderQueue.length}.\n`);
+    } else {
+      console.log(`  BLOCKED: ${unpostedCount} unposted videos. Post at least 10 before rendering more.`);
+      console.log(`  To override (grows queue): add --force\n`);
+      process.exit(1);
+    }
   }
 }
 

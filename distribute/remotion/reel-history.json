@@ -284,9 +284,11 @@
       "lastRendered": "2026-04-11T20:39:21.016Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/ZECpWlChKIc",
+          "videoId": "ZECpWlChKIc",
+          "postedAt": "2026-04-14T09:30:35.757Z",
+          "scheduledAt": "2026-04-14T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -319,9 +321,11 @@
       "lastRendered": "2026-04-11T20:39:21.016Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/hJ9-DVk4ihw",
+          "videoId": "hJ9-DVk4ihw",
+          "postedAt": "2026-04-14T09:31:39.599Z",
+          "scheduledAt": "2026-04-15T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -354,9 +358,11 @@
       "lastRendered": "2026-04-11T20:39:21.016Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/kux_FVCLyKE",
+          "videoId": "kux_FVCLyKE",
+          "postedAt": "2026-04-14T09:32:47.819Z",
+          "scheduledAt": "2026-04-16T19:03:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -389,9 +395,11 @@
       "lastRendered": "2026-04-11T20:39:21.016Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/TgaQrQrH6Pg",
+          "videoId": "TgaQrQrH6Pg",
+          "postedAt": "2026-04-14T09:32:55.654Z",
+          "scheduledAt": "2026-04-14T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -424,9 +432,11 @@
       "lastRendered": "2026-04-11T20:39:21.016Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/UmJof0QAs_Y",
+          "videoId": "UmJof0QAs_Y",
+          "postedAt": "2026-04-14T09:34:21.022Z",
+          "scheduledAt": "2026-04-15T19:02:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -1151,6 +1161,117 @@
           "videoId": "wmbCHDtZejY",
           "postedAt": "2026-04-11T20:42:01.607Z",
           "scheduledAt": "2026-04-17T16:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "csrd-scope-1-2-calculator-eu-sme",
+      "title": "Free CSRD Scope 1+2 Calculator",
+      "hub": "eu/csrd",
+      "language": "en",
+      "template": "CompareThree",
+      "themeIndex": 2,
+      "durationInFrames": 780,
+      "format": "short",
+      "hook": "EU SMEs: CSRD reporting costs 10K per year. This is free.",
+      "audio": "audio/beat2.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/csrd-scope-1-2-calculator-eu-sme.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/csrd-scope-1-2-calculator-eu-sme.txt",
+      "youtubeTitle": "Free CSRD Scope 1+2 Calculator — EU SMEs, No Signup",
+      "rendered": "2026-04-14T10:13:02.610Z",
+      "lastRendered": "2026-04-14T10:13:02.611Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "tcja-2027-tax-bracket-sunset-calculator",
+      "title": "TCJA 2027 Sunset Calculator",
+      "hub": "us",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 0,
+      "durationInFrames": 570,
+      "format": "short",
+      "hook": "Your 2027 taxes are going up. Here is how much.",
+      "audio": "audio/beat4.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tcja-2027-tax-bracket-sunset-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tcja-2027-tax-bracket-sunset-calculator.txt",
+      "youtubeTitle": "Your 2027 Taxes Are Going UP — Free TCJA Sunset Calculator",
+      "rendered": "2026-04-14T10:13:02.611Z",
+      "lastRendered": "2026-04-14T10:13:02.611Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "phenoage-biological-age-calculator",
+      "title": "Free PhenoAge Calculator",
+      "hub": "longevity",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 4,
+      "durationInFrames": 540,
+      "format": "short",
+      "hook": "Your body has two ages. Only one is on your birth certificate.",
+      "audio": "audio/beat3.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/phenoage-biological-age-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/phenoage-biological-age-calculator.txt",
+      "youtubeTitle": "Your Body Has Two Ages — Free PhenoAge Calculator (Levine 2018)",
+      "rendered": "2026-04-14T10:13:02.611Z",
+      "lastRendered": "2026-04-14T10:13:02.611Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
           "retries": 0
         },
         "instagram": {

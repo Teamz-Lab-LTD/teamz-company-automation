@@ -41,27 +41,44 @@
 | **Play Console listing push** | `py/build-play-console.py listing-push --file listing.json` | |
 | **Upload AAB to Play Console** | `py/build-play-console.py upload --aab file.aab --track internal --commit` | Auto-bumps versionCode if conflict |
 | **Store settings (contact)** | `py/build-play-console.py store-settings --commit` | |
-| **Full store release (22 steps)** | `py/aso/aso-store-release.py` | **START HERE — orchestrates everything** |
+| **Full store release (27 steps)** | `py/aso/aso-store-release.py` | **START HERE — orchestrates everything, chained 100%** |
 | **Copy-paste helper HTML** | `py/aso/aso-copy-helper.py` | For manual paste when API can't commit (draft apps) |
 | **Release notes paste file** | `py/aso/aso-copy-helper.py` | Also generates `release-notes-*-paste.txt` with `<locale>` tags (≤500 chars/locale) |
+| **Auto-generate release notes from git** | `py/aso/aso-release-notes-gen.py` | Reads git log since last tag → `release-notes-v{ver}.json`; `--translate` uses `claude` CLI for 35 locales |
+| **Localize Fastlane iOS metadata (all 40 locales)** | `py/aso/aso-localize.py` | Populates empty `fastlane/metadata/*/keywords.txt\|subtitle.txt\|name.txt\|promotional_text.txt` via locale-aware iTunes autocomplete; `--translate` for LLM copy |
+| **ASO+SEO master keyword merge** | `py/aso/aso-seo-merge.py` | Unifies ASO score + SEO volume + web rank + Deep Research → `aso-seo-master.csv` with `combined_score` (fulfills the "combine all sources" global rule) |
+| **A/B experiment tracker** | `py/aso/aso-experiments.py add\|snapshot\|end\|list\|report` | Icon/screenshot/subtitle/title variants with CVR tracking; writes `aso-experiments.json` + `aso-experiments-report.md` |
+| **App icon audit (contrast, size, alpha, fill)** | `py/aso/aso-icon-audit.py` | Stdlib PNG parser; catches iOS alpha rejection, low corner↔center contrast, undersized icons |
+| **Download velocity + install trend (Play + ASC)** | `py/aso/aso-velocity.py` | Uses existing Play service account + ASC P8 key (no new setup); writes `aso-velocity-latest.json` + history CSV + markdown report |
+| **Gemini Nano Banana image edit (no MCP)** | `py/aso/aso-gemini-edit.py --prompt "..." --image <src> --output <dst>` | REST wrapper for `nano-banana-pro-preview`. Reads API key from `~/.config/teamzlab/gemini-api-key.txt`. Used for screenshots, icons, feature graphics. Stdlib only. |
+| **Play Console batch push (39 locales + graphics)** | `TEAMZ_PLAY_PACKAGE_NAME=com.x python3 py/aso/aso-play-batch-push.py [--commit]` | Single edit transaction pushes listings for all locales + screenshots + feature graphic + icon in one shot. Dry-run by default. |
+| **ASC screenshots direct push (Ruby/Spaceship)** | `TARGET_VERSION=2.1.0 bundle exec ruby py/aso/asc-screenshots-push.rb` | Bypasses fastlane deliver's silent-failure race. Uploads to ALL 39 locales with `wait_for_processing: true`. Env: `LOCALES=ALL` or comma-list. |
+| **Localize metadata template (per-project translation file)** | Copy `py/aso/aso-localize-metadata-template.py` to project's `automation_data/localize_metadata.py` and fill TRANSLATIONS dict | Use Claude as translator; template enforces Apple char limits; auto-writes 195 metadata files + supports parent-copy for en-AU/fr-CA/es-MX |
 
 ### ASO Workflow (must follow this order)
 
 ```
-0. py/aso/aso-preflight.py --pre                          → VALIDATE before starting (blocks if data missing)
-1. py/aso/aso-keywords.py --suggest/--expand/--trending   → discover keywords
-2. py/build-keyword-volume.py "kw1" "kw2" ...            → get REAL volume data (Bing + Trends + autocomplete)
-3. py/aso/aso-competitors.py --find/--matrix               → competitive landscape
-4. py/aso/aso-keyword-pipeline.py                          → produce scored CSVs (integrates step 2 data)
-5. py/aso/aso-metadata.py --audit/--optimize               → audit current listing
-6. Google Trends (browser) — compare top 5 keywords        → confirm relative demand (script can't do this — 429 rate limited)
-7. THEN write the listing using data from steps 1-6
-8. py/aso/aso-preflight.py --post                          → VALIDATE after writing (blocks if listing has issues)
+0.  py/aso/aso-preflight.py --pre                          → VALIDATE before starting (blocks if data missing)
+1.  py/aso/aso-keywords.py --suggest/--expand/--trending   → discover keywords
+2.  py/build-keyword-volume.py "kw1" "kw2" ...             → get REAL volume data (Bing + Trends + autocomplete)
+3.  py/aso/aso-competitors.py --find/--matrix              → competitive landscape
+4.  py/aso/aso-keyword-pipeline.py                         → produce scored CSVs (integrates step 2 data)
+5.  py/aso/aso-seo-merge.py                                → UNIFY ASO + SEO volume + web rank → aso-seo-master.csv (the ONE source of truth)
+6.  py/aso/aso-metadata.py --audit/--optimize              → audit current listing
+7.  Google Trends (browser) — compare top 5 keywords       → confirm relative demand (script can't — 429 rate limited)
+8.  py/aso/aso-localize.py                                 → fill all 40 Fastlane locales' keywords/subtitle/name from master
+9.  py/aso/aso-release-notes-gen.py                        → auto-build release-notes-v{ver}.json from git log
+10. py/aso/aso-icon-audit.py                               → QA icon PNGs (contrast, size, alpha, fill)
+11. THEN write the listing using data from steps 1-10
+12. py/aso/aso-preflight.py --post                         → VALIDATE after writing (blocks if listing has issues)
+13. py/aso/aso-experiments.py add                          → register A/B variants before upload; `snapshot` weekly after release
 ```
 
-**⚠️ NEVER skip step 0 or step 8. The preflight script catches fabricated data, missing volume estimation, and listing issues.**
+**⚠️ NEVER skip step 0 or step 12 (preflight). The preflight script catches fabricated data, missing volume estimation, and listing issues.**
 **⚠️ NEVER skip step 2 (volume estimation). Without it, you cannot determine which keywords have actual search demand.**
-**⚠️ Step 6 (Google Trends) requires browser — the API is 429 rate-limited. Ask the user to do this manually.**
+**⚠️ NEVER skip step 5 (seo-merge). The global CLAUDE.md rule mandates combining ASO + SEO + Deep Research before writing content.**
+**⚠️ Step 7 (Google Trends) requires browser — the API is 429 rate-limited. Ask the user to do this manually.**
+**⚠️ The orchestrator `py/aso/aso-store-release.py` runs steps 0–13 automatically in order — prefer it over running scripts individually.**
 
 ---
 
@@ -168,12 +185,17 @@ Auto-detects monetization model (ads-only / IAP / both / free) and adjusts check
 | Assume a tool doesn't exist | `ls packages/team_mvp_kit/teamz-company-automation/py/` first |
 | Suggest Google Trends manually | `build-keyword-volume.py` already integrates Google Trends |
 | Suggest paid tools when free ones exist | Check this registry — 48 scripts cover most needs |
+| Claim "No Ads" / "Ad-Free" when AdMob ships | Check `.appstore-fastlane.env` `SERVES_ADS=` and `pubspec.yaml` for ad SDKs FIRST. Apple 2.3.1 rejects misleading claims. |
+| Claim "No Subscription" / "No IAP" without grep | Grep for `in_app_purchase`, `purchases_flutter`, `RevenueCat` before claiming. |
+| Claim "Offline" without verifying network deps | Critical-path features must work without network. WebView-wrapper apps almost never qualify. |
+| Round up tool/feature counts in metadata | "2000+ tools" must mean ≥2000. Auditor counts must back the claim. |
+| Write metadata before populating `_app_constraints` in deep-research-keywords.json | The constraints block lists `forbidden_claims` per-app. Listing step must refuse strings from that list. |
 
 ---
 
 ## Script Count by Category
 
-- **ASO**: 9 scripts (keyword research → competitor analysis → metadata → reviews → tracking)
+- **ASO**: 19 scripts (keyword research → competitor analysis → metadata → reviews → rank tracking → SEO merge → localization → release notes → icon audit → A/B experiments → download velocity → Gemini image edit → Play batch push → ASC Spaceship screenshot push → localize template)
 - **SEO**: 18 scripts (audit → keywords → volume → competitors → SERP → content → indexing)
 - **Auth**: 4 scripts (GSC, GA4, Google Ads, AdSense)
 - **Content**: 5 scripts (ideas, multilang, OG images, subtitles, programmatic SEO)
@@ -183,4 +205,4 @@ Auto-detects monetization model (ads-only / IAP / both / free) and adjusts check
 - **App Store (iOS)**: Fastlane setup (Fastfile + setup script + env template)
 - **Pre-Release**: 1 shell script (`sh/pre-release-verify.sh`) — adaptive checks for all monetization models
 
-**Total: 48 Python scripts + Fastlane iOS automation + pre-release verification. Python scripts are all standard library (no pip install needed). Fastlane requires `brew install fastlane`.**
+**Total: 58 Python scripts + 1 Ruby script + Fastlane iOS automation + pre-release verification. Python scripts are all standard library except `build-play-console.py`, `aso-velocity.py`, and `aso-play-batch-push.py` which need `pip3 install google-api-python-client google-auth`. Ruby script `asc-screenshots-push.rb` uses Spaceship from the Fastlane gem (already installed via Fastlane). Gemini-based scripts (`aso-gemini-edit.py`, `aso-appstore-screenshots` skill) need a Gemini API key at `~/.config/teamzlab/gemini-api-key.txt`.**

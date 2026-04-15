@@ -247,6 +247,18 @@ If 0 sets attached, STOP retrying fastlane (it fails the same way). Use `py/aso/
 
 **Rule P5.5 — Release notes per locale use ASC `whatsNew` field (camelCase), not `whats_new`.** The `whats_new` key doesn't exist in the v1 API. Use `Spaceship::ConnectAPI.patch_app_store_version_localization(attributes: { whatsNew: text })`. The `aso-release-notes-gen.py` script generates the JSON — push it via the direct patch pattern in `toss_app/fastlane` as reference.
 
+**Rule P5.6 — For Play Console release notes, use the kit's paste-file pattern.** Don't hand-write bulk paste files. `aso-copy-helper.py` writes BOTH paste files automatically when the orchestrator's `copy_helper` step runs:
+- `{data_dir}/release-notes-v{ver}-paste.txt` — Apple ASC format
+- `{data_dir}/play-release-notes-v{ver}-paste.txt` — Play Console format
+
+Both have `<locale>...</locale>` blocks per Google/Apple's paste conventions. User opens the file, Cmd+A, Cmd+C, pastes into the respective console's bulk-locale release-notes input.
+
+Files also exist per-locale for fastlane/supply auto-discovery:
+- Apple: `fastlane/metadata/{locale}/release_notes.txt`
+- Play: `android/app/src/main/play/release-notes/{play-locale}/default.txt`
+
+Play's Managed Publishing enforces photo/video permissions declaration review before accepting new AAB commits via API. If your app declares `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO`, expect a blocker on first release after policy activation (late 2024): submit declaration → wait for Google review (hours-days) → retry AAB commit. Manual upload via Play Console UI may succeed even when API rejects.
+
 ### Phase 6 — Category & tags (HIGH-impact, often-forgotten)
 
 **Rule P6.1 — Realign category + tags on every positioning pivot.** Category is a top-3 ranking signal. A "Paycheck Calculator" app in "Utilities / Developer Tools" category gets ~zero discovery benefit from keyword work.

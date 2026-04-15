@@ -204,6 +204,14 @@ summary {{ cursor: pointer; color: #4fc3f7; font-size: 13px; padding: 8px 0; }}
                 paste_lines.append(f"<{play_code}>\n{text}\n</{play_code}>")
             paste_text = "\n".join(paste_lines)
 
+            # Write the paste file to data_dir — companion to Apple's
+            # release-notes-v{version}-paste.txt. Open + Cmd+A Cmd+C and paste
+            # into Play Console → Release → Release notes bulk-locale input.
+            play_paste_path = _DATA_DIR / f"play-release-notes-v{rn_version}-paste.txt"
+            play_paste_path.write_text(paste_text + "\n", encoding="utf-8")
+            print(f"  [ok] Wrote {play_paste_path.name} ({len(rn_locales)} locales)",
+                  file=sys.stderr)
+
             warn_html = ""
             if over_limit:
                 warn_html = f'<div style="color:#ef5350;margin-bottom:8px">⚠️ Over 500 chars: {html.escape(", ".join(over_limit))}</div>'

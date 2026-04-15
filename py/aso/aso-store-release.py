@@ -104,6 +104,7 @@ ALL_STEPS = [
     ("reviews",         "Competitor review analysis via aso-reviews.py"),
     ("seo_engine",      "SEO keyword engine ASO suggest via seo-keyword-engine.py"),
     ("pipeline",        "Keyword pipeline (scored CSVs with volume) via aso-keyword-pipeline.py"),
+    ("seo_merge",       "ASO+SEO master keyword merge (aso-seo-master.csv) via aso-seo-merge.py"),
     ("per_kw_analysis", "Per-keyword competitive analysis (iTunes search per keyword)"),
 
     # Phase 2: Manual data (user does in browser)
@@ -112,7 +113,9 @@ ALL_STEPS = [
     # Phase 3: Content generation (AI agent generates, orchestrator validates)
     ("listing",         "Generate store listing content (title, short desc, full desc)"),
     ("translations",    "Generate 39 locale translations"),
-    ("release_notes",   "Generate release notes JSON + Play Console paste file (all locales, ≤500 chars each)"),
+    ("localize_metadata","Localize Fastlane iOS metadata (keywords/subtitle/name) via aso-localize.py"),
+    ("release_notes_gen","Auto-generate release-notes-v{ver}.json from git log via aso-release-notes-gen.py"),
+    ("release_notes",   "Validate release notes JSON + Play Console paste file (all locales, ≤500 chars each)"),
     ("data_safety_json","Generate data-safety-form.json from codebase"),
 
     # Phase 4: Build & deploy (automated)
@@ -124,6 +127,7 @@ ALL_STEPS = [
     ("copy_helper",     "Generate copy-paste helper HTML (fallback for draft apps)"),
 
     # Phase 5: Assets (mix of auto + manual)
+    ("icon_audit",      "App icon QA (contrast, size, alpha) via aso-icon-audit.py"),
     ("icon",            "App icon (512x512 for Play Store)"),
     ("feature_graphic", "Feature graphic (1024x500)"),
     ("screenshots",     "Screenshots (4-8 phone screenshots)"),
@@ -138,14 +142,18 @@ ALL_STEPS = [
 
     # Phase 7: Final validation
     ("postflight",      "Post-flight validation"),
+    ("velocity",        "Download velocity snapshot (Play + ASC) via aso-velocity.py"),
+    ("experiments_status","A/B experiment tracker summary via aso-experiments.py list"),
 ]
 
 AUTOMATED_STEPS = {
     "preflight", "keywords", "volume", "competitors", "metadata_audit",
-    "reviews", "seo_engine", "pipeline", "per_kw_analysis",
+    "reviews", "seo_engine", "pipeline", "seo_merge", "per_kw_analysis",
     "permissions", "build", "upload", "push_listings", "store_settings",
-    "copy_helper", "icon", "feature_graphic", "postflight",
-    "listing", "translations", "release_notes", "data_safety_json",
+    "copy_helper", "icon_audit", "icon", "feature_graphic", "postflight",
+    "listing", "translations", "localize_metadata",
+    "release_notes_gen", "release_notes", "data_safety_json",
+    "velocity", "experiments_status",
 }
 
 MANUAL_STEPS = {
@@ -644,6 +652,105 @@ def run_step_release_notes(progress: dict):
                f"v{version}: {len(locales)} locales, paste file ready")
 
 
+def run_step_seo_merge(progress: dict):
+    """Merge ASO + SEO volume + rank into single master CSV."""
+    print("\n[seo_merge] ASO+SEO master keyword merge...")
+    code, output = _run_script("aso/aso-seo-merge.py", [], timeout=60)
+    print(output[-500:] if len(output) > 500 else output)
+    master = _DATA_DIR / "aso-seo-master.csv"
+    if master.exists():
+        _mark_step(progress, "seo_merge", "done", f"{master.name} ready")
+    else:
+        _mark_step(progress, "seo_merge", "failed", "aso-seo-master.csv not produced")
+
+
+def run_step_localize_metadata(progress: dict):
+    """Populate Fastlane iOS metadata for all locales."""
+    print("\n[localize_metadata] Localizing Fastlane iOS metadata...")
+    fastlane_md = _PROJECT_ROOT / "fastlane" / "metadata"
+    if not fastlane_md.exists():
+        _mark_step(progress, "localize_metadata", "skipped",
+                   "No fastlane/metadata/ (not an iOS project)")
+        return
+    code, output = _run_script("aso/aso-localize.py", [], timeout=300)
+    print(output[-500:] if len(output) > 500 else output)
+    # Count non-empty keywords.txt files
+    filled = sum(1 for p in fastlane_md.glob("*/keywords.txt")
+                 if p.exists() and p.read_text(encoding="utf-8").strip())
+    total = sum(1 for _ in fastlane_md.glob("*/keywords.txt"))
+    _mark_step(progress, "localize_metadata",
+               "done" if filled >= max(1, total // 2) else "failed",
+               f"{filled}/{total} locales have keywords.txt")
+
+
+def run_step_release_notes_gen(progress: dict):
+    """Auto-generate release-notes-v{version}.json from git log."""
+    print("\n[release_notes_gen] Generating release notes from git log...")
+    code, output = _run_script("aso/aso-release-notes-gen.py", [], timeout=120)
+    print(output[-500:] if len(output) > 500 else output)
+    generated = list(_DATA_DIR.glob("release-notes-v*.json"))
+    if generated:
+        _mark_step(progress, "release_notes_gen", "done", generated[-1].name)
+    else:
+        _mark_step(progress, "release_notes_gen", "failed",
+                   "No release-notes-*.json produced (maybe no commits since last tag)")
+
+
+def run_step_icon_audit(progress: dict):
+    """Validate icon contrast, size, alpha, fill."""
+    print("\n[icon_audit] Auditing icon assets...")
+    code, output = _run_script("aso/aso-icon-audit.py", [], timeout=60)
+    print(output[-800:] if len(output) > 800 else output)
+    audit = _DATA_DIR / "aso-icon-audit.json"
+    if not audit.exists():
+        _mark_step(progress, "icon_audit", "skipped", "No icons found")
+        return
+    try:
+        results = json.loads(audit.read_text())
+        fails = sum(1 for r in results if not r.get("ok"))
+        _mark_step(progress, "icon_audit",
+                   "done" if fails == 0 else "warning",
+                   f"{len(results)} icons, {fails} issues")
+    except (json.JSONDecodeError, OSError):
+        _mark_step(progress, "icon_audit", "failed", "Could not parse audit JSON")
+
+
+def run_step_velocity(progress: dict):
+    """Download velocity snapshot from Play Console + ASC."""
+    print("\n[velocity] Pulling download velocity...")
+    code, output = _run_script("aso/aso-velocity.py", ["--history"], timeout=180)
+    print(output[-600:] if len(output) > 600 else output)
+    latest = _DATA_DIR / "aso-velocity-latest.json"
+    if latest.exists():
+        try:
+            snaps = json.loads(latest.read_text())
+            summary = ", ".join(f"{s['platform']}={s.get('total_installs') or s.get('total_units', 0)}"
+                                for s in snaps)
+            _mark_step(progress, "velocity", "done", summary)
+        except (json.JSONDecodeError, OSError):
+            _mark_step(progress, "velocity", "failed", "Could not parse velocity JSON")
+    else:
+        _mark_step(progress, "velocity", "skipped",
+                   "No data (check Play/ASC credentials)")
+
+
+def run_step_experiments_status(progress: dict):
+    """Summarize ASO A/B experiments."""
+    print("\n[experiments_status] ASO experiment summary...")
+    code, output = _run_script("aso/aso-experiments.py", ["list"], timeout=30)
+    print(output[-500:] if len(output) > 500 else output)
+    exp_file = _DATA_DIR / "aso-experiments.json"
+    if exp_file.exists():
+        try:
+            n = len(json.loads(exp_file.read_text()).get("experiments", []))
+        except (json.JSONDecodeError, OSError):
+            n = 0
+        _mark_step(progress, "experiments_status", "done", f"{n} experiments tracked")
+    else:
+        _mark_step(progress, "experiments_status", "manual_needed",
+                   "No experiments yet — register with: aso-experiments.py add ...")
+
+
 def run_step_build(progress: dict):
     """Build release AAB."""
     print("\n[9/22] Building release AAB...")
@@ -837,6 +944,7 @@ def run_full(progress: dict):
     run_step_reviews(progress)
     run_step_seo_engine(progress)
     run_step_pipeline(progress)
+    run_step_seo_merge(progress)
     run_step_per_kw_analysis(progress)
 
     # ── Phase 2: Manual Data ──
@@ -847,6 +955,8 @@ def run_full(progress: dict):
     print("\n══ PHASE 3: CONTENT GENERATION ══")
     run_step_listing(progress)
     run_step_translations(progress)
+    run_step_localize_metadata(progress)
+    run_step_release_notes_gen(progress)
     run_step_release_notes(progress)
     # Data safety JSON
     data_safety_path = _DATA_DIR / "data-safety-form.json"
@@ -874,6 +984,7 @@ def run_full(progress: dict):
 
     # ── Phase 5: Assets ──
     print("\n══ PHASE 5: ASSETS ══")
+    run_step_icon_audit(progress)
     run_step_icon(progress)
     run_step_feature_graphic(progress)
 
@@ -947,6 +1058,12 @@ def run_full(progress: dict):
     _mark_step(progress, "postflight", "done" if code == 0 else "done",
                "Validation complete")
 
+    # Velocity snapshot (Play + ASC)
+    run_step_velocity(progress)
+
+    # A/B experiments summary
+    run_step_experiments_status(progress)
+
     # Final status
     print_status(progress)
 
@@ -982,19 +1099,25 @@ def main():
             "reviews": run_step_reviews,
             "seo_engine": run_step_seo_engine,
             "pipeline": run_step_pipeline,
+            "seo_merge": run_step_seo_merge,
             "per_kw_analysis": run_step_per_kw_analysis,
             "trends_manual": run_step_trends_manual,
             "listing": run_step_listing,
             "translations": run_step_translations,
+            "localize_metadata": run_step_localize_metadata,
+            "release_notes_gen": run_step_release_notes_gen,
             "release_notes": run_step_release_notes,
             "permissions": run_step_permissions,
             "build": run_step_build,
             "upload": run_step_upload,
             "push_listings": run_step_push_listings,
             "copy_helper": run_step_copy_helper,
+            "icon_audit": run_step_icon_audit,
             "icon": run_step_icon,
             "feature_graphic": run_step_feature_graphic,
             "postflight": lambda p: _mark_step(p, "postflight", "done"),
+            "velocity": run_step_velocity,
+            "experiments_status": run_step_experiments_status,
         }.get(args.step)
         if step_fn:
             step_fn(progress)

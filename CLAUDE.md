@@ -107,7 +107,16 @@ See `automation-tool-registry.md` (this directory) for the complete mapping of e
 - **Apple Developer Team ID:** NDV83KC5LC
 - **App Store Connect API Key ID:** 559DD92MBH
 - **App Store Connect Issuer ID:** 100d6ef8-7452-4aff-85a4-990158b60b3d
+- **App Store Connect Vendor #:** 93213066 (for sales/financial reports)
 - **P8 key location:** `~/.config/teamzlab/AuthKey_559DD92MBH.p8`
+- **Google Play reports Cloud Storage bucket:** `pubsite_prod_7194763656319643086`
+  - Installs: `gs://pubsite_prod_7194763656319643086/stats/installs/`
+  - Crashes: `gs://pubsite_prod_7194763656319643086/stats/crashes/`
+  - Ratings: `gs://pubsite_prod_7194763656319643086/stats/ratings/`
+  - Earnings: `gs://pubsite_prod_7194763656319643086/earnings/`
+- **Play Console service account JSON:** `~/.config/teamzlab/play-console-service-account.json`
+- **AdMob Publisher ID:** pub-7088022825081956
+- **AdMob OAuth token:** `~/.config/teamzlab/admob-token.json`
 
 ## Config
 

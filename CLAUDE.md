@@ -113,9 +113,174 @@ bash packages/team_mvp_kit/teamz-company-automation/sh/pre-release-verify.sh
 
 Auto-detects monetization model (ads-only, IAP, both, free) and adjusts checks accordingly.
 
+## ASO Playbook — Mistakes Claude Has Made (Don't Repeat)
+
+This section captures every pitfall learned during real shipping. Any new Teamz project using this kit inherits these rules automatically — don't re-learn them by repeating the mistakes.
+
+### Phase 1 — Understanding the app (before touching metadata)
+
+**Rule P1.1 — Audit native-vs-WebView BEFORE making architecture claims.** Don't call an app a "WebView wrapper" without counting Scaffold widgets, bottom-nav tabs, and `InAppWebView` usages. Apple 4.2 risk assessment depends on the actual ratio of native screens to WebView screens.
+
+```bash
+# Minimum audit before any claim:
+grep -rn "class.*extends.*StatefulWidget\|class.*extends.*StatelessWidget" lib/ | grep -iE "screen|widget" | wc -l
+grep -rn "InAppWebView\|WebView\|WebViewController" lib/
+cat lib/screens/main_navigation_screen.dart  # or similar — enumerate tabs
+```
+
+A 12-tab app with 11 native calculators + 1 WebView tab is NOT at 4.2 risk. Don't cause panic without evidence.
+
+**Rule P1.2 — Verify monetization claims from code, not assumption.**
+
+```bash
+# Ad SDK check:
+grep -rn "google_mobile_ads\|AdMob\|AppLovin" pubspec.yaml lib/ ios/ android/
+grep "SERVES_ADS\|USES_IDFA" .appstore-fastlane.env
+# IAP check:
+grep -rn "in_app_purchase\|purchases_flutter\|RevenueCat" pubspec.yaml lib/
+# Analytics/tracking:
+grep -rn "firebase_analytics\|firebase_crashlytics\|onesignal_flutter" pubspec.yaml
+```
+
+Before writing ANY metadata, populate `automation_data/deep-research-keywords.json` `_app_constraints` block:
+
+```json
+{
+  "_app_constraints": {
+    "monetization": "ad-supported / freemium / paid / subscription",
+    "forbidden_claims": ["no ads", "ad-free", ...],  // if AdMob ships
+    "allowed_claims": ["free", "no paywall", "offline", ...]
+  }
+}
+```
+
+### Phase 2 — Writing metadata text
+
+**Rule P2.1 — Translate IN-CHAT for all 39 Fastlane locales, don't use English fallback.** `aso-localize.py` without `--translate` copies en-US to all locales. That's a fallback, NOT ship-quality. Write a per-project `automation_data/localize_metadata.py` using the kit template (`py/aso/aso-localize-metadata-template.py`) with hand-translated tuples. Reference impl: `toss_app/automation_data/localize_metadata.py` (30 locales × 5 fields = 195 files, runs in 1 sec).
+
+**Rule P2.2 — Mirror Apple metadata to Play Console in the same step.** Apple uses `fastlane/metadata/{locale}/{name,subtitle,keywords,description,promotional_text,release_notes}.txt`. Play Console expects `android/app/src/main/play/listings/{locale}/{title,short-description,full-description}.txt`.
+
+Mapping:
+- Apple `name.txt` (≤30) → Play `title.txt` (≤30, identical)
+- Apple `subtitle.txt` (≤30) + `promotional_text.txt` (≤170) → combined → Play `short-description.txt` (≤80)
+- Apple `description.txt` (≤4000) → Play `full-description.txt` (≤4000, can be identical)
+- Apple `keywords.txt` (≤100) → Play has no keyword slot; Play indexes description for ranking
+- Apple `release_notes.txt` → Play `release-notes.txt` (when each new release ships)
+
+**Rule P2.3 — Strip Play-forbidden promotional words from Play title + short-description (NOT Apple).** Play rejects "Free/Gratis/Kostenlos/Best/#1/Top Rated/etc." with a "may not be promoted" warning. Apple is lenient. Apply locale-aware regex ONLY to Play files, leave Apple alone. See `feedback_play_no_promo_words_in_metadata` pattern.
+
+**Rule P2.4 — Never claim features the app doesn't have.** Apple 2.3.1 rejects. Before writing: audit monetization (Rule P1.2). If AdMob ships, NEVER write "No Ads" or equivalents in any of the 41 locales.
+
+### Phase 3 — App icon
+
+**Rule P3.1 — Use kit template, single concept, ask the user for BG color.** Template at `packages/team_mvp_kit/prompts/icon-prompt-template.md`. When user says "make icon prompt":
+1. Read the template FIRST (don't invent structure)
+2. ASK user for BG color (neon-on-dark `#12151A` / neon BG `#D9FE06` / light `#F4F5F5`) — don't default
+3. Inspect the existing `ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png` to match existing pattern unless user requests a pivot
+4. Write to `prompts/{app_snake}_icon_prompt.md`
+5. Single ICON CONCEPT (not A/B/C variants)
+
+**Rule P3.2 — Use TeamzLab design system colors from `design_system.dart`.** `#D9FE06` (neon green), `#12151A` (dark), `#1D1F25` (dark II), `#FFFFFF`, `#F4F5F5`, `#DDDDDD`. NEVER `#CDFF1A` chartreuse — that's wrong.
+
+**Rule P3.3 — After generating, audit + regenerate all platform sizes.** Run `py/aso/aso-icon-audit.py` then `dart run flutter_launcher_icons`. Delete stale files (e.g. `Icon-App-60x60@1x.png` at wrong dimensions — deprecated iOS 7+ slot). Sync Android `ic_launcher.png` across all mipmap densities so third-party SDKs referencing default names get the new icon.
+
+### Phase 4 — Screenshots
+
+**Rule P4.1 — Screenshot text contrast follows WCAG: pair BG with FG.** compose.py defaults `--text-color=white`. On bright BGs (`#D9FE06` neon, `#CDFF1A` chartreuse, pastels, any BG with luminance >0.35) pass `--text-color=black`. Also explicitly tell Nano Banana in the enhancement prompt: "Keep the BLACK headline text — BLACK, not white."
+
+**Rule P4.2 — Force iPhone 15 Pro device frame in Nano Banana prompts.** Default renders Android-looking phones. Apple may reject screenshots showing non-Apple devices. Add:
+
+> "CRITICAL: Device MUST be a photorealistic Apple iPhone 15 Pro in Natural Titanium — Dynamic Island pill-shaped cutout at top center, Apple titanium side rails with rounded-square volume buttons left and single power button right, Apple's exact corner radius. No Samsung, no Pixel, no generic Android. No logos on chassis."
+
+**Rule P4.3 — Forbid emoji/chart icons/sparkles + gradients/glows explicitly.** Nano Banana loves adding 📈🎯✨ and radial gradients. Always:
+
+> "ABSOLUTELY NO emoji, NO colored icons, NO chart icons, NO sparkles. Keep background solid [color] — no gradients, glows, radial patterns, or light effects."
+
+**Rule P4.4 — Populate ALL 5 Apple device-size folders.** Apple ASC silently shows OLD version screenshots in any empty slot. Must fill:
+- `fastlane/screenshots/{locale}/APP_IPHONE_55/` (1242×2208)
+- `fastlane/screenshots/{locale}/APP_IPHONE_65/` (1242×2688)
+- `fastlane/screenshots/{locale}/APP_IPHONE_67/` (1290×2796)
+- `fastlane/screenshots/{locale}/APP_IPAD_PRO_129/` (2048×2732)
+- `fastlane/screenshots/{locale}/APP_IPAD_PRO_3GEN_129/` (2048×2732)
+
+Use `py/aso/pad_resize.py` or the skill's padding script to derive the 3 missing sizes from the 6.7" + 12.9" canonical sets (zero API cost).
+
+**Rule P4.5 — Derive Android screenshots from iOS, not regenerate.** Play accepts iPhone-framed screenshots (suboptimal but fine). Pad iOS outputs to 1080×1920 (phone) + 1200×1920 (tablet) via `pad_resize.py` — zero API cost vs $2-3 for native Pixel regen. Deploy to `android/app/src/main/play/listings/en-US/graphics/{phone,tablet-10-inch}-screenshots/`.
+
+### Phase 5 — Pushing to stores
+
+**Rule P5.1 — fastlane deliver silently fails to attach screenshots. Verify via ASC API, fall back to direct Spaceship.** After `fastlane upload_screenshots` or `upload_all` says "Successfully uploaded", QUERY the API:
+
+```ruby
+# Ruby: check screenshots actually attached
+loc = version.get_app_store_version_localizations.find { |l| l.locale == "en-US" }
+sets = loc.get_app_screenshot_sets
+# If sets.size == 0 despite fastlane success — use py/aso/asc-screenshots-push.rb
+```
+
+If 0 sets attached, STOP retrying fastlane (it fails the same way). Use `py/aso/asc-screenshots-push.rb` (direct Spaceship, `wait_for_processing: true` per image).
+
+**Rule P5.2 — Push screenshots to ALL 39 Apple locales, not just en-US.** Apple does NOT auto-inherit across locales within the same version. Empty locale slot → falls back to PREVIOUS version's screenshots (stale). The kit script `asc-screenshots-push.rb` accepts `LOCALES=ALL` (default) or comma-list. Expect ~30-45 min for 39 locales × 30 screenshots with `wait_for_processing: true`. For Play, push to en-US only — Play auto-inherits to other locales.
+
+**Rule P5.3 — Apple Deliverfile `phone_number` must be E.164.** Never empty. Teamz default: `+447490356046`. Kit's `setup-appstore-fastlane.sh` pre-fills this. Empty string causes fastlane deliver to fail AFTER uploading metadata — wasted time.
+
+**Rule P5.4 — Apple needs a new binary to update the App Store icon; Play accepts direct icon push.** iOS 1024×1024 marketing icon is embedded in the IPA via AppIcon.appiconset. Must `flutter build ipa --release` + `fastlane upload_testflight` for the new icon to appear. Play has a separate 512×512 icon slot pushable via `androidpublisher` API.
+
+**Rule P5.5 — Release notes per locale use ASC `whatsNew` field (camelCase), not `whats_new`.** The `whats_new` key doesn't exist in the v1 API. Use `Spaceship::ConnectAPI.patch_app_store_version_localization(attributes: { whatsNew: text })`. The `aso-release-notes-gen.py` script generates the JSON — push it via the direct patch pattern in `toss_app/fastlane` as reference.
+
+### Phase 6 — Category & tags (HIGH-impact, often-forgotten)
+
+**Rule P6.1 — Realign category + tags on every positioning pivot.** Category is a top-3 ranking signal. A "Paycheck Calculator" app in "Utilities / Developer Tools" category gets ~zero discovery benefit from keyword work.
+
+Data-driven selection process:
+1. Read `deep-research-keywords.json` competitor table → which category houses the scale leaders for your positioning cluster?
+2. For money-calc apps: **Apple Primary=Finance, Secondary=Productivity**; **Play Category=Finance**
+3. Avoid saturated categories: Utilities (browsers/VPNs dominate), generic Productivity (off-chart) — proven graveyards per real App Store research.
+
+**Rule P6.2 — Play tags cannot be set via API. Guide the user through Play Console UI.** `androidpublisher` v3 exposes listings + graphics + AAB but NOT category or tags. Apple primary/secondary category also UI-only.
+
+For each project, maintain `android/app/src/main/play/STORE_CONFIG.md` as a versioned reference of:
+- Play category + 5 tags (per release)
+- Apple primary + secondary category (per release)
+- Age rating answers + justification
+- Data source links to `deep-research-keywords.json` / `aso-seo-master.csv`
+
+Reference implementation: `toss_app/android/app/src/main/play/STORE_CONFIG.md`.
+
+**Rule P6.3 — Pick Play tags by data-driven cluster rank, not intuition.** For each tag in the Finance category, match against:
+- Bing exact-match volume from `keyword-volume-latest.json`
+- ChatGPT difficulty + gap from `deep-research-keywords.json`
+- Peer group reality (Mobile Payment tag pulls Venmo/PayPal peers — wrong for calculator apps)
+
+Prefer tags that match your app's actual tools. For money-calc + freelance apps: `Loan, Personal finance, Calculator, Investment, Business` proved optimal (1 Tools tag + 3 Finance + 1 Business).
+
+### Phase 7 — App Privacy (Apple) — often-forgotten blocker
+
+**Rule P7.1 — Declare ALL data types matching SDKs in the binary, don't under-declare.** Apple scans the IPA for SDKs and rejects if App Privacy declaration doesn't match. Default data types for Teamz apps with AdMob + Firebase + OneSignal:
+
+| Data type (ASC) | Why | Used for tracking? | Linked to user? |
+|---|---|---|---|
+| Identifiers → Device ID | AdMob uses IDFA | **YES** | No |
+| Usage Data → Product Interaction | Firebase Analytics events | No | No |
+| Usage Data → Advertising Data | AdMob logs impressions/clicks | **YES** | No |
+| Diagnostics → Crash Data | Crashlytics | No | No |
+| Diagnostics → Performance Data | Crashlytics performance | No | No |
+
+Guide the user through ASC → App Privacy → Edit Data Types. This is UI-only, no API.
+
+**Rule P7.2 — Age rating: Advertising=YES if AdMob ships. All other questions NO for calculator apps.** Final rating: 4+. Guide user through the 7-step questionnaire with explicit answer per question.
+
+### Phase 8 — Post-publication monitoring
+
+**Rule P8.1 — Run `aso-velocity.py --history` weekly.** Pulls Play Reporting API + ASC Sales & Trends. Appends to `aso-velocity-history.csv` for trend charts. No new auth needed — uses existing Play service account + ASC P8 key.
+
+**Rule P8.2 — Register A/B experiments before launch via `aso-experiments.py add ...`.** Icon variants, subtitle variants, feature-graphic variants. Snapshot weekly via `snapshot` subcommand.
+
+---
+
 ## Full Registry
 
-See `automation-tool-registry.md` (this directory) for the complete mapping of every task to every script (48 scripts, 7 categories).
+See `automation-tool-registry.md` (this directory) for the complete mapping of every task to every script (19 ASO + 18 SEO + other categories).
 
 ## Output Locations
 

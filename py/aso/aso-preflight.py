@@ -457,6 +457,88 @@ def check_no_fabricated_scores() -> list[dict]:
 
 # ── Report ────────────────────────────────────────────────────────────────────
 
+def check_misleading_claims() -> list[dict]:
+    """Block listings that claim features the app doesn't have.
+
+    Reads `_app_constraints.forbidden_claims` from deep-research-keywords.json
+    and scans every listing/metadata file for those strings. Apple 2.3.1 and
+    Google deceptive-behavior policy reject misleading metadata."""
+    results = []
+    constraints_path = _DATA_DIR / "deep-research-keywords.json"
+    if not constraints_path.exists():
+        results.append({
+            "check": "App constraints declared",
+            "status": "WARN",
+            "detail": "deep-research-keywords.json missing — cannot verify metadata claims. "
+                      "Add `_app_constraints.forbidden_claims` (e.g. ['no ads', 'ad-free']) "
+                      "based on the app's actual ad/IAP/auth code before publishing.",
+        })
+        return results
+    try:
+        constraints = json.loads(constraints_path.read_text())
+    except (json.JSONDecodeError, OSError) as e:
+        results.append({"check": "App constraints declared", "status": "FAIL",
+                        "detail": f"Cannot parse deep-research-keywords.json: {e}"})
+        return results
+
+    forbidden = (constraints.get("_app_constraints", {}) or {}).get("forbidden_claims", [])
+    if not forbidden:
+        results.append({
+            "check": "Forbidden claims list populated",
+            "status": "WARN",
+            "detail": "_app_constraints.forbidden_claims is empty. "
+                      "Audit the app: if it ships ads, add 'no ads'/'ad-free'; "
+                      "if it has IAP, add 'no subscription'; etc.",
+        })
+        return results
+
+    results.append({"check": f"Forbidden claims declared ({len(forbidden)})",
+                    "status": "PASS", "detail": ", ".join(forbidden[:5])})
+
+    # Scan every metadata source for forbidden phrases
+    sources = []
+    sources.extend(_DATA_DIR.glob("play-listing-*.json"))
+    sources.extend(_DATA_DIR.glob("play-store-*-locales.json"))
+    sources.extend(_DATA_DIR.glob("release-notes-v*.json"))
+
+    project_root = Path(_CFG.get("host_site_root", _DATA_DIR.parent))
+    fastlane_md = project_root / "fastlane" / "metadata"
+    if fastlane_md.exists():
+        for ext in ("name.txt", "subtitle.txt", "description.txt",
+                    "promotional_text.txt", "keywords.txt"):
+            sources.extend(fastlane_md.glob(f"*/{ext}"))
+
+    violations = []
+    for src in sources:
+        try:
+            text = src.read_text(encoding="utf-8", errors="replace").lower()
+        except OSError:
+            continue
+        for phrase in forbidden:
+            if phrase.lower() in text:
+                violations.append((str(src.name if src.parent.name in ("automation_data",)
+                                       else f"{src.parent.name}/{src.name}"), phrase))
+
+    if violations:
+        for path, phrase in violations[:10]:
+            results.append({
+                "check": f"Forbidden claim '{phrase}' in {path}",
+                "status": "FAIL",
+                "detail": f"Apple 2.3.1 / Google deceptive-behavior rejection risk. "
+                          f"Remove '{phrase}' from {path}.",
+            })
+        if len(violations) > 10:
+            results.append({"check": "More violations exist", "status": "FAIL",
+                            "detail": f"+{len(violations)-10} more — fix all before publishing"})
+    else:
+        results.append({
+            "check": f"No forbidden claims in {len(sources)} metadata file(s)",
+            "status": "PASS",
+            "detail": "All scanned files are clean.",
+        })
+    return results
+
+
 def run_checks(mode: str) -> list[dict]:
     """Run all checks for the given mode."""
     all_results = []
@@ -474,6 +556,7 @@ def run_checks(mode: str) -> list[dict]:
         all_results.append(("CHARACTER LIMITS", check_char_limits()))
         all_results.append(("RELEASE NOTES", check_release_notes()))
         all_results.append(("KEYWORD COVERAGE", check_keyword_coverage()))
+        all_results.append(("MISLEADING CLAIMS (Apple 2.3.1)", check_misleading_claims()))
 
     return all_results
 

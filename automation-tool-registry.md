@@ -47,6 +47,7 @@
 | **Auto-generate release notes from git** | `py/aso/aso-release-notes-gen.py` | Reads git log since last tag → `release-notes-v{ver}.json`; `--translate` uses `claude` CLI for 35 locales |
 | **Localize Fastlane iOS metadata (all 40 locales)** | `py/aso/aso-localize.py` | Populates empty `fastlane/metadata/*/keywords.txt\|subtitle.txt\|name.txt\|promotional_text.txt` via locale-aware iTunes autocomplete; `--translate` for LLM copy |
 | **ASO+SEO master keyword merge** | `py/aso/aso-seo-merge.py` | Unifies ASO score + SEO volume + web rank + Deep Research → `aso-seo-master.csv` with `combined_score` (fulfills the "combine all sources" global rule) |
+| **In-app tool ordering priority** | `py/aso/aso-priority-export.py` | Derives `tools_priority.json` from clusters + master CSV. Mirrors into `assets/data/tools_priority.json` when the host app has a Flutter assets folder, so the bundled fallback stays fresh on release builds. App fetches the remote copy at launch (GitHub raw) and boosts tools matching current ASO positioning to the top of list/favorites/hub views — keeps store listing language and in-app ordering in lock-step across ASO pivots. |
 | **A/B experiment tracker** | `py/aso/aso-experiments.py add\|snapshot\|end\|list\|report` | Icon/screenshot/subtitle/title variants with CVR tracking; writes `aso-experiments.json` + `aso-experiments-report.md` |
 | **App icon audit (contrast, size, alpha, fill)** | `py/aso/aso-icon-audit.py` | Stdlib PNG parser; catches iOS alpha rejection, low corner↔center contrast, undersized icons |
 | **Download velocity + install trend (Play + ASC)** | `py/aso/aso-velocity.py` | Uses existing Play service account + ASC P8 key (no new setup); writes `aso-velocity-latest.json` + history CSV + markdown report |
@@ -64,6 +65,7 @@
 3.  py/aso/aso-competitors.py --find/--matrix              → competitive landscape
 4.  py/aso/aso-keyword-pipeline.py                         → produce scored CSVs (integrates step 2 data)
 5.  py/aso/aso-seo-merge.py                                → UNIFY ASO + SEO volume + web rank → aso-seo-master.csv (the ONE source of truth)
+5b. py/aso/aso-priority-export.py                          → Export tools_priority.json so the host app's list order mirrors the current positioning (keywords + hub boosts)
 6.  py/aso/aso-metadata.py --audit/--optimize              → audit current listing
 7.  Google Trends (browser) — compare top 5 keywords       → confirm relative demand (script can't — 429 rate limited)
 8.  py/aso/aso-localize.py                                 → fill all 40 Fastlane locales' keywords/subtitle/name from master

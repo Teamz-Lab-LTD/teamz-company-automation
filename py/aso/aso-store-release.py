@@ -105,6 +105,7 @@ ALL_STEPS = [
     ("seo_engine",      "SEO keyword engine ASO suggest via seo-keyword-engine.py"),
     ("pipeline",        "Keyword pipeline (scored CSVs with volume) via aso-keyword-pipeline.py"),
     ("seo_merge",       "ASO+SEO master keyword merge (aso-seo-master.csv) via aso-seo-merge.py"),
+    ("priority_export", "Export tools_priority.json (in-app ordering boost) via aso-priority-export.py"),
     ("per_kw_analysis", "Per-keyword competitive analysis (iTunes search per keyword)"),
 
     # Phase 2: Manual data (user does in browser)
@@ -148,7 +149,7 @@ ALL_STEPS = [
 
 AUTOMATED_STEPS = {
     "preflight", "keywords", "volume", "competitors", "metadata_audit",
-    "reviews", "seo_engine", "pipeline", "seo_merge", "per_kw_analysis",
+    "reviews", "seo_engine", "pipeline", "seo_merge", "priority_export", "per_kw_analysis",
     "permissions", "build", "upload", "push_listings", "store_settings",
     "copy_helper", "icon_audit", "icon", "feature_graphic", "postflight",
     "listing", "translations", "localize_metadata",
@@ -664,6 +665,25 @@ def run_step_seo_merge(progress: dict):
         _mark_step(progress, "seo_merge", "failed", "aso-seo-master.csv not produced")
 
 
+def run_step_priority_export(progress: dict):
+    """Export tools_priority.json so the app can boost ASO-aligned tools to top."""
+    print("\n[priority_export] Exporting tools_priority.json...")
+    code, output = _run_script("aso/aso-priority-export.py", [], timeout=30)
+    print(output[-500:] if len(output) > 500 else output)
+    out = _DATA_DIR / "tools_priority.json"
+    if out.exists():
+        try:
+            data = json.loads(out.read_text(encoding="utf-8"))
+            kw = len(data.get("keywords", []))
+            hb = len(data.get("hub_boosts", {}))
+            _mark_step(progress, "priority_export", "done",
+                       f"{kw} keywords, {hb} hub boosts → {out.name}")
+        except (OSError, json.JSONDecodeError):
+            _mark_step(progress, "priority_export", "done", out.name)
+    else:
+        _mark_step(progress, "priority_export", "failed", "tools_priority.json not produced")
+
+
 def run_step_localize_metadata(progress: dict):
     """Populate Fastlane iOS metadata for all locales."""
     print("\n[localize_metadata] Localizing Fastlane iOS metadata...")
@@ -945,6 +965,7 @@ def run_full(progress: dict):
     run_step_seo_engine(progress)
     run_step_pipeline(progress)
     run_step_seo_merge(progress)
+    run_step_priority_export(progress)
     run_step_per_kw_analysis(progress)
 
     # ── Phase 2: Manual Data ──
@@ -1100,6 +1121,7 @@ def main():
             "seo_engine": run_step_seo_engine,
             "pipeline": run_step_pipeline,
             "seo_merge": run_step_seo_merge,
+            "priority_export": run_step_priority_export,
             "per_kw_analysis": run_step_per_kw_analysis,
             "trends_manual": run_step_trends_manual,
             "listing": run_step_listing,

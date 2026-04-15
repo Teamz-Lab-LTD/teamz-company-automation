@@ -259,7 +259,26 @@ Files also exist per-locale for fastlane/supply auto-discovery:
 
 Play's Managed Publishing enforces photo/video permissions declaration review before accepting new AAB commits via API. If your app declares `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO`, expect a blocker on first release after policy activation (late 2024): submit declaration → wait for Google review (hours-days) → retry AAB commit. Manual upload via Play Console UI may succeed even when API rejects.
 
-### Phase 6 — Category & tags (HIGH-impact, often-forgotten)
+**Rule P5.7 — Keep in-app list ordering in lock-step with store positioning via `aso-priority-export.py`.** When the store listing says "Paycheck & Freelance Calculator", the first tools a user sees after install MUST be paycheck/freelance/mortgage/tax/BMI — not alphabetical A-for-Age. Otherwise install→open→confused→uninstall tanks retention and makes the listing feel misleading (soft 2.3.1 risk).
+
+The kit ships `py/aso/aso-priority-export.py` which reads the project's `deep-research-keywords.json` `_recommended_clusters` (primary/secondary/tertiary) and the top-N rows of `aso-seo-master.csv`, then writes `tools_priority.json`:
+
+```json
+{
+  "version": 1,
+  "keywords": [{"term": "paycheck calculator", "weight": 100}, ...],
+  "hub_boosts": {"freelance": 60, "money": 50, ...}
+}
+```
+
+Wired into the orchestrator as step `priority_export` (runs automatically after `seo_merge`). The script also mirrors the file into the host app's `assets/data/tools_priority.json` if the folder exists, so the bundled fallback ships fresh on each release build.
+
+**Host app integration (one-time per project):**
+1. Add `assets/data/` to `pubspec.yaml` `assets:` list
+2. Create a priority loader mirroring `toss_app/lib/common/tool_priority.dart` — fetches remote JSON (GitHub raw from project repo), falls back to bundled asset, exposes `score(tool)` + `sortByPriority(list)`
+3. Call `ToolPriority.load()` alongside registry load; sort list/hub-grid by `score desc, title asc`
+
+Zero manual work per ASO pivot: user edits clusters → `aso-store-release.py` runs → script regenerates JSON (remote + bundled) → next app launch reflects new order.
 
 **Rule P6.1 — Realign category + tags on every positioning pivot.** Category is a top-3 ranking signal. A "Paycheck Calculator" app in "Utilities / Developer Tools" category gets ~zero discovery benefit from keyword work.
 

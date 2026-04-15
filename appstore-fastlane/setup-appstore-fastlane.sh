@@ -166,7 +166,7 @@ if [ ! -f "${DELIVERFILE}" ]; then
 app_review_information(
   first_name: "Teamz",
   last_name: "Lab",
-  phone_number: "",
+  phone_number: "+447490356046",  # MUST be E.164 (+country code) — Apple rejects empty/malformed
   email_address: "teamz.lab.contact@gmail.com"
 )
 DELIVER_EOF

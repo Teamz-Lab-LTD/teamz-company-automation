@@ -1,0 +1,15 @@
+{
+  "steps": {
+    "keywords": {
+      "status": "failed",
+      "detail": "No TEAMZ_ASO_KEYWORDS in .teamz-automation.env",
+      "timestamp": "2026-04-15T00:11:05.273478+00:00"
+    },
+    "competitors": {
+      "status": "done",
+      "detail": "0 finds + 3 matrices + keyword extraction",
+      "timestamp": "2026-04-15T00:11:09.538658+00:00"
+    }
+  },
+  "started_at": null
+}

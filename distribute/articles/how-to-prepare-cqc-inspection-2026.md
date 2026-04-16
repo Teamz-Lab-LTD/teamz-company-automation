@@ -58,7 +58,7 @@ All mapped to the 5 key questions: Safe, Effective, Caring, Responsive, Well-led
 
 I built a [free CQC Inspection Checklist](https://tool.teamzlab.com/compliance/cqc-inspection-checklist/) that lets you tick off each of these 21 categories and see your readiness score instantly. No signup needed.
 
-For ongoing tracking (not just a one-off check), [AlwaysReady Care](https://always-ready-care.web.app/) monitors your compliance continuously and alerts you to gaps before an inspector finds them.
+For ongoing tracking (not just a one-off check), [AlwaysReady Care](https://tool.teamzlab.com/apps/always-ready-care/) monitors your compliance continuously and alerts you to gaps before an inspector finds them.
 
 ## The #1 Mistake Care Homes Make
 

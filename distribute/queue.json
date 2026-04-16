@@ -73,7 +73,7 @@
         "language": "en"
       },
       "queued_at": "2026-04-10T19:01:36.472867+00:00",
-      "status": "pending"
+      "status": "done"
     },
     {
       "platform": "wordpress",
@@ -114,11 +114,11 @@
         "webdev",
         "showdev"
       ],
-      "canonical_url": "https://always-ready-care.web.app/",
+      "canonical_url": "https://tool.teamzlab.com/apps/always-ready-care/",
       "meta": {
         "slug": "built-care-home-compliance-app-2-weeks",
         "tags": "javascript, firebase, pwa, healthcare, startup, webdev, showdev",
-        "canonical_url": "https://always-ready-care.web.app/",
+        "canonical_url": "https://tool.teamzlab.com/apps/always-ready-care/",
         "og_image": "https://tool.teamzlab.com/og-images/compliance.png",
         "language": "en"
       },
@@ -139,16 +139,16 @@
         "webdev",
         "showdev"
       ],
-      "canonical_url": "https://always-ready-care.web.app/",
+      "canonical_url": "https://tool.teamzlab.com/apps/always-ready-care/",
       "meta": {
         "slug": "built-care-home-compliance-app-2-weeks",
         "tags": "javascript, firebase, pwa, healthcare, startup, webdev, showdev",
-        "canonical_url": "https://always-ready-care.web.app/",
+        "canonical_url": "https://tool.teamzlab.com/apps/always-ready-care/",
         "og_image": "https://tool.teamzlab.com/og-images/compliance.png",
         "language": "en"
       },
       "queued_at": "2026-04-10T19:01:36.567001+00:00",
-      "status": "pending"
+      "status": "done"
     },
     {
       "platform": "devto",
@@ -208,7 +208,70 @@
       "canonical_url": "",
       "meta": {},
       "queued_at": "2026-04-14T10:47:32.652782+00:00",
+      "status": "done"
+    },
+    {
+      "platform": "devto",
+      "title": "Japan Worker Tax Calculators 2026 — Nenmatsu-Chousei, Zangyou-Dai, Ikuji-Kyuugyou",
+      "slug": "japan-worker-tax-calculators-2026",
+      "filepath": "scripts/distribute/articles/japan-worker-tax-calculators-2026.md",
+      "tags": [
+        "japan",
+        "tax",
+        "calculator",
+        "salary",
+        "parental-leave"
+      ],
+      "canonical_url": "https://tool.teamzlab.com/jp/",
+      "meta": {
+        "slug": "japan-worker-tax-calculators-2026",
+        "tags": "japan, tax, calculator, salary, parental-leave",
+        "canonical_url": "https://tool.teamzlab.com/jp/"
+      },
+      "queued_at": "2026-04-15T22:28:11.637104+00:00",
       "status": "pending"
+    },
+    {
+      "platform": "hashnode",
+      "title": "Japan Worker Tax Calculators 2026 — Nenmatsu-Chousei, Zangyou-Dai, Ikuji-Kyuugyou",
+      "slug": "japan-worker-tax-calculators-2026",
+      "filepath": "scripts/distribute/articles/japan-worker-tax-calculators-2026.md",
+      "tags": [
+        "japan",
+        "tax",
+        "calculator",
+        "salary",
+        "parental-leave"
+      ],
+      "canonical_url": "https://tool.teamzlab.com/jp/",
+      "meta": {
+        "slug": "japan-worker-tax-calculators-2026",
+        "tags": "japan, tax, calculator, salary, parental-leave",
+        "canonical_url": "https://tool.teamzlab.com/jp/"
+      },
+      "queued_at": "2026-04-15T22:28:11.637604+00:00",
+      "status": "pending"
+    },
+    {
+      "platform": "tumblr",
+      "title": "Japan Worker Tax Calculators 2026 — Nenmatsu-Chousei, Zangyou-Dai, Ikuji-Kyuugyou",
+      "slug": "japan-worker-tax-calculators-2026",
+      "filepath": "scripts/distribute/articles/japan-worker-tax-calculators-2026.md",
+      "tags": [
+        "japan",
+        "tax",
+        "calculator",
+        "salary",
+        "parental-leave"
+      ],
+      "canonical_url": "https://tool.teamzlab.com/jp/",
+      "meta": {
+        "slug": "japan-worker-tax-calculators-2026",
+        "tags": "japan, tax, calculator, salary, parental-leave",
+        "canonical_url": "https://tool.teamzlab.com/jp/"
+      },
+      "queued_at": "2026-04-15T22:28:23.085237+00:00",
+      "status": "error"
     }
   ]
 }

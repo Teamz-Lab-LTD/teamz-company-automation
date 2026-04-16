@@ -1,7 +1,7 @@
 ---
 slug: built-care-home-compliance-app-2-weeks
 tags: javascript, firebase, pwa, healthcare, startup, webdev, showdev
-canonical_url: https://always-ready-care.web.app/
+canonical_url: https://tool.teamzlab.com/apps/always-ready-care/
 og_image: https://tool.teamzlab.com/og-images/compliance.png
 language: en
 ---
@@ -18,7 +18,7 @@ Nobody offers a lightweight evidence-only layer that works alongside existing so
 
 **AlwaysReady Care** — a PWA that does one thing: compliance evidence capture, review, and export.
 
-**Live:** [always-ready-care.web.app](https://always-ready-care.web.app/)
+**Live:** [tool.teamzlab.com/apps/always-ready-care/](https://tool.teamzlab.com/apps/always-ready-care/)
 
 ### Features
 - 12 evidence templates (medication, personal care, safeguarding, incidents, etc.)
@@ -104,7 +104,7 @@ All leveraging an existing tool site with 2,100+ indexed pages and established d
 
 ## Try It
 
-- **App:** [always-ready-care.web.app](https://always-ready-care.web.app/)
+- **App:** [tool.teamzlab.com/apps/always-ready-care/](https://tool.teamzlab.com/apps/always-ready-care/)
 - **Free tools:** [CQC Checklist](https://tool.teamzlab.com/compliance/cqc-inspection-checklist/) | [Compliance Score](https://tool.teamzlab.com/compliance/care-home-compliance-score/) | [Readiness Quiz](https://tool.teamzlab.com/compliance/cqc-readiness-quiz/)
 
 If you work in UK social care or know someone who does, I'd love feedback.

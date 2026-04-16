@@ -36,7 +36,7 @@ These tools help you check your readiness at a point in time. But CQC compliance
 - Managers seeing compliance gaps **before** an inspector finds them
 - Generating an inspection pack in **minutes**, not days
 
-That's why I also built [AlwaysReady Care](https://always-ready-care.web.app/) — a free compliance evidence layer that sits on top of whatever care planning system you already use (PCS, Nourish, Log my Care, etc.). Carers record evidence in 60 seconds from their phone. AI structures the notes. Managers see a live readiness score across 21 CQC categories.
+That's why I also built [AlwaysReady Care](https://tool.teamzlab.com/apps/always-ready-care/) — a free compliance evidence layer that sits on top of whatever care planning system you already use (PCS, Nourish, Log my Care, etc.). Carers record evidence in 60 seconds from their phone. AI structures the notes. Managers see a live readiness score across 21 CQC categories.
 
 ## Why I Built This
 

@@ -1,6 +1,6 @@
 {
   "generated": "2026-04-14T04:20:00",
-  "count": 3,
+  "count": 6,
   "batch": "high-velocity-2026-04",
   "plans": [
     {
@@ -16,7 +16,7 @@
           "url": "tool.teamzlab.com/eu/csrd/scope-1-2-calculator-sme/",
           "audioFile": "audio/beat2.mp3",
           "themeIndex": 2,
-          "ctaText": "Try free \u2192",
+          "ctaText": "Try free →",
           "ctaBadge": "NO SIGNUP",
           "brandName": "tool.teamzlab.com"
         }
@@ -24,12 +24,28 @@
       "youtube": {
         "title": "Free CSRD Scope 1+2 Calculator — EU SMEs, No Signup",
         "description": "EU SMEs under CSRD wave 2 need Scope 1+2 emissions reporting by 2026. Enterprise tools cost €10-30K/year. I built a free one.\n\nTry it FREE: https://tool.teamzlab.com/eu/csrd/scope-1-2-calculator-sme/\n\n✓ DEFRA 2026 + IEA 2025 factors\n✓ All 27 EU countries\n✓ Location + market-based methods\n✓ PDF export for your sustainability report\n✓ Year-over-year comparison\n✓ 100% private, runs in your browser\n\nCompanion tools:\n• vSME Report Generator: https://tool.teamzlab.com/eu/csrd/vsme-report-generator/\n• EU Grid Carbon Factor Lookup: https://tool.teamzlab.com/eu/csrd/carbon-factor-by-country/\n\nNo signup. No ads collecting your data. 100% free.\n\n#CSRD #ESG #EU #sustainability #carbonfootprint #SME",
-        "tags": ["csrd", "scope 1 2 calculator", "eu sme sustainability", "esg reporting free", "carbon footprint calculator", "vsme generator", "efrag", "defra emissions factors", "iea grid carbon", "csrd wave 2"],
+        "tags": [
+          "csrd",
+          "scope 1 2 calculator",
+          "eu sme sustainability",
+          "esg reporting free",
+          "carbon footprint calculator",
+          "vsme generator",
+          "efrag",
+          "defra emissions factors",
+          "iea grid carbon",
+          "csrd wave 2"
+        ],
         "categoryId": 28,
         "privacy": "public",
         "madeForKids": false,
         "defaultLanguage": "en",
-        "hashtags": ["#CSRD", "#ESG", "#sustainability", "#shorts"]
+        "hashtags": [
+          "#CSRD",
+          "#ESG",
+          "#sustainability",
+          "#shorts"
+        ]
       },
       "tiktok": {
         "caption": "EU SMEs: CSRD tools cost 10K/year. This one is free 🌱\n\ntool.teamzlab.com/eu/csrd/scope-1-2-calculator-sme/\n\n#CSRD #ESG #SME #sustainability #EU #carbonfootprint"
@@ -55,7 +71,7 @@
           "url": "tool.teamzlab.com/us/tcja-bracket-2027/",
           "audioFile": "audio/beat4.mp3",
           "themeIndex": 0,
-          "ctaText": "See the gap \u2192",
+          "ctaText": "See the gap →",
           "ctaBadge": "FREE",
           "brandName": "tool.teamzlab.com"
         }
@@ -63,12 +79,28 @@
       "youtube": {
         "title": "Your 2027 Taxes Are Going UP — Free TCJA Sunset Calculator",
         "description": "TCJA sunsets December 31, 2026. Your tax brackets revert. Your standard deduction halves. I built a free calculator that shows your exact 2026 vs 2027 dollar impact.\n\nTry it FREE: https://tool.teamzlab.com/us/tcja-bracket-2027/\n\n✓ 2026 vs 2027 brackets side-by-side\n✓ All 4 filing statuses\n✓ Standard deduction reversion shown\n✓ Shareable result card for social\n✓ 100% private, no signup\n\nWhat's changing on Jan 1, 2027:\n• Brackets: 10/12/22/24/32/35/37 → 10/15/25/28/33/35/39.6\n• Standard deduction: MFJ $30K → $16.5K\n• Estate exemption halves (~$13.9M → ~$7M)\n• Pass-through 20% QBI deduction expires\n\nPlanning opportunities (consult a CPA): Roth conversions, income acceleration into 2026, gifting strategies.\n\nNot tax advice. Consult a qualified tax pro.\n\n#TCJA #taxes #US #2027 #taxplanning #finance",
-        "tags": ["tcja sunset", "2027 tax brackets", "tax calculator", "tax cuts jobs act", "us taxes 2027", "tax planning", "standard deduction 2027", "estate tax 2027", "qbi deduction expiring", "tax reversion"],
+        "tags": [
+          "tcja sunset",
+          "2027 tax brackets",
+          "tax calculator",
+          "tax cuts jobs act",
+          "us taxes 2027",
+          "tax planning",
+          "standard deduction 2027",
+          "estate tax 2027",
+          "qbi deduction expiring",
+          "tax reversion"
+        ],
         "categoryId": 25,
         "privacy": "public",
         "madeForKids": false,
         "defaultLanguage": "en",
-        "hashtags": ["#TCJA", "#taxes", "#finance", "#shorts"]
+        "hashtags": [
+          "#TCJA",
+          "#taxes",
+          "#finance",
+          "#shorts"
+        ]
       },
       "tiktok": {
         "caption": "Your 2027 taxes are going UP. TCJA sunsets Dec 31, 2026.\n\nFree calculator shows your exact 2026 vs 2027 dollar impact 💰\n\ntool.teamzlab.com/us/tcja-bracket-2027/\n\n#TCJA #taxes #2027 #finance #taxplanning #fyp"
@@ -94,7 +126,7 @@
           "url": "tool.teamzlab.com/longevity/bio-vs-chrono-age-gap/",
           "audioFile": "audio/beat3.mp3",
           "themeIndex": 4,
-          "ctaText": "Find out \u2192",
+          "ctaText": "Find out →",
           "ctaBadge": "SCIENCE-BASED",
           "brandName": "tool.teamzlab.com"
         }
@@ -102,12 +134,28 @@
       "youtube": {
         "title": "Your Body Has Two Ages — Free PhenoAge Calculator (Levine 2018)",
         "description": "Your chrono age is on your birth certificate. Your biological age is in your blood. The Levine PhenoAge formula (Aging US 2018, PMID 29676998) predicts mortality better than chrono age alone.\n\nTry it FREE: https://tool.teamzlab.com/longevity/bio-vs-chrono-age-gap/\n\n✓ 9 biomarkers from a standard blood panel (CBC + CMP + CRP)\n✓ Peer-reviewed formula from NHANES data\n✓ Bio vs chrono age gap visualization\n✓ 10-year mortality ratio estimate\n✓ AI-personalized interventions (runs locally)\n✓ Pinterest-ready share card\n✓ 100% private — blood data never leaves your browser\n\n3 interventions that actually move PhenoAge:\n• Zone 2 cardio (3-4 hrs/week)\n• Protein 1.6g/kg bodyweight\n• 7-8h consistent sleep\n\nEducational tool only. Not a medical device. Not diagnostic. Consult a licensed clinician.\n\n#longevity #phenoage #biohacking #biologicalage #health",
-        "tags": ["phenoage calculator", "biological age test", "levine phenoage", "longevity", "biohacking", "bryan johnson", "peter attia", "biomarkers", "function health", "insidetracker"],
+        "tags": [
+          "phenoage calculator",
+          "biological age test",
+          "levine phenoage",
+          "longevity",
+          "biohacking",
+          "bryan johnson",
+          "peter attia",
+          "biomarkers",
+          "function health",
+          "insidetracker"
+        ],
         "categoryId": 26,
         "privacy": "public",
         "madeForKids": false,
         "defaultLanguage": "en",
-        "hashtags": ["#longevity", "#biohacking", "#PhenoAge", "#shorts"]
+        "hashtags": [
+          "#longevity",
+          "#biohacking",
+          "#PhenoAge",
+          "#shorts"
+        ]
       },
       "tiktok": {
         "caption": "Your body has TWO ages. Your blood tells the real one.\n\nFree PhenoAge calculator — Levine 2018 formula, 9 biomarkers, runs in your browser.\n\ntool.teamzlab.com/longevity/bio-vs-chrono-age-gap/\n\nNot medical advice. #longevity #biohacking #phenoage #peterattia"
@@ -119,6 +167,172 @@
       "hub": "longevity",
       "hookStyle": "curiosity",
       "series": "high-velocity-2026-04"
+    },
+    {
+      "id": "prep-emergency-preparedness-score",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "You think you're prepared. Here's a 2-minute test that says otherwise.",
+          "title": "Free Emergency Preparedness Score",
+          "description": "30 FEMA-aligned questions across 7 categories. Get a 0-100 score plus a ranked gap list in 2 minutes.",
+          "url": "tool.teamzlab.com/prep/emergency-preparedness-score/",
+          "audioFile": "audio/beat4.mp3",
+          "themeIndex": 3,
+          "ctaText": "Get your score →",
+          "ctaBadge": "2 MINUTES",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "Free Emergency Preparedness Score — Rate Your Family in 2 Minutes",
+        "description": "FEMA says every household needs 72 hours of self-sufficiency. Red Cross pushes it to two weeks. Most families are at zero — but can't self-assess because \"be prepared\" is too vague.\n\nI built a free scoring tool: 30 weighted questions across 7 categories (water, food, shelter, first aid, communication, documents, evacuation). You get a 0-100 score plus a ranked list of the exact gaps to close first.\n\nTry it FREE: https://tool.teamzlab.com/prep/emergency-preparedness-score/\n\n✓ FEMA + Red Cross aligned scoring\n✓ Critical items weigh 4 points, important items 2, bonus 1\n✓ Zero-category penalty (one gap hurts more than many small ones)\n✓ Shareable result card\n✓ 100% private — your answers never leave your browser\n✓ No signup, no email, no tracking\n\nCompanion tools:\n• Prep Pantry Tracker: https://tool.teamzlab.com/prep/prep-pantry-tracker/\n• 30-Day Prep Challenge: https://tool.teamzlab.com/prep/30-day-prep-challenge/\n\nNot life-safety advice. Complement with a real family communication plan and local emergency services.\n\n#emergencyprep #preparedness #FEMA #disasterprep #shorts",
+        "tags": [
+          "emergency preparedness score",
+          "disaster readiness quiz",
+          "how prepared am i",
+          "prep score",
+          "fema ready score",
+          "emergency preparedness test",
+          "disaster prep quiz",
+          "family preparedness",
+          "72 hour kit score",
+          "emergency kit score"
+        ],
+        "categoryId": 26,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "en",
+        "hashtags": [
+          "#emergencyprep",
+          "#preparedness",
+          "#disasterprep",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "You think you're prepared? Here's a free 2-min test that says otherwise.\n\n30 FEMA-aligned questions across 7 categories. Get your readiness score + priority gap list.\n\ntool.teamzlab.com/prep/emergency-preparedness-score/\n\n#emergencyprep #preparedness #disasterprep #prepper #FEMA #fyp"
+      },
+      "instagram": {
+        "caption": "FEMA recommends every household hold 72 hours of self-sufficiency. Red Cross says two weeks. Most families are at zero — but can't self-assess because \"be prepared\" is too vague.\n\nI built a free scoring tool: 30 weighted questions across 7 categories. Get a 0-100 score plus a ranked gap list in 2 minutes.\n\n100% private. No signup. Your answers never leave your browser.\n\nLink in bio.\n\n#emergencyprep #preparedness #disasterprep #prepper #FEMA #familypreparedness"
+      },
+      "keyword": "emergency preparedness score",
+      "hub": "prep",
+      "hookStyle": "challenge",
+      "series": "prep-launch-2026-04"
+    },
+    {
+      "id": "prep-pantry-tracker",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "A family spends $400 on prep food. Two years later, half of it's expired in the back of a shelf.",
+          "title": "Free Prep Pantry Tracker",
+          "description": "FIFO food rotation with expiry alerts. Auto-generates a shopping list. Data stays in your browser.",
+          "url": "tool.teamzlab.com/prep/prep-pantry-tracker/",
+          "audioFile": "audio/beat3.mp3",
+          "themeIndex": 5,
+          "ctaText": "Track free →",
+          "ctaBadge": "PRIVATE",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "Free Prep Pantry Tracker — FIFO Food Rotation with Expiry Alerts",
+        "description": "The single biggest failure mode in long-term food storage isn't spoilage — it's forgetting. A family spends $400 stocking a prep shelf, then two years later throws half of it away unused.\n\nI built a free browser-based pantry tracker that solves this with FIFO rotation (first expire, first use). Log your emergency food with expiry dates, and it auto-sorts, flags items expiring within 30 days, and generates a shopping list for what needs replacing.\n\nTry it FREE: https://tool.teamzlab.com/prep/prep-pantry-tracker/\n\n✓ FIFO rotation so oldest stock gets used first\n✓ 30-day expiry warnings before quality drops\n✓ Shopping list auto-built from expiring items\n✓ CSV export for backup\n✓ 4 status filters (All / Expired / Expiring / Fresh)\n✓ 100% private — localStorage only, nothing uploaded\n✓ No signup, no email, no tracking\n\nCompanion tools:\n• Emergency Preparedness Score: https://tool.teamzlab.com/prep/emergency-preparedness-score/\n• 30-Day Prep Challenge: https://tool.teamzlab.com/prep/30-day-prep-challenge/\n\n#emergencyprep #foodstorage #prepper #FIFO #preparedness #shorts",
+        "tags": [
+          "prep pantry tracker",
+          "food storage tracker",
+          "fifo food rotation",
+          "emergency food tracker",
+          "pantry inventory app",
+          "food expiry tracker",
+          "prep food rotation",
+          "emergency food storage",
+          "food stockpile tracker",
+          "long term food storage"
+        ],
+        "categoryId": 26,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "en",
+        "hashtags": [
+          "#emergencyprep",
+          "#foodstorage",
+          "#prepper",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "A family spends $400 on prep food. Two years later, half is expired.\n\nFree FIFO pantry tracker with expiry alerts + auto shopping list. localStorage only — nothing uploaded.\n\ntool.teamzlab.com/prep/prep-pantry-tracker/\n\n#emergencyprep #prepper #foodstorage #fifo #fyp"
+      },
+      "instagram": {
+        "caption": "The biggest failure mode in prep food storage isn't spoilage — it's forgetting.\n\nA household spends $400 stocking a prep shelf, then two years later throws half of it away unused.\n\nI built a free FIFO pantry tracker. Log food with expiry dates, it auto-sorts by rotation order, flags items expiring within 30 days, and generates a shopping list.\n\n100% private — your inventory never leaves your browser.\n\nLink in bio.\n\n#emergencyprep #foodstorage #prepper #FIFO #preparedness #foodrotation"
+      },
+      "keyword": "prep pantry tracker",
+      "hub": "prep",
+      "hookStyle": "waste",
+      "series": "prep-launch-2026-04"
+    },
+    {
+      "id": "prep-30-day-challenge",
+      "type": "tool",
+      "language": "en",
+      "render": {
+        "template": "InstantFix",
+        "props": {
+          "hook": "Don't have 2 weeks of prep? One small task a day for 30 days gets you there.",
+          "title": "Free 30-Day Prep Challenge",
+          "description": "One FEMA-aligned prep task a day with streak tracker. Reaches 2-week readiness baseline by day 30.",
+          "url": "tool.teamzlab.com/prep/30-day-prep-challenge/",
+          "audioFile": "audio/beat4.mp3",
+          "themeIndex": 0,
+          "ctaText": "Start day 1 →",
+          "ctaBadge": "30 DAYS",
+          "brandName": "tool.teamzlab.com"
+        }
+      },
+      "youtube": {
+        "title": "Free 30-Day Prep Challenge — Build 2 Weeks of Readiness in a Month",
+        "description": "Emergency prep is a classic procrastination trap. The cost of a disaster is huge but uncertain, so your brain keeps delaying action. A 200-item shopping list overwhelms most families into doing nothing.\n\nI built a free 30-day prep challenge that breaks it into 30 small daily tasks — one per day, usually under 30 minutes, often under $20. By day 30 your household has the FEMA-recommended 2-week self-sufficiency baseline.\n\nTry it FREE: https://tool.teamzlab.com/prep/30-day-prep-challenge/\n\n✓ 30 FEMA-aligned tasks ordered by survival priority\n✓ Streak counter + longest-ever streak\n✓ Today's task highlighted at top\n✓ Week-1 gets you 72-hour baseline (water, food, first aid, docs, cash)\n✓ Week-4 extends to 2 weeks + evacuation plan\n✓ 100% private — progress stored in your browser only\n✓ No signup, no email, no tracking\n\nWhy daily cadence works: a streak counter inverts the procrastination calculus. Once you're on day 12, skipping day 13 feels like losing something — and loss aversion is roughly twice as motivating as an equivalent gain.\n\nTotal budget: $150-300 spread across 30 days. Compare to $500-1,500 scrambling during a hurricane warning.\n\nCompanion tools:\n• Emergency Preparedness Score: https://tool.teamzlab.com/prep/emergency-preparedness-score/\n• Prep Pantry Tracker: https://tool.teamzlab.com/prep/prep-pantry-tracker/\n\n#emergencyprep #preparedness #prepchallenge #FEMA #shorts",
+        "tags": [
+          "30 day prep challenge",
+          "emergency preparedness plan",
+          "prep in 30 days",
+          "daily prep tasks",
+          "FEMA preparedness",
+          "2 week emergency kit",
+          "preparedness streak",
+          "beginner prepper plan",
+          "emergency prep schedule",
+          "disaster prep 30 days"
+        ],
+        "categoryId": 26,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "en",
+        "hashtags": [
+          "#emergencyprep",
+          "#preparedness",
+          "#prepchallenge",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Don't have 2 weeks of prep? One task a day for 30 days gets you there.\n\nFree challenge with streak tracker. FEMA-aligned tasks. Week 1 = 72hr baseline. Week 4 = 2 weeks + evac plan.\n\ntool.teamzlab.com/prep/30-day-prep-challenge/\n\n#emergencyprep #prepchallenge #preparedness #FEMA #fyp"
+      },
+      "instagram": {
+        "caption": "Emergency prep is a classic procrastination trap. A 200-item shopping list overwhelms most families into doing nothing.\n\nI built a free 30-day challenge: one small prep task a day, under 30 minutes, often under $20. Streak counter keeps you going.\n\nDay 1: stored water. Day 30: 2-week self-sufficiency baseline with evacuation plan.\n\nTotal budget: $150-300 spread across 30 days. 100% private — progress stays in your browser.\n\nLink in bio.\n\n#emergencyprep #preparedness #prepchallenge #FEMA #familypreparedness #beginnerprepper"
+      },
+      "keyword": "30 day prep challenge",
+      "hub": "prep",
+      "hookStyle": "challenge",
+      "series": "prep-launch-2026-04"
     }
-  ]
+  ],
+  "lastAppended": "2026-04-17T01:37:51.716404Z"
 }

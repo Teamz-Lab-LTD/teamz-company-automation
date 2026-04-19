@@ -36,6 +36,44 @@ token-compliant alternative.
   32, 48, 64).
 - `SizedBox(height: 17)` etc. — round to the spacing scale.
 
+### Double-padding (page-gutter rule)
+
+A section widget (`CoursesStrip`, `WeeklyRecapSection`, `RecentsStrip`,
+any Home/Library card) **must not** add its own horizontal padding when
+its parent scroll view already provides a page gutter. Vertical padding
+is fine; horizontal is not. If you don't know which side owns the
+gutter, the **parent scroll view owns it** by default in Teamz apps.
+
+- ❌ `Padding(padding: EdgeInsets.fromLTRB(20, 8, 20, 16), child: …)`
+  inside a section widget that gets mounted in a `SingleChildScrollView`
+  with its own horizontal 20.
+- ✅ `Padding(padding: EdgeInsets.only(top: 8, bottom: 16), child: …)` —
+  vertical only; horizontal flows from the page.
+
+How to detect before shipping:
+
+1. Grep the section for `EdgeInsets.fromLTRB\(\d` / `EdgeInsets.symmetric\(horizontal:`.
+2. Read the screen file that mounts it and confirm whether its scroll
+   view already sets `horizontal`. If yes, strip the horizontal pad
+   from the section.
+3. If the section must be usable in BOTH gutterless and guttered
+   parents (e.g. a reusable kit card), accept an optional
+   `EdgeInsetsGeometry margin` param instead of hardcoding — parent
+   passes `EdgeInsets.zero` when it already has its own gutter.
+
+Symptom when wrong: the offending section sits ~40 px from the screen
+edge while every other section sits at ~20 px. Fix the section, not the
+parent — the parent's gutter is the whole-page convention.
+
+### Orphan-chip sections
+
+A single centered chip / button dropped into a Column of left-aligned
+sections reads as floating chrome, not a deliberate affordance. If a
+section's idle state is "tap to generate", wrap the button in a proper
+mini-section: left-aligned title + one-line subtitle + the button. Do
+not `Align(alignment: Alignment.center, child: CommonButton(...))`
+inside a larger page rhythm.
+
 ## Interaction misuse
 
 - Tap targets smaller than 44×44 logical pixels. Minimum applies even to

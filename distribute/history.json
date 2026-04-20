@@ -3923,7 +3923,43 @@
       "title": "I Built a Free Business Card Maker That Runs Entirely in Your Browser",
       "hash": "c0d6fcd6b3752dd6",
       "created": "2026-04-04T21:40:46.855989+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/i-built-free-business-card-maker-that.html",
+          "posted_at": "2026-04-20T20:41:27.860577+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/21/i-built-a-free-business-card-maker-that-runs-entirely-in-your-browser/",
+          "posted_at": "2026-04-20T20:41:36.507509+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/814447536337207296",
+          "posted_at": "2026-04-20T20:41:37.808677+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjxddpuuip2p",
+          "posted_at": "2026-04-20T20:41:39.915349+00:00",
+          "status": "published"
+        },
+        "github_discussions": {
+          "url": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/93",
+          "posted_at": "2026-04-20T20:41:47.219894+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/I-Built-a-Free-Business-Card-Maker-That-Runs-Entirely-in-Your-Browser-04-20",
+          "posted_at": "2026-04-20T20:41:47.985659+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=53973:shorts=1:tutorials=0",
+          "posted_at": "2026-04-20T20:41:48.420630+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/free-business-card-maker-no-signup-private.md",
         "priority": "high",
@@ -3983,6 +4019,11 @@
           "url": "https://teamzlab.wordpress.com/2026/04/12/how-to-prepare-for-a-cqc-inspection-in-2026-complete-checklist/",
           "posted_at": "2026-04-11T20:02:15.842781+00:00",
           "status": "published"
+        },
+        "devto": {
+          "url": "https://dev.to/teamzlab/how-to-prepare-for-a-cqc-inspection-in-2026-complete-checklist-lcj",
+          "posted_at": "2026-04-15T22:27:47.651729+00:00",
+          "status": "published"
         }
       }
     },
@@ -3995,6 +4036,16 @@
         "blogger": {
           "url": "https://teamzlab.blogspot.com/2026/04/i-built-care-home-compliance-app-in-2.html",
           "posted_at": "2026-04-10T19:01:40.823566+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/i-built-a-care-home-compliance-app-in-2-weeks-here-is-the-tech-stack",
+          "posted_at": "2026-04-15T22:27:52.031119+00:00",
+          "status": "published"
+        },
+        "devto": {
+          "url": "https://dev.to/teamzlab/i-built-a-care-home-compliance-app-in-2-weeks-here-is-the-tech-stack-1p8n",
+          "posted_at": "2026-04-20T20:40:44.902565+00:00",
           "status": "published"
         }
       }
@@ -4033,6 +4084,26 @@
         "substack": {
           "url": "https://substack.com/home/post/p-194170551",
           "posted_at": "2026-04-14T10:17:13.906659+00:00",
+          "status": "published"
+        },
+        "devto": {
+          "url": "https://dev.to/teamzlab/free-aged-care-compliance-software-for-australia-acqs-2025-ready-o62",
+          "posted_at": "2026-04-16T14:27:18.615748+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/16/free-aged-care-compliance-software-for-australia-acqs-2025-ready-3/",
+          "posted_at": "2026-04-16T14:27:24.749339+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=28964:shorts=1:tutorials=0",
+          "posted_at": "2026-04-16T14:27:32.977205+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=4431:count=1",
+          "posted_at": "2026-04-20T22:30:05.624891+00:00",
           "status": "published"
         }
       },
@@ -4095,6 +4166,11 @@
         "youtube": {
           "url": "scheduled:pid=56579:shorts=1:tutorials=0",
           "posted_at": "2026-04-14T09:30:27.816658+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-194843496",
+          "posted_at": "2026-04-20T20:41:11.542272+00:00",
           "status": "published"
         }
       },
@@ -4267,6 +4343,11 @@
           "url": "https://teamzlab.wordpress.com/2026/04/15/care-home-inspection-statistics-2025-uk-au-de-ie-nz-compared/",
           "posted_at": "2026-04-14T19:36:10.317385+00:00",
           "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/814001236210794496",
+          "posted_at": "2026-04-15T22:27:53.014803+00:00",
+          "status": "published"
         }
       }
     },
@@ -4348,6 +4429,135 @@
         "seo_keywords": [],
         "competition": "",
         "drafted_at": "2026-04-14T19:35:39.935159+00:00"
+      }
+    },
+    {
+      "slug": "japan-worker-tax-calculators-2026",
+      "title": "Japan Worker Tax Calculators 2026 — Nenmatsu-Chousei, Zangyou-Dai, Ikuji-Kyuugyou",
+      "hash": "1f1cabf0eac85220",
+      "created": "2026-04-15T22:28:11.636575+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/japan-worker-tax-calculators-2026.html",
+          "posted_at": "2026-04-15T22:28:15.567056+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/16/japan-worker-tax-calculators-2026-nenmatsu-chousei-zangyou-dai-ikuji-kyuugyou/",
+          "posted_at": "2026-04-15T22:28:23.084964+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjkwxz3gky2z",
+          "posted_at": "2026-04-15T22:28:25.181187+00:00",
+          "status": "published"
+        },
+        "github_discussions": {
+          "url": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/91",
+          "posted_at": "2026-04-15T22:28:26.825403+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-194350473",
+          "posted_at": "2026-04-15T22:28:33.261520+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Japan-Worker-Tax-Calculators-2026--Nenmatsu-Chousei-Zangyou-Dai-Ikuji-Kyuugyou-04-15",
+          "posted_at": "2026-04-15T22:28:33.977262+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=14850:shorts=1:tutorials=0",
+          "posted_at": "2026-04-15T22:28:34.416515+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/japan-worker-tax-calculators-2026-nenmatsu-chousei-zangyou-dai-ikuji-kyuugyou",
+          "posted_at": "2026-04-20T20:40:49.042419+00:00",
+          "status": "published"
+        }
+      }
+    },
+    {
+      "slug": "crypto-tax-calculator-5-countries-uk-india-canada-australia-us",
+      "title": "Free Crypto Tax Calculators for 5 Countries — UK, India, Canada, Australia, US",
+      "hash": "bc52ef11d078f587",
+      "created": "2026-04-15T22:30:32.432261+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/crypto-tax-calculator-5-countries-uk-india-canada-australia-us.md",
+        "priority": "high",
+        "series": "crypto-tax-2026",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-15T22:30:32.432433+00:00"
+      }
+    },
+    {
+      "slug": "free-monthly-budget-planner-50-30-20-custom-splits",
+      "title": "Free Monthly Budget Planner — 50/30/20 Rule, Custom Splits, Save Plans Month to Month",
+      "hash": "468950e4f3cf0dce",
+      "created": "2026-04-15T22:30:32.491012+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/free-monthly-budget-planner-50-30-20-custom-splits.md",
+        "priority": "high",
+        "series": "retention-tools-2026",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-15T22:30:32.491348+00:00"
+      }
+    },
+    {
+      "slug": "free-freelancer-tax-calculators-us-se-tax-uk-ir35-quarterly-estimator",
+      "title": "Free Freelancer Tax Calculators — US Self-Employment, UK IR35, Quarterly 1040-ES",
+      "hash": "748baaa129ab6567",
+      "created": "2026-04-15T22:30:32.551290+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/free-freelancer-tax-calculators-us-se-tax-uk-ir35-quarterly-estimator.md",
+        "priority": "high",
+        "series": "freelancer-2026",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-15T22:30:32.551473+00:00"
+      }
+    },
+    {
+      "slug": "3-free-emergency-prep-tools-readiness-score-pantry-tracker-a-30-day-challenge",
+      "title": "3 Free Emergency Prep Tools: Readiness Score, Pantry Tracker & a 30-Day Challenge",
+      "hash": "14819343abf84280",
+      "created": "2026-04-17T09:46:51.019014+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/3-free-emergency-prep-tools-readiness.html",
+          "posted_at": "2026-04-17T09:46:55.272188+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/17/3-free-emergency-prep-tools-readiness-score-pantry-tracker-a-30-day-challenge/",
+          "posted_at": "2026-04-17T09:47:01.364665+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjonegguuf2n",
+          "posted_at": "2026-04-17T09:47:03.408179+00:00",
+          "status": "published"
+        },
+        "github_discussions": {
+          "url": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/92",
+          "posted_at": "2026-04-17T09:47:05.254187+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/3-Free-Emergency-Prep-Tools-Readiness-Score-Pantry-Tracker--a-30-Day-Challenge-04-17",
+          "posted_at": "2026-04-17T09:47:05.974989+00:00",
+          "status": "published"
+        }
       }
     }
   ]

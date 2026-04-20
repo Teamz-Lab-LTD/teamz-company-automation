@@ -194,16 +194,16 @@ async function uploadToTiktok({ filePath, caption }) {
   const token = await getAccessToken();
   const fileSize = fs.statSync(filePath).size;
 
-  // Step 1: Initialize upload
+  // Step 1: Initialize upload — uses INBOX endpoint (drafts in TikTok app)
+  // Why inbox instead of direct publish:
+  //   - Works for Business accounts (direct publish needs audited app + private
+  //     account; Business accounts can't be set to private)
+  //   - Works in sandbox without any account-privacy restriction
+  //   - Videos land in user's TikTok app inbox — user reviews + publishes with
+  //     one tap. Acts as a draft safety net (algorithm-safer than fully
+  //     automated posting anyway).
+  //   - Saves the caption as the draft title — user can edit before posting.
   const initBody = JSON.stringify({
-    post_info: {
-      title: caption.substring(0, 150),
-      privacy_level: "PUBLIC_TO_EVERYONE",
-      disable_duet: false,
-      disable_stitch: false,
-      disable_comment: false,
-      video_cover_timestamp_ms: 1000,
-    },
     source_info: {
       source: "FILE_UPLOAD",
       video_size: fileSize,
@@ -215,7 +215,7 @@ async function uploadToTiktok({ filePath, caption }) {
   const initResult = await new Promise((resolve, reject) => {
     const req = https.request({
       hostname: "open.tiktokapis.com",
-      path: "/v2/post/publish/video/init/",
+      path: "/v2/post/publish/inbox/video/init/",
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -351,12 +351,16 @@ function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null,
       process.exit(0);
     }
 
-    // Safety check
+    // Safety check — --force bypasses gap (inbox uploads are drafts, lower risk)
     const safeCheck = isSafeToUpload();
-    if (!safeCheck.safe) {
+    if (!safeCheck.safe && !hasFlag("--force")) {
       console.log(`\n  BLOCKED: ${safeCheck.reason}`);
-      console.log(`  TikTok rate limits protect your account from being flagged.\n`);
+      console.log(`  TikTok rate limits protect your account from being flagged.`);
+      console.log(`  Use --force to bypass gap (safe-ish for inbox drafts).\n`);
       process.exit(1);
+    }
+    if (!safeCheck.safe && hasFlag("--force")) {
+      console.log(`\n  --force: bypassing gap check (${safeCheck.reason})\n`);
     }
 
     const maxNow = Math.min(count, MAX_UPLOADS_PER_DAY - (safeCheck.daily || 0));

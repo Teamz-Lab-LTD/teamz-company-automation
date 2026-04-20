@@ -603,14 +603,71 @@ def generate_video_plan(tool, keyword=None, trending_context=None):
     # Localized CTA
     local_cta = LOCALIZED_CTA.get(lang, {"ctaText": "Try it free", "ctaBadge": "LINK IN BIO", "privacy": "100% free. No signup. 100% private."})
 
-    # Localized platform captions
+    # ─── TikTok-optimized captions (viral hashtag strategy per hub) ─────────
+    # Hub-specific hashtag pools: 2 niche + 1 broad topic + 1 platform + 1 tool
+    # TikTok feed algorithm favors 3-5 focused hashtags over 10+ generic ones
+    HUB_HASHTAGS = {
+        "longevity":  ["#biohacking",    "#longevity",    "#healthtok",    "#peterattia"],
+        "health":     ["#healthtok",     "#wellness",     "#healthhacks",  "#biohacking"],
+        "finance":    ["#moneytok",      "#personalfinance", "#financehack", "#taxtips"],
+        "tax":        ["#taxtips",       "#moneytok",     "#taxes",        "#irs"],
+        "career":     ["#careeradvice",  "#resumetips",   "#jobtok",       "#careertok"],
+        "resume":     ["#resumetips",    "#careeradvice", "#jobsearch",    "#jobtok"],
+        "ai":         ["#aitools",       "#chatgpt",      "#techtok",      "#aitok"],
+        "dev":        ["#codetok",       "#webdev",       "#programmer",   "#techtok"],
+        "devicegpt":  ["#androidtips",   "#phonetips",    "#techtok",      "#smartphone"],
+        "pdf":        ["#productivity",  "#officehacks",  "#lifehack",     "#techtok"],
+        "image":      ["#designtok",     "#graphicdesign","#contentcreator","#techtok"],
+        "video":      ["#videoediting",  "#contentcreator","#editingtips", "#techtok"],
+        "design":     ["#designtok",     "#graphicdesign","#branding",     "#canva"],
+        "compliance": ["#carehome",      "#nursinghome",  "#ukcare",       "#socialcare"],
+        "care":       ["#carehome",      "#nursinghome",  "#caregiver",    "#healthcare"],
+        "education":  ["#studytok",      "#studytips",    "#learning",     "#education"],
+        "marketing":  ["#marketingtips", "#smallbusiness","#digitalmarketing","#entrepreneur"],
+        "business":   ["#smallbusiness", "#entrepreneur", "#businesstips", "#startup"],
+        "restaurant": ["#foodtok",       "#restaurant",   "#smallbusiness","#hospitality"],
+        "eu":         ["#sustainability","#esg",          "#greenbusiness","#climate"],
+        "fitness":    ["#fittok",        "#workout",      "#fitness",      "#gymtok"],
+        "parenting":  ["#parentingtips", "#momsoftiktok", "#parentok",     "#momlife"],
+        "travel":     ["#travelhacks",   "#traveltips",   "#budgettravel", "#traveltok"],
+    }
+    # Default fallback for any hub not above
+    hub_tags = HUB_HASHTAGS.get(hub, ["#lifehack", "#productivity", "#techtok", "#freetools"])
+
+    # Niche-specific engagement prompt (algorithm boosts comments/saves)
+    ENGAGE_PROMPTS = {
+        "longevity":  "Save this for your next bloodwork 🔖",
+        "health":     "Tag someone who needs this 👇",
+        "finance":    "Save this before tax season 🔖",
+        "tax":        "Save this before tax season 🔖",
+        "career":     "Save this for your next job hunt 🔖",
+        "resume":     "Save this for your next job hunt 🔖",
+        "ai":         "Which one are you trying first? 👇",
+        "dev":        "Bookmark this — you'll need it 🔖",
+        "devicegpt":  "Try it on your phone right now 📱",
+        "compliance": "Tag your compliance lead 👇",
+        "care":       "Tag your compliance lead 👇",
+    }
+    engage = ENGAGE_PROMPTS.get(hub, "Try it free — link in bio 🔗")
+
+    # Shorten URL for readability (remove protocol)
+    short_url = url.replace("https://", "").replace("http://", "")
+
+    # TikTok caption — viral format:
+    # [Hook] \n\n [engagement prompt] \n\n [link] \n\n [5 hashtags]
+    # Total target: 120-250 chars (optimal for TikTok feed completion)
+    viral_hashtags = " ".join(hub_tags[:4] + ["#fyp"])
+    tt_caption = f"{hook}\n\n{engage}\n\n🔗 {short_url}\n\n{viral_hashtags}"
+
+    # Instagram caption — longer is fine, IG rewards detail + 10-15 hashtags
+    ig_hashtags = " ".join(hub_tags + ["#reels", "#explorepage", "#smallbusiness", "#freetools", f"#{kw.replace(' ', '').replace('-', '')}"])
+    ig_caption = f"{hook}\n\n{tool['title']} — {tool.get('desc', '')[:100]}\n\nFree. No signup. 100% private.\n\n{engage}\n\nLink in bio: {short_url}\n\n{ig_hashtags}"
+
+    # Non-English override (keep local hashtag style)
     kw_tag = kw.replace(" ", "").replace("-", "")
     if lang != "en":
-        tt_caption = f"{hook}\n\n{local_cta['privacy']}\n\n{url}\n\n#freetools #{kw_tag} #shorts"
-        ig_caption = f"{hook}\n\n{tool['title']} — {tool.get('desc', '')[:100]}\n\n{local_cta['privacy']}\n\nLink in bio: {url}\n\n#freetools #{kw_tag} #{hub}tools #webapp"
-    else:
-        tt_caption = f"{hook}\n\nTry it: {url}\n\n#freetools #{kw_tag} #tech #lifehack #webapp"
-        ig_caption = f"{hook}\n\n{tool['title']} — {tool.get('desc', '')[:100]}\n\nFree. No signup. 100% private.\n\nLink in bio: {url}\n\n#freetools #{kw_tag} #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+        tt_caption = f"{hook}\n\n{local_cta['privacy']}\n\n🔗 {short_url}\n\n#freetools #{kw_tag} #{hub} #fyp"
+        ig_caption = f"{hook}\n\n{tool['title']} — {tool.get('desc', '')[:100]}\n\n{local_cta['privacy']}\n\nLink in bio: {short_url}\n\n#freetools #{kw_tag} #{hub}tools #reels"
 
     plan = {
         "id": tool.get("href", "").strip("/").replace("/", "_") or tool["title"].lower().replace(" ", "-"),

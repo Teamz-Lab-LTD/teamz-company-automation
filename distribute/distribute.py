@@ -81,7 +81,7 @@ HISTORY_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_HISTORY", str(SCRIPT_DIR / "hist
 EXAMPLE_CONFIG = Path(os.getenv("TEAMZ_DISTRIBUTE_EXAMPLE_CONFIG", str(SCRIPT_DIR / "config.example.json")))
 ARTICLES_DIR = Path(os.getenv("TEAMZ_DISTRIBUTE_ARTICLES_DIR", str(SCRIPT_DIR / "articles")))
 
-ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "github_discussions", "gitlab", "substack", "telegraph", "google_sites", "pinterest", "youtube"]
+ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "github_discussions", "gitlab", "substack", "telegraph", "google_sites", "pinterest", "youtube", "tiktok"]
 
 QUEUE_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_QUEUE", str(SCRIPT_DIR / "queue.json")))
 
@@ -113,6 +113,10 @@ PLATFORM_LIMITS = {
     # (10k units/day, upload=1600) naturally limits anything bigger. 12h gap
     # prevents back-to-back uploads looking spammy to the algorithm.
     "youtube":    {"daily": 1, "min_gap_hours": 12, "weekly": 5,  "queue_mode": True},
+    # TikTok: 2/day, 4h gap, 5/week — matches tiktok-upload.js safety layer.
+    # Reuses the same reel-history.json as YouTube, so the same rendered video
+    # gets posted to both platforms (tracked per-platform in reel.platforms.*).
+    "tiktok":     {"daily": 2, "min_gap_hours": 4,  "weekly": 5,  "queue_mode": True},
 }
 
 # Localized footer text — article language should match tool language
@@ -1553,6 +1557,51 @@ def post_youtube(config, title, body, tags, canonical_url):
         return None, f"Failed to launch autopilot: {str(e)[:180]}"
 
 
+def post_tiktok(config, title, body, tags, canonical_url):
+    """
+    Post the next unposted reel from reel-history.json to TikTok.
+    Same pattern as post_youtube — fire-and-forget, returns scheduled label.
+    Reuses the SAME reel file that YouTube uses, so the same video is
+    distributed to both platforms (tracked separately in platforms.youtube
+    vs platforms.tiktok inside reel-history.json).
+
+    Returns: (url_or_label, error)
+    """
+    cfg = config.get("tiktok", {})
+    if not cfg.get("enabled"):
+        return None, "Platform disabled in config"
+
+    import subprocess, shutil
+    upload_script = SCRIPT_DIR / "remotion" / "upload" / "tiktok-upload.js"
+    if not upload_script.exists():
+        return None, f"tiktok-upload.js not found: {upload_script}"
+    if not shutil.which("node"):
+        return None, "node not on PATH — install Node.js"
+
+    count = int(cfg.get("uploads_per_call", 1))
+    log_dir = SCRIPT_DIR / "remotion"
+    log_dir.mkdir(exist_ok=True)
+    log_path = log_dir / "tiktok-upload.log"
+
+    cmd = ["node", str(upload_script), "--from-history", "--count", str(count)]
+
+    try:
+        with open(log_path, "ab") as logf:
+            logf.write(
+                ("\n\n=== " + datetime.now(timezone.utc).isoformat()
+                 + " — distribute.py invoked tiktok-upload ===\n").encode("utf-8")
+            )
+            proc = subprocess.Popen(
+                cmd, cwd=str(SCRIPT_DIR / "remotion"),
+                stdout=logf, stderr=subprocess.STDOUT,
+                start_new_session=True
+            )
+        label = f"scheduled:pid={proc.pid}:count={count}"
+        return label, None
+    except Exception as e:
+        return None, f"Failed to launch tiktok-upload: {str(e)[:180]}"
+
+
 # ─── Markdown to HTML (basic) ─────────────────────────────────────────────────
 
 def markdown_to_html(md):
@@ -1985,6 +2034,7 @@ def cmd_post(title, filepath, platforms):
         "google_sites": post_google_sites,
         "pinterest": post_pinterest,
         "youtube": post_youtube,
+        "tiktok": post_tiktok,
     }
 
     results = {}
@@ -2418,7 +2468,7 @@ def cmd_flush(clear_only=False):
             "github_discussions": post_github_discussions, "gitlab": post_gitlab,
             "substack": post_substack, "telegraph": post_telegraph,
             "google_sites": post_google_sites, "pinterest": post_pinterest,
-            "youtube": post_youtube,
+            "youtube": post_youtube, "tiktok": post_tiktok,
         }
 
         if platform not in platform_funcs:

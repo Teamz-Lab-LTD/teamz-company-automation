@@ -14,10 +14,10 @@ export const RemotionRoot = () => {
   // Templates internally use durationInFrames prop to adjust slide timing.
   // render-batch.js randomizes within each template's range.
   const DURATIONS = {
-    InstantFix: 540,    // 18s default (range: 15-22s)
-    BeforeAfter: 660,   // 22s default (range: 18-26s)
-    CompareThree: 750,  // 25s default (range: 22-28s)
-    ProofCase: 600,     // 20s default (range: 17-24s)
+    InstantFix: 360,    // 12s (shorter = higher retention on Shorts)
+    BeforeAfter: 450,   // 15s
+    CompareThree: 540,  // 18s
+    ProofCase: 420,     // 14s
   };
 
   return (

@@ -15,8 +15,13 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { execSync } = require("child_process");
 const url = require("url");
+
+// PKCE — TikTok v2 OAuth requires this. Note: TikTok uses HEX, not base64url.
+const codeVerifier = crypto.randomBytes(32).toString("hex");
+const codeChallenge = crypto.createHash("sha256").update(codeVerifier).digest("hex");
 
 const CONFIG_DIR = path.join(require("os").homedir(), ".config", "teamzlab");
 const CONFIG_FILE = path.join(CONFIG_DIR, "tiktok-config.json");
@@ -53,7 +58,7 @@ if (args.includes("--test")) {
 
 // Build auth URL
 const scopes = "user.info.basic,video.upload,video.publish";
-const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${config.client_key}&scope=${scopes}&response_type=code&redirect_uri=${encodeURIComponent(config.redirect_uri)}&state=teamzlab`;
+const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${config.client_key}&scope=${scopes}&response_type=code&redirect_uri=${encodeURIComponent(config.redirect_uri)}&state=teamzlab&code_challenge=${codeChallenge}&code_challenge_method=S256`;
 
 console.log("Opening browser for TikTok authorization...\n");
 
@@ -69,7 +74,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Exchange code for token
-  const postData = `client_key=${config.client_key}&client_secret=${config.client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=${encodeURIComponent(config.redirect_uri)}`;
+  const postData = `client_key=${config.client_key}&client_secret=${config.client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=${encodeURIComponent(config.redirect_uri)}&code_verifier=${codeVerifier}`;
 
   try {
     const tokenData = await new Promise((resolve, reject) => {

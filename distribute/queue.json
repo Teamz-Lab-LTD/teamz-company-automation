@@ -123,7 +123,7 @@
         "language": "en"
       },
       "queued_at": "2026-04-10T19:01:36.566320+00:00",
-      "status": "pending"
+      "status": "done"
     },
     {
       "platform": "hashnode",
@@ -250,7 +250,7 @@
         "canonical_url": "https://tool.teamzlab.com/jp/"
       },
       "queued_at": "2026-04-15T22:28:11.637604+00:00",
-      "status": "pending"
+      "status": "done"
     },
     {
       "platform": "tumblr",

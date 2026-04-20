@@ -77,10 +77,9 @@ export const InstantFix = ({
           <FloatingOrbs theme={T} />
           <ScanLine theme={T} delay={5} />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28, zIndex: 1, padding: 50 }}>
-            <AnimText delay={0} fontSize={44} color={T.muted} fontWeight={500}>Introducing</AnimText>
-            <AnimText delay={4} fontSize={62} fontWeight={900} color={T.text}>{title}</AnimText>
-            <GlowLine theme={T} delay={12} />
-            <AnimText delay={14} fontSize={28} fontWeight={400} color={T.muted} lineHeight={1.6}>{description}</AnimText>
+            <AnimText delay={0} fontSize={72} fontWeight={900} color={T.text}>{title}</AnimText>
+            <GlowLine theme={T} delay={6} />
+            <AnimText delay={8} fontSize={32} fontWeight={500} color={T.muted} lineHeight={1.5}>{description}</AnimText>
           </div>
         </AbsoluteFill>
       </Sequence>
@@ -91,7 +90,7 @@ export const InstantFix = ({
           <GradientBg theme={T} variant={2} />
           <FloatingOrbs theme={T} />
           <div style={{ display: "flex", flexDirection: "column", gap: 24, zIndex: 1, width: "82%", padding: 50 }}>
-            <AnimText fontSize={40} delay={0} fontWeight={800} color={T.text}>Why you'll love it</AnimText>
+            <AnimText fontSize={48} delay={0} fontWeight={900} color={T.text}>Here's what it does</AnimText>
             {defaultFeatures.map((f, i) => (
               <FeatureCard key={i} icon={f.icon} text={f.text} theme={T} delay={6 + i * 6} index={i} />
             ))}
@@ -106,7 +105,7 @@ export const InstantFix = ({
           <FloatingOrbs theme={T} />
           <AccentRing theme={T} delay={0} size={450} />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 40, zIndex: 1 }}>
-            <AnimText fontSize={44} delay={0} fontWeight={800} color={T.text}>The numbers speak</AnimText>
+            <AnimText fontSize={52} delay={0} fontWeight={900} color={T.text}>No catch.</AnimText>
             <div style={{ display: "flex", gap: 60, marginTop: 20 }}>
               <NumberPop value={m1.value} label={m1.label} theme={T} delay={8} />
               <NumberPop value={m2.value} label={m2.label} theme={T} delay={14} />
@@ -142,10 +141,10 @@ const SlideInterrupt = ({ theme }) => {
       <AbsoluteFill style={{ backgroundColor: theme.accent, opacity: flash * 0.15 }} />
 
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 30, zIndex: 1 }}>
-        <AnimText delay={8} fontSize={52} fontWeight={700} color={theme.muted}>But what if...</AnimText>
-        <InstantHook delay={18} fontSize={64} color={theme.accent}>
-          You never had to pay?
+        <InstantHook delay={4} fontSize={88} color={theme.accent}>
+          $0
         </InstantHook>
+        <AnimText delay={14} fontSize={44} fontWeight={700} color={theme.text}>forever.</AnimText>
       </div>
     </AbsoluteFill>
   );

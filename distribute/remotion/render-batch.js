@@ -133,11 +133,11 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 // Each template has a base + random jitter so no two reels are the same length.
 // YouTube flags channels where all Shorts are identical duration as automated.
 const TEMPLATE_DURATION_RANGE = {
-  InstantFix:   { min: 450, max: 660 },   // 15-22 seconds
-  BeforeAfter:  { min: 540, max: 780 },   // 18-26 seconds
-  CompareThree: { min: 660, max: 840 },   // 22-28 seconds
-  ProofCase:    { min: 510, max: 720 },   // 17-24 seconds
-  Tutorial:     { min: 5400, max: 12600 }, // 3-7 minutes (based on step count)
+  InstantFix:   { min: 330, max: 420 },   // 11-14 seconds (tightened for retention)
+  BeforeAfter:  { min: 390, max: 480 },   // 13-16 seconds
+  CompareThree: { min: 480, max: 570 },   // 16-19 seconds
+  ProofCase:    { min: 390, max: 480 },   // 13-16 seconds
+  Tutorial:     { min: 5400, max: 12600 }, // 3-7 minutes (long-form, unchanged)
 };
 
 function randomDuration(template) {

@@ -30,9 +30,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7630973511032604680",
+          "postedAt": "2026-04-20T22:42:02.746Z",
           "retries": 0
         }
       }
@@ -1192,7 +1193,7 @@
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/csrd-scope-1-2-calculator-eu-sme.txt",
       "youtubeTitle": "Free CSRD Scope 1+2 Calculator — EU SMEs, No Signup",
       "rendered": "2026-04-14T10:13:02.610Z",
-      "lastRendered": "2026-04-14T10:13:02.611Z",
+      "lastRendered": "2026-04-20T20:59:16.574Z",
       "platforms": {
         "youtube": {
           "posted": true,
@@ -1231,12 +1232,14 @@
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tcja-2027-tax-bracket-sunset-calculator.txt",
       "youtubeTitle": "Your 2027 Taxes Are Going UP — Free TCJA Sunset Calculator",
       "rendered": "2026-04-14T10:13:02.611Z",
-      "lastRendered": "2026-04-14T10:13:02.611Z",
+      "lastRendered": "2026-04-20T20:59:16.575Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/kwJtBkKb66U",
+          "videoId": "kwJtBkKb66U",
+          "postedAt": "2026-04-15T22:28:43.164Z",
+          "scheduledAt": "2026-04-16T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -1268,12 +1271,14 @@
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/phenoage-biological-age-calculator.txt",
       "youtubeTitle": "Your Body Has Two Ages — Free PhenoAge Calculator (Levine 2018)",
       "rendered": "2026-04-14T10:13:02.611Z",
-      "lastRendered": "2026-04-14T10:13:02.611Z",
+      "lastRendered": "2026-04-20T20:59:16.575Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/ahlIrLrEbHk",
+          "videoId": "ahlIrLrEbHk",
+          "postedAt": "2026-04-15T22:29:53.767Z",
+          "scheduledAt": "2026-04-17T19:04:00.000Z",
           "retries": 0
         },
         "instagram": {

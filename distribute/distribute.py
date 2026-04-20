@@ -83,6 +83,41 @@ ARTICLES_DIR = Path(os.getenv("TEAMZ_DISTRIBUTE_ARTICLES_DIR", str(SCRIPT_DIR / 
 
 ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "github_discussions", "gitlab", "substack", "telegraph", "google_sites", "pinterest", "youtube", "tiktok"]
 
+# Platforms that get UTM-tagged outbound teamzlab.com links.
+# Short-form platforms (bluesky/mastodon) are skipped — char limits break on extra params,
+# and their link cards are what drives clicks anyway. Pinterest/YouTube/TikTok use their
+# own URL fields (pin destination, description links) — tagging handled inside those post_* fns
+# via canonical_url where it matters.
+UTM_TAG_PLATFORMS = {"devto", "hashnode", "medium", "blogger", "wordpress", "tumblr",
+                     "substack", "github_discussions", "gitlab", "telegraph", "google_sites"}
+
+_TEAMZLAB_URL_RE = re.compile(r'https?://tool\.teamzlab\.com[^\s)\]"<>\'`]*', re.IGNORECASE)
+
+def tag_teamzlab_urls(text, platform, campaign_slug=""):
+    """Inject UTM parameters into every tool.teamzlab.com link in text.
+
+    Skips links that already carry utm_source. Preserves existing query params
+    and #fragments. Campaign format: YYYY-MM[-slug] so GA4 trends by month.
+    """
+    if not text:
+        return text
+    month = datetime.now().strftime("%Y-%m")
+    campaign = f"{month}-{campaign_slug}" if campaign_slug else month
+
+    def _inject(match):
+        url = match.group(0)
+        parsed = urllib.parse.urlparse(url)
+        params = dict(urllib.parse.parse_qsl(parsed.query, keep_blank_values=True))
+        if "utm_source" in params:
+            return url
+        params["utm_source"] = platform
+        params["utm_medium"] = "article"
+        params["utm_campaign"] = campaign
+        new_query = urllib.parse.urlencode(params)
+        return urllib.parse.urlunparse(parsed._replace(query=new_query))
+
+    return _TEAMZLAB_URL_RE.sub(_inject, text)
+
 QUEUE_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_QUEUE", str(SCRIPT_DIR / "queue.json")))
 
 # ─── Platform Safety Limits ───────────────────────────────────────────────────
@@ -2075,14 +2110,27 @@ def cmd_post(title, filepath, platforms):
             print(f"  [{platform}] {reason}")
 
         print(f"  [{platform}] Posting...", end=" ", flush=True)
+
+        # UTM-tag outbound teamzlab.com links so GA4 attributes this platform's
+        # traffic correctly (otherwise it shows up as "Direct" — most of our
+        # 76% Direct traffic is actually untagged distribution clicks).
+        if platform in UTM_TAG_PLATFORMS:
+            tagged_body = tag_teamzlab_urls(body, platform, slug)
+            tagged_body_with_footer = tag_teamzlab_urls(body_with_footer, platform, slug)
+            tagged_canonical = canonical_url  # canonical_url must stay un-tagged — it's the SEO canonical
+        else:
+            tagged_body = body
+            tagged_body_with_footer = body_with_footer
+            tagged_canonical = canonical_url
+
         if platform == "pinterest":
             pin_img = (meta.get("pin_image") or meta.get("og_image") or "").strip()
-            url, error = post_pinterest(config, title, body, tags, canonical_url, pin_img)
+            url, error = post_pinterest(config, title, tagged_body, tags, tagged_canonical, pin_img)
         elif platform in ("telegraph", "substack", "gitlab", "google_sites"):
             # These platforms handle their own formatting/footer — send raw body
-            url, error = platform_funcs[platform](config, title, body, tags, canonical_url)
+            url, error = platform_funcs[platform](config, title, tagged_body, tags, tagged_canonical)
         else:
-            url, error = platform_funcs[platform](config, title, body_with_footer, tags, canonical_url)
+            url, error = platform_funcs[platform](config, title, tagged_body_with_footer, tags, tagged_canonical)
 
         if url:
             print(f"OK — {url}")

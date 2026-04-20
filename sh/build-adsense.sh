@@ -110,7 +110,7 @@ adsense_report() {
     fi
 
     url+="&limit=$limit"
-    url+="&orderBy=%2BESTIMATED_EARNINGS"
+    url+="&orderBy=-ESTIMATED_EARNINGS"
 
     curl -s "$url" \
         -H "Authorization: Bearer ${ACCESS_TOKEN}" \
@@ -157,10 +157,8 @@ for i, h in enumerate(headers):
     val = cells[i].get('value', '0') if i < len(cells) else '0'
     label = labels.get(h, h)
     if h in ('ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'COST_PER_CLICK'):
-        # Convert micros to currency
         try:
-            v = float(val) / 1000000
-            val = f'£{v:.2f}'
+            val = f'£{float(val):.2f}'
         except:
             pass
     print(f'  {label:.<30} {val}')
@@ -196,8 +194,7 @@ for r in rows:
     impr = cells[3].get('value', '0') if len(cells) > 3 else '0'
     clicks = cells[4].get('value', '0') if len(cells) > 4 else '0'
     try:
-        e = float(earnings) / 1000000
-        earnings = f'£{e:.2f}'
+        earnings = f'£{float(earnings):.2f}'
     except:
         pass
     print(f'  {date:<15} {earnings:>10} {views:>8} {impr:>8} {clicks:>7}')
@@ -232,13 +229,11 @@ for r in rows:
     views = cells[2].get('value', '0') if len(cells) > 2 else '0'
     rpm = cells[5].get('value', '0') if len(cells) > 5 else '0'
     try:
-        e = float(earnings) / 1000000
-        earnings = f'£{e:.2f}'
+        earnings = f'£{float(earnings):.2f}'
     except:
         pass
     try:
-        r_val = float(rpm) / 1000000
-        rpm = f'£{r_val:.2f}'
+        rpm = f'£{float(rpm):.2f}'
     except:
         pass
     print(f'  {page:<50} {earnings:>9} {views:>7} {rpm:>8}')
@@ -272,8 +267,7 @@ for r in rows:
     views = cells[2].get('value', '0') if len(cells) > 2 else '0'
     clicks = cells[3].get('value', '0') if len(cells) > 3 else '0'
     try:
-        e = float(earnings) / 1000000
-        earnings = f'£{e:.2f}'
+        earnings = f'£{float(earnings):.2f}'
     except:
         pass
     print(f'  {country:<25} {earnings:>9} {views:>8} {clicks:>7}')

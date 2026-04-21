@@ -13,9 +13,9 @@
 #      project in sync without manual remembering.
 #
 # Usage (from a host project root):
-#   bash team_mvp_kit/scripts/install-claude-context.sh
-#   bash team_mvp_kit/scripts/install-claude-context.sh --install-hooks
-#   bash team_mvp_kit/scripts/install-claude-context.sh --check
+#   bash team_mvp_kit/teamz-company-automation/sh/install-claude-context.sh
+#   bash team_mvp_kit/teamz-company-automation/sh/install-claude-context.sh --install-hooks
+#   bash team_mvp_kit/teamz-company-automation/sh/install-claude-context.sh --check
 #
 # Exit codes:
 #   0 = success (or already wired)
@@ -27,10 +27,10 @@ set -euo pipefail
 # Locate project root + kit root
 # ---------------------------------------------------------------------------
 # Canonical home: teamz-company-automation/sh/install-claude-context.sh
-# Callers may invoke via:
-#   bash team_mvp_kit/teamz-company-automation/sh/install-claude-context.sh  (direct)
-#   bash team_mvp_kit/scripts/install-claude-context.sh                       (symlink)
-#   bash scripts/install-claude-context.sh                                    (host symlink)
+# Callers should invoke via the canonical path:
+#   bash team_mvp_kit/teamz-company-automation/sh/install-claude-context.sh
+# Legacy `team_mvp_kit/scripts/<name>` symlinks have been retired — do not
+# rely on them in new tooling.
 #
 # So the script can't assume a fixed depth. Walk up from $PWD looking for
 # the kit marker (`team_mvp_kit/pubspec.yaml`).
@@ -105,7 +105,7 @@ MANAGED_BEGIN="<!-- claude-context:begin -->"
 MANAGED_END="<!-- claude-context:end -->"
 
 MANAGED_BLOCK="$MANAGED_BEGIN
-> Managed by \`team_mvp_kit/scripts/install-claude-context.sh\`.
+> Managed by \`team_mvp_kit/teamz-company-automation/sh/install-claude-context.sh\`.
 > Do not edit between the begin/end markers — re-run the script instead.
 
 ## Inherited from the kit (auto-loaded — do not duplicate below)
@@ -224,12 +224,12 @@ if [[ $INSTALL_HOOKS -eq 1 ]]; then
   mkdir -p "$HOOKS_DIR"
   cat > "$HOOKS_DIR/post-merge" <<'HOOK'
 #!/usr/bin/env bash
-# Auto-installed by team_mvp_kit/scripts/install-claude-context.sh
+# Auto-installed by team_mvp_kit/teamz-company-automation/sh/install-claude-context.sh
 # Re-runs the Claude context refresh if the kit submodule changed in
 # this merge/pull. Safe no-op otherwise.
 set -e
 if git diff --name-only HEAD@{1} HEAD 2>/dev/null | grep -q '^team_mvp_kit'; then
-  bash team_mvp_kit/scripts/install-claude-context.sh || true
+  bash team_mvp_kit/teamz-company-automation/sh/install-claude-context.sh || true
 fi
 HOOK
   chmod +x "$HOOKS_DIR/post-merge"

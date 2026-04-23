@@ -4,6 +4,8 @@ This directory contains **58 Python scripts + 1 Ruby script** for SEO, ASO, keyw
 
 ## Critical Rules
 
+**Rule 0 — After ANY schema / canonical / sitemap change, run `py/inspect-urls.py` to verify before shipping.** Google validates JSON-LD permissively but rejects at the Rich Results layer when review/aggregateRating is attached to a parent type that is not eligible for a rich-result feature. Only these types can carry Review snippets: Book, Course, Event, HowTo, LocalBusiness, MediaObject, Movie, Organization, Product, Recipe, SoftwareApplication. Attaching review to Service, CreativeWork, Article, etc. will silently fail the Rich Results test even though the JSON-LD is well-formed. Same script flags canonical mismatches and "Discovered — currently not indexed" pages. Run it, fix anything it flags, then ship. Do not declare a schema task done without this check.
+
 **Rule 1 — Never fabricate keyword scores, search volumes, or metrics.** Run the existing scripts to get real data. If a script fails, fix it — don't work around it with made-up numbers.
 
 **Rule 2 — Never claim features the app doesn't have.** Apple Guideline 2.3.1 (Accurate Metadata) and Google Play deceptive-behavior policy reject metadata that misrepresents the app. Before writing ANY name / subtitle / description / promo text / keywords, verify each claim against the actual app code & config. **Mandatory 60-second audit:**

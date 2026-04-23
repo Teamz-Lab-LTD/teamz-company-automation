@@ -38,8 +38,18 @@ SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
-# Project root for loading tool data
-PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent
+# Project root for loading tool data.
+# Override with env TEAMZ_HOST_SITE_ROOT when running from a host repo other
+# than the one the submodule is nested under (useful for multi-project setups).
+_ENV_ROOT = os.getenv("TEAMZ_HOST_SITE_ROOT", "").strip()
+PROJECT_ROOT = Path(_ENV_ROOT) if _ENV_ROOT else SCRIPT_DIR.parent.parent.parent
+
+# Per-project site + brand config — read from env (loaded from .teamz-automation.env
+# by distribute.py before this module imports, or set explicitly). Falls back to
+# sensible defaults so single-project repos still work with zero config.
+SITE_URL = os.getenv("TEAMZ_SITE_URL", "https://apps.teamzlab.com/").rstrip("/")
+BRAND_NAME = os.getenv("TEAMZ_VIDEO_BRAND", SITE_URL.replace("https://", "").replace("http://", ""))
+CTA_BADGE = os.getenv("TEAMZ_VIDEO_CTA", "DOWNLOAD FREE")
 
 # ═════════════════════════════════════════════════════════════════════════════
 # FREE DATA SOURCES
@@ -139,7 +149,7 @@ def load_search_console_keywords():
 
 
 def load_tools_from_index():
-    """Load tools from search-index.js"""
+    """Load tools from search-index.js (tool.teamzlab.com-style catalog)"""
     idx_file = PROJECT_ROOT / "shared" / "js" / "search-index.js"
     if not idx_file.exists():
         return []
@@ -157,6 +167,97 @@ def load_tools_from_index():
             "hub": parts[0],
         })
     return tools
+
+
+def _parse_simple_frontmatter(raw: str) -> dict:
+    """Minimal YAML-ish frontmatter parser for key: value pairs + nested keys we care about.
+    Avoids a pyyaml dep. Returns top-level scalar keys only — good enough for appName,
+    shortDescription, primaryKeyword, playStoreUrl, appStoreUrl, platforms, secondaryKeywords."""
+    if not raw.startswith("---"):
+        return {}
+    parts = raw.split("---", 2)
+    if len(parts) < 3:
+        return {}
+    body = parts[1]
+    meta = {}
+    current_list_key = None
+    for line in body.split("\n"):
+        if not line.strip() or line.lstrip().startswith("#"):
+            current_list_key = None
+            continue
+        # continuation of a list (- item under "key:")
+        if current_list_key and line.startswith(("  - ", "- ")):
+            meta.setdefault(current_list_key, []).append(
+                line.strip()[2:].strip().strip('"').strip("'")
+            )
+            continue
+        if ":" not in line or line.startswith(" "):
+            current_list_key = None
+            continue
+        key, val = line.split(":", 1)
+        key = key.strip()
+        val = val.strip()
+        if not val:
+            current_list_key = key  # next lines may be list items
+            continue
+        current_list_key = None
+        meta[key] = val.strip('"').strip("'")
+    return meta
+
+
+def load_tools_from_landing_pages():
+    """Load app landing pages (src/content/apps/*.md) as 'app' tools for video generation.
+
+    Makes content-engine usable from ANY host repo that ships app landing pages —
+    not just the tool.teamzlab.com tools catalog. Override the scan path with env
+    TEAMZ_APPS_DIR (default: <PROJECT_ROOT>/src/content/apps).
+    """
+    apps_dir_env = os.getenv("TEAMZ_APPS_DIR", "").strip()
+    apps_dir = Path(apps_dir_env) if apps_dir_env else (PROJECT_ROOT / "src" / "content" / "apps")
+    if not apps_dir.exists() or not apps_dir.is_dir():
+        return []
+    tools = []
+    for md in sorted(apps_dir.glob("*.md")):
+        if md.name.lower() == "readme.md":
+            continue
+        try:
+            meta = _parse_simple_frontmatter(md.read_text(errors="replace"))
+        except Exception:
+            continue
+        slug = md.stem
+        name = meta.get("appName") or slug
+        desc = meta.get("shortDescription") or meta.get("tagline") or ""
+        landing = f"{SITE_URL}/{slug}/"
+        play = meta.get("playStoreUrl", "")
+        app_store = meta.get("appStoreUrl", "")
+        tools.append({
+            "title": name,
+            "desc": desc,
+            "href": landing,
+            "hub": "app",
+            "type": "app",
+            "slug": slug,
+            "landing_url": landing,
+            "play_store_url": play,
+            "app_store_url": app_store,
+            "primary_keyword": meta.get("primaryKeyword", ""),
+            "secondary_keywords": meta.get("secondaryKeywords", []),
+            "platforms": meta.get("platforms", ""),
+        })
+    return tools
+
+
+def load_tools_from_sources():
+    """Combine tools from all configured sources. Dedupes by href."""
+    combined = []
+    seen = set()
+    for t in (*load_tools_from_index(), *load_tools_from_landing_pages()):
+        key = t.get("href") or t.get("title")
+        if key in seen:
+            continue
+        seen.add(key)
+        combined.append(t)
+    return combined
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -472,7 +573,37 @@ def generate_title(tool_title, keyword, style="outcome"):
 
 
 def generate_description(tool, keyword, url):
-    """Generate YouTube-optimized description"""
+    """Generate YouTube-optimized description.
+
+    App-type tools (tool['type'] == 'app') get app-store-first copy (landing +
+    Play + App Store links, no 'browser tool' framing). Catalog tools (default)
+    keep the tool.teamzlab.com-style 'browser tool' copy.
+    """
+    if tool.get("type") == "app":
+        landing = tool.get("landing_url") or (f"https://{url}" if url else "")
+        play = tool.get("play_store_url", "")
+        app_store = tool.get("app_store_url", "")
+        store_lines = []
+        if landing:
+            store_lines.append(f"Learn more: {landing}")
+        if play:
+            store_lines.append(f"Google Play: {play}")
+        if app_store:
+            store_lines.append(f"App Store: {app_store}")
+        stores = "\n".join(store_lines) or f"Learn more: https://{url}"
+        brand = BRAND_NAME
+        tool_desc = (tool.get("desc") or "")[:200]
+        kw_tag = keyword.replace(" ", "").lower()
+        return (
+            f"{tool['title']} — {tool_desc}\n\n"
+            f"{stores}\n\n"
+            f"Free to install. No paywall, no subscription, no signup.\n\n"
+            f"---\n"
+            f"More from {brand}: https://{brand}\n\n"
+            f"#app #{kw_tag} #free #nosignup"
+        )
+
+    # Default: tool catalog / browser-tool framing
     desc = f"""{tool['title']} — {tool['desc'][:120]}
 
 Try it FREE: https://{url}
@@ -483,7 +614,7 @@ Your data never leaves your browser.
 100% free, 100% private, works instantly.
 
 ---
-{tool['title']} is one of 1800+ free browser tools at tool.teamzlab.com
+{tool['title']} is one of many free browser tools at {BRAND_NAME}
 
 #freetools #{keyword.replace(' ', '').lower()} #privacy #browsertools #nosubscription"""
     return desc
@@ -581,7 +712,15 @@ def generate_video_plan(tool, keyword=None, trending_context=None):
     else:
         title = generate_title(tool["title"], kw)
 
-    url = f"tool.teamzlab.com{tool['href']}" if tool.get("href") else tool.get("url", "teamzlab.com")
+    # URL resolution: prefer full URLs on tool (app landings) over prepending
+    # brand host. Falls back to BRAND_NAME + href for relative hrefs (tools catalog).
+    href = tool.get("href") or ""
+    if href.startswith(("http://", "https://")):
+        url = href.replace("https://", "").replace("http://", "").rstrip("/")
+    elif href:
+        url = f"{BRAND_NAME}{href}"
+    else:
+        url = tool.get("url", BRAND_NAME)
 
     if lang != "en" and lang in LOCALIZED_DESC:
         description = LOCALIZED_DESC[lang].format(
@@ -894,7 +1033,13 @@ def generate_tutorial_plan(tool, keyword=None):
     ]
     hook = random.choice(hooks)
 
-    url = f"tool.teamzlab.com{tool['href']}" if tool.get("href") else "tool.teamzlab.com"
+    href = tool.get("href") or ""
+    if href.startswith(("http://", "https://")):
+        url = href.replace("https://", "").replace("http://", "").rstrip("/")
+    elif href:
+        url = f"{BRAND_NAME}{href}"
+    else:
+        url = BRAND_NAME
     theme_index = random.randint(0, 7)
     audio_files = [f"audio/beat{i}.mp3" for i in range(1, 11)]
     audio = random.choice(audio_files)
@@ -959,7 +1104,7 @@ def generate_tutorial_plan(tool, keyword=None):
                 "themeIndex": theme_index,
                 "ctaText": "Try it free",
                 "ctaBadge": "LINK IN DESCRIPTION",
-                "brandName": "tool.teamzlab.com",
+                "brandName": BRAND_NAME,
                 "durationInFrames": duration_frames,
             },
         },
@@ -1007,9 +1152,13 @@ def main():
     print("  Content Intelligence Engine — Teamz Lab")
     print("=" * 60)
 
-    # Load tools
-    tools = load_tools_from_index()
-    print(f"\nLoaded {len(tools)} tools from search-index")
+    # Load tools from all sources (search-index.js + app landing pages)
+    tools = load_tools_from_sources()
+    app_tool_count = sum(1 for t in tools if t.get("type") == "app")
+    catalog_tool_count = len(tools) - app_tool_count
+    print(f"\nLoaded {len(tools)} tools total — {catalog_tool_count} from search-index, {app_tool_count} from app landings")
+    print(f"  Project root: {PROJECT_ROOT}")
+    print(f"  Site URL:     {SITE_URL}")
 
     # Collect keyword ideas from all free sources
     all_keywords = []
@@ -1185,20 +1334,64 @@ def main():
             plans.append(plan)
             used_tools.add(tool["href"])
 
-    # App-specific plans (ASO)
+    # App-specific plans
+    # Mode A (explicit): --app "AppName" → ASO-style plans for that one app.
+    # Mode B (auto): no --app flag → iterate every app landing page found and
+    #                generate plans seeded from primaryKeyword + secondaryKeywords
+    #                in their frontmatter. Works for any host repo with apps.
+    app_tools = [t for t in tools if t.get("type") == "app"]
+
     if args.app:
         print(f"\nASO mode for app: {args.app}")
         aso_keywords = youtube_autocomplete(args.app)
         aso_keywords.extend(google_autocomplete(f"{args.app} app"))
         print(f"  ASO keywords: {len(aso_keywords)}")
+        match = next((t for t in app_tools if t["title"].lower() == args.app.lower()), None)
+        base_tool = match or {
+            "title": args.app,
+            "desc": f"Download {args.app} on App Store & Play Store",
+            "href": "",
+            "hub": "app",
+            "type": "app",
+        }
         for kw in aso_keywords[:5]:
-            app_plan = generate_video_plan(
-                {"title": args.app, "desc": f"Download {args.app} on App Store & Play Store", "href": "", "hub": "app", "type": "app"},
-                keyword=kw
-            )
-            app_plan["render"]["props"]["ctaBadge"] = "DOWNLOAD FREE"
-            app_plan["render"]["props"]["brandName"] = "teamzlab.com"
+            app_plan = generate_video_plan(base_tool, keyword=kw)
+            app_plan["render"]["props"]["ctaBadge"] = CTA_BADGE
+            app_plan["render"]["props"]["brandName"] = BRAND_NAME
+            if base_tool.get("landing_url"):
+                app_plan.setdefault("backlinks", {})["landing"] = base_tool["landing_url"]
+            if base_tool.get("play_store_url"):
+                app_plan.setdefault("backlinks", {})["play_store"] = base_tool["play_store_url"]
+            if base_tool.get("app_store_url"):
+                app_plan.setdefault("backlinks", {})["app_store"] = base_tool["app_store_url"]
             plans.append(app_plan)
+    elif app_tools:
+        print(f"\nApp landings mode: found {len(app_tools)} app landing page(s)")
+        # Per app, generate 1-3 ASO plans using its primary + first two secondary keywords.
+        for t in app_tools:
+            seeds = []
+            if t.get("primary_keyword"):
+                seeds.append(t["primary_keyword"])
+            for k in (t.get("secondary_keywords") or [])[:2]:
+                if k and k not in seeds:
+                    seeds.append(k)
+            if not seeds:
+                seeds = [t["title"]]
+            for kw in seeds:
+                app_plan = generate_video_plan(t, keyword=kw)
+                app_plan["render"]["props"]["ctaBadge"] = CTA_BADGE
+                app_plan["render"]["props"]["brandName"] = BRAND_NAME
+                if t.get("landing_url"):
+                    app_plan.setdefault("backlinks", {})["landing"] = t["landing_url"]
+                if t.get("play_store_url"):
+                    app_plan.setdefault("backlinks", {})["play_store"] = t["play_store_url"]
+                if t.get("app_store_url"):
+                    app_plan.setdefault("backlinks", {})["app_store"] = t["app_store_url"]
+                plans.append(app_plan)
+                if len(plans) >= args.count:
+                    break
+            if len(plans) >= args.count:
+                break
 
     print(f"\n{'=' * 60}")
     print(f"Generated {len(plans)} video plans")

@@ -181,12 +181,92 @@ def _sitemap_urls() -> list[str]:
     return []
 
 
+def _snapshot_row(url: str, data: dict, strategy: str) -> dict | None:
+    """Extract a compact scoreboard row for JSON logging."""
+    if data.get("error"):
+        return {"url": url, "strategy": strategy, "error": data["error"]}
+    lr = data.get("lighthouseResult", {})
+    cats = lr.get("categories", {})
+    audits = lr.get("audits", {})
+    exp = data.get("loadingExperience", {}).get("metrics", {})
+
+    def pct(key: str) -> int | None:
+        v = cats.get(key, {}).get("score")
+        return int(round(v * 100)) if v is not None else None
+
+    def field(key: str) -> dict | None:
+        m = exp.get(key)
+        if not m:
+            return None
+        return {"p75": m.get("percentile"), "category": m.get("category")}
+
+    def lab_raw(audit_id: str, key: str = "numericValue") -> float | None:
+        return audits.get(audit_id, {}).get(key)
+
+    return {
+        "url": url,
+        "strategy": strategy,
+        "scores": {
+            "performance": pct("performance"),
+            "seo": pct("seo"),
+            "accessibility": pct("accessibility"),
+            "best_practices": pct("best-practices"),
+        },
+        "field": {
+            "LCP": field("LARGEST_CONTENTFUL_PAINT_MS"),
+            "INP": field("INTERACTION_TO_NEXT_PAINT"),
+            "CLS": field("CUMULATIVE_LAYOUT_SHIFT_SCORE"),
+            "FCP": field("FIRST_CONTENTFUL_PAINT_MS"),
+            "TTFB": field("EXPERIMENTAL_TIME_TO_FIRST_BYTE"),
+        },
+        "lab": {
+            "lcp_ms": lab_raw("largest-contentful-paint"),
+            "cls": lab_raw("cumulative-layout-shift"),
+            "tbt_ms": lab_raw("total-blocking-time"),
+            "fcp_ms": lab_raw("first-contentful-paint"),
+            "tti_ms": lab_raw("interactive"),
+            "speed_index_ms": lab_raw("speed-index"),
+        },
+    }
+
+
+def _log_snapshot(rows: list[dict], strategy: str, data_dir: str | None) -> str | None:
+    """Append today's snapshot to data/cwv-history.json (grouped by date+strategy)."""
+    import datetime
+    if not data_dir:
+        data_dir = os.environ.get("TEAMZ_DATA_DIR", "")
+    if not data_dir:
+        return None
+    path = os.path.join(data_dir, "cwv-history.json")
+    history = {"records": []}
+    if os.path.exists(path):
+        try:
+            history = json.loads(open(path).read())
+        except Exception:
+            pass
+    today = datetime.date.today().isoformat()
+    # Replace any existing same-day+strategy record so re-running today overwrites
+    history["records"] = [
+        r for r in history.get("records", []) if not (r.get("date") == today and r.get("strategy") == strategy)
+    ]
+    history["records"].append({"date": today, "strategy": strategy, "rows": rows})
+    history["records"] = history["records"][-120:]  # keep ~4 months of mobile+desktop snapshots
+    with open(path, "w") as f:
+        json.dump(history, f, indent=2)
+    # Also write a flat today-only file for quick grepping
+    day_path = os.path.join(data_dir, f"cwv-{today}-{strategy}.json")
+    with open(day_path, "w") as f:
+        json.dump({"date": today, "strategy": strategy, "rows": rows}, f, indent=2)
+    return path
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--url", nargs="+")
     ap.add_argument("--file")
     ap.add_argument("--strategy", choices=["mobile", "desktop"], default="mobile")
     ap.add_argument("--sleep", type=float, default=0.4, help="Seconds between calls.")
+    ap.add_argument("--log", action="store_true", help="Append snapshot to $TEAMZ_DATA_DIR/cwv-history.json.")
     args = ap.parse_args()
 
     urls: list[str] = []
@@ -204,17 +284,29 @@ def main() -> None:
     api_key = _key()
     bad = 0
     ok = 0
+    rows: list[dict] = []
     for u in urls:
         data = _query(u, args.strategy, api_key)
         if _emit_row(u, data, args.strategy):
             ok += 1
         else:
             bad += 1
+        snap = _snapshot_row(u, data, args.strategy)
+        if snap is not None:
+            rows.append(snap)
         if args.sleep > 0:
             time.sleep(args.sleep)
 
     print()
     print(f"Summary: {ok} OK, {bad} poor/slow  (of {len(urls)})")
+
+    if args.log:
+        path = _log_snapshot(rows, args.strategy, data_dir=os.environ.get("TEAMZ_DATA_DIR"))
+        if path:
+            print(f"Logged snapshot → {path}")
+        else:
+            print("WARN: --log set but TEAMZ_DATA_DIR not resolved; skipped.")
+
     sys.exit(0 if bad == 0 else 1)
 
 

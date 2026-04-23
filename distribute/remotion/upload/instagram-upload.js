@@ -260,6 +260,15 @@ function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null,
         caption = fs.readFileSync(reel.caption, "utf-8").substring(0, 2200);
       }
 
+      // Append app install link if reel carries backlinks (central reel-history).
+      if (reel.backlinks && !/Install:/.test(caption)) {
+        const bl = reel.backlinks;
+        const link = bl.landing || bl.play_store || bl.app_store;
+        if (link) {
+          caption = `${caption.trim()}\n\nInstall: ${link}`.substring(0, 2200);
+        }
+      }
+
       console.log(`  ${reel.title}`);
       console.log(`  File: ${reel.video}`);
 

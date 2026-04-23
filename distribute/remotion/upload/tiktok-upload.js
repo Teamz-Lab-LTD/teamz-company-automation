@@ -381,6 +381,16 @@ function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null,
         caption = `${reel.hook || reel.title} #freetools #shorts`;
       }
 
+      // Append app install links if reel carries backlinks (content-engine app mode).
+      // TikTok caps caption around 2200 chars; only inject landing (shortest).
+      if (reel.backlinks && !/Install:/.test(caption)) {
+        const bl = reel.backlinks;
+        const link = bl.landing || bl.play_store || bl.app_store;
+        if (link) {
+          caption = `${caption.trim()}\n\nInstall: ${link}`.substring(0, 2200);
+        }
+      }
+
       console.log(`[${i + 1}/${toUpload.length}] ${reel.title}`);
       console.log(`  File: ${reel.video}`);
       console.log(`  Caption: ${caption.substring(0, 80)}...`);

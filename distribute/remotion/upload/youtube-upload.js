@@ -616,6 +616,20 @@ async function addToPlaylist(playlistId, videoId) {
         description = fs.readFileSync(reel.caption, "utf-8");
       }
 
+      // Inject app-store / landing backlinks if the reel was seeded from an
+      // app landing (content-engine app-mode). Idempotent — skip if caption
+      // already contains the Install: block from render time.
+      if (reel.backlinks && !/📲 Install:/.test(description)) {
+        const bl = reel.backlinks;
+        const parts = [];
+        if (bl.play_store) parts.push(`Android: ${bl.play_store}`);
+        if (bl.app_store) parts.push(`iOS: ${bl.app_store}`);
+        if (bl.landing) parts.push(`More: ${bl.landing}`);
+        if (parts.length) {
+          description = `${description.trimEnd()}\n\n📲 Install:\n${parts.join("\n")}\n`;
+        }
+      }
+
       // Parse tags from caption or use defaults
       const tags = [...CFG.defaultTags, reel.hub, reel.title].filter(Boolean);
 

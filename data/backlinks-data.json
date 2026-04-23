@@ -4809,523 +4809,602 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/04/how-to-check-battery-health-on-samsung_0470832835.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-07T00:14:42.386061+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlabltd.tumblr.com/post/813192585272229888",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-04-07T00:14:43.171358+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3miuipuinwl2e",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-07T00:14:45.269622+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/86",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-04-07T00:14:47.280673+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/How-to-Check-Battery-Health-on-Samsung-Pixel--Xiaomi--Real-Power-in-Watts-Free-04-07-2",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-04-07T00:14:47.956189+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/04/is-my-isp-spying-on-me-how-to-check-dns.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-14T19:36:20.219681+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/90",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-04-14T19:36:22.962745+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Is-My-ISP-Spying-on-Me-How-to-Check-DNS-Manipulation-DPI--SSL-Hijacking-on-Android-Free-04-14",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-04-14T19:36:23.742796+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/04/i-built-free-business-card-maker-that.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-20T20:41:27.860577+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/04/21/i-built-a-free-business-card-maker-that-runs-entirely-in-your-browser/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-04-20T20:41:36.507509+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlabltd.tumblr.com/post/814447536337207296",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-04-20T20:41:37.808677+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjxddpuuip2p",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-20T20:41:39.915349+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/93",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-04-20T20:41:47.219894+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/I-Built-a-Free-Business-Card-Maker-That-Runs-Entirely-in-Your-Browser-04-20",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-04-20T20:41:47.985659+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=53973:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-04-20T20:41:48.420630+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mj5z43luza2s",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-10T19:01:52.824586+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/i-built-3-free-cqc-compliance-tools-for-uk-care-homes-oca",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-04-11T20:02:04.379736+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/i-built-3-free-cqc-compliance-tools-for-uk-care-homes",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-04-11T20:02:05.548552+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/04/12/how-to-prepare-for-a-cqc-inspection-in-2026-complete-checklist/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-04-11T20:02:15.842781+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/how-to-prepare-for-a-cqc-inspection-in-2026-complete-checklist-lcj",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-04-15T22:27:47.651729+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/04/i-built-care-home-compliance-app-in-2.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-10T19:01:40.823566+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/i-built-a-care-home-compliance-app-in-2-weeks-here-is-the-tech-stack",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-04-15T22:27:52.031119+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/i-built-a-care-home-compliance-app-in-2-weeks-here-is-the-tech-stack-1p8n",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-04-20T20:40:44.902565+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/04/free-aged-care-compliance-software-for_01977709986.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-11T20:02:25.059966+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlabltd.tumblr.com/post/813629697394114560",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-04-11T20:02:26.286833+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjamxed6rd2z",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-11T20:02:28.624811+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/88",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-04-11T20:02:31.014970+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Free-Aged-Care-Compliance-Software-for-Australia--ACQS-2025-Ready-04-11",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-04-11T20:02:31.699663+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-194170551",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-04-14T10:17:13.906659+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/free-aged-care-compliance-software-for-australia-acqs-2025-ready-o62",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-04-16T14:27:18.615748+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/04/16/free-aged-care-compliance-software-for-australia-acqs-2025-ready-3/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-04-16T14:27:24.749339+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=28964:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-04-16T14:27:32.977205+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=4431:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-04-20T22:30:05.624891+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/free-rest-home-compliance-software-for-new-zealand-nzs-8134-audit-tool-2dn6",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-04-14T09:30:04.888029+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/free-rest-home-compliance-software-for-new-zealand-nzs-8134-audit-tool-1",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-04-14T09:30:09.233779+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/04/free-rest-home-compliance-software-for.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-14T09:30:12.697396+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/04/14/free-rest-home-compliance-software-for-new-zealand-nzs-8134-audit-tool/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-04-14T09:30:22.179957+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlabltd.tumblr.com/post/813861723464482816",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-04-14T09:30:23.029310+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjh2zvulrg2m",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-14T09:30:24.916090+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/89",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-04-14T09:30:26.507426+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Free-Rest-Home-Compliance-Software-for-New-Zealand--NZS-8134-Audit-Tool-04-14",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-04-14T09:30:27.297570+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=56579:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-04-14T09:30:27.816658+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-194843496",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-04-20T20:41:11.542272+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mji4uvjszl24",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-14T19:36:04.036759+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/04/15/care-home-inspection-statistics-2025-uk-au-de-ie-nz-compared/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-04-14T19:36:10.317385+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlabltd.tumblr.com/post/814001236210794496",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-04-15T22:27:53.014803+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/04/japan-worker-tax-calculators-2026.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-15T22:28:15.567056+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/04/16/japan-worker-tax-calculators-2026-nenmatsu-chousei-zangyou-dai-ikuji-kyuugyou/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-04-15T22:28:23.084964+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjkwxz3gky2z",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-15T22:28:25.181187+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/91",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-04-15T22:28:26.825403+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-194350473",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-04-15T22:28:33.261520+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Japan-Worker-Tax-Calculators-2026--Nenmatsu-Chousei-Zangyou-Dai-Ikuji-Kyuugyou-04-15",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-04-15T22:28:33.977262+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=14850:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-04-15T22:28:34.416515+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/japan-worker-tax-calculators-2026-nenmatsu-chousei-zangyou-dai-ikuji-kyuugyou",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-04-20T20:40:49.042419+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/04/3-free-emergency-prep-tools-readiness.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-17T09:46:55.272188+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/04/17/3-free-emergency-prep-tools-readiness-score-pantry-tracker-a-30-day-challenge/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-04-17T09:47:01.364665+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjonegguuf2n",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-17T09:47:03.408179+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/92",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-04-17T09:47:05.254187+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/3-Free-Emergency-Prep-Tools-Readiness-Score-Pantry-Tracker--a-30-Day-Challenge-04-17",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-04-17T09:47:05.974989+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://dev.to/teamzlab/why-nestjs-1ahj",
+      "platform": "devto",
+      "type": "DoFollow",
+      "date": "2026-04-21T11:12:27.363831+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.hashnode.dev/why-nestjs",
+      "platform": "hashnode",
+      "type": "DoFollow",
+      "date": "2026-04-21T11:12:31.526633+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/04/why-nestjs.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-04-21T11:12:35.875495+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.wordpress.com/2026/04/21/why-nestjs/",
+      "platform": "wordpress",
+      "type": "DoFollow",
+      "date": "2026-04-21T11:12:45.952977+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlabltd.tumblr.com/post/814502344415969280",
+      "platform": "tumblr",
+      "type": "NoFollow",
+      "date": "2026-04-21T11:12:46.817564+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mjytzhdsey2o",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-04-21T11:12:48.792214+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://github.com/Teamz-Lab-LTD/teamz-lab-blogs/discussions/94",
+      "platform": "github_discussions",
+      "type": "DoFollow",
+      "date": "2026-04-21T11:12:50.161173+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-194902337",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-04-21T11:12:59.401044+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Why-NestJS-04-21",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-04-21T11:13:00.347716+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://api.indexnow.org/indexnow",
       "platform": "ping_indexnow",
       "type": "DoFollow",
-      "date": "2026-03-29T17:43:38.388233",
+      "date": "2026-04-14T05:57:08.158815",
       "status": "submitted",
       "origin": "directory"
     }
   ],
-  "scanned_at": "2026-04-05T03:27:31.427082",
+  "scanned_at": "2026-04-24T02:42:58.494581",
   "linking_sites": [],
   "top_pages": [
     {
-      "page": "/ramadan/eid-salami-qr-card-generator/",
-      "clicks": 15,
-      "impressions": 50
-    },
-    {
-      "page": "/jp/tsuukin-hi-keisan/",
-      "clicks": 12,
-      "impressions": 241
-    },
-    {
-      "page": "/work/probation-period-calculator/",
-      "clicks": 10,
-      "impressions": 278
-    },
-    {
-      "page": "/weather/wind-chill-calculator/",
-      "clicks": 6,
-      "impressions": 141
-    },
-    {
       "page": "/",
-      "clicks": 4,
-      "impressions": 125
-    },
-    {
-      "page": "/bd/electricity-bill-calculator/",
-      "clicks": 3,
-      "impressions": 412
-    },
-    {
-      "page": "/bd/loan-emi-calculator/",
-      "clicks": 3,
-      "impressions": 108
-    },
-    {
-      "page": "/career/resume-job-match-checker/",
-      "clicks": 3,
-      "impressions": 296
-    },
-    {
-      "page": "/cricket/ipl-playoff-calculator/",
-      "clicks": 3,
-      "impressions": 12
-    },
-    {
-      "page": "/football/ucl-group-stage-simulator/",
-      "clicks": 3,
-      "impressions": 17
-    },
-    {
-      "page": "/health/down-syndrome-risk-calculator/",
-      "clicks": 3,
-      "impressions": 16
-    },
-    {
-      "page": "/bd/independence-day-greeting-card/",
-      "clicks": 2,
-      "impressions": 97
-    },
-    {
-      "page": "/ca/ei-benefit-estimator/",
-      "clicks": 2,
-      "impressions": 291
-    },
-    {
-      "page": "/de/grundsteuer-rechner-thueringen/",
-      "clicks": 2,
-      "impressions": 27
-    },
-    {
-      "page": "/design/logo-text-maker/",
-      "clicks": 2,
-      "impressions": 178
-    },
-    {
-      "page": "/gaming/fps-calculator/",
-      "clicks": 2,
-      "impressions": 83
-    },
-    {
-      "page": "/grooming/attractiveness-quiz/",
-      "clicks": 2,
-      "impressions": 156
-    },
-    {
-      "page": "/health/screen-distance-checker/",
-      "clicks": 2,
-      "impressions": 10
-    },
-    {
-      "page": "/health/time-blindness-calculator/",
-      "clicks": 2,
-      "impressions": 4
-    },
-    {
-      "page": "/ramadan/eid-salami-scratch-challenge/",
-      "clicks": 2,
-      "impressions": 11
-    },
-    {
-      "page": "/student/attendance-percentage-calculator/",
-      "clicks": 2,
-      "impressions": 379
-    },
-    {
-      "page": "/student/exam-timer/",
-      "clicks": 2,
-      "impressions": 30
-    },
-    {
-      "page": "/student/how-many-classes-can-i-miss-calculator/",
-      "clicks": 2,
-      "impressions": 152
-    },
-    {
-      "page": "/tools/ai-emotion-detector/",
-      "clicks": 2,
-      "impressions": 87
-    },
-    {
-      "page": "/tools/anagram-solver/",
-      "clicks": 2,
-      "impressions": 497
-    },
-    {
-      "page": "/tools/birthday-countdown/",
-      "clicks": 2,
-      "impressions": 54
-    },
-    {
-      "page": "/work/business-day-calculator/",
-      "clicks": 2,
-      "impressions": 960
-    },
-    {
-      "page": "/3d/fluid-simulation/",
       "clicks": 1,
-      "impressions": 37
+      "impressions": 126
     },
     {
-      "page": "/ai/",
+      "page": "/devicegpt",
       "clicks": 1,
       "impressions": 32
     },
     {
-      "page": "/amazon/",
-      "clicks": 1,
-      "impressions": 4
-    },
-    {
-      "page": "/bd/customs-duty-calculator/",
-      "clicks": 1,
-      "impressions": 34
-    },
-    {
-      "page": "/bd/family-card-generator/",
-      "clicks": 1,
-      "impressions": 1
-    },
-    {
-      "page": "/bd/govt-salary-calculator/",
-      "clicks": 1,
-      "impressions": 83
-    },
-    {
-      "page": "/bd/pohela-boishakh-countdown/",
-      "clicks": 1,
-      "impressions": 9
-    },
-    {
-      "page": "/be/erfbelasting-berekening/",
-      "clicks": 1,
-      "impressions": 50
-    },
-    {
-      "page": "/cricket/ipl-auction-budget-calculator/",
-      "clicks": 1,
-      "impressions": 18
-    },
-    {
-      "page": "/de/grundsteuer-rechner-saarland/",
-      "clicks": 1,
-      "impressions": 3
-    },
-    {
-      "page": "/dev/github-profile-analyzer/",
-      "clicks": 1,
-      "impressions": 8
-    },
-    {
-      "page": "/dev/yaml-to-json/",
-      "clicks": 1,
-      "impressions": 17
-    },
-    {
-      "page": "/diagnostic/dns-leak-test/",
-      "clicks": 1,
-      "impressions": 176
-    },
-    {
-      "page": "/diagnostic/screen-resolution-tester/",
-      "clicks": 1,
-      "impressions": 191
-    },
-    {
-      "page": "/diagnostic/what-is-my-dns-server/",
-      "clicks": 1,
-      "impressions": 57
-    },
-    {
-      "page": "/evergreen/roth-ira-calculator/",
-      "clicks": 1,
-      "impressions": 478
-    },
-    {
-      "page": "/football/football-salary-calculator/",
-      "clicks": 1,
-      "impressions": 89
-    },
-    {
-      "page": "/freelance/invoice-due-date-calculator/",
-      "clicks": 1,
-      "impressions": 251
-    },
-    {
-      "page": "/gaming/click-speed-test/",
-      "clicks": 1,
-      "impressions": 211
-    },
-    {
-      "page": "/gaming/crosshair-generator/",
-      "clicks": 1,
-      "impressions": 79
-    },
-    {
-      "page": "/gaming/dpi-calculator/",
-      "clicks": 1,
-      "impressions": 54
-    },
-    {
-      "page": "/gaming/kd-ratio-calculator/",
-      "clicks": 1,
-      "impressions": 400
-    },
-    {
-      "page": "/ie/irish-salary-calculator/",
-      "clicks": 1,
-      "impressions": 272
-    },
-    {
-      "page": "/mobile/",
-      "clicks": 1,
-      "impressions": 8
-    },
-    {
-      "page": "/mobile/deep-link-generator/",
-      "clicks": 1,
-      "impressions": 12
-    },
-    {
-      "page": "/music/bpm-tapper/",
-      "clicks": 1,
-      "impressions": 151
-    },
-    {
-      "page": "/pt/calculadora-carne-leao/",
-      "clicks": 1,
-      "impressions": 1
-    },
-    {
-      "page": "/pt/calculadora-emprestimo/",
-      "clicks": 1,
-      "impressions": 6
-    },
-    {
-      "page": "/pt/simulador-nhr-portugal/",
-      "clicks": 1,
-      "impressions": 1
-    },
-    {
-      "page": "/ramadan/eid-salami-cheque-book/",
-      "clicks": 1,
-      "impressions": 4
-    },
-    {
-      "page": "/research/literature-review-matrix/",
-      "clicks": 1,
-      "impressions": 27
-    },
-    {
-      "page": "/sg/cpf-contribution-calculator/",
-      "clicks": 1,
-      "impressions": 377
-    },
-    {
-      "page": "/sg/cpf-retirement-calculator/",
-      "clicks": 1,
-      "impressions": 207
-    },
-    {
-      "page": "/sg/shared-parental-leave-planner/",
-      "clicks": 1,
-      "impressions": 26
-    },
-    {
-      "page": "/software/token-cost-calculator/",
-      "clicks": 1,
-      "impressions": 41
-    },
-    {
-      "page": "/tea/",
-      "clicks": 1,
-      "impressions": 10
-    },
-    {
-      "page": "/text/passive-voice-checker/",
-      "clicks": 1,
-      "impressions": 201
-    },
-    {
-      "page": "/tools/ai-named-entity-extractor/",
-      "clicks": 1,
-      "impressions": 49
-    },
-    {
-      "page": "/tools/birthday-invitation-maker/",
-      "clicks": 1,
-      "impressions": 1
-    },
-    {
-      "page": "/tools/code-typing-practice/",
-      "clicks": 1,
-      "impressions": 7
-    },
-    {
-      "page": "/tools/habit-tracker/",
-      "clicks": 1,
-      "impressions": 2
-    },
-    {
-      "page": "/tools/name-meaning-generator/",
-      "clicks": 1,
-      "impressions": 17
-    },
-    {
-      "page": "/tools/number-typing-practice/",
-      "clicks": 1,
-      "impressions": 273
-    },
-    {
-      "page": "/tools/random-name-picker/",
-      "clicks": 1,
-      "impressions": 505
-    },
-    {
-      "page": "/tools/signature-background-remover/",
-      "clicks": 1,
-      "impressions": 31
-    },
-    {
-      "page": "/uk/dividend-tax-calculator/",
-      "clicks": 1,
-      "impressions": 92
-    },
-    {
-      "page": "/us/income-tax-calculator/",
-      "clicks": 1,
-      "impressions": 206
-    },
-    {
-      "page": "/us/quarterly-tax-estimator/",
+      "page": "/no-trace-chat/",
       "clicks": 1,
       "impressions": 29
     },
     {
-      "page": "/us/roth-conversion-calculator/",
-      "clicks": 1,
-      "impressions": 69
-    },
-    {
-      "page": "/us/salt-deduction-calculator/",
-      "clicks": 1,
-      "impressions": 21
-    },
-    {
-      "page": "/video/",
-      "clicks": 1,
-      "impressions": 22
-    },
-    {
-      "page": "/work/last-working-day-calculator/",
-      "clicks": 1,
-      "impressions": 93
-    },
-    {
-      "page": "/work/salary-per-day-calculator/",
-      "clicks": 1,
-      "impressions": 151
-    },
-    {
-      "page": "/3d/",
-      "clicks": 0,
-      "impressions": 2
-    },
-    {
-      "page": "/3d/ai-3d-prompt-generator/",
-      "clicks": 0,
-      "impressions": 4
-    },
-    {
-      "page": "/3d/audio-visualizer/",
+      "page": "/blog/vibe-coding-vs-no-code-vs-agency-what-should-a-startup-choose/",
       "clicks": 0,
       "impressions": 3
     },
     {
-      "page": "/3d/dice-roller/",
-      "clicks": 0,
-      "impressions": 3
-    },
-    {
-      "page": "/3d/model-viewer/",
-      "clicks": 0,
-      "impressions": 61
-    },
-    {
-      "page": "/3d/print-time-estimator/",
-      "clicks": 0,
-      "impressions": 31
-    },
-    {
-      "page": "/3d/printing-cost-calculator/",
-      "clicks": 0,
-      "impressions": 19
-    },
-    {
-      "page": "/3d/product-mockup-generator/",
-      "clicks": 0,
-      "impressions": 4
-    },
-    {
-      "page": "/3d/stl-to-obj-converter/",
-      "clicks": 0,
-      "impressions": 1
-    },
-    {
-      "page": "/3d/stl-viewer/",
-      "clicks": 0,
-      "impressions": 6
-    },
-    {
-      "page": "/3d/text-generator/",
-      "clicks": 0,
-      "impressions": 1
-    },
-    {
-      "page": "/about/",
-      "clicks": 0,
-      "impressions": 21
-    },
-    {
-      "page": "/accessibility/accessible-color-palette-generator/",
-      "clicks": 0,
-      "impressions": 17
-    },
-    {
-      "page": "/accessibility/ada-compliance-checker/",
-      "clicks": 0,
-      "impressions": 58
-    },
-    {
-      "page": "/accessibility/autism-support-plan-generator/",
-      "clicks": 0,
-      "impressions": 1
-    },
-    {
-      "page": "/accessibility/color-blindness-simulator/",
-      "clicks": 0,
-      "impressions": 35
-    },
-    {
-      "page": "/accessibility/dyslexia-friendly-text-converter/",
-      "clicks": 0,
-      "impressions": 4
-    },
-    {
-      "page": "/accessibility/screen-reader-text-preview/",
+      "page": "/eula/",
       "clicks": 0,
       "impressions": 2
     },
     {
-      "page": "/accessibility/ssdi-benefits-estimator/",
+      "page": "/privacy/",
       "clicks": 0,
-      "impressions": 18
+      "impressions": 11
     },
     {
-      "page": "/accessibility/visual-schedule-maker/",
+      "page": "/top3picks/",
       "clicks": 0,
-      "impressions": 9
+      "impressions": 2
     }
   ],
   "summary": {
-    "total": 602,
-    "dofollow": 460,
-    "nofollow": 142,
-    "distribution": 601,
+    "total": 670,
+    "dofollow": 513,
+    "nofollow": 157,
+    "distribution": 669,
     "directory": 1
   }
 }

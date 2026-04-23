@@ -155,19 +155,28 @@ def _emit_row(url: str, data: dict, strategy: str) -> bool:
     return not bad
 
 
+_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+
+def _fetch(url: str, timeout: int = 20) -> bytes:
+    # Cloudflare 403s urllib's default User-Agent; send a browser UA so sitemap
+    # fetches work on CF-fronted sites (teamzlab.com and most other hosts).
+    req = urllib.request.Request(url, headers={"User-Agent": _UA, "Accept": "application/xml,text/xml,*/*"})
+    return urllib.request.urlopen(req, timeout=timeout).read()
+
+
 def _sitemap_urls() -> list[str]:
     host = SITE_URL.rstrip("/")
     ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
     for path in ("sitemap-index.xml", "sitemap-0.xml", "sitemap.xml"):
         try:
-            r = urllib.request.urlopen(f"{host}/{path}", timeout=20)
-            root = ET.fromstring(r.read().decode())
+            root = ET.fromstring(_fetch(f"{host}/{path}").decode())
         except Exception:
             continue
         pages: list[str] = []
         for sm in root.findall("ns:sitemap/ns:loc", ns):
             try:
-                sub = ET.fromstring(urllib.request.urlopen(sm.text, timeout=20).read().decode())
+                sub = ET.fromstring(_fetch(sm.text).decode())
                 for loc in sub.findall("ns:url/ns:loc", ns):
                     if loc.text:
                         pages.append(loc.text)

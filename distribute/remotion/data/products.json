@@ -1,39 +1,41 @@
 {
   "products": [
     {
-      "id": "kids_decode-teen-texts",
-      "type": "tool",
-      "category": "kids",
-      "title": "Decode Teen Texts",
-      "description": "Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with a cringe-o-meter. Flags concerning terms. 100% pri",
-      "url": "tool.teamzlab.com/kids/decode-teen-texts/",
-      "hook": "I can't believe this decode teen texts natok tool is free",
-      "template": "InstantFix",
-      "themeIndex": 6,
-      "audioFile": "audio/beat2.mp3",
+      "id": "https:__apps.teamzlab.com_notetube-ai",
+      "type": "app",
+      "category": "app",
+      "title": "NoteTube AI",
+      "description": "Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture with timestamp jump-back. Export to Anki CSV, Obsidia",
+      "url": "apps.teamzlab.com/notetube-ai",
+      "hook": "I replaced $500/mo with this free ai image converter",
+      "template": "BeforeAfter",
+      "themeIndex": 1,
+      "audioFile": "audio/beat1.mp3",
       "ctaText": "Try it free",
       "ctaBadge": "LINK IN BIO",
-      "brandName": "tool.teamzlab.com",
+      "brandName": "apps.teamzlab.com",
       "youtube": {
-        "title": "Decode Teen Texts Natok \u2014 Free Browser Tool",
-        "description": "Decode Teen Texts \u2014 Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with a cringe-o-meter. Fl\n\nTry it FREE: https://tool.teamzlab.com/kids/decode-teen-texts/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nDecode Teen Texts is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #decodeteentextsnatok #privacy #browsertools #nosubscription",
+        "title": "Best Free Ai Image Converter \u2014 No Signup",
+        "description": "NoteTube AI \u2014 Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture with timestamp jump-back. Export to Anki CSV, Obsidian, or Notion. Also: channel radar with outlier det\n\nLearn more: https://apps.teamzlab.com/notetube-ai/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.notetube_ai\nApp Store: https://apps.apple.com/app/notetube-ai/id0000000000\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #aiimageconverter #free #nosignup",
         "tags": [
-          "decode teen texts natok",
-          "free decode teen texts natok",
-          "decode teen texts natok online",
-          "decode teen texts natok free",
-          "best decode teen texts natok",
-          "decode teen texts natok no signup",
-          "decode teen texts natok browser",
-          "decode teen texts",
+          "ai image converter",
+          "free ai image converter",
+          "ai image converter online",
+          "ai image converter free",
+          "best ai image converter",
+          "ai image converter no signup",
+          "ai image converter browser",
+          "notetube ai",
           "free tools",
           "browser tools",
           "no signup",
           "privacy",
           "online tools",
-          "kids",
-          "decoder",
-          "\u09a8\u09be\u099f\u0995 copy paste"
+          "app",
+          "best free ai image converter",
+          "free ai image to video converter",
+          "face app \u09a6\u09bf\u09af\u09bc\u09c7 \u0995\u09bf\u09ad\u09be\u09ac\u09c7 \u0995\u09be\u099c \u0995\u09b0\u09c7",
+          "pc diye photo editing"
         ],
         "categoryId": 28,
         "privacy": "public",
@@ -41,101 +43,102 @@
         "defaultLanguage": "",
         "hashtags": [
           "#freetools",
-          "#decodeteentextsnatok",
+          "#aiimageconverter",
           "#shorts"
         ]
       },
       "tiktok": {
-        "caption": "I can't believe this decode teen texts natok tool is free\n\nTry it: tool.teamzlab.com/kids/decode-teen-texts/\n\n#freetools #decodeteentextsnatok #tech #lifehack #webapp"
+        "caption": "I replaced $500/mo with this free ai image converter\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/notetube-ai\n\n#lifehack #productivity #techtok #freetools #fyp"
       },
       "instagram": {
-        "caption": "I can't believe this decode teen texts natok tool is free\n\nDecode Teen Texts \u2014 Gen Z slang translator for parents. Decode teen texts to plain English or encode your messages with \n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/kids/decode-teen-texts/\n\n#freetools #decodeteentextsnatok #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+        "caption": "I replaced $500/mo with this free ai image converter\n\nNoteTube AI \u2014 Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture wit\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/notetube-ai\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #aiimageconverter"
       }
     },
     {
-      "id": "career_contractor-vs-employee-calculator",
-      "type": "tool",
-      "category": "career",
-      "title": "Contractor vs Employee Cost Calculator",
-      "description": "Compare 1099 contractor vs W-2 employee costs side by side. Factor in payroll taxes, benefits, insurance, and overhead. Free calculator for US employe",
-      "url": "tool.teamzlab.com/career/contractor-vs-employee-calculator/",
-      "hook": "Wait till you see this contractor vs employee cost calculator result",
-      "template": "CompareThree",
-      "themeIndex": 3,
-      "audioFile": "audio/beat5.mp3",
+      "id": "https:__apps.teamzlab.com_top3picks",
+      "type": "app",
+      "category": "app",
+      "title": "Top3Picks",
+      "description": "Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budget \u2014 AI compares prices across Amazon, Best Buy, Wa",
+      "url": "apps.teamzlab.com/top3picks",
+      "hook": "Free image to pdf converter app iphone that actually works",
+      "template": "BeforeAfter",
+      "themeIndex": 7,
+      "audioFile": "audio/beat7.mp3",
       "ctaText": "Try it free",
       "ctaBadge": "LINK IN BIO",
-      "brandName": "tool.teamzlab.com",
+      "brandName": "apps.teamzlab.com",
       "youtube": {
-        "title": "Best Free Contractor Vs Employee Cost Calculator \u2014 No Signup",
-        "description": "Contractor vs Employee Cost Calculator \u2014 Compare 1099 contractor vs W-2 employee costs side by side. Factor in payroll taxes, benefits, insurance, and overhead. \n\nTry it FREE: https://tool.teamzlab.com/career/contractor-vs-employee-calculator/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nContractor vs Employee Cost Calculator is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #contractorvsemployeecostcalculator #privacy #browsertools #nosubscription",
+        "title": "Free Image To Pdf Converter App Iphone That Actually Works",
+        "description": "Top3Picks \u2014 Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budget \u2014 AI compares prices across Amazon, Best Buy, Walmart, and more, then picks the 3 best products wi\n\nLearn more: https://apps.teamzlab.com/top3picks/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.top3picks.top_3_picks\nApp Store: https://apps.apple.com/app/top3picks-shopping-assistant/id6759916887\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #imagetopdfconverterappiphone #free #nosignup",
         "tags": [
-          "contractor vs employee cost calculator",
-          "free contractor vs employee cost calculator",
-          "contractor vs employee cost calculator online",
-          "contractor vs employee cost calculator free",
-          "best contractor vs employee cost calculator",
-          "contractor vs employee cost calculator no signup",
-          "contractor vs employee cost calculator browser",
+          "image to pdf converter app iphone",
+          "free image to pdf converter app iphone",
+          "image to pdf converter app iphone online",
+          "image to pdf converter app iphone free",
+          "best image to pdf converter app iphone",
+          "image to pdf converter app iphone no signup",
+          "image to pdf converter app iphone browser",
+          "top3picks",
           "free tools",
           "browser tools",
           "no signup",
           "privacy",
           "online tools",
-          "career",
-          "free contractor vs employee cost calculator bangla",
-          "free contractor vs employee cost calculator in tamil"
+          "app",
+          "image to pdf converter",
+          "bangla pdf file to word converter",
+          "pdf file \u0995\u09bf\u09ad\u09be\u09ac\u09c7 edit \u0995\u09b0\u09be \u09af\u09be\u09af\u09bc"
         ],
-        "categoryId": 27,
+        "categoryId": 28,
         "privacy": "public",
         "madeForKids": false,
         "defaultLanguage": "",
         "hashtags": [
           "#freetools",
-          "#contractorvsemployeecostcalculator",
+          "#imagetopdfconverterappiphone",
           "#shorts"
         ]
       },
       "tiktok": {
-        "caption": "Wait till you see this contractor vs employee cost calculator result\n\nTry it: tool.teamzlab.com/career/contractor-vs-employee-calculator/\n\n#freetools #contractorvsemployeecostcalculator #tech #lifehack #webapp"
+        "caption": "Free image to pdf converter app iphone that actually works\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/top3picks\n\n#lifehack #productivity #techtok #freetools #fyp"
       },
       "instagram": {
-        "caption": "Wait till you see this contractor vs employee cost calculator result\n\nContractor vs Employee Cost Calculator \u2014 Compare 1099 contractor vs W-2 employee costs side by side. Factor in payroll taxes, benefits, insur\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/career/contractor-vs-employee-calculator/\n\n#freetools #contractorvsemployeecostcalculator #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+        "caption": "Free image to pdf converter app iphone that actually works\n\nTop3Picks \u2014 Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budge\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/top3picks\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #imagetopdfconverterappiphone"
       }
     },
     {
-      "id": "legal_employment-contract-checklist",
-      "type": "tool",
-      "category": "legal",
-      "title": "Employment Contract Checklist",
-      "description": "Review your employment contract with this free checklist. Spot missing clauses for UK, AU, IE, US, SG, CA. 25+ essential items covered. 100% private.",
-      "url": "tool.teamzlab.com/legal/employment-contract-checklist/",
-      "hook": "You're wasting time doing employment contract checklist manually",
+      "id": "https:__apps.teamzlab.com_toss",
+      "type": "app",
+      "category": "app",
+      "title": "Paycheck & Freelance Calc",
+      "description": "Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan, tax, BMI & 2,000+ free calculators in one app. No",
+      "url": "apps.teamzlab.com/toss",
+      "hook": "Why are you still paying for font generator & custom online text changer?",
       "template": "InstantFix",
       "themeIndex": 2,
-      "audioFile": "audio/beat9.mp3",
+      "audioFile": "audio/beat4.mp3",
       "ctaText": "Try it free",
       "ctaBadge": "LINK IN BIO",
-      "brandName": "tool.teamzlab.com",
+      "brandName": "apps.teamzlab.com",
       "youtube": {
-        "title": "Employment Contract Checklist \u2014 100% Private & Free",
-        "description": "Employment Contract Checklist \u2014 Review your employment contract with this free checklist. Spot missing clauses for UK, AU, IE, US, SG, CA. 25+ essential\n\nTry it FREE: https://tool.teamzlab.com/legal/employment-contract-checklist/\n\nNo signup. No download. No tracking.\nYour data never leaves your browser.\n\n100% free, 100% private, works instantly.\n\n---\nEmployment Contract Checklist is one of 1800+ free browser tools at tool.teamzlab.com\n\n#freetools #employmentcontractchecklist #privacy #browsertools #nosubscription",
+        "title": "Stop Paying for Font Generator & Custom Online Text Changer",
+        "description": "Paycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan, tax, BMI & 2,000+ free calculators in one app. No signup. Works offline.\n\nLearn more: https://apps.teamzlab.com/toss/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamz.toss.toss\nApp Store: https://apps.apple.com/us/app/id6739454718\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #fontgenerator&customonlinetextchanger #free #nosignup",
         "tags": [
-          "employment contract checklist",
-          "free employment contract checklist",
-          "employment contract checklist online",
-          "employment contract checklist free",
-          "best employment contract checklist",
-          "employment contract checklist no signup",
-          "employment contract checklist browser",
+          "font generator & custom online text changer",
+          "free font generator & custom online text changer",
+          "font generator & custom online text changer online",
+          "font generator & custom online text changer free",
+          "best font generator & custom online text changer",
+          "font generator & custom online text changer no signup",
+          "font generator & custom online text changer browser",
+          "paycheck & freelance calc",
           "free tools",
           "browser tools",
           "no signup",
           "privacy",
           "online tools",
-          "legal",
-          "free employment contract checklist bangla",
-          "free employment contract checklist natok"
+          "app"
         ],
         "categoryId": 28,
         "privacy": "public",
@@ -143,15 +146,845 @@
         "defaultLanguage": "",
         "hashtags": [
           "#freetools",
-          "#employmentcontractchecklist",
+          "#fontgenerator&customonlinetextchanger",
           "#shorts"
         ]
       },
       "tiktok": {
-        "caption": "You're wasting time doing employment contract checklist manually\n\nTry it: tool.teamzlab.com/legal/employment-contract-checklist/\n\n#freetools #employmentcontractchecklist #tech #lifehack #webapp"
+        "caption": "Why are you still paying for font generator & custom online text changer?\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #fyp"
       },
       "instagram": {
-        "caption": "You're wasting time doing employment contract checklist manually\n\nEmployment Contract Checklist \u2014 Review your employment contract with this free checklist. Spot missing clauses for UK, AU, IE, US, S\n\nFree. No signup. 100% private.\n\nLink in bio: tool.teamzlab.com/legal/employment-contract-checklist/\n\n#freetools #employmentcontractchecklist #productivity #tech #browsertools #nosubscription #webapp #lifehack"
+        "caption": "Why are you still paying for font generator & custom online text changer?\n\nPaycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan,\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #fontgenerator&customonlinetextchanger"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_no-trace-chat",
+      "type": "app",
+      "category": "app",
+      "title": "No Trace Chat",
+      "description": "No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, share a code or QR, messages vanish after read. End-",
+      "url": "apps.teamzlab.com/no-trace-chat",
+      "hook": "This free invoice generator online no sign up tool is actually insane",
+      "template": "InstantFix",
+      "themeIndex": 7,
+      "audioFile": "audio/beat4.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "LINK IN BIO",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Free No Trace Chat Online (No Install)",
+        "description": "No Trace Chat \u2014 No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, share a code or QR, messages vanish after read. End-to-end encrypted, no signup, disposable chat by de\n\nLearn more: https://apps.teamzlab.com/no-trace-chat/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.no_trace_code_chat\nApp Store: https://apps.apple.com/us/app/no-trace-chat-private/id6758867181\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #invoicegeneratoronlinenosignup #free #nosignup",
+        "tags": [
+          "invoice generator online no sign up",
+          "free invoice generator online no sign up",
+          "invoice generator online no sign up online",
+          "invoice generator online no sign up free",
+          "best invoice generator online no sign up",
+          "invoice generator online no sign up no signup",
+          "invoice generator online no sign up browser",
+          "no trace chat",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free invoice generator online no sign up bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#invoicegeneratoronlinenosignup",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "This free invoice generator online no sign up tool is actually insane\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/no-trace-chat\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "This free invoice generator online no sign up tool is actually insane\n\nNo Trace Chat \u2014 No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, sh\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/no-trace-chat\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #invoicegeneratoronlinenosignup"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_devicegpt",
+      "type": "app",
+      "category": "app",
+      "title": "DeviceGPT",
+      "description": "DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware test, spyware detector, mic/camera privacy, phone co",
+      "url": "apps.teamzlab.com/devicegpt",
+      "hook": "phone health check app shouldn't cost money",
+      "template": "InstantFix",
+      "themeIndex": 3,
+      "audioFile": "audio/beat2.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Best Free Phone Health Check App \u2014 No Signup",
+        "description": "DeviceGPT \u2014 DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware test, spyware detector, mic/camera privacy, phone condition check with resale value. AI-powered plain-\n\nLearn more: https://apps.teamzlab.com/devicegpt/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamz.lab.debugger\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #phonehealthcheckapp #free #nosignup",
+        "tags": [
+          "phone health check app",
+          "free phone health check app",
+          "phone health check app online",
+          "phone health check app free",
+          "best phone health check app",
+          "phone health check app no signup",
+          "phone health check app browser",
+          "devicegpt",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free phone health check app bangla",
+          "free phone health check apps bangla",
+          "free phone health check app malayalam"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#phonehealthcheckapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "phone health check app shouldn't cost money\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/devicegpt\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "phone health check app shouldn't cost money\n\nDeviceGPT \u2014 DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware te\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/devicegpt\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #phonehealthcheckapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_devicegpt",
+      "type": "app",
+      "category": "app",
+      "title": "DeviceGPT",
+      "description": "DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware test, spyware detector, mic/camera privacy, phone co",
+      "url": "apps.teamzlab.com/devicegpt",
+      "hook": "Nobody talks about this free battery health",
+      "template": "InstantFix",
+      "themeIndex": 0,
+      "audioFile": "audio/beat9.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Battery Health \u2014 Free Browser Tool",
+        "description": "DeviceGPT \u2014 DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware test, spyware detector, mic/camera privacy, phone condition check with resale value. AI-powered plain-\n\nLearn more: https://apps.teamzlab.com/devicegpt/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamz.lab.debugger\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #batteryhealth #free #nosignup",
+        "tags": [
+          "battery health",
+          "free battery health",
+          "battery health online",
+          "battery health free",
+          "best battery health",
+          "battery health no signup",
+          "battery health browser",
+          "devicegpt",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free battery health check bangla",
+          "free battery health bangla",
+          "free battery health kivabe korbo"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#batteryhealth",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Nobody talks about this free battery health\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/devicegpt\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "Nobody talks about this free battery health\n\nDeviceGPT \u2014 DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware te\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/devicegpt\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #batteryhealth"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_devicegpt",
+      "type": "app",
+      "category": "app",
+      "title": "DeviceGPT",
+      "description": "DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware test, spyware detector, mic/camera privacy, phone co",
+      "url": "apps.teamzlab.com/devicegpt",
+      "hook": "Stop paying for battery health android",
+      "template": "InstantFix",
+      "themeIndex": 4,
+      "audioFile": "audio/beat10.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Stop Paying for Battery Health Android",
+        "description": "DeviceGPT \u2014 DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware test, spyware detector, mic/camera privacy, phone condition check with resale value. AI-powered plain-\n\nLearn more: https://apps.teamzlab.com/devicegpt/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamz.lab.debugger\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #batteryhealthandroid #free #nosignup",
+        "tags": [
+          "battery health android",
+          "free battery health android",
+          "battery health android online",
+          "battery health android free",
+          "best battery health android",
+          "battery health android no signup",
+          "battery health android browser",
+          "devicegpt",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free battery health android bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#batteryhealthandroid",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Stop paying for battery health android\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/devicegpt\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "Stop paying for battery health android\n\nDeviceGPT \u2014 DeviceGPT is a battery health and phone health check app for Android: diagnostics, phone hardware te\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/devicegpt\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #batteryhealthandroid"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_no-trace-chat",
+      "type": "app",
+      "category": "app",
+      "title": "No Trace Chat",
+      "description": "No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, share a code or QR, messages vanish after read. End-",
+      "url": "apps.teamzlab.com/no-trace-chat",
+      "hook": "Don't install software for disappearing messages app",
+      "template": "InstantFix",
+      "themeIndex": 4,
+      "audioFile": "audio/beat1.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Best Free Disappearing Messages App \u2014 No Signup",
+        "description": "No Trace Chat \u2014 No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, share a code or QR, messages vanish after read. End-to-end encrypted, no signup, disposable chat by de\n\nLearn more: https://apps.teamzlab.com/no-trace-chat/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.no_trace_code_chat\nApp Store: https://apps.apple.com/us/app/no-trace-chat-private/id6758867181\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #disappearingmessagesapp #free #nosignup",
+        "tags": [
+          "disappearing messages app",
+          "free disappearing messages app",
+          "disappearing messages app online",
+          "disappearing messages app free",
+          "best disappearing messages app",
+          "disappearing messages app no signup",
+          "disappearing messages app browser",
+          "no trace chat",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free disappearing messages app bangla",
+          "free disappearing messages apps bangla",
+          "free disappearing messages app malayalam"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#disappearingmessagesapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Don't install software for disappearing messages app\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/no-trace-chat\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "Don't install software for disappearing messages app\n\nNo Trace Chat \u2014 No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, sh\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/no-trace-chat\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #disappearingmessagesapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_no-trace-chat",
+      "type": "app",
+      "category": "app",
+      "title": "No Trace Chat",
+      "description": "No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, share a code or QR, messages vanish after read. End-",
+      "url": "apps.teamzlab.com/no-trace-chat",
+      "hook": "Nobody talks about this free secure chat app",
+      "template": "InstantFix",
+      "themeIndex": 3,
+      "audioFile": "audio/beat7.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "No Trace Chat \u2014 100% Private & Free",
+        "description": "No Trace Chat \u2014 No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, share a code or QR, messages vanish after read. End-to-end encrypted, no signup, disposable chat by de\n\nLearn more: https://apps.teamzlab.com/no-trace-chat/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.no_trace_code_chat\nApp Store: https://apps.apple.com/us/app/no-trace-chat-private/id6758867181\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #securechatapp #free #nosignup",
+        "tags": [
+          "secure chat app",
+          "free secure chat app",
+          "secure chat app online",
+          "secure chat app free",
+          "best secure chat app",
+          "secure chat app no signup",
+          "secure chat app browser",
+          "no trace chat",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free secure chat app bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#securechatapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Nobody talks about this free secure chat app\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/no-trace-chat\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "Nobody talks about this free secure chat app\n\nNo Trace Chat \u2014 No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, sh\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/no-trace-chat\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #securechatapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_no-trace-chat",
+      "type": "app",
+      "category": "app",
+      "title": "No Trace Chat",
+      "description": "No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, share a code or QR, messages vanish after read. End-",
+      "url": "apps.teamzlab.com/no-trace-chat",
+      "hook": "Wait till you see this private chat app result",
+      "template": "InstantFix",
+      "themeIndex": 0,
+      "audioFile": "audio/beat7.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Private Chat App \u2014 Free Browser Tool",
+        "description": "No Trace Chat \u2014 No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, share a code or QR, messages vanish after read. End-to-end encrypted, no signup, disposable chat by de\n\nLearn more: https://apps.teamzlab.com/no-trace-chat/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.no_trace_code_chat\nApp Store: https://apps.apple.com/us/app/no-trace-chat-private/id6758867181\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #privatechatapp #free #nosignup",
+        "tags": [
+          "private chat app",
+          "free private chat app",
+          "private chat app online",
+          "private chat app free",
+          "best private chat app",
+          "private chat app no signup",
+          "private chat app browser",
+          "no trace chat",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free chat app",
+          "free call apps",
+          "\u09ab\u09cd\u09b0\u09bf \u09ad\u09bf\u09a1\u09bf\u0993 \u0995\u09b2 \u0985\u09cd\u09af\u09be\u09aa"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#privatechatapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Wait till you see this private chat app result\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/no-trace-chat\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "Wait till you see this private chat app result\n\nNo Trace Chat \u2014 No Trace Chat is a disappearing messages app and secret chat without phone number. Create a room, sh\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/no-trace-chat\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #privatechatapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_notetube-ai",
+      "type": "app",
+      "category": "app",
+      "title": "NoteTube AI",
+      "description": "Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture with timestamp jump-back. Export to Anki CSV, Obsidia",
+      "url": "apps.teamzlab.com/notetube-ai",
+      "hook": "Stop paying for youtube to flashcards",
+      "template": "InstantFix",
+      "themeIndex": 5,
+      "audioFile": "audio/beat7.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Youtube To Flashcards in Seconds \u2014 Free Tool",
+        "description": "NoteTube AI \u2014 Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture with timestamp jump-back. Export to Anki CSV, Obsidian, or Notion. Also: channel radar with outlier det\n\nLearn more: https://apps.teamzlab.com/notetube-ai/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.notetube_ai\nApp Store: https://apps.apple.com/app/notetube-ai/id0000000000\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #youtubetoflashcards #free #nosignup",
+        "tags": [
+          "youtube to flashcards",
+          "free youtube to flashcards",
+          "youtube to flashcards online",
+          "youtube to flashcards free",
+          "best youtube to flashcards",
+          "youtube to flashcards no signup",
+          "youtube to flashcards browser",
+          "notetube ai",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free youtube to flashcards bangla",
+          "free youtube to flashcards bangla tutorial"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#youtubetoflashcards",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Stop paying for youtube to flashcards\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/notetube-ai\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "Stop paying for youtube to flashcards\n\nNoteTube AI \u2014 Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture wit\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/notetube-ai\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #youtubetoflashcards"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_notetube-ai",
+      "type": "app",
+      "category": "app",
+      "title": "NoteTube AI",
+      "description": "Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture with timestamp jump-back. Export to Anki CSV, Obsidia",
+      "url": "apps.teamzlab.com/notetube-ai",
+      "hook": "youtube flashcards in 10 seconds \u2014 for free",
+      "template": "InstantFix",
+      "themeIndex": 1,
+      "audioFile": "audio/beat4.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "NoteTube AI \u2014 Free, No Signup",
+        "description": "NoteTube AI \u2014 Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture with timestamp jump-back. Export to Anki CSV, Obsidian, or Notion. Also: channel radar with outlier det\n\nLearn more: https://apps.teamzlab.com/notetube-ai/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.notetube_ai\nApp Store: https://apps.apple.com/app/notetube-ai/id0000000000\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #youtubeflashcards #free #nosignup",
+        "tags": [
+          "youtube flashcards",
+          "free youtube flashcards",
+          "youtube flashcards online",
+          "youtube flashcards free",
+          "best youtube flashcards",
+          "youtube flashcards no signup",
+          "youtube flashcards browser",
+          "notetube ai",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free youtube flashcards bangla",
+          "free youtube flashcards bangla tutorial"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#youtubeflashcards",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "youtube flashcards in 10 seconds \u2014 for free\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/notetube-ai\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "youtube flashcards in 10 seconds \u2014 for free\n\nNoteTube AI \u2014 Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture wit\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/notetube-ai\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #youtubeflashcards"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_notetube-ai",
+      "type": "app",
+      "category": "app",
+      "title": "NoteTube AI",
+      "description": "Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture with timestamp jump-back. Export to Anki CSV, Obsidia",
+      "url": "apps.teamzlab.com/notetube-ai",
+      "hook": "This free youtube notes app tool is actually insane",
+      "template": "InstantFix",
+      "themeIndex": 1,
+      "audioFile": "audio/beat6.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Stop Paying for Youtube Notes App",
+        "description": "NoteTube AI \u2014 Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture with timestamp jump-back. Export to Anki CSV, Obsidian, or Notion. Also: channel radar with outlier det\n\nLearn more: https://apps.teamzlab.com/notetube-ai/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.notetube_ai\nApp Store: https://apps.apple.com/app/notetube-ai/id0000000000\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #youtubenotesapp #free #nosignup",
+        "tags": [
+          "youtube notes app",
+          "free youtube notes app",
+          "youtube notes app online",
+          "youtube notes app free",
+          "best youtube notes app",
+          "youtube notes app no signup",
+          "youtube notes app browser",
+          "notetube ai",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free youtube notes app bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#youtubenotesapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "This free youtube notes app tool is actually insane\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/notetube-ai\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "This free youtube notes app tool is actually insane\n\nNoteTube AI \u2014 Watch YouTube, walk away with flashcards. NoteTube AI pulls 10 exam-ready cards from any lecture wit\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/notetube-ai\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #youtubenotesapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_top3picks",
+      "type": "app",
+      "category": "app",
+      "title": "Top3Picks",
+      "description": "Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budget \u2014 AI compares prices across Amazon, Best Buy, Wa",
+      "url": "apps.teamzlab.com/top3picks",
+      "hook": "I can't believe this price comparison app tool is free",
+      "template": "InstantFix",
+      "themeIndex": 2,
+      "audioFile": "audio/beat5.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Price Comparison App in Seconds \u2014 Free Tool",
+        "description": "Top3Picks \u2014 Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budget \u2014 AI compares prices across Amazon, Best Buy, Walmart, and more, then picks the 3 best products wi\n\nLearn more: https://apps.teamzlab.com/top3picks/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.top3picks.top_3_picks\nApp Store: https://apps.apple.com/app/top3picks-shopping-assistant/id6759916887\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #pricecomparisonapp #free #nosignup",
+        "tags": [
+          "price comparison app",
+          "free price comparison app",
+          "price comparison app online",
+          "price comparison app free",
+          "best price comparison app",
+          "price comparison app no signup",
+          "price comparison app browser",
+          "top3picks",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free price comparison app bangla",
+          "free price comparison apps bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#pricecomparisonapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "I can't believe this price comparison app tool is free\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/top3picks\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "I can't believe this price comparison app tool is free\n\nTop3Picks \u2014 Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budge\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/top3picks\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #pricecomparisonapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_top3picks",
+      "type": "app",
+      "category": "app",
+      "title": "Top3Picks",
+      "description": "Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budget \u2014 AI compares prices across Amazon, Best Buy, Wa",
+      "url": "apps.teamzlab.com/top3picks",
+      "hook": "AI price comparison app shouldn't cost money",
+      "template": "InstantFix",
+      "themeIndex": 4,
+      "audioFile": "audio/beat2.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Free Top3Picks Online (No Install)",
+        "description": "Top3Picks \u2014 Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budget \u2014 AI compares prices across Amazon, Best Buy, Walmart, and more, then picks the 3 best products wi\n\nLearn more: https://apps.teamzlab.com/top3picks/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.top3picks.top_3_picks\nApp Store: https://apps.apple.com/app/top3picks-shopping-assistant/id6759916887\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #aipricecomparisonapp #free #nosignup",
+        "tags": [
+          "ai price comparison app",
+          "free ai price comparison app",
+          "ai price comparison app online",
+          "ai price comparison app free",
+          "best ai price comparison app",
+          "ai price comparison app no signup",
+          "ai price comparison app browser",
+          "top3picks",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free ai price comparison app bangla",
+          "free ai price comparison apps bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#AIpricecomparisonapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "AI price comparison app shouldn't cost money\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/top3picks\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "AI price comparison app shouldn't cost money\n\nTop3Picks \u2014 Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budge\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/top3picks\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #AIpricecomparisonapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_top3picks",
+      "type": "app",
+      "category": "app",
+      "title": "Top3Picks",
+      "description": "Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budget \u2014 AI compares prices across Amazon, Best Buy, Wa",
+      "url": "apps.teamzlab.com/top3picks",
+      "hook": "How is this compare prices app tool free??",
+      "template": "CompareThree",
+      "themeIndex": 6,
+      "audioFile": "audio/beat5.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Compare Prices App in Seconds \u2014 Free Tool",
+        "description": "Top3Picks \u2014 Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budget \u2014 AI compares prices across Amazon, Best Buy, Walmart, and more, then picks the 3 best products wi\n\nLearn more: https://apps.teamzlab.com/top3picks/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamzlab.top3picks.top_3_picks\nApp Store: https://apps.apple.com/app/top3picks-shopping-assistant/id6759916887\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #comparepricesapp #free #nosignup",
+        "tags": [
+          "compare prices app",
+          "free compare prices app",
+          "compare prices app online",
+          "compare prices app free",
+          "best compare prices app",
+          "compare prices app no signup",
+          "compare prices app browser",
+          "top3picks",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free compare prices app bangla",
+          "free compare prices apps bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#comparepricesapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "How is this compare prices app tool free??\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/top3picks\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "How is this compare prices app tool free??\n\nTop3Picks \u2014 Top3Picks is an AI price comparison app for iPhone and Android. Tell it what you want and your budge\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/top3picks\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #comparepricesapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_toss",
+      "type": "app",
+      "category": "app",
+      "title": "Paycheck & Freelance Calc",
+      "description": "Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan, tax, BMI & 2,000+ free calculators in one app. No",
+      "url": "apps.teamzlab.com/toss",
+      "hook": "I can't believe this paycheck calculator app tool is free",
+      "template": "InstantFix",
+      "themeIndex": 1,
+      "audioFile": "audio/beat4.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Best Free Paycheck Calculator App \u2014 No Signup",
+        "description": "Paycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan, tax, BMI & 2,000+ free calculators in one app. No signup. Works offline.\n\nLearn more: https://apps.teamzlab.com/toss/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamz.toss.toss\nApp Store: https://apps.apple.com/us/app/id6739454718\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #paycheckcalculatorapp #free #nosignup",
+        "tags": [
+          "paycheck calculator app",
+          "free paycheck calculator app",
+          "paycheck calculator app online",
+          "paycheck calculator app free",
+          "best paycheck calculator app",
+          "paycheck calculator app no signup",
+          "paycheck calculator app browser",
+          "paycheck & freelance calc",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free paycheck calculator app bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#paycheckcalculatorapp",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "I can't believe this paycheck calculator app tool is free\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "I can't believe this paycheck calculator app tool is free\n\nPaycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan,\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #paycheckcalculatorapp"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_toss",
+      "type": "app",
+      "category": "app",
+      "title": "Paycheck & Freelance Calc",
+      "description": "Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan, tax, BMI & 2,000+ free calculators in one app. No",
+      "url": "apps.teamzlab.com/toss",
+      "hook": "Wait till you see this paycheck calculator result",
+      "template": "InstantFix",
+      "themeIndex": 5,
+      "audioFile": "audio/beat8.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Free Paycheck Calculator That Actually Works",
+        "description": "Paycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan, tax, BMI & 2,000+ free calculators in one app. No signup. Works offline.\n\nLearn more: https://apps.teamzlab.com/toss/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamz.toss.toss\nApp Store: https://apps.apple.com/us/app/id6739454718\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #paycheckcalculator #free #nosignup",
+        "tags": [
+          "paycheck calculator",
+          "free paycheck calculator",
+          "paycheck calculator online",
+          "paycheck calculator free",
+          "best paycheck calculator",
+          "paycheck calculator no signup",
+          "paycheck calculator browser",
+          "paycheck & freelance calc",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free paycheck calculator bangla"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#paycheckcalculator",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Wait till you see this paycheck calculator result\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "Wait till you see this paycheck calculator result\n\nPaycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan,\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #paycheckcalculator"
+      }
+    },
+    {
+      "id": "https:__apps.teamzlab.com_toss",
+      "type": "app",
+      "category": "app",
+      "title": "Paycheck & Freelance Calc",
+      "description": "Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan, tax, BMI & 2,000+ free calculators in one app. No",
+      "url": "apps.teamzlab.com/toss",
+      "hook": "I replaced $500/mo with this free take home pay calculator",
+      "template": "InstantFix",
+      "themeIndex": 6,
+      "audioFile": "audio/beat4.mp3",
+      "ctaText": "Try it free",
+      "ctaBadge": "DOWNLOAD FREE",
+      "brandName": "apps.teamzlab.com",
+      "youtube": {
+        "title": "Paycheck & Freelance Calc \u2014 100% Private & Free",
+        "description": "Paycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan, tax, BMI & 2,000+ free calculators in one app. No signup. Works offline.\n\nLearn more: https://apps.teamzlab.com/toss/\nGoogle Play: https://play.google.com/store/apps/details?id=com.teamz.toss.toss\nApp Store: https://apps.apple.com/us/app/id6739454718\n\nFree to install. No paywall, no subscription, no signup.\n\n---\nMore from apps.teamzlab.com: https://apps.teamzlab.com\n\n#app #takehomepaycalculator #free #nosignup",
+        "tags": [
+          "take home pay calculator",
+          "free take home pay calculator",
+          "take home pay calculator online",
+          "take home pay calculator free",
+          "best take home pay calculator",
+          "take home pay calculator no signup",
+          "take home pay calculator browser",
+          "paycheck & freelance calc",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy",
+          "online tools",
+          "app",
+          "free take home pay calculator bangla",
+          "free take home pay calculator natok"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "",
+        "hashtags": [
+          "#freetools",
+          "#takehomepaycalculator",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "I replaced $500/mo with this free take home pay calculator\n\nTry it free \u2014 link in bio \ud83d\udd17\n\n\ud83d\udd17 apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #fyp"
+      },
+      "instagram": {
+        "caption": "I replaced $500/mo with this free take home pay calculator\n\nPaycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan,\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #takehomepaycalculator"
       }
     }
   ]

@@ -808,8 +808,23 @@ def generate_video_plan(tool, keyword=None, trending_context=None):
         tt_caption = f"{hook}\n\n{local_cta['privacy']}\n\n🔗 {short_url}\n\n#freetools #{kw_tag} #{hub} #fyp"
         ig_caption = f"{hook}\n\n{tool['title']} — {tool.get('desc', '')[:100]}\n\n{local_cta['privacy']}\n\nLink in bio: {short_url}\n\n#freetools #{kw_tag} #{hub}tools #reels"
 
+    # Build a unique, filesystem-safe slug per (tool, keyword, language).
+    # For tools with a full-URL href (app landings: https://host/slug/) we use
+    # the tool.slug field; for catalog tools we keep the href-derived path.
+    # Append keyword-hash so multiple plans for the same tool get distinct files
+    # (previously they overwrote each other on render).
+    _base_slug = (
+        tool.get("slug")
+        or tool.get("href", "").strip("/").replace("/", "_")
+        or tool["title"].lower().replace(" ", "-")
+    )
+    if _base_slug.startswith(("https:", "http:")):
+        _base_slug = tool.get("slug") or tool["title"].lower().replace(" ", "-")
+    _kw_part = re.sub(r"[^a-z0-9]+", "-", (kw or "").lower()).strip("-")[:40] or "default"
+    _lang_part = lang if lang != "en" else ""
+    _plan_id = "__".join(p for p in [_base_slug, _kw_part, _lang_part] if p)
     plan = {
-        "id": tool.get("href", "").strip("/").replace("/", "_") or tool["title"].lower().replace(" ", "-"),
+        "id": _plan_id,
         "type": tool.get("type", "tool"),
         "language": lang,
 

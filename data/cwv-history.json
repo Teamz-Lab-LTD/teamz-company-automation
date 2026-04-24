@@ -8,7 +8,7 @@
           "url": "https://apps.teamzlab.com/",
           "strategy": "mobile",
           "scores": {
-            "performance": 81,
+            "performance": 83,
             "seo": 92,
             "accessibility": 97,
             "best_practices": 100
@@ -21,21 +21,21 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2812.0040045272563,
-            "cls": 0.172285,
-            "tbt_ms": 123,
-            "fcp_ms": 2736.9985310106667,
-            "tti_ms": 4950.32803899367,
-            "speed_index_ms": 3962.846118391779
+            "lcp_ms": 2705.720982658525,
+            "cls": 0.172314,
+            "tbt_ms": 38.000000000000455,
+            "fcp_ms": 2705.720982658525,
+            "tti_ms": 4875.9971783656765,
+            "speed_index_ms": 3723.5877250641115
           }
         },
         {
           "url": "https://apps.teamzlab.com/add-ai-to-my-app/",
           "strategy": "mobile",
           "scores": {
-            "performance": 89,
+            "performance": 86,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -46,21 +46,21 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2664.7658316164016,
-            "cls": 0.111475,
-            "tbt_ms": 63.5,
-            "fcp_ms": 2589.3162379206656,
-            "tti_ms": 4533.512416203031,
-            "speed_index_ms": 2646.013635172514
+            "lcp_ms": 2635.7780538173156,
+            "cls": 0.138159,
+            "tbt_ms": 93,
+            "fcp_ms": 2560.3284600936704,
+            "tti_ms": 4776.024638295099,
+            "speed_index_ms": 3423.83273003674
           }
         },
         {
           "url": "https://apps.teamzlab.com/ai-agent-development/",
           "strategy": "mobile",
           "scores": {
-            "performance": 92,
+            "performance": 93,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -71,21 +71,21 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2663.9241798966814,
-            "cls": 0.057581,
-            "tbt_ms": 89.49999999999955,
-            "fcp_ms": 2588.474586039116,
-            "tti_ms": 4993.170763852173,
-            "speed_index_ms": 2661.5413404216642
+            "lcp_ms": 2560.322672596289,
+            "cls": 0.021844,
+            "tbt_ms": 52,
+            "fcp_ms": 2560.322672596289,
+            "tti_ms": 4508.519243530191,
+            "speed_index_ms": 2595.290451042807
           }
         },
         {
           "url": "https://apps.teamzlab.com/ai-integration/",
           "strategy": "mobile",
           "scores": {
-            "performance": 88,
+            "performance": 89,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -96,12 +96,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2664.7767785154238,
-            "cls": 0.109325,
-            "tbt_ms": 116,
-            "fcp_ms": 2589.327184657968,
-            "tti_ms": 4805.427996943055,
-            "speed_index_ms": 2782.3254158647333
+            "lcp_ms": 2589.321328866982,
+            "cls": 0.12749,
+            "tbt_ms": 20.5,
+            "fcp_ms": 2589.321328866982,
+            "tti_ms": 4621.91657263273,
+            "speed_index_ms": 2589.321328866982
           }
         },
         {
@@ -121,12 +121,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 3034.704171640882,
+            "lcp_ms": 3005.705056957947,
             "cls": 0,
-            "tbt_ms": 20759,
-            "fcp_ms": 3034.704171640882,
-            "tti_ms": 28916.10669929063,
-            "speed_index_ms": 8617.28778971564
+            "tbt_ms": 22541.8035387162,
+            "fcp_ms": 3005.705056957947,
+            "tti_ms": 29211.45859567415,
+            "speed_index_ms": 9196.261212755908
           }
         },
         {
@@ -146,19 +146,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2558.9424440381918,
-            "cls": 0.010641,
-            "tbt_ms": 68,
-            "fcp_ms": 2558.9424440381918,
-            "tti_ms": 4295.1437075926415,
-            "speed_index_ms": 2558.9424440381918
+            "lcp_ms": 2617.444623454335,
+            "cls": 0.009777,
+            "tbt_ms": 4.999999999999545,
+            "fcp_ms": 2617.444623454335,
+            "tti_ms": 4113.545074873848,
+            "speed_index_ms": 2617.444623454335
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/ai-shopping-assistants-how-they-work-which-are-worth-it/",
           "strategy": "mobile",
           "scores": {
-            "performance": 90,
+            "performance": 91,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -171,19 +171,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2620.889079289729,
-            "cls": 0.087451,
-            "tbt_ms": 148,
-            "fcp_ms": 2620.889079289729,
-            "tti_ms": 4318.990072081573,
-            "speed_index_ms": 2620.889079289729
+            "lcp_ms": 2559.1787162467117,
+            "cls": 0.087459,
+            "tbt_ms": 83.00000000000045,
+            "fcp_ms": 2559.1787162467117,
+            "tti_ms": 4097.880521920048,
+            "speed_index_ms": 3202.9237784987695
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/best-ways-to-find-deals-online-2026/",
           "strategy": "mobile",
           "scores": {
-            "performance": 92,
+            "performance": 93,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -196,12 +196,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2617.3497611170233,
-            "cls": 0.049916,
-            "tbt_ms": 116.00000000000045,
-            "fcp_ms": 2617.3497611170233,
-            "tti_ms": 4124.552107714069,
-            "speed_index_ms": 2617.3497611170233
+            "lcp_ms": 2587.868447659001,
+            "cls": 0.046292,
+            "tbt_ms": 88,
+            "fcp_ms": 2587.868447659001,
+            "tti_ms": 4406.069892148607,
+            "speed_index_ms": 2587.868447659001
           }
         },
         {
@@ -221,12 +221,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2588.3461972698387,
-            "cls": 0.019774,
-            "tbt_ms": 71,
-            "fcp_ms": 2588.3461972698387,
-            "tti_ms": 4240.94872436021,
-            "speed_index_ms": 2588.3461972698387
+            "lcp_ms": 2587.825245136503,
+            "cls": 0.017819,
+            "tbt_ms": 93,
+            "fcp_ms": 2587.825245136503,
+            "tti_ms": 4414.526689673865,
+            "speed_index_ms": 2587.825245136503
           }
         },
         {
@@ -246,19 +246,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2559.3342003960215,
-            "cls": 0.042305,
-            "tbt_ms": 93,
-            "fcp_ms": 2559.3342003960215,
-            "tti_ms": 4250.035464452616,
-            "speed_index_ms": 2559.3342003960215
+            "lcp_ms": 2617.386760850507,
+            "cls": 0.042291,
+            "tbt_ms": 76,
+            "fcp_ms": 2617.386760850507,
+            "tti_ms": 4373.0891082220405,
+            "speed_index_ms": 2617.386760850507
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/gift-finder-guide-how-to-pick-the-perfect-gift-on-a-budget/",
           "strategy": "mobile",
           "scores": {
-            "performance": 90,
+            "performance": 91,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -271,19 +271,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2591.890072074988,
-            "cls": 0.061672,
-            "tbt_ms": 185,
-            "fcp_ms": 2591.890072074988,
-            "tti_ms": 4255.091877152263,
-            "speed_index_ms": 2806.1382588217616
+            "lcp_ms": 2559.8500992475197,
+            "cls": 0.050236,
+            "tbt_ms": 148.55045141781693,
+            "fcp_ms": 2559.8500992475197,
+            "tti_ms": 4599.54640835919,
+            "speed_index_ms": 2559.8500992475197
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/how-much-does-it-cost-to-build-an-app-in-2026/",
           "strategy": "mobile",
           "scores": {
-            "performance": 90,
+            "performance": 91,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -296,16 +296,41 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2560.3191634146556,
-            "cls": 0.10022,
-            "tbt_ms": 90,
-            "fcp_ms": 2560.3191634146556,
-            "tti_ms": 4400.5207886316675,
-            "speed_index_ms": 2560.3191634146556
+            "lcp_ms": 2559.320944824137,
+            "cls": 0.08934,
+            "tbt_ms": 67,
+            "fcp_ms": 2559.320944824137,
+            "tti_ms": 4081.522028227634,
+            "speed_index_ms": 2559.320944824137
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/how-much-does-it-cost-to-hire-a-ui-ux-designer-in-2026/",
+          "strategy": "mobile",
+          "scores": {
+            "performance": 93,
+            "seo": 92,
+            "accessibility": 96,
+            "best_practices": 100
+          },
+          "field": {
+            "LCP": null,
+            "INP": null,
+            "CLS": null,
+            "FCP": null,
+            "TTFB": null
+          },
+          "lab": {
+            "lcp_ms": 2588.3265500768725,
+            "cls": 0.056541,
+            "tbt_ms": 13,
+            "fcp_ms": 2588.3265500768725,
+            "tti_ms": 3985.527994611469,
+            "speed_index_ms": 2588.3265500768725
+          }
+        },
+        {
+          "url": "https://apps.teamzlab.com/blog/how-to-compare-prices-online-before-buying/",
           "strategy": "mobile",
           "scores": {
             "performance": 92,
@@ -321,44 +346,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2588.334127827152,
-            "cls": 0.072518,
-            "tbt_ms": 92.5,
-            "fcp_ms": 2588.334127827152,
-            "tti_ms": 4339.035391378826,
-            "speed_index_ms": 2588.334127827152
-          }
-        },
-        {
-          "url": "https://apps.teamzlab.com/blog/how-to-compare-prices-online-before-buying/",
-          "strategy": "mobile",
-          "scores": {
-            "performance": 93,
-            "seo": 92,
-            "accessibility": 96,
-            "best_practices": 100
-          },
-          "field": {
-            "LCP": null,
-            "INP": null,
-            "CLS": null,
-            "FCP": null,
-            "TTFB": null
-          },
-          "lab": {
-            "lcp_ms": 2588.3481646405826,
-            "cls": 0.029414,
-            "tbt_ms": 85,
-            "fcp_ms": 2588.3481646405826,
-            "tti_ms": 4391.049970017061,
-            "speed_index_ms": 2588.3481646405826
+            "lcp_ms": 2588.3436904384034,
+            "cls": 0.012796,
+            "tbt_ms": 141,
+            "fcp_ms": 2588.3436904384034,
+            "tti_ms": 4438.944502990193,
+            "speed_index_ms": 2588.3436904384034
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/i-have-an-app-idea-what-to-do-before-hiring-developers/",
           "strategy": "mobile",
           "scores": {
-            "performance": 77,
+            "performance": 79,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -371,19 +371,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2588.32857013982,
-            "cls": 0.305332,
-            "tbt_ms": 81.00000000000045,
-            "fcp_ms": 2588.3285701398195,
-            "tti_ms": 4245.9293824212145,
-            "speed_index_ms": 2588.3285701398195
+            "lcp_ms": 2558.8253395361835,
+            "cls": 0.262938,
+            "tbt_ms": 122,
+            "fcp_ms": 2558.825339536183,
+            "tti_ms": 4438.426332655443,
+            "speed_index_ms": 2582.966517813131
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/monthly-design-package-or-one-off-tasks-best-choice-for-startups/",
           "strategy": "mobile",
           "scores": {
-            "performance": 93,
+            "performance": 94,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -396,19 +396,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2558.8299392831323,
-            "cls": 0.007629,
-            "tbt_ms": 59,
-            "fcp_ms": 2558.8299392831323,
-            "tti_ms": 4227.930480805812,
-            "speed_index_ms": 2558.8299392831323
+            "lcp_ms": 2407.9429583178453,
+            "cls": 0.006131,
+            "tbt_ms": 88,
+            "fcp_ms": 2407.9429583178453,
+            "tti_ms": 4400.043590282293,
+            "speed_index_ms": 2458.650099327593
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/vibe-coding-vs-no-code-vs-agency-what-should-a-startup-choose/",
           "strategy": "mobile",
           "scores": {
-            "performance": 87,
+            "performance": 91,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -421,19 +421,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2560.0560534404067,
-            "cls": 0.087572,
-            "tbt_ms": 250,
-            "fcp_ms": 2560.0560534404067,
-            "tti_ms": 4543.926060472042,
-            "speed_index_ms": 2809.2066053762073
+            "lcp_ms": 2558.8068813649697,
+            "cls": 0.073634,
+            "tbt_ms": 130,
+            "fcp_ms": 2558.8068813649697,
+            "tti_ms": 4434.910673274639,
+            "speed_index_ms": 2558.8068813649697
           }
         },
         {
           "url": "https://apps.teamzlab.com/blog/youtube-to-flashcards-how-ai-turns-lectures-into-anki-cards/",
           "strategy": "mobile",
           "scores": {
-            "performance": 93,
+            "performance": 91,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -446,12 +446,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2558.8235472646297,
-            "cls": 0.020142,
-            "tbt_ms": 42,
-            "fcp_ms": 2558.8235472646293,
-            "tti_ms": 4210.424269293823,
-            "speed_index_ms": 2558.8235472646293
+            "lcp_ms": 2558.8310720660343,
+            "cls": 0.020137,
+            "tbt_ms": 165.55040627634935,
+            "fcp_ms": 2558.8310720660343,
+            "tti_ms": 4380.027250267447,
+            "speed_index_ms": 2558.8310720660343
           }
         },
         {
@@ -471,19 +471,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2935.8168575980685,
-            "cls": 0.003777,
-            "tbt_ms": 55.5,
-            "fcp_ms": 2935.8168575980685,
-            "tti_ms": 5115.417489373007,
-            "speed_index_ms": 3564.524917034216
+            "lcp_ms": 2936.8063690062345,
+            "cls": 0.003692,
+            "tbt_ms": 59,
+            "fcp_ms": 2936.8063690062345,
+            "tti_ms": 5111.907362125139,
+            "speed_index_ms": 3598.5803475933562
           }
         },
         {
           "url": "https://apps.teamzlab.com/devicegpt/",
           "strategy": "mobile",
           "scores": {
-            "performance": 74,
+            "performance": 90,
             "seo": 92,
             "accessibility": 94,
             "best_practices": 100
@@ -496,12 +496,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 5361.101156546057,
+            "lcp_ms": 2901.7002660640214,
             "cls": 0.000181,
-            "tbt_ms": 48.5,
-            "fcp_ms": 2843.302420684163,
-            "tti_ms": 5383.601156546058,
-            "speed_index_ms": 3650.6724102663643
+            "tbt_ms": 33,
+            "fcp_ms": 2750.80098833266,
+            "tti_ms": 5059.997035622186,
+            "speed_index_ms": 3422.1838693310156
           }
         },
         {
@@ -510,7 +510,7 @@
           "scores": {
             "performance": 93,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -521,19 +521,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2635.753819580851,
-            "cls": 0.026988,
-            "tbt_ms": 89.5,
-            "fcp_ms": 2560.30427084844,
-            "tti_ms": 4782.905173383617,
-            "speed_index_ms": 2682.0386403374514
+            "lcp_ms": 2588.307321642844,
+            "cls": 0.023088,
+            "tbt_ms": 60,
+            "fcp_ms": 2588.307321642844,
+            "tti_ms": 4748.503499844257,
+            "speed_index_ms": 2588.307321642844
           }
         },
         {
           "url": "https://apps.teamzlab.com/eula/",
           "strategy": "mobile",
           "scores": {
-            "performance": 95,
+            "performance": 91,
             "seo": 92,
             "accessibility": 95,
             "best_practices": 100
@@ -546,12 +546,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2409.767706953965,
+            "lcp_ms": 2409.189230906738,
             "cls": 0.001861,
-            "tbt_ms": 59,
-            "fcp_ms": 2409.767706953965,
-            "tti_ms": 4228.469512025504,
-            "speed_index_ms": 2409.767706953965
+            "tbt_ms": 210,
+            "fcp_ms": 2409.189230906738,
+            "tti_ms": 4088.8908560098644,
+            "speed_index_ms": 2529.1218963700385
           }
         },
         {
@@ -560,7 +560,7 @@
           "scores": {
             "performance": 90,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -571,19 +571,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2634.7677023476303,
+            "lcp_ms": 2634.770427595836,
             "cls": 0.10155,
-            "tbt_ms": 51,
-            "fcp_ms": 2559.3180182353844,
-            "tti_ms": 4574.4186500108935,
-            "speed_index_ms": 2559.3180182353844
+            "tbt_ms": 81,
+            "fcp_ms": 2559.320969297224,
+            "tti_ms": 4631.422052700002,
+            "speed_index_ms": 2601.865325708065
           }
         },
         {
           "url": "https://apps.teamzlab.com/no-trace-chat/",
           "strategy": "mobile",
           "scores": {
-            "performance": 62,
+            "performance": 76,
             "seo": 92,
             "accessibility": 90,
             "best_practices": 100
@@ -596,19 +596,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 6139.860572788836,
-            "cls": 0.224438,
-            "tbt_ms": 71,
-            "fcp_ms": 2778.940744410045,
-            "tti_ms": 6190.172663930557,
-            "speed_index_ms": 2906.2296897637693
+            "lcp_ms": 5097.6105018534945,
+            "cls": 0.033825,
+            "tbt_ms": 70.5,
+            "fcp_ms": 2770.8121269593867,
+            "tti_ms": 5244.626842565856,
+            "speed_index_ms": 2770.8121269593867
           }
         },
         {
           "url": "https://apps.teamzlab.com/notetube-ai/",
           "strategy": "mobile",
           "scores": {
-            "performance": 91,
+            "performance": 92,
             "seo": 92,
             "accessibility": 93,
             "best_practices": 96
@@ -621,19 +621,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2739.2186120874685,
+            "lcp_ms": 2559.314757046535,
             "cls": 0.000181,
-            "tbt_ms": 130,
-            "fcp_ms": 2588.319785384348,
-            "tti_ms": 4440.4209586812285,
-            "speed_index_ms": 2694.3152021505093
+            "tbt_ms": 128,
+            "fcp_ms": 2559.314757046535,
+            "tti_ms": 4440.415659882062,
+            "speed_index_ms": 2670.002436818533
           }
         },
         {
           "url": "https://apps.teamzlab.com/privacy/",
           "strategy": "mobile",
           "scores": {
-            "performance": 77,
+            "performance": 93,
             "seo": 92,
             "accessibility": 90,
             "best_practices": 100
@@ -646,19 +646,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2411.4864616447844,
-            "cls": 0.008154,
-            "tbt_ms": 688,
-            "fcp_ms": 2411.4864616447844,
-            "tti_ms": 4709.952245480306,
-            "speed_index_ms": 2957.1715486501826
+            "lcp_ms": 2412.492777320347,
+            "cls": 0.008151,
+            "tbt_ms": 139.00000000000045,
+            "fcp_ms": 2412.492777320347,
+            "tti_ms": 4159.3863795883135,
+            "speed_index_ms": 2592.263926926007
           }
         },
         {
           "url": "https://apps.teamzlab.com/search/",
           "strategy": "mobile",
           "scores": {
-            "performance": 80,
+            "performance": 85,
             "seo": 92,
             "accessibility": 96,
             "best_practices": 100
@@ -671,41 +671,16 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 3752.3894408907636,
-            "cls": 0.12351,
-            "tbt_ms": 69.5,
-            "fcp_ms": 2588.5359559073922,
-            "tti_ms": 4609.136768191201,
-            "speed_index_ms": 3420.3263383563117
+            "lcp_ms": 2843.7612708732668,
+            "cls": 0.112699,
+            "tbt_ms": 163.5,
+            "fcp_ms": 2617.4127605515914,
+            "tti_ms": 4841.513753670473,
+            "speed_index_ms": 3545.867454206325
           }
         },
         {
           "url": "https://apps.teamzlab.com/team/hemal-akhand/",
-          "strategy": "mobile",
-          "scores": {
-            "performance": 71,
-            "seo": 92,
-            "accessibility": 92,
-            "best_practices": 100
-          },
-          "field": {
-            "LCP": null,
-            "INP": null,
-            "CLS": null,
-            "FCP": null,
-            "TTFB": null
-          },
-          "lab": {
-            "lcp_ms": 7201.312576747519,
-            "cls": 0.001933,
-            "tbt_ms": 96,
-            "fcp_ms": 2560.322126372675,
-            "tti_ms": 7201.312576747519,
-            "speed_index_ms": 3539.607046554058
-          }
-        },
-        {
-          "url": "https://apps.teamzlab.com/team/sabariya-muzumder/",
           "strategy": "mobile",
           "scores": {
             "performance": 92,
@@ -721,19 +696,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2588.8227479962175,
-            "cls": 0.006847,
-            "tbt_ms": 102,
-            "fcp_ms": 2588.8227479962175,
-            "tti_ms": 5058.018794937129,
-            "speed_index_ms": 3556.1006632014773
+            "lcp_ms": 2710.210111416285,
+            "cls": 0.001933,
+            "tbt_ms": 50,
+            "fcp_ms": 2559.310833684401,
+            "tti_ms": 4310.506880973169,
+            "speed_index_ms": 3340.5713554814615
           }
         },
         {
-          "url": "https://apps.teamzlab.com/team/sazzad-hossain/",
+          "url": "https://apps.teamzlab.com/team/sabariya-muzumder/",
           "strategy": "mobile",
           "scores": {
-            "performance": 75,
+            "performance": 88,
             "seo": 92,
             "accessibility": 92,
             "best_practices": 100
@@ -746,19 +721,44 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 4957.5725937748575,
-            "cls": 0.017569,
-            "tbt_ms": 171,
-            "fcp_ms": 2560.8761136699413,
-            "tti_ms": 4957.5725937748575,
-            "speed_index_ms": 3095.3978154539764
+            "lcp_ms": 2617.3112365224592,
+            "cls": 0.12847,
+            "tbt_ms": 83.00000000000045,
+            "fcp_ms": 2617.3112365224592,
+            "tti_ms": 4311.012681061447,
+            "speed_index_ms": 2617.3112365224592
+          }
+        },
+        {
+          "url": "https://apps.teamzlab.com/team/sazzad-hossain/",
+          "strategy": "mobile",
+          "scores": {
+            "performance": 88,
+            "seo": 92,
+            "accessibility": 92,
+            "best_practices": 100
+          },
+          "field": {
+            "LCP": null,
+            "INP": null,
+            "CLS": null,
+            "FCP": null,
+            "TTFB": null
+          },
+          "lab": {
+            "lcp_ms": 2559.310956451779,
+            "cls": 0.129394,
+            "tbt_ms": 69,
+            "fcp_ms": 2559.310956451779,
+            "tti_ms": 4364.507920121587,
+            "speed_index_ms": 2641.9415565681893
           }
         },
         {
           "url": "https://apps.teamzlab.com/terms/",
           "strategy": "mobile",
           "scores": {
-            "performance": 94,
+            "performance": 89,
             "seo": 92,
             "accessibility": 90,
             "best_practices": 100
@@ -771,19 +771,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2411.492779698496,
+            "lcp_ms": 2412.491874476458,
             "cls": 0.019865,
-            "tbt_ms": 93.00000000000045,
-            "fcp_ms": 2411.492779698496,
-            "tti_ms": 4259.694223758797,
-            "speed_index_ms": 2411.492779698496
+            "tbt_ms": 278.5,
+            "fcp_ms": 2412.491874476458,
+            "tti_ms": 4439.942687028813,
+            "speed_index_ms": 2649.9662318097694
           }
         },
         {
           "url": "https://apps.teamzlab.com/top3picks/",
           "strategy": "mobile",
           "scores": {
-            "performance": 77,
+            "performance": 79,
             "seo": 92,
             "accessibility": 90,
             "best_practices": 100
@@ -796,19 +796,19 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 4926.600167285506,
-            "cls": 0.031627,
-            "tbt_ms": 72.5,
-            "fcp_ms": 2775.302514822684,
-            "tti_ms": 5172.067104003679,
-            "speed_index_ms": 2775.302514822684
+            "lcp_ms": 4573.205194601307,
+            "cls": 0.031638,
+            "tbt_ms": 104.5,
+            "fcp_ms": 2682.306368287563,
+            "tti_ms": 4984.166485656189,
+            "speed_index_ms": 2709.352699317644
           }
         },
         {
           "url": "https://apps.teamzlab.com/toss/",
           "strategy": "mobile",
           "scores": {
-            "performance": 71,
+            "performance": 78,
             "seo": 92,
             "accessibility": 90,
             "best_practices": 100
@@ -821,12 +821,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 6495.571487986519,
+            "lcp_ms": 4817.721036798668,
             "cls": 0.000181,
-            "tbt_ms": 71,
-            "fcp_ms": 3035.3024708558164,
-            "tti_ms": 6495.571487986519,
-            "speed_index_ms": 3035.3024708558164
+            "tbt_ms": 75.5,
+            "fcp_ms": 2779.322029919369,
+            "tti_ms": 5295.23212923144,
+            "speed_index_ms": 2799.70280596684
           }
         },
         {
@@ -835,7 +835,7 @@
           "scores": {
             "performance": 86,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -846,21 +846,21 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 3005.1982032154665,
+            "lcp_ms": 3020.711287882053,
             "cls": 0.12749,
-            "tbt_ms": 69.99999999999955,
-            "fcp_ms": 2559.3106488119433,
-            "tti_ms": 4762.506826620558,
-            "speed_index_ms": 2589.4869475279297
+            "tbt_ms": 58.5,
+            "fcp_ms": 2589.3158960498417,
+            "tti_ms": 4581.011812428244,
+            "speed_index_ms": 2589.3158960498417
           }
         },
         {
           "url": "https://apps.teamzlab.com/vibe-coding-agency/",
           "strategy": "mobile",
           "scores": {
-            "performance": 93,
+            "performance": 88,
             "seo": 92,
-            "accessibility": 94,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -871,12 +871,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2635.7662869966334,
-            "cls": 0.000664,
-            "tbt_ms": 89,
-            "fcp_ms": 2560.316648011155,
-            "tti_ms": 4651.012694953268,
-            "speed_index_ms": 2797.0838592090086
+            "lcp_ms": 2663.764121302317,
+            "cls": 0.12749,
+            "tbt_ms": 87.5,
+            "fcp_ms": 2588.314573008651,
+            "tti_ms": 4711.510882957022,
+            "speed_index_ms": 2729.853041201267
           }
         },
         {
@@ -885,7 +885,7 @@
           "scores": {
             "performance": 88,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -896,21 +896,21 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2559.3395567369816,
+            "lcp_ms": 2588.685801190469,
             "cls": 0.134253,
-            "tbt_ms": 71,
-            "fcp_ms": 2559.3395567369816,
-            "tti_ms": 4584.940188513518,
-            "speed_index_ms": 2661.5110526834287
+            "tbt_ms": 53,
+            "fcp_ms": 2588.685801190469,
+            "tti_ms": 4575.286523919917,
+            "speed_index_ms": 2599.3561364836537
           }
         },
         {
           "url": "https://apps.teamzlab.com/vibe-coding-service/",
           "strategy": "mobile",
           "scores": {
-            "performance": 91,
+            "performance": 89,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -921,21 +921,21 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2634.7542318993283,
+            "lcp_ms": 3019.744250280386,
             "cls": 0.079742,
-            "tbt_ms": 55.5,
-            "fcp_ms": 2559.305387923743,
-            "tti_ms": 4517.011344443448,
-            "speed_index_ms": 2588.054239175404
+            "tbt_ms": 82.5,
+            "fcp_ms": 2588.324320548035,
+            "tti_ms": 4703.0263067867045,
+            "speed_index_ms": 2611.3252262274664
           }
         },
         {
           "url": "https://apps.teamzlab.com/web-design/",
           "strategy": "mobile",
           "scores": {
-            "performance": 91,
+            "performance": 90,
             "seo": 92,
-            "accessibility": 93,
+            "accessibility": 97,
             "best_practices": 100
           },
           "field": {
@@ -946,12 +946,12 @@
             "TTFB": null
           },
           "lab": {
-            "lcp_ms": 2617.3218747789765,
+            "lcp_ms": 2663.7706555044806,
             "cls": 0.089472,
-            "tbt_ms": 8,
-            "fcp_ms": 2617.3218747789765,
-            "tti_ms": 4414.5179217227105,
-            "speed_index_ms": 2617.3218747789765
+            "tbt_ms": 75.50000000000045,
+            "fcp_ms": 2588.321016638162,
+            "tti_ms": 4779.517063925838,
+            "speed_index_ms": 2651.2734506521074
           }
         }
       ]

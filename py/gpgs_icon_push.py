@@ -87,25 +87,43 @@ def _require_yaml() -> None:
 
 ACHIEVEMENT_LIST_URL_TEMPLATE = (
     "https://play.google.com/console/u/0/developers/{dev_id}/app/{app_id}/"
-    "game-services/{game_id}/achievement-management"
+    "games/achievements"
+)
+ACHIEVEMENT_EDIT_URL_TEMPLATE = (
+    "https://play.google.com/console/u/0/developers/{dev_id}/app/{app_id}/"
+    "games/edit-achievement?id={ach_id}"
 )
 
 
 def _open_list(page: Page, dev_id: str, app_id: str, game_id: str) -> None:
-    url = ACHIEVEMENT_LIST_URL_TEMPLATE.format(
-        dev_id=dev_id, app_id=app_id, game_id=game_id
-    )
+    # game_id no longer in URL — keep param for backward compat
+    url = ACHIEVEMENT_LIST_URL_TEMPLATE.format(dev_id=dev_id, app_id=app_id)
     print(f"  → opening {url}")
     page.goto(url, wait_until="domcontentloaded", timeout=60_000)
     # Give the React tree time to hydrate the table
     page.wait_for_load_state("networkidle", timeout=30_000)
 
 
+def _open_edit(page: Page, dev_id: str, app_id: str, ach_id: str) -> None:
+    """Direct deep-link to a single achievement edit page."""
+    url = ACHIEVEMENT_EDIT_URL_TEMPLATE.format(
+        dev_id=dev_id, app_id=app_id, ach_id=ach_id
+    )
+    page.goto(url, wait_until="domcontentloaded", timeout=60_000)
+    page.wait_for_load_state("networkidle", timeout=30_000)
+    page.wait_for_timeout(1500)
+
+
 def _find_row_by_name(page: Page, name: str):
-    """Return the row link element matching the achievement display name."""
-    # Play Console renders achievements as anchored rows; the achievement
-    # name is the first text node in the row link.
-    return page.get_by_role("link", name=name, exact=True).first
+    """Return the achievement row element matching the display name.
+
+    Play Console renders the table as Angular `<ess-cell>` cells inside
+    `[role=row]`. The achievement name is in `div.line` inside an image
+    cell. Filter rows by `has_text=` and pick the one with an exact
+    match in the name column.
+    """
+    # has_text uses substring + regex so we anchor with word boundary.
+    return page.locator("[role=row]").filter(has_text=name).first
 
 
 def _open_row(page: Page, name: str) -> bool:
@@ -115,8 +133,18 @@ def _open_row(page: Page, name: str) -> bool:
     except PWTimeout:
         print(f"    (skip) row '{name}' not visible")
         return False
-    locator.click()
+    # Clicking the row navigates to the achievement edit page.
+    # Click the name cell specifically — clicking row sometimes hits
+    # the checkbox cell.
+    name_cell = locator.locator("div.line", has_text=name).first
+    try:
+        name_cell.wait_for(state="visible", timeout=5_000)
+        name_cell.click()
+    except PWTimeout:
+        # Fallback to row click
+        locator.click()
     page.wait_for_load_state("networkidle", timeout=30_000)
+    page.wait_for_timeout(1500)
     return True
 
 
@@ -141,45 +169,44 @@ def _has_icon_already(page: Page) -> bool:
 
 
 def _upload_icon(page: Page, png_path: Path) -> bool:
-    """Drop the PNG into the icon input + click Save. Returns True on
-    confirmed save."""
-    # Find any file input on the page (Play Console hides them off-screen
-    # and triggers via labelled buttons).
+    """Drop the PNG into the icon file input + click 'Save as draft'.
+
+    Play Console edit page has exactly one input[type=file] (accepts
+    .png/.jpg/.jpeg) and the save button reads 'Save as draft'.
+    """
     file_inputs = page.locator("input[type='file']")
-    count = file_inputs.count()
-    if count == 0:
+    if file_inputs.count() == 0:
         print("    (skip) no <input type=file> on this page")
         return False
-    # Take the first — Play Console only has one file input on the
-    # achievement edit page (icon).
     file_inputs.first.set_input_files(str(png_path))
-    # Wait for upload preview to appear (image element with non-data src
-    # inside the icon section)
-    try:
-        page.wait_for_function(
-            "() => {const imgs=[...document.querySelectorAll('img')];"
-            "return imgs.some(i => i.src && !i.src.startsWith('data:') "
-            "&& i.naturalWidth > 100);}",
-            timeout=30_000,
-        )
-    except PWTimeout:
-        print("    (warn) upload preview did not appear in 30s")
+    # Wait for the page to register the new file — Play Console swaps
+    # the existing thumbnail or shows a 'Replace' button when the new
+    # image is staged.
+    page.wait_for_timeout(2500)
 
-    # Click Save — usually labelled exactly "Save" inside Play Console.
-    save_btn = page.get_by_role("button", name="Save", exact=True).first
+    # 'Save as draft' is exact button text on this page
+    save_btn = page.get_by_role("button", name="Save as draft", exact=True).first
     try:
         save_btn.wait_for(state="visible", timeout=10_000)
+        # Button is sometimes disabled briefly while upload preprocesses —
+        # poll for enabled state.
+        for _ in range(30):
+            if not save_btn.is_disabled():
+                break
+            page.wait_for_timeout(500)
         save_btn.click()
     except PWTimeout:
-        print("    (warn) Save button not found")
+        print("    (warn) 'Save as draft' button not found")
         return False
-    # Wait for toast or button disable as proxy for save complete
+    # Wait for save confirmation — the URL typically navigates back to
+    # the list, or a 'Saved' toast appears.
     try:
         page.wait_for_selector(
-            "text=/Saved|saved successfully/i", timeout=15_000
+            "text=/Saved|Draft saved|saved as draft/i", timeout=20_000
         )
     except PWTimeout:
-        print("    (warn) no 'saved' toast — assuming complete")
+        # Fallback: wait for the save button to disappear or the URL to change
+        page.wait_for_timeout(5000)
     return True
 
 
@@ -204,6 +231,31 @@ def _resolve_icons_dir(arg: str | None) -> Path:
     if arg:
         return Path(arg).expanduser()
     return Path.cwd() / "automation_data" / "achievement_icons"
+
+
+def _read_id_map(yaml_data: dict, host_root: Path) -> dict[str, str]:
+    """Parse _kPlayGamesAchievementIds map out of lib/app_config.dart."""
+    ac = host_root / "lib" / "app_config.dart"
+    if not ac.exists():
+        return {}
+    text = ac.read_text()
+    map_var = yaml_data.get("google_id_map_var", "_kPlayGamesAchievementIds")
+    idx = text.find(f"{map_var} = {{")
+    if idx == -1:
+        return {}
+    end = text.find("};", idx)
+    block = text[idx:end]
+    out: dict[str, str] = {}
+    for line in block.splitlines():
+        line = line.strip()
+        if not line.startswith("'") and not line.startswith('"'):
+            continue
+        if ":" not in line:
+            continue
+        k, _, rest = line.partition(":")
+        v = rest.strip().rstrip(",").strip()
+        out[k.strip().strip("'").strip('"')] = v.strip().strip("'").strip('"')
+    return out
 
 
 def main() -> int:
@@ -236,6 +288,13 @@ def main() -> int:
         keep = {s.strip() for s in args.only.split(",")}
         entries = [e for e in entries if e["id"] in keep]
 
+    id_map = _read_id_map(data, Path.cwd())
+    if not id_map:
+        raise SystemExit(
+            "Could not parse _kPlayGamesAchievementIds from lib/app_config.dart. "
+            "Need encoded ach IDs (CgkI…) for direct edit URLs."
+        )
+
     print(f"Will visit {len(entries)} achievements via Play Console UI.")
     print(f"Browser profile cache: {PROFILE_DIR}")
     print("If this is a first run, log into Play Console + complete 2FA in")
@@ -253,42 +312,48 @@ def main() -> int:
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         _open_list(page, args.dev_id, args.app_id, args.application_id)
 
-        # If first run + not authed, page will redirect to login. Pause.
+        # If first run + not authed, page redirects to Google sign-in.
+        # Poll for the redirect back to play.google.com — handles 2FA,
+        # device prompt, account picker, etc, without needing stdin.
+        deadline = time.time() + 600  # 10 min budget for login
+        while time.time() < deadline and (
+            "accounts.google.com" in page.url or "signin" in page.url
+        ):
+            print("→ Waiting for login in the browser window…")
+            time.sleep(5)
         if "accounts.google.com" in page.url or "signin" in page.url:
-            print("→ Please log in within the spawned window. Press <enter> here when done.")
-            input()
-            _open_list(page, args.dev_id, args.app_id, args.application_id)
+            print("login timeout — re-run after authenticating once")
+            ctx.close()
+            return 2
+        # Re-navigate after login completes
+        _open_list(page, args.dev_id, args.app_id, args.application_id)
 
         ok = 0
         skip = 0
         for entry in entries:
             name = entry["name"]
             local_id = entry["id"]
+            ach_id = id_map.get(local_id, "")
+            if not ach_id or ach_id.startswith("TODO_"):
+                print(f"  (skip) {local_id}: no encoded id mapped")
+                skip += 1
+                continue
             png_path = icons_dir / f"{local_id}.png"
             if not png_path.exists():
                 print(f"  (skip) {local_id}: no png at {png_path.name}")
                 skip += 1
                 continue
-            print(f"\n  → {name}  ({local_id})")
-            opened = _open_row(page, name)
-            if not opened:
-                skip += 1
-                continue
-            if _has_icon_already(page):
-                print("    (skip) icon already attached")
-                _back_to_list(page)
-                skip += 1
-                continue
+
+            print(f"\n  → {name}  ({local_id} / {ach_id})")
+            _open_edit(page, args.dev_id, args.app_id, ach_id)
             if args.dry_run:
                 print(f"    (dry-run) would upload {png_path.name}")
-                _back_to_list(page)
                 continue
             if _upload_icon(page, png_path):
                 print("    upload + save ✓")
                 ok += 1
             else:
                 print("    upload failed")
-            _back_to_list(page)
 
         print(f"\nDone. Uploaded {ok}, skipped {skip}.")
         ctx.close()

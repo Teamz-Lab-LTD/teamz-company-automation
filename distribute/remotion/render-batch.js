@@ -467,6 +467,8 @@ if (FROM_PLANS) {
       title: r.props.title,
       hook: r.props.hook,
       audio: r.props.audioFile,
+      // App-landing backlinks — threaded into caption + upload-time description
+      backlinks: plan.backlinks || null,
     });
   }
 
@@ -706,11 +708,20 @@ for (let i = 0; i < renderQueue.length; i++) {
       ].join("\n");
     } else {
       // Short: compact but SEO-optimized
+      const backlinkBlock = [];
+      if (q.backlinks && (q.backlinks.play_store || q.backlinks.app_store || q.backlinks.landing)) {
+        backlinkBlock.push("📲 Install:");
+        if (q.backlinks.play_store) backlinkBlock.push(`Android: ${q.backlinks.play_store}`);
+        if (q.backlinks.app_store) backlinkBlock.push(`iOS: ${q.backlinks.app_store}`);
+        if (q.backlinks.landing) backlinkBlock.push(`More: ${q.backlinks.landing}`);
+        backlinkBlock.push("");
+      }
       caption = [
         `${q.props.hook}`,
         "",
         `Try ${q.title} FREE: https://${q.props.url}`,
         "",
+        ...backlinkBlock,
         ...CFG.sellingPoints.map((s) => `✅ ${s}`),
         "",
         `${engagementQ}`,
@@ -745,6 +756,8 @@ for (const q of rendered) {
     existing.caption = q.captionFile;
     existing.hook = q.hook || q.props.hook;
     existing.themeIndex = q.themeIndex;
+    if (q.backlinks) existing.backlinks = q.backlinks;
+    if (q.hub) existing.hub = q.hub;
   } else {
     history.reels.push({
       slug: q.slug,
@@ -760,6 +773,9 @@ for (const q of rendered) {
       video: q.outFile,
       caption: q.captionFile,
       youtubeTitle: q.youtubeTitle || "",
+      // Central tracking of app backlinks so upload scripts can inject them
+      // into per-platform descriptions (YouTube / TikTok / Instagram).
+      backlinks: q.backlinks || null,
       rendered: new Date().toISOString(),
       lastRendered: new Date().toISOString(),
       platforms: {

@@ -236,27 +236,16 @@ def submit_indexnow(urls):
 
 
 def ping_sitemaps():
-    """Ping Google and Bing to re-process sitemap."""
+    """Sitemap ping is a no-op: Google deprecated /ping?sitemap= in June 2023,
+    Bing returns HTTP 410 Gone. IndexNow (called above) covers Bing/Yandex.
+    For Google, auto-discovery works via robots.txt Sitemap: directive plus
+    one-time manual submission in Google Search Console.
+    """
     print('\n' + '=' * 66)
-    print('  SITEMAP PING — Google & Bing')
+    print('  SITEMAP PING — skipped')
+    print('  Google: deprecated 2023-06 → use GSC sitemap submission (once)')
+    print('  Bing:   deprecated 2022-05 → covered by IndexNow above')
     print('=' * 66)
-
-    encoded = urllib.parse.quote(SITEMAP_URL, safe='')
-    pings = [
-        ('Google', f'https://www.google.com/ping?sitemap={encoded}'),
-        ('Bing', f'https://www.bing.com/ping?sitemap={encoded}'),
-    ]
-
-    for name, url in pings:
-        req = urllib.request.Request(url, headers={'User-Agent': 'TeamzLab/1.0'})
-        try:
-            with urllib.request.urlopen(req, context=ctx, timeout=10) as r:
-                print(f'  OK  {name}: Sitemap ping sent (HTTP {r.status})')
-        except urllib.error.HTTPError as e:
-            # Google returns various codes but still processes the ping
-            print(f'  OK  {name}: Sitemap ping sent (HTTP {e.code})')
-        except Exception as e:
-            print(f'  ERR {name}: {str(e)[:60]}')
 
 
 def get_all_urls_from_sitemap():

@@ -14753,6 +14753,18 @@
           "imps": 3
         }
       }
+    },
+    {
+      "date": "2026-04-24",
+      "keyword_count": 1,
+      "data": {
+        "device_gpt": {
+          "pos": 9,
+          "page": "/devicegpt",
+          "clicks": 0,
+          "imps": 1
+        }
+      }
     }
   ],
   "keywords": {
@@ -27795,6 +27807,14 @@
       "last_pos": 63,
       "last_seen": "2026-04-09",
       "page": "/kids/child-bmi-calculator/"
+    },
+    "device_gpt": {
+      "first_seen": "2026-04-24",
+      "best_pos": 9,
+      "best_date": "2026-04-24",
+      "last_pos": 9,
+      "last_seen": "2026-04-24",
+      "page": "/devicegpt"
     }
   }
 }

@@ -1,0 +1,956 @@
+{
+  "date": "2026-04-24",
+  "strategy": "mobile",
+  "rows": [
+    {
+      "url": "https://apps.teamzlab.com/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 81,
+        "seo": 92,
+        "accessibility": 97,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2812.0040045272563,
+        "cls": 0.172285,
+        "tbt_ms": 123,
+        "fcp_ms": 2736.9985310106667,
+        "tti_ms": 4950.32803899367,
+        "speed_index_ms": 3962.846118391779
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/add-ai-to-my-app/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 89,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2664.7658316164016,
+        "cls": 0.111475,
+        "tbt_ms": 63.5,
+        "fcp_ms": 2589.3162379206656,
+        "tti_ms": 4533.512416203031,
+        "speed_index_ms": 2646.013635172514
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/ai-agent-development/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 92,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2663.9241798966814,
+        "cls": 0.057581,
+        "tbt_ms": 89.49999999999955,
+        "fcp_ms": 2588.474586039116,
+        "tti_ms": 4993.170763852173,
+        "speed_index_ms": 2661.5413404216642
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/ai-integration/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 88,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2664.7767785154238,
+        "cls": 0.109325,
+        "tbt_ms": 116,
+        "fcp_ms": 2589.327184657968,
+        "tti_ms": 4805.427996943055,
+        "speed_index_ms": 2782.3254158647333
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/animations/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 51,
+        "seo": 92,
+        "accessibility": 91,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 3034.704171640882,
+        "cls": 0,
+        "tbt_ms": 20759,
+        "fcp_ms": 3034.704171640882,
+        "tti_ms": 28916.10669929063,
+        "speed_index_ms": 8617.28778971564
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 93,
+        "seo": 92,
+        "accessibility": 95,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2558.9424440381918,
+        "cls": 0.010641,
+        "tbt_ms": 68,
+        "fcp_ms": 2558.9424440381918,
+        "tti_ms": 4295.1437075926415,
+        "speed_index_ms": 2558.9424440381918
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/ai-shopping-assistants-how-they-work-which-are-worth-it/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 90,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2620.889079289729,
+        "cls": 0.087451,
+        "tbt_ms": 148,
+        "fcp_ms": 2620.889079289729,
+        "tti_ms": 4318.990072081573,
+        "speed_index_ms": 2620.889079289729
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/best-ways-to-find-deals-online-2026/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 92,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2617.3497611170233,
+        "cls": 0.049916,
+        "tbt_ms": 116.00000000000045,
+        "fcp_ms": 2617.3497611170233,
+        "tti_ms": 4124.552107714069,
+        "speed_index_ms": 2617.3497611170233
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/boards-and-beyond-to-anki-free-tool/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 93,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2588.3461972698387,
+        "cls": 0.019774,
+        "tbt_ms": 71,
+        "fcp_ms": 2588.3461972698387,
+        "tti_ms": 4240.94872436021,
+        "speed_index_ms": 2588.3461972698387
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/budget-shopping-tips-how-to-get-best-value-for-money/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 92,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2559.3342003960215,
+        "cls": 0.042305,
+        "tbt_ms": 93,
+        "fcp_ms": 2559.3342003960215,
+        "tti_ms": 4250.035464452616,
+        "speed_index_ms": 2559.3342003960215
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/gift-finder-guide-how-to-pick-the-perfect-gift-on-a-budget/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 90,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2591.890072074988,
+        "cls": 0.061672,
+        "tbt_ms": 185,
+        "fcp_ms": 2591.890072074988,
+        "tti_ms": 4255.091877152263,
+        "speed_index_ms": 2806.1382588217616
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/how-much-does-it-cost-to-build-an-app-in-2026/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 90,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2560.3191634146556,
+        "cls": 0.10022,
+        "tbt_ms": 90,
+        "fcp_ms": 2560.3191634146556,
+        "tti_ms": 4400.5207886316675,
+        "speed_index_ms": 2560.3191634146556
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/how-much-does-it-cost-to-hire-a-ui-ux-designer-in-2026/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 92,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2588.334127827152,
+        "cls": 0.072518,
+        "tbt_ms": 92.5,
+        "fcp_ms": 2588.334127827152,
+        "tti_ms": 4339.035391378826,
+        "speed_index_ms": 2588.334127827152
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/how-to-compare-prices-online-before-buying/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 93,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2588.3481646405826,
+        "cls": 0.029414,
+        "tbt_ms": 85,
+        "fcp_ms": 2588.3481646405826,
+        "tti_ms": 4391.049970017061,
+        "speed_index_ms": 2588.3481646405826
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/i-have-an-app-idea-what-to-do-before-hiring-developers/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 77,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2588.32857013982,
+        "cls": 0.305332,
+        "tbt_ms": 81.00000000000045,
+        "fcp_ms": 2588.3285701398195,
+        "tti_ms": 4245.9293824212145,
+        "speed_index_ms": 2588.3285701398195
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/monthly-design-package-or-one-off-tasks-best-choice-for-startups/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 93,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2558.8299392831323,
+        "cls": 0.007629,
+        "tbt_ms": 59,
+        "fcp_ms": 2558.8299392831323,
+        "tti_ms": 4227.930480805812,
+        "speed_index_ms": 2558.8299392831323
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/vibe-coding-vs-no-code-vs-agency-what-should-a-startup-choose/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 87,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2560.0560534404067,
+        "cls": 0.087572,
+        "tbt_ms": 250,
+        "fcp_ms": 2560.0560534404067,
+        "tti_ms": 4543.926060472042,
+        "speed_index_ms": 2809.2066053762073
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/blog/youtube-to-flashcards-how-ai-turns-lectures-into-anki-cards/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 93,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2558.8235472646297,
+        "cls": 0.020142,
+        "tbt_ms": 42,
+        "fcp_ms": 2558.8235472646293,
+        "tti_ms": 4210.424269293823,
+        "speed_index_ms": 2558.8235472646293
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/case-studies/hazira-khata/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 89,
+        "seo": 92,
+        "accessibility": 97,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2935.8168575980685,
+        "cls": 0.003777,
+        "tbt_ms": 55.5,
+        "fcp_ms": 2935.8168575980685,
+        "tti_ms": 5115.417489373007,
+        "speed_index_ms": 3564.524917034216
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/devicegpt/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 74,
+        "seo": 92,
+        "accessibility": 94,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 5361.101156546057,
+        "cls": 0.000181,
+        "tbt_ms": 48.5,
+        "fcp_ms": 2843.302420684163,
+        "tti_ms": 5383.601156546058,
+        "speed_index_ms": 3650.6724102663643
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/ecommerce-development/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 93,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2635.753819580851,
+        "cls": 0.026988,
+        "tbt_ms": 89.5,
+        "fcp_ms": 2560.30427084844,
+        "tti_ms": 4782.905173383617,
+        "speed_index_ms": 2682.0386403374514
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/eula/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 95,
+        "seo": 92,
+        "accessibility": 95,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2409.767706953965,
+        "cls": 0.001861,
+        "tbt_ms": 59,
+        "fcp_ms": 2409.767706953965,
+        "tti_ms": 4228.469512025504,
+        "speed_index_ms": 2409.767706953965
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/hire-app-developer-for-startup/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 90,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2634.7677023476303,
+        "cls": 0.10155,
+        "tbt_ms": 51,
+        "fcp_ms": 2559.3180182353844,
+        "tti_ms": 4574.4186500108935,
+        "speed_index_ms": 2559.3180182353844
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/no-trace-chat/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 62,
+        "seo": 92,
+        "accessibility": 90,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 6139.860572788836,
+        "cls": 0.224438,
+        "tbt_ms": 71,
+        "fcp_ms": 2778.940744410045,
+        "tti_ms": 6190.172663930557,
+        "speed_index_ms": 2906.2296897637693
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/notetube-ai/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 91,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 96
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2739.2186120874685,
+        "cls": 0.000181,
+        "tbt_ms": 130,
+        "fcp_ms": 2588.319785384348,
+        "tti_ms": 4440.4209586812285,
+        "speed_index_ms": 2694.3152021505093
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/privacy/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 77,
+        "seo": 92,
+        "accessibility": 90,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2411.4864616447844,
+        "cls": 0.008154,
+        "tbt_ms": 688,
+        "fcp_ms": 2411.4864616447844,
+        "tti_ms": 4709.952245480306,
+        "speed_index_ms": 2957.1715486501826
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/search/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 80,
+        "seo": 92,
+        "accessibility": 96,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 3752.3894408907636,
+        "cls": 0.12351,
+        "tbt_ms": 69.5,
+        "fcp_ms": 2588.5359559073922,
+        "tti_ms": 4609.136768191201,
+        "speed_index_ms": 3420.3263383563117
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/team/hemal-akhand/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 71,
+        "seo": 92,
+        "accessibility": 92,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 7201.312576747519,
+        "cls": 0.001933,
+        "tbt_ms": 96,
+        "fcp_ms": 2560.322126372675,
+        "tti_ms": 7201.312576747519,
+        "speed_index_ms": 3539.607046554058
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/team/sabariya-muzumder/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 92,
+        "seo": 92,
+        "accessibility": 92,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2588.8227479962175,
+        "cls": 0.006847,
+        "tbt_ms": 102,
+        "fcp_ms": 2588.8227479962175,
+        "tti_ms": 5058.018794937129,
+        "speed_index_ms": 3556.1006632014773
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/team/sazzad-hossain/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 75,
+        "seo": 92,
+        "accessibility": 92,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 4957.5725937748575,
+        "cls": 0.017569,
+        "tbt_ms": 171,
+        "fcp_ms": 2560.8761136699413,
+        "tti_ms": 4957.5725937748575,
+        "speed_index_ms": 3095.3978154539764
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/terms/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 94,
+        "seo": 92,
+        "accessibility": 90,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2411.492779698496,
+        "cls": 0.019865,
+        "tbt_ms": 93.00000000000045,
+        "fcp_ms": 2411.492779698496,
+        "tti_ms": 4259.694223758797,
+        "speed_index_ms": 2411.492779698496
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/top3picks/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 77,
+        "seo": 92,
+        "accessibility": 90,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 4926.600167285506,
+        "cls": 0.031627,
+        "tbt_ms": 72.5,
+        "fcp_ms": 2775.302514822684,
+        "tti_ms": 5172.067104003679,
+        "speed_index_ms": 2775.302514822684
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/toss/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 71,
+        "seo": 92,
+        "accessibility": 90,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 6495.571487986519,
+        "cls": 0.000181,
+        "tbt_ms": 71,
+        "fcp_ms": 3035.3024708558164,
+        "tti_ms": 6495.571487986519,
+        "speed_index_ms": 3035.3024708558164
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/ui-ux-design/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 86,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 3005.1982032154665,
+        "cls": 0.12749,
+        "tbt_ms": 69.99999999999955,
+        "fcp_ms": 2559.3106488119433,
+        "tti_ms": 4762.506826620558,
+        "speed_index_ms": 2589.4869475279297
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/vibe-coding-agency/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 93,
+        "seo": 92,
+        "accessibility": 94,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2635.7662869966334,
+        "cls": 0.000664,
+        "tbt_ms": 89,
+        "fcp_ms": 2560.316648011155,
+        "tti_ms": 4651.012694953268,
+        "speed_index_ms": 2797.0838592090086
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/vibe-coding-repair/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 88,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2559.3395567369816,
+        "cls": 0.134253,
+        "tbt_ms": 71,
+        "fcp_ms": 2559.3395567369816,
+        "tti_ms": 4584.940188513518,
+        "speed_index_ms": 2661.5110526834287
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/vibe-coding-service/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 91,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2634.7542318993283,
+        "cls": 0.079742,
+        "tbt_ms": 55.5,
+        "fcp_ms": 2559.305387923743,
+        "tti_ms": 4517.011344443448,
+        "speed_index_ms": 2588.054239175404
+      }
+    },
+    {
+      "url": "https://apps.teamzlab.com/web-design/",
+      "strategy": "mobile",
+      "scores": {
+        "performance": 91,
+        "seo": 92,
+        "accessibility": 93,
+        "best_practices": 100
+      },
+      "field": {
+        "LCP": null,
+        "INP": null,
+        "CLS": null,
+        "FCP": null,
+        "TTFB": null
+      },
+      "lab": {
+        "lcp_ms": 2617.3218747789765,
+        "cls": 0.089472,
+        "tbt_ms": 8,
+        "fcp_ms": 2617.3218747789765,
+        "tti_ms": 4414.5179217227105,
+        "speed_index_ms": 2617.3218747789765
+      }
+    }
+  ]
+}

@@ -101,10 +101,17 @@
 | **SERP feature tracking** | `py/build-serp-tracker.py` |
 | **SEO audit fixes** | `py/build-seo-audit-fixes.py --dry-run` |
 | **Crawl snapshot** | `py/build-crawl-diff.py` |
-| **Schema validation** | `py/build-schema-validate.py` |
+| **Schema validation (static)** | `py/build-schema-validate.py` |
+| **URL indexation + rich-results status via GSC API** (REQUIRED after any schema/canonical/sitemap change — replaces manual Rich Results Test clicks) | `py/inspect-urls.py` |
+| **Cloudflare cache purge after deploy** | `py/cloudflare-purge.py` |
 | **Search Console anomalies** | `py/build-gsc-anomalies.py` |
 | **Topic cluster report** | `py/build-topic-cluster-report.py` |
 | **Request indexing** | `py/build-request-indexing.py` |
+
+### Review snippet eligibility (MUST know before adding `review` to JSON-LD)
+Google only renders star rich-results when the `Review` / `AggregateRating` parent node is one of these types:
+`Book, Course, Event, HowTo, LocalBusiness, MediaObject, Movie, Organization, Product, Recipe, SoftwareApplication`.
+Attaching reviews to `Service`, `CreativeWork`, `Article`, etc. validates as JSON but fails at the Rich Results layer with "Invalid object type for field `<parent_node>`". Default choice for Teamz agency pages: put the reviews on the `Organization` node and cross-link the `Service` via `provider.@id`.
 
 ---
 

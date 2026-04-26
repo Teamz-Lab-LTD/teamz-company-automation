@@ -370,6 +370,135 @@ def _patch_localization(
 
 
 # ─────────────────────────────────────────────────────────────────────
+# Image upload (multi-step: reserve → chunk PUT → finalize)
+# ─────────────────────────────────────────────────────────────────────
+
+def _md5_b64(data: bytes) -> str:
+    import base64
+    import hashlib
+
+    return base64.b64encode(hashlib.md5(data).digest()).decode()
+
+
+def _reserve_image(
+    *,
+    localization_id: str,
+    file_name: str,
+    file_size: int,
+    jwt: str,
+) -> dict:
+    """POST /v1/gameCenterAchievementImages — Apple returns the image
+    record + uploadOperations[] (URLs + headers + offsets) we must PUT
+    chunks to."""
+    url = f"{ASC_BASE}/v1/gameCenterAchievementImages"
+    body = {
+        "data": {
+            "type": "gameCenterAchievementImages",
+            "attributes": {
+                "fileName": file_name,
+                "fileSize": file_size,
+            },
+            "relationships": {
+                "gameCenterAchievementLocalization": {
+                    "data": {
+                        "type": "gameCenterAchievementLocalizations",
+                        "id": localization_id,
+                    }
+                }
+            },
+        }
+    }
+    s, j, raw = _request("POST", url, jwt, body)
+    if s >= 300:
+        raise RuntimeError(f"reserve image failed: {s} {raw[:600]}")
+    return j["data"]
+
+
+def _put_chunk(operation: dict, payload: bytes) -> None:
+    """Apple uploadOperation = {method, url, length, offset, requestHeaders[]}.
+    PUT the slice [offset:offset+length] to the URL with the supplied headers.
+    No bearer auth — the URL itself is signed."""
+    method = operation.get("method", "PUT")
+    url = operation["url"]
+    length = int(operation["length"])
+    offset = int(operation["offset"])
+    chunk = payload[offset : offset + length]
+    req = urllib.request.Request(url, data=chunk, method=method)
+    for h in operation.get("requestHeaders", []) or []:
+        req.add_header(h["name"], h["value"])
+    with urllib.request.urlopen(req, timeout=120) as r:
+        if r.status >= 300:
+            raise RuntimeError(f"chunk upload {offset}/{length}: HTTP {r.status}")
+
+
+def _finalize_image(image_id: str, jwt: str) -> None:
+    """PATCH the image record with uploaded=true.
+
+    Apple's gameCenterAchievementImages no longer accepts
+    `sourceFileChecksum` as a write attribute (returns 409
+    ENTITY_ERROR.ATTRIBUTE.UNKNOWN). Only `uploaded` is needed to
+    finalize — Apple computes the checksum server-side.
+    """
+    body = {
+        "data": {
+            "type": "gameCenterAchievementImages",
+            "id": image_id,
+            "attributes": {"uploaded": True},
+        }
+    }
+    url = f"{ASC_BASE}/v1/gameCenterAchievementImages/{image_id}"
+    s, j, raw = _request("PATCH", url, jwt, body)
+    if s >= 300:
+        raise RuntimeError(f"finalize image failed: {s} {raw[:600]}")
+
+
+def _delete_existing_image_for_localization(
+    localization_id: str, jwt: str
+) -> None:
+    """A localization can hold ≤1 image. Wipe the existing one before
+    re-uploading so apply is idempotent."""
+    url = (
+        f"{ASC_BASE}/v1/gameCenterAchievementLocalizations/{localization_id}"
+        f"/gameCenterAchievementImage"
+    )
+    s, j, raw = _request("GET", url, jwt)
+    if s == 404 or not j or not j.get("data"):
+        return
+    img_id = j["data"].get("id")
+    if not img_id:
+        return
+    s2, _, raw2 = _request(
+        "DELETE", f"{ASC_BASE}/v1/gameCenterAchievementImages/{img_id}", jwt
+    )
+    if s2 >= 300 and s2 != 404:
+        raise RuntimeError(f"delete prior image failed: {s2} {raw2[:300]}")
+
+
+def upload_icon_for_localization(
+    *,
+    localization_id: str,
+    icon_path: Path,
+    jwt: str,
+) -> str:
+    """Full upload — delete existing → reserve → chunk PUT → finalize.
+    Returns the new image id."""
+    payload = icon_path.read_bytes()
+    _delete_existing_image_for_localization(localization_id, jwt)
+    image = _reserve_image(
+        localization_id=localization_id,
+        file_name=icon_path.name,
+        file_size=len(payload),
+        jwt=jwt,
+    )
+    image_id = image["id"]
+    operations = (image.get("attributes") or {}).get("uploadOperations") or []
+    for op in operations:
+        _put_chunk(op, payload)
+    _finalize_image(image_id, jwt)
+    return image_id
+
+
+# ─────────────────────────────────────────────────────────────────────
 # Local helpers
 # ─────────────────────────────────────────────────────────────────────
 
@@ -547,6 +676,93 @@ def cmd_sync(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_upload_icons(args: argparse.Namespace) -> int:
+    cfg = _resolve_config()
+    app_id = args.apple_app_id or cfg["TEAMZ_APPLE_APP_ID"]
+    if not app_id:
+        raise SystemExit("Missing TEAMZ_APPLE_APP_ID")
+
+    yaml_path = Path(args.yaml or cfg["TEAMZ_ACHIEVEMENTS_YAML"])
+    yaml_data = _load_yaml(yaml_path)
+    entries = yaml_data.get("achievements") or []
+
+    icons_dir = Path(args.icons_dir).expanduser()
+    if not icons_dir.exists():
+        raise SystemExit(f"icons dir missing: {icons_dir}")
+
+    id_map = _read_local_id_map(yaml_data, Path.cwd())
+    if not id_map:
+        raise SystemExit("Couldn't parse _kGameCenterAchievementIds map")
+
+    jwt = _asc_jwt(cfg)
+    detail_id = _get_game_center_detail_id(app_id, jwt)
+    live = _list_achievements(detail_id, jwt)
+    by_vendor = {
+        (it.get("attributes") or {}).get("vendorIdentifier", ""): it
+        for it in live
+    }
+
+    n_done = 0
+    n_skip = 0
+    for entry in entries:
+        local = entry["id"]
+        vendor = id_map.get(local, "")
+        if not vendor or vendor not in by_vendor:
+            print(f"  (skip) {local}: not present on Apple yet")
+            n_skip += 1
+            continue
+        ach = by_vendor[vendor]
+        ach_id = ach["id"]
+        icon_path = icons_dir / f"{local}.png"
+        if not icon_path.exists():
+            print(f"  (skip) {local}: no icon file at {icon_path}")
+            n_skip += 1
+            continue
+
+        # Find en-US localization
+        locs = _list_localizations(ach_id, jwt)
+        en = next(
+            (
+                l
+                for l in locs
+                if (l.get("attributes") or {}).get("locale") == LOCALE
+            ),
+            None,
+        )
+        if not en:
+            print(f"  (skip) {local}: no en-US localization yet — run sync first")
+            n_skip += 1
+            continue
+
+        if args.dry_run:
+            print(
+                f"  UPLOAD  {vendor:50s} → loc={en['id']} "
+                f"({icon_path.name}, {icon_path.stat().st_size}B)"
+            )
+            continue
+
+        try:
+            new_id = upload_icon_for_localization(
+                localization_id=en["id"], icon_path=icon_path, jwt=jwt
+            )
+            print(f"  UPLOAD  {vendor:50s} → image={new_id} ✓")
+            n_done += 1
+        except Exception as e:
+            print(f"  UPLOAD  {vendor:50s} FAILED: {e}")
+
+    if args.dry_run:
+        print()
+        print("Dry-run complete. Re-run with --apply to upload.")
+    else:
+        print()
+        print(f"Uploaded {n_done} icons, skipped {n_skip}.")
+        print(
+            "Apple Game Center icons go live with the next app review "
+            "submission — no separate publish step."
+        )
+    return 0
+
+
 # ─────────────────────────────────────────────────────────────────────
 # Entry
 # ─────────────────────────────────────────────────────────────────────
@@ -568,6 +784,22 @@ def _build_parser() -> argparse.ArgumentParser:
     g.add_argument("--dry-run", action="store_true")
     g.add_argument("--apply", action="store_true")
     s_sync.set_defaults(func=cmd_sync)
+
+    s_up = sub.add_parser(
+        "upload-icons",
+        help="Upload <id>.png from icons-dir to each en-US localization",
+    )
+    s_up.add_argument("--apple-app-id", help="Apple ASC numeric app id")
+    s_up.add_argument("--yaml", help="Path to achievements yaml")
+    s_up.add_argument(
+        "--icons-dir",
+        default="automation_data/achievement_icons",
+        help="Directory containing <achievement_id>.png files",
+    )
+    g2 = s_up.add_mutually_exclusive_group()
+    g2.add_argument("--dry-run", action="store_true")
+    g2.add_argument("--apply", action="store_true")
+    s_up.set_defaults(func=cmd_upload_icons)
     return p
 
 

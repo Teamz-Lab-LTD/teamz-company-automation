@@ -120,6 +120,130 @@ python3 py/admob.py report --app APP_ID --days 30
 Stdlib-only (no pip deps). Reuses `~/.config/teamzlab/oauth-client-config.json`.
 Token refresh is automatic.
 
+## Web automation framework (sites without API/MCP support)
+
+For tasks where the target has no REST API, no MCP server, or the API
+intentionally excludes a UI feature (e.g. Play Console icon upload,
+Blogger draft styling, Reddit posting). Reusable across every Teamz
+Lab project.
+
+Lives in `py/web_automation/` as a small framework over Playwright:
+
+| File | Role |
+|------|------|
+| `py/web_automation/__init__.py` | `BrowserSession` + `Recipe` base + `run()` |
+| `py/web_automation/__main__.py` | CLI dispatch |
+| `py/web_automation/recipes/<name>.py` | One module per site/task |
+
+### Built-in recipes
+
+| Recipe | Use case |
+|--------|----------|
+| `play_console_icons` | bulk-upload icons to Play Games achievements |
+| `blogger_post`       | draft + publish Blogger posts from yaml |
+| `reddit_comment`     | post comments on a list of Reddit threads |
+| `generic_form_fill`  | drive any form from a yaml step list (catch-all) |
+
+```bash
+# List available recipes
+python3 -m web_automation list
+
+# Run a recipe (--debug = headed + slow-mo + screenshots on fail)
+python3 -m web_automation run play_console_icons --debug
+
+# Recipe-specific args go AFTER `--`
+python3 -m web_automation run blogger_post --debug -- --yaml automation_data/posts.yaml
+
+# Limit to specific items by id/label
+python3 -m web_automation run play_console_icons --only landing_master,flawless
+
+# Generic form-fill (no custom recipe needed)
+python3 -m web_automation run generic_form_fill -- \
+    --yaml my_form.yaml --profile some_partner_portal
+```
+
+### Hard rules
+
+**Rule WA1 — Never reuse a profile across accounts.**
+Each persistent profile lives at
+`~/.cache/teamzlab/web-profiles/<profile_name>/`. Profiles capture
+cookies + 2FA — mixing accounts inside one profile triggers
+Google/Apple security flags and locks you out for hours. One profile
+per (site, account) pair.
+
+**Rule WA2 — Run with `--debug` on first execution after any selector
+change.** Headed mode lets you watch the browser drive the page +
+verify selectors. Once green, drop `--debug` for unattended runs.
+
+**Rule WA3 — Don't rely on internal/private APIs that the web app
+calls.** Play Console / Blogger / Reddit all have unstable internal
+gRPC/JSON endpoints; using them lasts a few weeks then breaks.
+The DOM at least has accessibility roles to anchor against.
+
+**Rule WA4 — Refuse anti-bot-protected flows.** If the page shows
+a CAPTCHA, Turnstile, hCaptcha, Akamai bot-fight, etc — STOP. Don't
+build evasion. The risk of account flag outweighs the convenience.
+
+**Rule WA5 — Selectors anchor on accessibility roles + visible text
+first.** `get_by_role("button", name="Save as draft")` survives
+reskins better than `.css-1abc234`. Fall back to `[role=row]`,
+`[aria-label=...]`, then last-resort to specific Angular Material
+classes (`particle-table-row` etc).
+
+**Rule WA6 — Idempotency lives in `recipe.is_done(sess, item)`.**
+Override it. Without it, re-runs replay all the work — wasteful at
+best, breaks state at worst (e.g. duplicate comments on Reddit).
+
+### Writing a new recipe — minimal template
+
+```python
+# py/web_automation/recipes/my_site.py
+from .. import BrowserSession, Recipe
+
+class MySiteRecipe(Recipe):
+    name = "my_site"
+    profile = "my_site"  # ~/.cache/teamzlab/web-profiles/my_site
+
+    def setup(self, sess):
+        sess.goto("https://my.site/dashboard")
+        if not sess.wait_for_login():
+            raise SystemExit("login timed out")
+
+    def items(self):
+        for row in load_from_yaml():
+            yield row
+
+    def is_done(self, sess, item):
+        # Optional: hit a fast read-only URL to detect prior writes
+        return False
+
+    def process(self, sess, item):
+        sess.goto(item["edit_url"])
+        sess.fill('[aria-label="Title"]', item["title"])
+        sess.click_button("Save")
+        sess.wait_text("Saved")
+
+# CLI integration (optional — needed if you want flags)
+def add_args(p):
+    p.add_argument("--yaml", required=True)
+
+def build_recipe(args):
+    return MySiteRecipe()  # …pass yaml etc.
+```
+
+### Pip deps
+
+```
+pip install --user playwright pyyaml
+python3 -m playwright install chromium
+```
+
+### Screenshots on failure
+
+When a step throws, `run()` saves a full-page screenshot to
+`~/.cache/teamzlab/web-screenshots/<profile>-<label>-<ts>.png`. Helps
+diagnose selector misses without running headed.
+
 ## Achievements (cross-store, REST API)
 
 Single YAML drives both Play Games + Apple Game Center. Same shape as

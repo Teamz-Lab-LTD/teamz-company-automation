@@ -118,6 +118,101 @@ python3 py/admob.py report --app APP_ID --days 30
 Stdlib-only (no pip deps). Reuses `~/.config/teamzlab/oauth-client-config.json`.
 Token refresh is automatic.
 
+## In-App Purchase (cross-store, REST API)
+
+```bash
+# One command for any Teamz Lab app — creates iOS IAP + en-US localization
+# + price schedule, then creates + ACTIVATES Google Play one-time product,
+# then verifies RC entitlement exists. RC product import + attach is UI-only.
+python3 py/iap.py setup \
+    --sku com.teamz.<app>.captains_bundle \
+    --price-usd 2.99 \
+    --name "Captains Bundle" \
+    --description "Remove ads forever and unlock all bundled cosmetics." \
+    --rc-entitlement remove_ads
+
+# Per-platform if you need to retry one side:
+python3 py/iap.py apple-create  --sku ... --price-usd ... --name ... --description ...
+python3 py/iap.py google-create --sku ... --price-usd ... --name ... --description ...
+python3 py/iap.py rc-attach     --sku ... --rc-entitlement remove_ads
+```
+
+Reads:
+- `.teamz-automation.env` → `TEAMZ_APPLE_APP_ID`, `TEAMZ_PLAY_PACKAGE_NAME`, `TEAMZ_ASC_KEY_*`
+- `.env.local` (gitignored) → `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_PROJECT_ID`, `REVENUECAT_IOS_APP_ID`, `REVENUECAT_ANDROID_APP_ID`
+
+Canonical Teamz Lab project values (shared across every game/app):
+- RevenueCat umbrella project: `proj8d8322e7` ("Teamz Lab Mobile Apps")
+- ASC P8: `~/.config/teamzlab/AuthKey_559DD92MBH.p8`, Key ID `559DD92MBH`,
+  Issuer `100d6ef8-7452-4aff-85a4-990158b60b3d` — **team-wide, works for
+  every iOS app under the developer account; never re-generate per app**
+- Play SA: `~/.config/teamzlab/play-console-service-account.json` —
+  service account email `play-console-automation@teamz-lab-app-landing-pages.iam.gserviceaccount.com`.
+  **Must grant `Manage orders and subscriptions` + `View financial data`
+  to the SA on each new app's permissions page** (Play Console →
+  Setup → API access → Edit app permissions → toggle the two perms).
+
+Pip deps: `pyjwt`, `cryptography`, `google-auth`. Standard via `pip install`.
+
+### IAP gotchas — burned hours so you don't have to
+
+- **Google's REST has casing inconsistency.** PATCH path uses
+  lowercase `/applications/{pkg}/onetimeproducts/{sku}`. GET / list /
+  delete / batchUpdateStates use camelCase `/applications/{pkg}/oneTimeProducts/{sku}`.
+  Wrong casing returns Google's generic 404 HTML, NOT a JSON error —
+  easy to misread as "product missing". The discovery doc at
+  `https://androidpublisher.googleapis.com/$discovery/rest?version=v3`
+  is canonical. Both casings are encoded in `iap.py`.
+- **Initial Google PATCH lands in DRAFT** regardless of `state: ACTIVE`
+  in the body. Activation requires the camelCase
+  `oneTimeProducts/{sku}/purchaseOptions:batchUpdateStates` endpoint
+  with body `{"requests":[{"purchaseOptionId":"buy","activate":{}}]}`.
+  `iap.py google-create` runs both steps automatically.
+- **IAP creation requires at least one uploaded build** (Internal
+  Testing track minimum). Without it, Play returns
+  `Can't create product. To fix, request billing permission` —
+  misleading: real cause is "no build to gate against, not a perm
+  issue." Always: `flutter build appbundle --release` →
+  upload via `py/build-play-console.py upload --aab ... --track internal --commit`
+  → THEN run `iap.py`.
+- **Play AAB commit blocked** when manifest auto-includes
+  `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO` / `READ_MEDIA_AUDIO` /
+  `READ_EXTERNAL_STORAGE` (added by `file_picker` / `video_thumbnail`
+  plugins via the kit). Strip via `tools:node="remove"` in
+  `android/app/src/main/AndroidManifest.xml` if the host app doesn't
+  use them, OR upload via Play Console UI which has interactive Data
+  Safety prompts.
+- **Apple description max 55 chars.** `iap.py apple-create` auto-
+  truncates with ellipsis.
+- **Apple price points are encoded JWT-like tokens** (e.g.
+  `eyJzIjoiNjc2Mzg5MzM1NyIsInQiOiJVU0EiLCJwIjoiMTAwMzYifQ` for $2.99
+  USA). They don't filter by `customerPrice` — must page through and
+  match locally. `iap.py` does this.
+- **RC public SDK keys are safe in source** (RevenueCat's own docs
+  recommend embedding). Secret keys NEVER are — gitignore `.env.local`,
+  rotate via dashboard if leaked in chat / commit.
+- **Initial app's RC entitlement + offering must be created via
+  RC v2 REST first**: see iap.py docstring or use `curl`. Single
+  per-app entitlement `remove_ads` + single offering `default` keeps
+  Captain's Bundle pattern consistent across the company.
+- **RC product import + attach to entitlement is UI-only** as of
+  RC v2 REST. After running `iap.py setup`, finish in the dashboard:
+  Products tab → Import from store → both SKUs auto-discover →
+  Entitlements → `remove_ads` → Attach products.
+
+### IAP standard pricing pattern (Teamz Lab apps under <5k DAU)
+
+Single SKU bundle: **$2.99 USD "Captain's Bundle"** = ads off + all
+current cosmetics + 5k coins (or app-equivalent currency). Picked over
+multi-SKU catalog because:
+
+- conversion >> whale ceiling at small scale,
+- single SKU = single failure point in customer support,
+- room for future Vehicle Pass / Season Pass / Subscription tiers
+  ($4.99-9.99) once DAU > 5k justifies a catalog,
+- selling level/world unlocks is BANNED — kills retention loop +
+  leaderboard integrity. Cosmetics + ads off + currency only.
+
 ## Pre-Release Verification
 
 ```bash

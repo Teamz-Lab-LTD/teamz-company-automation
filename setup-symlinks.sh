@@ -68,5 +68,30 @@ if [ -d "$SCRIPT_DIR/distribute" ] && [ ! -L "scripts/distribute" ]; then
   created=$((created + 1))
 fi
 
+# Claude Code skills provided by this submodule — symlinked into the host
+# project's .claude/skills/ so Claude auto-discovers them. Every skill that
+# lives at skills/<name>/ here gets exposed at .claude/skills/<name>/ in the
+# host project. Depth of the symlink target is 3 levels (../../..) because
+# .claude/skills/<name> is three deep from the repo root.
+if [ -d "$SCRIPT_DIR/skills" ]; then
+  mkdir -p .claude/skills
+  for skill_dir in "$SCRIPT_DIR"/skills/*/; do
+    [ -d "$skill_dir" ] || continue
+    skill_name="$(basename "$skill_dir")"
+    link_path=".claude/skills/$skill_name"
+    target="../../$SUBMOD_REL/skills/$skill_name"
+    if [ -L "$link_path" ]; then
+      skipped=$((skipped + 1))
+    else
+      rm -rf "$link_path" 2>/dev/null
+      ln -sf "$target" "$link_path"
+      created=$((created + 1))
+    fi
+  done
+fi
+
 echo "setup-symlinks: created $created, skipped $skipped (already exist)"
 echo "Run scripts via: python3 scripts/<name>.py  or  ./scripts/<name>.sh"
+if [ -d "$SCRIPT_DIR/skills" ]; then
+  echo "Claude Code skills linked under .claude/skills/ — reload your editor or re-open Claude to pick them up."
+fi

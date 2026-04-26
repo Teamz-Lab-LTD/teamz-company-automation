@@ -530,15 +530,187 @@ def rc_attach(
     return True
 
 
+def _run_preflight_gate(args: argparse.Namespace) -> int:
+    """Run iap_preflight before any setup writes. Refuses to proceed if checks fail.
+
+    Override with --skip-preflight (rare; commit message must explain).
+    """
+    if getattr(args, "skip_preflight", False):
+        print("[iap] WARNING: --skip-preflight set; skipping safety gate")
+        return 0
+    try:
+        from iap_preflight import run_preflight, _format_text  # type: ignore
+    except ImportError:
+        # When iap.py is run from a different cwd, ensure the script's
+        # directory is on sys.path so iap_preflight imports.
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from iap_preflight import run_preflight, _format_text  # type: ignore
+
+    results = run_preflight(
+        sku=args.sku,
+        name=args.name,
+        description=args.description,
+    )
+    failed = [r for r in results if not r.passed]
+    print(_format_text(results))
+    if failed:
+        print("[iap] preflight failed; refusing to call API. Fix above + retry.")
+        return min(254, len(failed))
+    return 0
+
+
+def _print_dry_run(args: argparse.Namespace) -> None:
+    """Print the exact API requests setup would issue, without calling them.
+
+    Helps verify SKU / price / metadata before write. Reads env so all
+    canonical IDs / paths show up resolved.
+    """
+    apple_app = os.getenv("TEAMZ_APPLE_APP_ID", "<unset>")
+    play_pkg = os.getenv("TEAMZ_PLAY_PACKAGE_NAME", "<unset>")
+    units = int(args.price_usd)
+    nanos = int(round((args.price_usd - units) * 1_000_000_000))
+    print("=" * 60)
+    print("[iap] DRY RUN — no API call, no writes")
+    print("=" * 60)
+    print(f"\n# Apple App Store Connect target:")
+    print(f"  app_id={apple_app}")
+    print(f"  POST https://api.appstoreconnect.apple.com/v2/inAppPurchases")
+    print(json.dumps({
+        "data": {
+            "type": "inAppPurchases",
+            "attributes": {
+                "name": args.name,
+                "productId": args.sku,
+                "inAppPurchaseType": "NON_CONSUMABLE",
+                "familySharable": False,
+            },
+            "relationships": {"app": {"data": {"type": "apps", "id": apple_app}}},
+        }
+    }, indent=2))
+    print(f"\n  + en-US localization (description truncated to 55 chars if needed)")
+    print(f"  + price schedule for $${args.price_usd:.2f} USD")
+    print(f"\n# Google Play target:")
+    print(f"  package={play_pkg}")
+    print(f"  PATCH .../onetimeproducts/{args.sku}?allowMissing=true&updateMask=...")
+    print(json.dumps({
+        "productId": args.sku,
+        "packageName": play_pkg,
+        "purchaseOptions": [{
+            "purchaseOptionId": "buy",
+            "state": "ACTIVE (lands DRAFT — activate via batchUpdateStates)",
+            "buyOption": {"legacyCompatible": True},
+            "newRegionsConfig": {
+                "availability": "AVAILABLE",
+                "usdPrice": {"currencyCode": "USD", "units": str(units), "nanos": nanos},
+                "eurPrice": {"currencyCode": "EUR", "units": str(units), "nanos": nanos},
+            },
+            "regionalPricingAndAvailabilityConfigs": [{
+                "regionCode": "US",
+                "price": {"currencyCode": "USD", "units": str(units), "nanos": nanos},
+            }],
+        }],
+        "listings": [{"languageCode": "en-US", "title": args.name, "description": args.description}],
+    }, indent=2))
+    print(f"\n  + activate via:")
+    print(f"  POST .../oneTimeProducts/{args.sku}/purchaseOptions:batchUpdateStates")
+    print(f"  body: {{\"requests\":[{{\"purchaseOptionId\":\"buy\",\"activate\":{{}}}}]}}")
+    if args.rc_entitlement:
+        print(f"\n# RevenueCat target:")
+        print(f"  GET https://api.revenuecat.com/v2/projects/{os.getenv('REVENUECAT_PROJECT_ID', '<unset>')}/entitlements")
+        print(f"  -> verify '{args.rc_entitlement}' exists (lookup-only; UI does product import)")
+    print("\n" + "=" * 60)
+    print("[iap] DRY RUN complete. Re-run without --dry-run to apply.")
+    print("=" * 60)
+
+
+def _verify_post_state(args: argparse.Namespace) -> int:
+    """Read both stores after setup ran + confirm everything landed.
+
+    iOS: confirms IAP exists at the SKU + has the expected name.
+    Google: confirms onetimeproduct ACTIVE in 173+ regions.
+
+    Uses the camelCase Google GET path (lowercase returns 404).
+    """
+    print("=" * 60)
+    print("[iap] VERIFY")
+    print("=" * 60)
+    apple_ok = False
+    google_ok = False
+
+    # Apple: search current app's inAppPurchases for our SKU.
+    apple_app = os.getenv("TEAMZ_APPLE_APP_ID", "")
+    jwt_token = _asc_jwt() if apple_app and pyjwt is not None else None
+    if jwt_token:
+        code, payload = _http_request(
+            "GET",
+            f"https://api.appstoreconnect.apple.com/v1/apps/{apple_app}/inAppPurchasesV2"
+            f"?filter%5BproductId%5D={urllib.parse.quote(args.sku)}",
+            token=jwt_token,
+        )
+        if code == 200:
+            data = json.loads(payload).get("data", [])
+            apple_ok = bool(data)
+            if apple_ok:
+                first = data[0]
+                attrs = first.get("attributes", {})
+                print(f"[apple] OK id={first.get('id')} state={attrs.get('state')} type={attrs.get('inAppPurchaseType')}")
+            else:
+                print(f"[apple] MISSING — IAP {args.sku} not found under app {apple_app}")
+        else:
+            print(f"[apple] http {code} listing IAPs")
+    else:
+        print("[apple] SKIPPED (no JWT)")
+
+    # Google: GET via camelCase (lowercase returns 404).
+    play_pkg = os.getenv("TEAMZ_PLAY_PACKAGE_NAME", "")
+    token = _play_token() if play_pkg else None
+    if token and play_pkg:
+        code, payload = _http_request(
+            "GET",
+            f"https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{play_pkg}/oneTimeProducts/{args.sku}",
+            token=token,
+        )
+        if code == 200:
+            r = json.loads(payload)
+            states = [po.get("state") for po in r.get("purchaseOptions", [])]
+            google_ok = "ACTIVE" in states
+            print(f"[google] {'OK' if google_ok else 'EXISTS-NOT-ACTIVE'} purchaseOption states={states}")
+            print(f"[google] regions={len(r.get('purchaseOptions',[{}])[0].get('regionalPricingAndAvailabilityConfigs', []))}")
+        else:
+            print(f"[google] http {code} on GET {args.sku} (try lowercase if 404; lowercase is the PATCH-only path)")
+    else:
+        print("[google] SKIPPED (no token)")
+
+    print()
+    if apple_ok and google_ok:
+        print("[iap] verify OK on both stores. Finish in RC dashboard:")
+        print("  1. Apps -> Apple/Android -> wire ASC API key + Play SA JSON")
+        print("  2. Products -> Import from store -> both SKUs auto-discover")
+        print(f"  3. Entitlements -> {args.rc_entitlement or 'remove_ads'} -> Attach products")
+        return 0
+    print("[iap] verify FAILED on one or both stores. Investigate above before claiming done.")
+    return 1
+
+
 def cmd_setup(args: argparse.Namespace) -> int:
+    if args.dry_run:
+        _print_dry_run(args)
+        return 0
+    if args.verify_only:
+        return _verify_post_state(args)
+    code = _run_preflight_gate(args)
+    if code != 0:
+        return code
     apple_id = apple_create(args.sku, args.price_usd, args.name, args.description)
     google_ok = google_create(args.sku, args.price_usd, args.name, args.description)
     if args.rc_entitlement:
         rc_attach(args.sku, args.rc_entitlement, args.rc_offering, args.rc_package)
-    print("[iap] setup complete. Manual steps remaining:")
+    print("[iap] setup complete. Verifying both stores...")
+    verify_code = _verify_post_state(args)
+    print("[iap] manual steps remaining:")
     print("  1. Apple: upload App Review screenshot in App Store Connect")
     print("  2. RC dashboard: import products + attach to entitlement + offering")
-    return 0 if apple_id and google_ok else 1
+    return verify_code if (apple_id and google_ok) else 1
 
 
 def cmd_apple(args: argparse.Namespace) -> int:
@@ -586,9 +758,27 @@ def main() -> int:
     parser = argparse.ArgumentParser(prog="iap.py", description=__doc__)
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    s_setup = sub.add_parser("setup", help="Apple + Google + RC attach")
+    s_setup = sub.add_parser(
+        "setup",
+        help="Apple + Google + RC attach. Runs iap_preflight gate first.",
+    )
     _add_product_args(s_setup)
     _add_rc_args(s_setup)
+    s_setup.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the exact API request bodies without calling — useful for verifying SKU/price/metadata before a write.",
+    )
+    s_setup.add_argument(
+        "--skip-preflight",
+        action="store_true",
+        help="Skip the precondition gate. Rare — commit message must explain why.",
+    )
+    s_setup.add_argument(
+        "--verify-only",
+        action="store_true",
+        help="Skip writes, only run the post-write verifier (camelCase Google GET, Apple inAppPurchasesV2 list filter).",
+    )
     s_setup.set_defaults(func=cmd_setup)
 
     s_apple = sub.add_parser("apple-create", help="Apple side only")

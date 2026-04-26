@@ -120,7 +120,82 @@ Token refresh is automatic.
 
 ## In-App Purchase (cross-store, REST API)
 
-**Naming convention is per-app — pick a brand-fitting bundle name.**
+### Hard rules — read before touching this surface
+
+**Rule IAP1 — Discovery doc first, no API field guessing.**
+Before sending ANY request to Google Android Publisher API or Apple
+ASC API, fetch the canonical discovery doc and grep for the resource
+schema. Cost: 1 curl. Saves 5-10 guess-and-check turns.
+
+```bash
+# Google: full v3 schema (resource paths, methods, request fields)
+curl -s "https://androidpublisher.googleapis.com/\$discovery/rest?version=v3" \
+  | python3 -m json.tool > /tmp/play-v3.json
+
+# Apple: per-resource OpenAPI live in their public docs site;
+# easiest verify = list one record + inspect attributes
+curl -H "Authorization: Bearer $JWT" \
+  "https://api.appstoreconnect.apple.com/v1/apps?limit=1" | python3 -m json.tool
+```
+
+Specific traps already paid for during chopstick_landing_games launch
+(don't re-pay them):
+
+- **Google REST has casing inconsistency.** `PATCH` path uses
+  `onetimeproducts` (lowercase). `GET` / `list` / `delete` /
+  `batchUpdateStates` use `oneTimeProducts` (camelCase). Wrong casing
+  returns Google's generic 404 HTML, not JSON — easy to misread as
+  "missing resource". `iap.py` and `iap_preflight.py` use both
+  casings correctly.
+- **Initial Google PATCH lands purchaseOption in DRAFT** regardless
+  of `state: "ACTIVE"` in the body. Activation needs the camelCase
+  `oneTimeProducts/{sku}/purchaseOptions:batchUpdateStates` endpoint.
+- **Apple description max is 55 chars.** Apple display name max is
+  30 chars. Google description max is 200 chars. Google name max is
+  25 chars. iap.py auto-truncates Apple description; preflight rejects
+  if any cap is exceeded.
+- **Apple price points are encoded JWT-like tokens** that don't
+  filter by `customerPrice`. Must page through and match locally.
+- **Apple `availableInAllTerritories`** is NOT a real attribute on
+  inAppPurchases (Apple's docs imply otherwise). Don't include it in
+  the create body.
+- **Apple price-schedule local ID format** is `${name}` (literal
+  dollar-sign + curly braces). Other formats return ENTITY_ERROR.
+- **Google IAP creation requires at least one uploaded build** in
+  Internal Testing track. Without it Play returns the misleading
+  `Can't create product. To fix, request billing permission` —
+  burned 4+ turns last time. Preflight check #9 catches this.
+- **Photo/video permission auto-strip** — Flutter's `file_picker` /
+  `video_thumbnail` plugins auto-add `READ_MEDIA_*` perms to the
+  AAB, blocking commit until disclosed. Strip via `tools:node="remove"`
+  in `android/app/src/main/AndroidManifest.xml`.
+
+**Rule IAP2 — Preflight gate runs before any setup write.**
+`iap.py setup` automatically calls `iap_preflight` first. If any of
+the 14 checks fail, setup refuses to proceed. Do NOT pass
+`--skip-preflight` unless you can explain in the commit message
+exactly why.
+
+**Rule IAP3 — Dry-run before writing.**
+For first runs against a new app, always run `iap.py setup --dry-run`
+first. Confirms the resolved Apple App ID + Play package + price body
+shape match expectations.
+
+**Rule IAP4 — Verify after writing.**
+`iap.py setup` automatically calls the post-write verifier. It hits
+the camelCase Google GET endpoint + Apple `inAppPurchasesV2` filter
+and confirms ACTIVE state on Google + presence on Apple. If a future
+change adds a new write step, extend `_verify_post_state` so the
+state confirmation grows with the script.
+
+**Rule IAP5 — Build first, then IAP.**
+Always: `fvm flutter build appbundle --release` →
+`python3 py/build-play-console.py upload --aab <path> --track internal --commit` →
+THEN `iap.py setup`. Every IAP-create-without-build attempt costs
+~20 minutes chasing fake permission errors.
+
+### Naming convention is per-app — pick a brand-fitting bundle name
+
 The pattern (single $2.99 SKU = ads off + all current cosmetics +
 bonus currency) is universal; the WORDS are not. Each app brands its
 own bundle:
@@ -153,6 +228,15 @@ python3 py/iap.py setup \
     --description "Remove ads forever and unlock all current rocket skins." \
     --rc-entitlement remove_ads \
     --rc-package captains_bundle
+
+# Inspect what setup would do, no writes:
+python3 py/iap.py setup ... --dry-run
+
+# After running setup, re-verify the post-state without re-writing:
+python3 py/iap.py setup ... --verify-only
+
+# Pre-flight only (no API calls beyond discovery + read-only sanity):
+python3 py/iap_preflight.py --sku ... --name ... --description ...
 
 # Per-platform if you need to retry one side:
 python3 py/iap.py apple-create  --sku ... --price-usd ... --name ... --description ...

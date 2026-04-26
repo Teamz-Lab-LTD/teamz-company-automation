@@ -51,15 +51,26 @@ Per-app secret (host project's gitignored `.env.local`):
     REVENUECAT_ANDROID_APP_ID     e.g. appb3f78299da
 
 Usage:
+    # Naming convention is per-app — every Teamz Lab project picks its own
+    # brand-fitting bundle name. The PATTERN stays the same: one $2.99
+    # single-SKU bundle = ads off + all current cosmetics + bonus currency.
+    # Pick a name that fits the app's voice. Examples:
+    #
+    #   chopstick_landing_games (SpaceX) -> "Captains Bundle"
+    #   pet_portrait_ai          (creative) -> "Studio Pass" / "Pro Bundle"
+    #   note_tube_ai             (utility)  -> "Pro Pack"
+    #   decorion                 (design)   -> "Designer Bundle"
+    #   debugger / DeviceGPT     (utility)  -> "Pro Diagnostic"
+    #
     # Full flow (Apple + Google + RC entitlement attach):
     python3 iap.py setup \\
-        --sku com.teamz.<app>.captains_bundle \\
+        --sku com.teamz.<app>.<bundle_slug> \\
         --price-usd 2.99 \\
-        --name "Captains Bundle" \\
-        --description "Remove ads forever and unlock all current rocket skins." \\
+        --name "<Bundle Name>" \\
+        --description "Remove ads + unlock all bundled cosmetics." \\
         --rc-entitlement remove_ads \\
         --rc-offering default \\
-        --rc-package captains_bundle
+        --rc-package <bundle_slug>
 
     # Individual platforms:
     python3 iap.py apple-create --sku ... --price-usd ... --name ... --description ...
@@ -554,9 +565,20 @@ def _add_product_args(p: argparse.ArgumentParser) -> None:
 
 
 def _add_rc_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--rc-entitlement", default="", help="RC entitlement lookup_key (e.g. remove_ads)")
+    p.add_argument(
+        "--rc-entitlement",
+        default="",
+        help="RC entitlement lookup_key (canonical for ad removal: 'remove_ads'). "
+        "Pick what the app actually unlocks — entitlements are app-specific.",
+    )
     p.add_argument("--rc-offering", default="default", help="RC offering lookup_key")
-    p.add_argument("--rc-package", default="captains_bundle", help="RC package identifier inside offering")
+    p.add_argument(
+        "--rc-package",
+        default="",
+        help="RC package identifier inside offering. Pick something app-themed "
+        "(e.g. 'captains_bundle' for a SpaceX game, 'studio_pass' for a creative "
+        "tool, 'pro_pack' for a utility). Leave empty when only running setup.",
+    )
 
 
 def main() -> int:

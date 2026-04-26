@@ -120,16 +120,39 @@ Token refresh is automatic.
 
 ## In-App Purchase (cross-store, REST API)
 
+**Naming convention is per-app — pick a brand-fitting bundle name.**
+The pattern (single $2.99 SKU = ads off + all current cosmetics +
+bonus currency) is universal; the WORDS are not. Each app brands its
+own bundle:
+
+| App | Brand | Suggested bundle name |
+|-----|-------|------------------------|
+| chopstick_landing_games | SpaceX rocket sim | Captain's Bundle |
+| pet_portrait_ai | creative tool | Studio Pass |
+| note_tube_ai | utility | Pro Pack |
+| decorion | design tool | Designer Bundle |
+| debugger / DeviceGPT | utility | Pro Diagnostic |
+
+Don't hardcode "Captain" anywhere outside chopstick_landing_games.
+
 ```bash
-# One command for any Teamz Lab app — creates iOS IAP + en-US localization
-# + price schedule, then creates + ACTIVATES Google Play one-time product,
-# then verifies RC entitlement exists. RC product import + attach is UI-only.
+# Generic shape — substitute <bundle_slug> + name per app:
 python3 py/iap.py setup \
-    --sku com.teamz.<app>.captains_bundle \
+    --sku com.teamz.<app>.<bundle_slug> \
+    --price-usd 2.99 \
+    --name "<Bundle Name>" \
+    --description "Remove ads + unlock all bundled cosmetics." \
+    --rc-entitlement remove_ads \
+    --rc-package <bundle_slug>
+
+# Worked example (chopstick_landing_games):
+python3 py/iap.py setup \
+    --sku com.teamz.chopstick.captains_bundle \
     --price-usd 2.99 \
     --name "Captains Bundle" \
-    --description "Remove ads forever and unlock all bundled cosmetics." \
-    --rc-entitlement remove_ads
+    --description "Remove ads forever and unlock all current rocket skins." \
+    --rc-entitlement remove_ads \
+    --rc-package captains_bundle
 
 # Per-platform if you need to retry one side:
 python3 py/iap.py apple-create  --sku ... --price-usd ... --name ... --description ...
@@ -192,9 +215,10 @@ Pip deps: `pyjwt`, `cryptography`, `google-auth`. Standard via `pip install`.
   recommend embedding). Secret keys NEVER are — gitignore `.env.local`,
   rotate via dashboard if leaked in chat / commit.
 - **Initial app's RC entitlement + offering must be created via
-  RC v2 REST first**: see iap.py docstring or use `curl`. Single
-  per-app entitlement `remove_ads` + single offering `default` keeps
-  Captain's Bundle pattern consistent across the company.
+  RC v2 REST first**: see iap.py docstring or use `curl`. Standardize
+  every Teamz Lab app on entitlement `remove_ads` + offering `default`.
+  Only the package identifier inside the offering varies per app
+  (matches the bundle slug — e.g. `captains_bundle`, `studio_pass`).
 - **RC product import + attach to entitlement is UI-only** as of
   RC v2 REST. After running `iap.py setup`, finish in the dashboard:
   Products tab → Import from store → both SKUs auto-discover →
@@ -202,9 +226,11 @@ Pip deps: `pyjwt`, `cryptography`, `google-auth`. Standard via `pip install`.
 
 ### IAP standard pricing pattern (Teamz Lab apps under <5k DAU)
 
-Single SKU bundle: **$2.99 USD "Captain's Bundle"** = ads off + all
-current cosmetics + 5k coins (or app-equivalent currency). Picked over
-multi-SKU catalog because:
+Single SKU bundle: **$2.99 USD** = ads off + all current cosmetics +
+5k coins (or app-equivalent currency). Bundle name is per-app brand
+(Captain's Bundle for chopstick, Studio Pass for creative, Pro Pack
+for utility, etc — pick what fits the voice). Picked over multi-SKU
+catalog because:
 
 - conversion >> whale ceiling at small scale,
 - single SKU = single failure point in customer support,

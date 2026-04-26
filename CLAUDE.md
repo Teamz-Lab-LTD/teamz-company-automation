@@ -120,6 +120,84 @@ python3 py/admob.py report --app APP_ID --days 30
 Stdlib-only (no pip deps). Reuses `~/.config/teamzlab/oauth-client-config.json`.
 Token refresh is automatic.
 
+## Achievements (cross-store, REST API)
+
+Single YAML drives both Play Games + Apple Game Center. Same shape as
+IAP: discovery-grounded API helpers, one source of truth, dry-run +
+apply, idempotent reruns. Eliminates Console-form-by-form drudgery
+across 26 achievements × 2 stores per game.
+
+| Script | Stores written | Method |
+|--------|----------------|--------|
+| `py/gpgs.py`        | Google Play Games | PUT (full replace, optimistic-lock token) |
+| `py/gamecenter.py`  | Apple Game Center | PATCH attrs + upsert per-locale localization |
+
+YAML lives at host app's `automation_data/achievements.yaml`. Schema
+in the file's header. One canonical en-US record per achievement —
+add new locales as additional `localizations:` keys (per-app override
+of `LOCALE = "en-US"` constant).
+
+```bash
+# Probe live state on either store
+python3 py/gpgs.py        list --application-id <PG_NUMERIC_ID>
+python3 py/gamecenter.py  list --apple-app-id <ASC_NUMERIC_ID>
+
+# Diff YAML vs live (no writes)
+python3 py/gpgs.py        sync --application-id <PG_NUMERIC_ID> --dry-run
+python3 py/gamecenter.py  sync --apple-app-id  <ASC_NUMERIC_ID> --dry-run
+
+# Apply
+python3 py/gpgs.py        sync --application-id <PG_NUMERIC_ID> --apply
+python3 py/gamecenter.py  sync --apple-app-id  <ASC_NUMERIC_ID> --apply
+```
+
+After Google sync, dev clicks "Review and publish" in Play Console once
+to push drafts to all users. Apple goes live with the next app review
+submission — no separate publish step.
+
+### Hard rules
+
+**Rule ACH1 — Locale string is `en-US` for both stores.**
+Apple's API returns 409 ENTITY_ERROR on `en_US`. Google's API silently
+creates a duplicate locale entry. Both scripts hardcode `en-US`.
+
+**Rule ACH2 — Google uses canonical host `gamesconfiguration.googleapis.com`,
+NOT `www.googleapis.com`.** The legacy proxy on `www.googleapis.com`
+handles GET only; PUT / POST / DELETE return generic HTML 400. Always
+use the dedicated host for writes — `gpgs.GAMES_BASE` is set
+correctly already.
+
+**Rule ACH3 — Google PUT (no PATCH) — always full-resource read-modify-write.**
+The Configuration API exposes PUT only. Empty `iconUrl` field returns
+400 — preserve only when non-empty. Optimistic-lock `token` field
+must come from the latest GET; reuse causes 410 UpdateTokenInvalid.
+`gpgs.cmd_sync` handles all three.
+
+**Rule ACH4 — Apple POST `/v1/gameCenterAchievements` requires the
+`gameCenterDetail` relationship.** Fetch via `/v1/apps/{appId}/gameCenterDetail`
+at script start. `gamecenter._get_game_center_detail_id` does this.
+
+**Rule ACH5 — Apple `points` cap: 1-100 per achievement, sum ≤1000 per
+game.** Sum overflow returns 422 on the next create. Track in YAML
+and audit.
+
+**Rule ACH6 — Don't ship AI-drafted name/description without a human
+voice pass.** AI achievement copy is detectable in 30 seconds — same
+generic verbs, same blanded-out tone. The YAML keeps the canonical
+text in one place precisely so it can be voice-edited per app.
+
+### Per-app config
+
+Host project's `.teamz-automation.env`:
+
+```
+TEAMZ_APPLE_APP_ID=6739433404
+TEAMZ_PG_APPLICATION_ID=1004286776719
+TEAMZ_PLAY_PACKAGE_NAME=com.teamz.lab.<app>
+```
+
+Or pass explicitly via `--apple-app-id` / `--application-id`.
+
 ## In-App Purchase (cross-store, REST API)
 
 ### Canonical Teamz Lab IAP infrastructure (durable — survives across machines/conversations)

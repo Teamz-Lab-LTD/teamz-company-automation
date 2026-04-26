@@ -120,6 +120,33 @@ Token refresh is automatic.
 
 ## In-App Purchase (cross-store, REST API)
 
+### Canonical Teamz Lab IAP infrastructure (durable — survives across machines/conversations)
+
+Single shared infrastructure across every Teamz Lab project. These
+identifiers don't change per app — only per-app SKUs/names do.
+
+| Resource | Value | Notes |
+|----------|-------|-------|
+| Apple Developer Team | `NDV83KC5LC` | Single team, all apps |
+| Apple ASC API key | `~/.config/teamzlab/AuthKey_559DD92MBH.p8` | Team-wide, never re-generate per app |
+| Apple ASC Key ID | `559DD92MBH` | |
+| Apple ASC Issuer ID | `100d6ef8-7452-4aff-85a4-990158b60b3d` | |
+| Play Service Account JSON | `~/.config/teamzlab/play-console-service-account.json` | Service account email below |
+| Play SA email | `play-console-automation@teamz-lab-app-landing-pages.iam.gserviceaccount.com` | Must grant `Manage orders and subscriptions` + `View financial data` per new app |
+| RevenueCat umbrella project | `proj8d8322e7` | "Teamz Lab Mobile Apps" — single project, all apps |
+| RevenueCat secret key | `.env.local` -> `REVENUECAT_SECRET_API_KEY` | NEVER commit, gitignored, rotate via dashboard |
+| Standard entitlement | `remove_ads` | Same name across every Teamz Lab app |
+| Standard offering | `default` | Same across every app; package id varies by bundle slug |
+| Standard price | `$2.99 USD` non-consumable | Single SKU bundle pattern; tested at small DAU |
+
+Per-app config lives in two files (host project root):
+
+- `.teamz-automation.env` (committed): `TEAMZ_APPLE_APP_ID`,
+  `TEAMZ_PLAY_PACKAGE_NAME`, `TEAMZ_ASC_KEY_*` (overrides).
+- `.env.local` (gitignored): `REVENUECAT_SECRET_API_KEY`,
+  `REVENUECAT_PROJECT_ID`, `REVENUECAT_IOS_APP_ID`,
+  `REVENUECAT_ANDROID_APP_ID`.
+
 ### Hard rules — read before touching this surface
 
 **Rule IAP1 — Discovery doc first, no API field guessing.**
@@ -193,6 +220,47 @@ Always: `fvm flutter build appbundle --release` →
 `python3 py/build-play-console.py upload --aab <path> --track internal --commit` →
 THEN `iap.py setup`. Every IAP-create-without-build attempt costs
 ~20 minutes chasing fake permission errors.
+
+**Rule IAP6 — Run smoke test on every kit pointer bump that touches IAP code.**
+The kit ships `sh/iap-smoke-test.sh` which exercises preflight +
+discovery + dry-run + verify-only against the host app's current
+state. Run it before pushing kit changes to catch regressions:
+
+```bash
+bash team_mvp_kit/teamz-company-automation/sh/iap-smoke-test.sh
+```
+
+Exit 0 = safe to push. Non-zero on any of the 5 gates = fix before
+merging.
+
+### Apple ASC quirks — encoded as constants in `py/iap_discovery.py`
+
+- `APPLE_IAP_NAME_MAX = 30` (display name)
+- `APPLE_IAP_DESCRIPTION_MAX = 55` (localized description)
+- `APPLE_PRICE_LOCAL_ID_FORMAT = "${name}"` (literal dollar-curly,
+  required for inline relationship IDs in price-schedule POST)
+- `APPLE_BANNED_IAP_ATTRIBUTES = {"availableInAllTerritories"}`
+  (looks real per old docs, v2 API rejects with 409)
+- `APPLE_VALID_IAP_TYPES = {"CONSUMABLE", "NON_CONSUMABLE",
+  "NON_RENEWING_SUBSCRIPTION"}`
+- `APPLE_IAP_STATES` — known set; anything outside means Apple added
+  a new state, investigate before assuming it's terminal.
+
+`iap.py._assert_apple_iap_attrs(attrs)` enforces these on every Apple
+write. Add new entries here when bitten by a fresh Apple quirk so
+future agents inherit the lesson.
+
+### Google API casing facts
+
+`GOOGLE_CASING_FACTS["onetimeproducts"]` in `py/iap_discovery.py`:
+
+- PATCH: `onetimeproducts` (lowercase)
+- GET / DELETE / list: `oneTimeProducts` (camelCase)
+- batch* / activate states: `oneTimeProducts` (camelCase)
+
+`iap.py._assert_google_path(method, path)` mechanically enforces by
+fetching the canonical discovery doc (cached 24h at
+`~/.cache/teamzlab/discovery/google-androidpublisher-v3.json`).
 
 ### Naming convention is per-app — pick a brand-fitting bundle name
 

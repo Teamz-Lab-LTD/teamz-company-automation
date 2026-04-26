@@ -124,6 +124,39 @@ except ImportError:
     service_account = None  # type: ignore
 
 
+_DEPENDENCY_HINT = (
+    "Install missing dependencies:\n"
+    "  pip install pyjwt cryptography google-auth\n"
+    "All three are required for cross-store IAP automation. "
+    "pyjwt+cryptography handle Apple ASC's ES256-signed JWTs, "
+    "google-auth handles Play Console OAuth2 token refresh."
+)
+
+
+def _require_pyjwt() -> None:
+    if pyjwt is not None:
+        return
+    print(
+        "[iap] missing dependency: PyJWT\n"
+        + _DEPENDENCY_HINT
+        + "\nApple App Store Connect API auth needs PyJWT to sign ES256 JWTs.",
+        file=sys.stderr,
+    )
+    sys.exit(2)
+
+
+def _require_google_auth() -> None:
+    if service_account is not None:
+        return
+    print(
+        "[iap] missing dependency: google-auth\n"
+        + _DEPENDENCY_HINT
+        + "\nGoogle Play Android Publisher API auth needs google-auth for OAuth2.",
+        file=sys.stderr,
+    )
+    sys.exit(2)
+
+
 _DEFAULT_ASC_KEY = Path.home() / ".config" / "teamzlab" / "AuthKey_559DD92MBH.p8"
 _DEFAULT_ASC_KEY_ID = "559DD92MBH"
 _DEFAULT_ASC_ISSUER_ID = "100d6ef8-7452-4aff-85a4-990158b60b3d"
@@ -184,8 +217,7 @@ def _http_request(
 
 
 def _asc_jwt() -> str:
-    if pyjwt is None:
-        _die("pyjwt missing — `pip install pyjwt cryptography`")
+    _require_pyjwt()
     key_path = Path(os.getenv("TEAMZ_ASC_KEY_FILEPATH", str(_DEFAULT_ASC_KEY))).expanduser()
     if not key_path.exists():
         _die(f"ASC P8 key not found: {key_path}")
@@ -206,8 +238,7 @@ def _asc_jwt() -> str:
 
 
 def _play_token() -> str:
-    if service_account is None:
-        _die("google-auth missing — `pip install google-auth`")
+    _require_google_auth()
     sa_path = Path(
         os.getenv("TEAMZ_PLAY_SERVICE_ACCOUNT_JSON", str(_DEFAULT_PLAY_SA))
     ).expanduser()
@@ -225,6 +256,61 @@ def _need(env: str) -> str:
     if not val:
         _die(f"missing env {env}")
     return val
+
+
+def _assert_google_path(method: str, path: str) -> None:
+    """Mechanical enforcement of IAP1 (discovery doc first).
+
+    Raises ValueError before the HTTP call when the path/method isn't in
+    Google's discovery doc — surfaces casing typos at lint time.
+    Cached 24h locally so cost is one fetch per day per machine.
+    """
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from iap_discovery import assert_google_path_exists  # type: ignore
+    except ImportError:
+        # Discovery module missing — degrade gracefully, log a hint.
+        print(
+            "[iap] WARNING: iap_discovery not importable; skipping path check",
+            file=sys.stderr,
+        )
+        return
+    try:
+        assert_google_path_exists(method, path)
+    except RuntimeError as e:
+        # Network failure fetching discovery doc — degrade gracefully.
+        print(f"[iap] WARNING: discovery fetch failed ({e}); skipping path check", file=sys.stderr)
+
+
+def _assert_apple_iap_attrs(attrs: dict) -> None:
+    """Mechanical enforcement: reject known-banned Apple IAP attribute keys + cap fields."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from iap_discovery import (
+            APPLE_BANNED_IAP_ATTRIBUTES,
+            APPLE_IAP_NAME_MAX,
+            APPLE_VALID_IAP_TYPES,
+        )
+    except ImportError:
+        return
+    bad = set(attrs.keys()) & APPLE_BANNED_IAP_ATTRIBUTES
+    if bad:
+        raise ValueError(
+            f"Apple IAP attributes contain banned keys: {bad}. These look "
+            "real per old docs but the v2 API rejects with 409. See "
+            "iap_discovery.APPLE_BANNED_IAP_ATTRIBUTES."
+        )
+    name = attrs.get("name") or ""
+    if len(name) > APPLE_IAP_NAME_MAX:
+        raise ValueError(
+            f"Apple IAP name too long: {len(name)} > {APPLE_IAP_NAME_MAX}"
+        )
+    iap_type = attrs.get("inAppPurchaseType")
+    if iap_type and iap_type not in APPLE_VALID_IAP_TYPES:
+        raise ValueError(
+            f"Apple inAppPurchaseType='{iap_type}' not in known set "
+            f"{APPLE_VALID_IAP_TYPES}. Verify Apple's docs before sending."
+        )
 
 
 def _print_json(label: str, payload: bytes) -> None:
@@ -250,6 +336,14 @@ def apple_create(
     jwt_token = _asc_jwt()
 
     # 1. Create the IAP shell.
+    apple_attrs = {
+        "name": name,
+        "productId": sku,
+        "inAppPurchaseType": "NON_CONSUMABLE",
+        "reviewNote": "Removes ads + unlocks all bundled cosmetics.",
+        "familySharable": False,
+    }
+    _assert_apple_iap_attrs(apple_attrs)
     code, payload = _http_request(
         "POST",
         "https://api.appstoreconnect.apple.com/v2/inAppPurchases",
@@ -257,13 +351,7 @@ def apple_create(
         body={
             "data": {
                 "type": "inAppPurchases",
-                "attributes": {
-                    "name": name,
-                    "productId": sku,
-                    "inAppPurchaseType": "NON_CONSUMABLE",
-                    "reviewNote": "Removes ads + unlocks all bundled cosmetics.",
-                    "familySharable": False,
-                },
+                "attributes": apple_attrs,
                 "relationships": {
                     "app": {"data": {"type": "apps", "id": apple_app_id}}
                 },
@@ -394,6 +482,18 @@ def google_create(
     package = _need("TEAMZ_PLAY_PACKAGE_NAME")
     token = _play_token()
 
+    # Mechanical discovery-doc enforcement (IAP1). Both casings used —
+    # PATCH lowercase, batchUpdateStates camelCase. Discovery helper
+    # catches typos before HTTP call.
+    _assert_google_path(
+        "PATCH",
+        "androidpublisher/v3/applications/{packageName}/onetimeproducts/{productId}",
+    )
+    _assert_google_path(
+        "POST",
+        "androidpublisher/v3/applications/{packageName}/oneTimeProducts/{productId}/purchaseOptions:batchUpdateStates",
+    )
+
     # 1. Upsert the product (PATCH lowercase path).
     units = int(price_usd)
     nanos = int(round((price_usd - units) * 1_000_000_000))
@@ -487,26 +587,7 @@ def google_create(
     return True
 
 
-def rc_attach(
-    sku: str, entitlement: str, offering: str, package: str
-) -> bool:
-    """Attach a store SKU to a RevenueCat entitlement + offering package.
-
-    Requires REVENUECAT_SECRET_API_KEY + REVENUECAT_PROJECT_ID +
-    REVENUECAT_IOS_APP_ID + REVENUECAT_ANDROID_APP_ID in env.
-    """
-    secret = _need("REVENUECAT_SECRET_API_KEY")
-    project_id = _need("REVENUECAT_PROJECT_ID")
-    print(f"[iap] rc-attach {sku} -> entitlement {entitlement}, offering {offering}/{package}")
-    print(
-        f"[iap] WARNING: rc-attach is currently a stub — RC v2 REST does not "
-        f"expose a single 'attach product to entitlement' verb. The Apple/"
-        f"Play products you just created will only auto-import into RC's "
-        f"Products list AFTER you've wired the ASC API key + Play service "
-        f"account JSON in the RC dashboard for this project. Once imported, "
-        f"flip Entitlement {entitlement} -> Attach products in the RC UI."
-    )
-    # Sanity: confirm the entitlement exists so the user knows the lookup_key is right.
+def _rc_find_entitlement(secret: str, project_id: str, lookup_key: str) -> Optional[str]:
     code, payload = _http_request(
         "GET",
         f"https://api.revenuecat.com/v2/projects/{project_id}/entitlements",
@@ -514,19 +595,225 @@ def rc_attach(
     )
     if code >= 300:
         _print_json(f"rc-list-entitlements http {code}", payload)
-        return False
-    items = json.loads(payload).get("items", [])
-    matched = [e for e in items if e.get("lookup_key") == entitlement]
-    if not matched:
+        return None
+    for e in json.loads(payload).get("items", []):
+        if e.get("lookup_key") == lookup_key:
+            return e.get("id")
+    return None
+
+
+def _rc_find_or_create_product(
+    secret: str,
+    project_id: str,
+    *,
+    rc_app_id: str,
+    store_identifier: str,
+    display_name: str,
+    is_consumable: bool = False,
+) -> Optional[str]:
+    """Find an existing RC product matching (app, SKU) or create one.
+
+    For non-consumables (the Captain's Bundle pattern), `type=non_consumable`
+    + `one_time.is_consumable=false`. Returns the RC product id.
+    """
+    # 1. List products under this app and try to find by store_identifier.
+    code, payload = _http_request(
+        "GET",
+        f"https://api.revenuecat.com/v2/projects/{project_id}/products?limit=100",
+        token=secret,
+    )
+    if code < 300:
+        for p in json.loads(payload).get("items", []):
+            if (
+                p.get("app_id") == rc_app_id
+                and p.get("store_identifier") == store_identifier
+            ):
+                return p.get("id")
+
+    # 2. Not found — create.
+    code, payload = _http_request(
+        "POST",
+        f"https://api.revenuecat.com/v2/projects/{project_id}/products",
+        token=secret,
+        body={
+            "store_identifier": store_identifier,
+            "app_id": rc_app_id,
+            "type": "non_consumable",
+            "display_name": display_name,
+            "one_time": {"is_consumable": is_consumable},
+        },
+    )
+    if code >= 300:
+        _print_json(f"rc-create-product http {code}", payload)
+        return None
+    return json.loads(payload).get("id")
+
+
+def rc_attach(
+    sku: str, entitlement: str, offering: str, package: str
+) -> bool:
+    """Attach a store SKU to a RevenueCat entitlement (real REST impl).
+
+    Steps:
+        1. Resolve entitlement id by lookup_key.
+        2. For each registered RC app under the project (iOS app_store +
+           Android play_store with the matching bundle/package), find or
+           create the product record for `sku`.
+        3. POST to entitlements/{ent}/actions/attach_products to attach
+           both products in one call.
+
+    Required env:
+        REVENUECAT_SECRET_API_KEY
+        REVENUECAT_PROJECT_ID
+        TEAMZ_PLAY_PACKAGE_NAME (used to match the Android RC app)
+
+    Optional env (overrides discovery):
+        REVENUECAT_IOS_APP_ID, REVENUECAT_ANDROID_APP_ID
+
+    `offering` + `package` are not used by this function — RC v2 REST
+    handles offering/package linkage as a separate concern. The kit's
+    convention is one offering 'default' + one package matching the
+    bundle slug; create those once per project via REST or the dashboard.
+    """
+    secret = _need("REVENUECAT_SECRET_API_KEY")
+    project_id = _need("REVENUECAT_PROJECT_ID")
+    package_name = _need("TEAMZ_PLAY_PACKAGE_NAME")
+    ent_id = _rc_find_entitlement(secret, project_id, entitlement)
+    if not ent_id:
         print(
-            f"[iap] entitlement '{entitlement}' not found in project {project_id}. "
-            f"Create it via:\n"
-            f"  curl -H 'Authorization: Bearer $REVENUECAT_SECRET_API_KEY' "
-            f"-d '{{\"lookup_key\":\"{entitlement}\",\"display_name\":\"...\"}}' "
-            f"https://api.revenuecat.com/v2/projects/{project_id}/entitlements"
+            f"[iap] entitlement '{entitlement}' not found in project {project_id}.\n"
+            f"     Create via: POST /v2/projects/{project_id}/entitlements\n"
+            f"       body: {{\"lookup_key\":\"{entitlement}\",\"display_name\":\"...\"}}"
         )
         return False
-    print(f"[iap] rc entitlement '{entitlement}' confirmed (id={matched[0]['id']})")
+    print(f"[iap] rc entitlement '{entitlement}' resolved -> {ent_id}")
+
+    # Find RC apps under this project, matching iOS + Android.
+    code, payload = _http_request(
+        "GET",
+        f"https://api.revenuecat.com/v2/projects/{project_id}/apps",
+        token=secret,
+    )
+    if code >= 300:
+        _print_json(f"rc-list-apps http {code}", payload)
+        return False
+    rc_apps = json.loads(payload).get("items", [])
+    ios_app_id = os.getenv("REVENUECAT_IOS_APP_ID", "").strip() or None
+    android_app_id = os.getenv("REVENUECAT_ANDROID_APP_ID", "").strip() or None
+    if not ios_app_id:
+        for a in rc_apps:
+            if a.get("type") == "app_store":
+                ios_app_id = a.get("id")
+                break
+    if not android_app_id:
+        for a in rc_apps:
+            if a.get("type") == "play_store" and a.get("play_store", {}).get(
+                "package_name"
+            ) == package_name:
+                android_app_id = a.get("id")
+                break
+    if not ios_app_id or not android_app_id:
+        print(
+            f"[iap] could not resolve both RC apps (ios={ios_app_id}, "
+            f"android={android_app_id}). Set REVENUECAT_IOS_APP_ID + "
+            f"REVENUECAT_ANDROID_APP_ID in .env.local to override discovery."
+        )
+        return False
+
+    product_ids: list[str] = []
+    for app_id, label in ((ios_app_id, "iOS"), (android_app_id, "Android")):
+        pid = _rc_find_or_create_product(
+            secret,
+            project_id,
+            rc_app_id=app_id,
+            store_identifier=sku,
+            display_name=sku,
+        )
+        if not pid:
+            print(f"[iap] failed to find/create RC product for {label} app {app_id}")
+            return False
+        product_ids.append(pid)
+        print(f"[iap] rc product {label} -> {pid}")
+
+    # Attach products to entitlement.
+    code, payload = _http_request(
+        "POST",
+        f"https://api.revenuecat.com/v2/projects/{project_id}/entitlements/{ent_id}/actions/attach_products",
+        token=secret,
+        body={"product_ids": product_ids},
+    )
+    if code >= 300:
+        # Already-attached products return 409 — treat as soft success.
+        try:
+            err = json.loads(payload)
+        except Exception:
+            err = {}
+        if err.get("type") == "resource_already_exists" or "already" in (
+            err.get("message") or ""
+        ).lower():
+            print(f"[iap] rc products already attached to '{entitlement}' (idempotent)")
+            return True
+        _print_json(f"rc-attach http {code}", payload)
+        return False
+    print(f"[iap] rc products attached to entitlement '{entitlement}'")
+
+    # Best-effort offering/package wire-up.
+    if offering and package:
+        # Ensure offering exists (lookup_key match).
+        code, payload = _http_request(
+            "GET",
+            f"https://api.revenuecat.com/v2/projects/{project_id}/offerings?limit=100",
+            token=secret,
+        )
+        if code < 300:
+            offerings = json.loads(payload).get("items", [])
+            off_id = next(
+                (o.get("id") for o in offerings if o.get("lookup_key") == offering),
+                None,
+            )
+            if off_id:
+                # Add a package + attach products.
+                code, payload = _http_request(
+                    "POST",
+                    f"https://api.revenuecat.com/v2/projects/{project_id}/offerings/{off_id}/packages",
+                    token=secret,
+                    body={
+                        "lookup_key": package,
+                        "display_name": package,
+                        "position": 1,
+                    },
+                )
+                if code < 300:
+                    pkg_id = json.loads(payload).get("id")
+                    print(f"[iap] rc package '{package}' created in offering '{offering}' -> {pkg_id}")
+                    code, payload = _http_request(
+                        "POST",
+                        f"https://api.revenuecat.com/v2/projects/{project_id}/packages/{pkg_id}/actions/attach_products",
+                        token=secret,
+                        body={
+                            "products": [
+                                {"product_id": pid, "eligibility_criteria": "all"}
+                                for pid in product_ids
+                            ]
+                        },
+                    )
+                    if code < 300:
+                        print(f"[iap] rc package '{package}' has products attached")
+                    else:
+                        _print_json(
+                            f"rc-attach-package http {code} (non-fatal)",
+                            payload,
+                        )
+                else:
+                    _print_json(
+                        f"rc-create-package http {code} (non-fatal — may already exist)",
+                        payload,
+                    )
+            else:
+                print(
+                    f"[iap] offering '{offering}' not found — create it via "
+                    f"POST /v2/projects/{project_id}/offerings then re-run."
+                )
     return True
 
 

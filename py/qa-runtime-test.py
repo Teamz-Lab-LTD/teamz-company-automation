@@ -36,9 +36,11 @@ PAGE_TIMEOUT = int(os.environ.get('QA_RUNTIME_PAGE_TIMEOUT', '12000'))  # ms per
 def get_all_tools():
     """Find all tool index.html files (not hub pages)."""
     tools = []
+    # roktolagbe = standalone product on separate Firebase project (lifedrop-prod).
+    # It uses its own firebase-config.js and won't initialize under tool.teamzlab.com host.
     skip = {'.git', 'node_modules', 'shared', 'branding', 'docs', 'scripts',
             '.claude', '.claude-memory', 'og-images', 'icons', 'apps',
-            'flutter_service_worker', 'teamzlab-website'}
+            'flutter_service_worker', 'teamzlab-website', 'roktolagbe'}
     for dirpath, dirnames, filenames in os.walk(ROOT):
         dirnames[:] = [d for d in dirnames if d not in skip]
         if 'index.html' not in filenames:
@@ -76,6 +78,9 @@ def get_changed_tools():
         for f in files:
             f = f.strip()
             if not f or not f.endswith('index.html'):
+                continue
+            # roktolagbe lives on a separate Firebase project — skip in main repo runtime test
+            if f.startswith('roktolagbe/'):
                 continue
             parts = f.split('/')
             if len(parts) >= 3:  # hub/tool/index.html

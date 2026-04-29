@@ -97,6 +97,7 @@ def _run_script(script_path: str, args: list[str] = None, timeout: int = 600) ->
 ALL_STEPS = [
     # Phase 1: Data collection (all automated)
     ("preflight",       "Pre-flight validation"),
+    ("monetization",    "Monetization research (AdMob eCPM benchmark + Reddit crowd intel + auto-populate _monetization_context)"),
     ("keywords",        "Keyword discovery (suggest + expand + trending + long-tail + seasonal)"),
     ("volume",          "Volume estimation (Bing + Trends + autocomplete) via build-keyword-volume.py"),
     ("competitors",     "Competitor analysis (find + matrix + keywords + gaps)"),
@@ -148,7 +149,7 @@ ALL_STEPS = [
 ]
 
 AUTOMATED_STEPS = {
-    "preflight", "keywords", "volume", "competitors", "metadata_audit",
+    "preflight", "monetization", "keywords", "volume", "competitors", "metadata_audit",
     "reviews", "seo_engine", "pipeline", "seo_merge", "priority_export", "per_kw_analysis",
     "permissions", "build", "upload", "push_listings", "store_settings",
     "copy_helper", "icon_audit", "icon", "feature_graphic", "postflight",
@@ -216,6 +217,155 @@ def run_step_preflight(progress: dict):
     # Preflight warnings are OK, only fail on hard errors
     _mark_step(progress, "preflight", "done" if code == 0 else "done",
                "Passed with warnings" if code != 0 else "All checks passed")
+
+
+# Map TEAMZ_ASO_CATEGORY values (Play/Apple-style) to admob-rpm-benchmarks categories.
+# Add new entries here as new app categories are launched.
+_CATEGORY_TO_ADMOB = {
+    "shopping": "shopping-apps",
+    "finance": "finance-apps",
+    "productivity": "productivity-apps",
+    "tools": "utility-apps",
+    "utility": "utility-apps",
+    "health": "health-fitness-apps",
+    "fitness": "health-fitness-apps",
+    "photography": "photo-video-apps",
+    "video": "photo-video-apps",
+    "social": "social-dating-apps",
+    "dating": "social-dating-apps",
+    "education": "kids-education-apps",
+    "kids": "kids-education-apps",
+    "lifestyle": "lifestyle-apps",
+    "news": "news-magazines",
+    "magazines": "news-magazines",
+    "casual_game": "casual-games",
+    "puzzle": "casual-games",
+    "word": "word-trivia-games",
+    "trivia": "word-trivia-games",
+    "rpg": "rpg-strategy-games",
+    "strategy": "rpg-strategy-games",
+    "simulation": "simulation-games",
+    "crypto": "web3-crypto-apps",
+    "web3": "web3-crypto-apps",
+}
+
+
+def _get_target_country() -> str:
+    """Get target country code from env (defaults to US)."""
+    env_file = _PROJECT_ROOT / ".teamz-automation.env"
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            if line.startswith("TEAMZ_TARGET_COUNTRY="):
+                return line.split("=", 1)[1].strip().upper()
+    return "US"
+
+
+def run_step_monetization_research(progress: dict):
+    """Refresh AdMob eCPM benchmark + Reddit ASO crowd intel.
+    Auto-populate _monetization_context in deep-research-keywords.json so the
+    listing-generation step has hard data to ground revenue claims + country
+    priority decisions in. Runs at start of pipeline (after preflight) so all
+    downstream steps see the data.
+    """
+    step_n = len(ALL_STEPS)
+    print(f"\n[2/{step_n}] Monetization research (eCPM benchmark + Reddit crowd intel)...")
+
+    category_raw = _get_category()
+    admob_category = _CATEGORY_TO_ADMOB.get(category_raw.lower(), "utility-apps")
+    target_country = _get_target_country()
+
+    if admob_category == "utility-apps" and category_raw.lower() not in ("tools", "utility", "utility-apps"):
+        print(f"  WARN: TEAMZ_ASO_CATEGORY='{category_raw}' has no eCPM mapping; defaulting to utility-apps. "
+              f"Add a mapping in _CATEGORY_TO_ADMOB if this is wrong.")
+
+    # 1. Refresh AdMob eCPM benchmarks (writes data/admob-rpm-benchmarks.json in submodule data dir)
+    print("  Refreshing AdMob eCPM benchmarks...")
+    code, output = _run_script("aso/aso-admob-rpm-benchmarks.py", [], timeout=30)
+    if code != 0:
+        print(f"  WARN: benchmark refresh exit {code}: {output[-200:]}")
+
+    # 2. Refresh Reddit ASO crowd (--quick to keep it fast in pipeline; user can run --full manually)
+    print("  Refreshing Reddit ASO crowd intel (--quick)...")
+    _run_script("build-reddit-rpm-tracker.py", ["--niche", "aso", "--quick"], timeout=300)
+    # Reddit hits 429 rate limits sometimes — non-fatal, just log
+
+    # 3. Pull eCPM range for our category × country combo
+    print(f"  Querying eCPM for category={admob_category} country={target_country}...")
+    code, output = _run_script(
+        "aso/aso-admob-rpm-benchmarks.py",
+        ["--query", admob_category, "--country", target_country],
+        timeout=10,
+    )
+
+    # 4. Pull revenue projection at 1k DAUs (canonical anchor for sanity check)
+    print(f"  Computing revenue projection at 1000 DAUs...")
+    code, projection = _run_script(
+        "aso/aso-admob-rpm-benchmarks.py",
+        ["--revenue-projection", "--category", admob_category, "--country", target_country, "--daus", "1000"],
+        timeout=10,
+    )
+    print(projection[-600:] if len(projection) > 600 else projection)
+
+    # 5. Auto-populate _monetization_context block in deep-research-keywords.json (don't overwrite anything else)
+    drk_path = _DATA_DIR / "deep-research-keywords.json"
+    drk = {}
+    if drk_path.exists():
+        try:
+            drk = json.loads(drk_path.read_text())
+        except json.JSONDecodeError:
+            drk = {}
+
+    # Read benchmark JSON from submodule data dir
+    bench_path = Path(_PY_DIR.parent / "data" / "admob-rpm-benchmarks.json")
+    if bench_path.exists():
+        bench = json.loads(bench_path.read_text())
+        cat_data = bench.get("benchmarks", {}).get(admob_category, {})
+        tier_mult = bench.get("tier_multipliers", {}).get(target_country, 1.0)
+
+        rewarded = cat_data.get("rewarded", {})
+        interstitial = cat_data.get("interstitial", {})
+        iap = cat_data.get("iap_arpdau", {})
+
+        drk["_monetization_context"] = {
+            "_generated_by": "aso-store-release.py monetization step",
+            "_last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "category": admob_category,
+            "target_country": target_country,
+            "country_tier_multiplier": tier_mult,
+            "ecpm_baseline_us": {
+                "rewarded_video": {"low": rewarded.get("low"), "high": rewarded.get("high")},
+                "interstitial":   {"low": interstitial.get("low"), "high": interstitial.get("high")},
+                "iap_arpdau":     {"low": iap.get("low"), "high": iap.get("high")},
+            },
+            "ecpm_target_country_adjusted": {
+                "rewarded_video": {
+                    "low": round((rewarded.get("low") or 0) * tier_mult, 2),
+                    "high": round((rewarded.get("high") or 0) * tier_mult, 2),
+                },
+                "interstitial": {
+                    "low": round((interstitial.get("low") or 0) * tier_mult, 2),
+                    "high": round((interstitial.get("high") or 0) * tier_mult, 2),
+                },
+            },
+            "revenue_projection_1k_daus_text": projection.split("\n")[-15:] if projection else [],
+            "sources": bench.get("sources", []),
+            "caveats": bench.get("caveats", []),
+            "usage_for_orchestrator": (
+                "Listing generation MUST use this data when making revenue claims, "
+                "country priority decisions, or monetization model recommendations. "
+                "Numbers are public benchmarks; real eCPM varies ±50% by app age, "
+                "fill rate, and mediation stack."
+            ),
+        }
+
+        _DATA_DIR.mkdir(parents=True, exist_ok=True)
+        drk_path.write_text(json.dumps(drk, indent=2) + "\n")
+        print(f"  Wrote _monetization_context to {drk_path.relative_to(_PROJECT_ROOT) if drk_path.is_relative_to(_PROJECT_ROOT) else drk_path}")
+        _mark_step(progress, "monetization", "done",
+                   f"category={admob_category}, country={target_country}, tier_mult={tier_mult}, rewarded ${(rewarded.get('low') or 0)*tier_mult:.2f}-${(rewarded.get('high') or 0)*tier_mult:.2f}")
+    else:
+        print(f"  WARN: benchmark JSON not found at {bench_path} — skipping context block")
+        _mark_step(progress, "monetization", "failed", "benchmark JSON not generated")
 
 
 def _get_seeds() -> list[str]:
@@ -957,6 +1107,7 @@ def run_full(progress: dict):
     # ── Phase 1: Data Collection (all automated) ──
     print("\n══ PHASE 1: DATA COLLECTION ══")
     run_step_preflight(progress)
+    run_step_monetization_research(progress)
     run_step_keywords(progress)
     run_step_volume(progress)
     run_step_competitors(progress)
@@ -1113,6 +1264,7 @@ def main():
     if args.step:
         step_fn = {
             "preflight": run_step_preflight,
+            "monetization": run_step_monetization_research,
             "keywords": run_step_keywords,
             "volume": run_step_volume,
             "competitors": run_step_competitors,

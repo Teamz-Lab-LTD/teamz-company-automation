@@ -51,6 +51,8 @@
 | **A/B experiment tracker** | `py/aso/aso-experiments.py add\|snapshot\|end\|list\|report` | Icon/screenshot/subtitle/title variants with CVR tracking; writes `aso-experiments.json` + `aso-experiments-report.md` |
 | **App icon audit (contrast, size, alpha, fill)** | `py/aso/aso-icon-audit.py` | Stdlib PNG parser; catches iOS alpha rejection, low corner↔center contrast, undersized icons |
 | **Download velocity + install trend (Play + ASC)** | `py/aso/aso-velocity.py` | Uses existing Play service account + ASC P8 key (no new setup); writes `aso-velocity-latest.json` + history CSV + markdown report |
+| **AdMob eCPM benchmarks (app-idea generation gate)** | `py/aso/aso-admob-rpm-benchmarks.py [--query CATEGORY] [--country CC] [--top N] [--format rewarded\|interstitial\|banner\|native\|app-open] [--revenue-projection --category X --country US --daus 1000] [--validate]` | Mobile counterpart to `build-public-rpm-benchmarks.py`. 15 categories × 5 ad formats × 56 country multipliers. Auto-called by `aso-store-release.py` Phase 1 `monetization` step — populates `_monetization_context` block in `deep-research-keywords.json` with country-adjusted eCPM range + revenue projection. Use `--revenue-projection` standalone for "should I build this?" gate. |
+| **Reddit AdMob/IAP/eCPM crowd intel** | `py/build-reddit-rpm-tracker.py --niche aso [--quick] [--report]` | Scans r/AdMob, r/iOSProgramming, r/androiddev, r/PlayConsole, r/ASO + 5 more for eCPM/ARPDAU/ARPPU dollar mentions. Writes `data/reddit-aso-rpm-crowd.json`. Auto-called by orchestrator's `monetization` step (--quick). Cross-validation against AdMob benchmarks via `aso-admob-rpm-benchmarks.py --validate`. |
 | **Gemini Nano Banana image edit (no MCP)** | `py/aso/aso-gemini-edit.py --prompt "..." --image <src> --output <dst>` | REST wrapper for `nano-banana-pro-preview`. Reads API key from `~/.config/teamzlab/gemini-api-key.txt`. Used for screenshots, icons, feature graphics. Stdlib only. |
 | **Play Console batch push (39 locales + graphics)** | `TEAMZ_PLAY_PACKAGE_NAME=com.x python3 py/aso/aso-play-batch-push.py [--commit]` | Single edit transaction pushes listings for all locales + screenshots + feature graphic + icon in one shot. Dry-run by default. |
 | **ASC screenshots direct push (Ruby/Spaceship)** | `TARGET_VERSION=2.1.0 bundle exec ruby py/aso/asc-screenshots-push.rb` | Bypasses fastlane deliver's silent-failure race. Uploads to ALL 39 locales with `wait_for_processing: true`. Env: `LOCALES=ALL` or comma-list. |
@@ -60,6 +62,9 @@
 
 ```
 0.  py/aso/aso-preflight.py --pre                          → VALIDATE before starting (blocks if data missing)
+0b. py/aso/aso-admob-rpm-benchmarks.py                     → Refresh eCPM benchmark JSON (15 categories × 56 countries)
+0c. py/build-reddit-rpm-tracker.py --niche aso --quick     → Refresh Reddit crowd intel (AdMob/eCPM/ARPDAU mentions)
+0d. (auto) write _monetization_context to deep-research-keywords.json so listing/translations reference real eCPM × country tier data
 1.  py/aso/aso-keywords.py --suggest/--expand/--trending   → discover keywords
 2.  py/build-keyword-volume.py "kw1" "kw2" ...             → get REAL volume data (Bing + Trends + autocomplete)
 3.  py/aso/aso-competitors.py --find/--matrix              → competitive landscape
@@ -81,6 +86,7 @@
 **⚠️ NEVER skip step 5 (seo-merge). The global CLAUDE.md rule mandates combining ASO + SEO + Deep Research before writing content.**
 **⚠️ Step 7 (Google Trends) requires browser — the API is 429 rate-limited. Ask the user to do this manually.**
 **⚠️ The orchestrator `py/aso/aso-store-release.py` runs steps 0–13 automatically in order — prefer it over running scripts individually.**
+**⚠️ Step 0b/0c/0d (monetization research) auto-fires as orchestrator step `monetization` immediately after preflight. Listing-generation step depends on `_monetization_context` being populated — never skip.**
 
 ---
 

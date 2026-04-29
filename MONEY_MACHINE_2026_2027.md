@@ -11,7 +11,7 @@
 ## TL;DR — what to do this week
 
 1. **Fix AdSense FIRST.** £0 on 4,592 weekly views is the bleeding wound. Likely "Ads Limited" status driven by 26% bot traffic. No new tool earns until this is fixed.
-2. **Then build in this order** (90-day plan): TCJA-2027 cluster (US, time-locked spike Dec 2026–Apr 2027) → Mortgage hub fill (highest RPM $30-80 × empty hub, see PICK 6) → Singapore expansion (16→50 tools, validated by clone competitor) → Japan English expansion (8→30 tools, top organic + retention winner) → CSRD/SME carbon (EU, regulation-forced, B2B RPM) → Longevity / PhenoAge (evergreen, blue ocean).
+2. **Then build in this order** (90-day plan): OBBB 2026/2027 cleanup cluster (US, filing season Jan-Apr 2027 spike — REFRAMED 2026-04-29 from TCJA sunset to OBBB confusion cleanup) → Mortgage hub fill (highest RPM $30-80 × empty hub, see PICK 6) → Singapore expansion (16→50 tools, validated by clone competitor) → Japan English expansion (8→30 tools, top organic + retention winner) → CSRD/SME carbon (EU, regulation-forced, B2B RPM — ⚠️ wave 2/3 timing politically fluid 2-yr postponement proposed, see PICK 4) → Longevity / PhenoAge (evergreen, blue ocean).
 3. **Stop building one-shot calculators.** Default to retention (biological/seasonal trigger) tools when possible. Programmatic SEO + multilang is the scale lever — already 5 templates exist, only 2% of tools use TeamzAI.
 
 **Hub-coverage-gap context (2026-04-29 audit):** Site has 2,511 tools but Tier 1 RPM hubs are nearly empty. mortgage:1 ($30-80 RPM), finance:2 ($18-45), insurance:0 ($25-60), tax:0 ($20-50), real-estate:0 ($12-28). Total gap −577 tools = **$6-20K/mo potential**. PICKs 1, 4 already fill /tax/ and /eu/csrd/ hubs. PICK 6 (mortgage) added below to fill highest-RPM × biggest-gap hub. Country-RPM modifier: Tier S (CH/NO/AU/DK/SE/NZ/IE/SG) +30-80% over US. Banned: BD/IN/PK/NG/PH/ID (2-10% of US RPM, wasted cycle).
@@ -121,9 +121,16 @@ These are the 2026-2027 money machines, ranked by execution priority:
 
 ---
 
-### 🥇 PICK 1 — TCJA 2027 Sunset Cluster (`/us/tcja-2027/`) — TIME-LOCKED, BUILD NOW
+### 🥇 PICK 1 — OBBB 2026/2027 Tax Cleanup (`/us/obbb-2026/`) — REFRAMED 2026-04-29
 
-**Why now:** TCJA provisions sunset Dec 31, 2026. OBBBA (July 2025) made some permanent but not all — standard deduction reverts, estate exemption halves from $13.9M → ~$7M, brackets shift. **Search spike inevitable Dec 2026 → Apr 2027.** US RPM is highest in our portfolio.
+**⚠️ MAJOR REFRAME 2026-04-29:** Original "TCJA sunset Dec 2027" thesis is partly OUTDATED. The **One Big Beautiful Bill Act** (P.L. 119-21, signed July 4, 2025) already extended/made permanent many TCJA provisions. **Estate exemption was RAISED to $15M for 2026** — NOT halving to $7M as originally feared. Full deep research: `data/research-cache/deep-research-2026-04-29.md`.
+
+**Why now (REVISED):** People are still searching outdated "TCJA sunset 2027" terms even though OBBB already resolved the central federal sunset cliff. Two opportunities:
+1. **OBBB confusion cleanup** — answer "is the TCJA still sunsetting?" "what changed under OBBB?" "did estate exemption halve?" with correct 2026 facts
+2. **Annual IRS bracket update tools** — filing season Jan-Apr 2027 is the real spike (NOT Dec 2026 panic)
+3. **State-level changes** — some states didn't conform to OBBB; state-specific gaps remain
+
+US RPM is highest in our portfolio. Source: irs.gov OBBB pages, P.L. 119-21.
 
 **Validation evidence:** Tax Foundation, JCT, Grant Thornton, Empower all publishing 2027 planning guides Mar-Apr 2026. SERP for "2027 tax bracket calculator" is currently thin blog posts.
 
@@ -135,7 +142,7 @@ These are the 2026-2027 money machines, ranked by execution priority:
 | `/us/salt-40k-cap-calculator/` | SALT $40K Cap Calculator 2027 — Teamz Lab | Calculate your SALT deduction after the $40K cap reverts in 2027. All 50 states. Free, instant. |
 | `/us/bonus-depreciation-phaseout-2026/` | Bonus Depreciation 40% Phaseout 2026 — Teamz Lab | Calculate Section 168(k) bonus depreciation at 40% for 2026 assets. IRS-compliant. Free tool. |
 | `/us/401k-catch-up-8000-calculator/` | $8,000 401(k) Catch-Up Calculator 2026 — Teamz Lab | Calculate your new $8,000 SECURE 2.0 catch-up 401(k) contribution (age 60-63). IRS 2026 limits. |
-| `/us/estate-exemption-2027-halving/` | Estate Tax Exemption 2027 Halving Calculator — Teamz Lab | Calculate estate tax impact when exemption halves from $13.9M to ~$7M in 2027. Free, private. |
+| `/us/estate-exemption-2027-halving/` | ⚠️ STALE 2026-04-29 — exemption RAISED to $15M for 2026 under OBBB, did NOT halve. Tool needs reframe to "OBBB estate exemption $15M update" or sunset/redirect. |
 
 **Programmatic SEO templates:**
 - `us-tcja-by-state` (51 variants) — each state shows actual 2026→2027 delta in $ using state tax stack
@@ -143,8 +150,11 @@ These are the 2026-2027 money machines, ranked by execution priority:
 - `us-estate-exemption-by-net-worth` (5 tiers)
 - **Total: 64 variants** auto-generated after base tools ship.
 
-**GEO intro template** (use for every TCJA tool):
-> "On [Last updated: 2026-MM-DD], the Tax Cuts and Jobs Act provisions sunset December 31, 2026. This calculator compares your 2026 vs 2027 [bracket/SALT/estate] tax under current law reversion. Based on IRS 2026 inflation-adjusted brackets and Joint Committee on Taxation scoring."
+**GEO intro template** (REFRAMED 2026-04-29 — use for OBBB tools):
+> "On [Last updated: 2026-MM-DD], the One Big Beautiful Bill Act (P.L. 119-21, signed July 4, 2025) extended or made permanent many TCJA provisions. This calculator reflects [bracket/SALT/estate] tax under current law as updated by OBBB. Based on IRS 2026 inflation-adjusted brackets."
+
+**OLD GEO template (DO NOT USE — keeps confusion alive):**
+> ~~"...Tax Cuts and Jobs Act provisions sunset December 31, 2026..."~~ — outdated, OBBB resolved central sunset.
 
 **Schema stack:** WebApplication + FAQPage + BreadcrumbList + GovernmentService + Dataset (bracket table) + Article (per state).
 
@@ -220,9 +230,11 @@ But it's a 3-6 month organic ranking play, NOT a quick win. Recommend deferring 
 
 ---
 
-### 🏅 PICK 4 — SME CSRD Carbon Tracker (`/eu/csrd/` new hub)
+### 🏅 PICK 4 — SME CSRD Carbon Tracker (`/eu/csrd/` new hub) — ⚠️ TIMING UNCERTAIN 2026-04-29
 
-**Why:** 2026 = first reporting year for many EU SMEs under CSRD. Existing tools (Sweep, Coolset, Persefoni, Seedling) charge €10K-30K/year. Free public tools = massive demand gap. CarbonTrack just launched Jan 2026 — niche not yet dominated. **B2B RPM >> consumer.** Affiliate to Sweep/Coolset/Plan A; lead-gen to sustainability consultants is $50-300/lead.
+**⚠️ TIMING FLAG (added 2026-04-29):** EU Commission's omnibus package proposes a **2-year postponement** for wave 2 + wave 3 entities (originally due to report 2026/2027 → would shift to 2028/2029). This is a Commission proposal, not yet enacted EU law as of Q2 2026. Search demand still real but timing fluid. Source: ChatGPT Deep Research 2026-04-29 + EU Commission CSRD page. **DO NOT** hard-code reporting deadlines into calculator pages without legal-review step. Frame tools around "current proposal" + cite latest EU source.
+
+**Why:** 2026 = ORIGINALLY first reporting year for many EU SMEs under CSRD wave 2 — but postponement proposal in flight. Existing tools (Sweep, Coolset, Persefoni, Seedling) charge €10K-30K/year. Free public tools = massive demand gap regardless of postponement. CarbonTrack just launched Jan 2026 — niche not yet dominated. **B2B RPM >> consumer.** Affiliate to Sweep/Coolset/Plan A; lead-gen to sustainability consultants is $50-300/lead.
 
 **5 launch tools:**
 

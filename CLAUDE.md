@@ -85,6 +85,7 @@ The orchestrator tracks progress in `store-release-progress.json`. It calls all 
 | **Metadata audit** | `py/aso/aso-metadata.py --audit APP_ID` |
 | **AdMob accounts/apps/units/reports** | `py/admob.py {auth\|accounts\|apps\|ad-units\|report}` |
 | **Reddit AdMob/IAP/eCPM crowd intel** | `py/build-reddit-rpm-tracker.py --niche aso [--quick] [--report]` (writes `data/reddit-aso-rpm-crowd.json`; scans r/AdMob, r/iOSProgramming, r/androiddev, r/PlayConsole, r/ASO + 5 more — extracts dollar-mentions of RPM/eCPM/ARPDAU/ARPPU per app niche) |
+| **AdMob eCPM benchmarks (idea gen)** | `py/aso/aso-admob-rpm-benchmarks.py [--query CATEGORY] [--country CC] [--top N] [--format rewarded\|interstitial\|banner\|native\|app-open] [--revenue-projection --category X --country US --daus 1000] [--validate]` (writes `data/admob-rpm-benchmarks.json`; 15 app categories × 5 ad formats × 56 country multipliers; gates app-idea generation with eCPM × country tier; revenue projection mode = realistic monthly $ range; validate cross-checks against reddit-aso-rpm-crowd.json) |
 
 ## iOS App Store (Fastlane)
 

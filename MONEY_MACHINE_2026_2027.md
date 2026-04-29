@@ -4,13 +4,17 @@
 > **Inputs used:** Search Console, GA4, AdSense, Microsoft Clarity, PageSpeed, Rank Tracker, Backlinks Overview, Topic Cluster Report, Keyword Intel, Bing Volume, Product Hunt API, Google Trends, Google Autocomplete, build-keyword-volume, build-multilang, build-programmatic-seo, seo-geo + seo-programmatic skills, plus 30+ targeted WebSearches (real sources cited).
 > **Status:** Replaces the earlier "GLP-1 + Perimenopause + Longevity" synthesis. Several earlier picks were **wrong** — corrected here based on SERP evidence.
 
+> **2026-04-29 update:** Rising-tools auto-detection live. Phase 0 nightly auto-enhance locked. RPM-tier hub coverage data folded into TL;DR + PICK 6 (mortgage) added below.
+
 ---
 
 ## TL;DR — what to do this week
 
 1. **Fix AdSense FIRST.** £0 on 4,592 weekly views is the bleeding wound. Likely "Ads Limited" status driven by 26% bot traffic. No new tool earns until this is fixed.
-2. **Then build in this order** (90-day plan): TCJA-2027 cluster (US, time-locked spike Dec 2026–Apr 2027) → Singapore expansion (16→50 tools, validated by clone competitor) → Japan English expansion (8→30 tools, top organic + retention winner) → CSRD/SME carbon (EU, regulation-forced, B2B RPM) → Longevity / PhenoAge (evergreen, blue ocean).
+2. **Then build in this order** (90-day plan): TCJA-2027 cluster (US, time-locked spike Dec 2026–Apr 2027) → Mortgage hub fill (highest RPM $30-80 × empty hub, see PICK 6) → Singapore expansion (16→50 tools, validated by clone competitor) → Japan English expansion (8→30 tools, top organic + retention winner) → CSRD/SME carbon (EU, regulation-forced, B2B RPM) → Longevity / PhenoAge (evergreen, blue ocean).
 3. **Stop building one-shot calculators.** Default to retention (biological/seasonal trigger) tools when possible. Programmatic SEO + multilang is the scale lever — already 5 templates exist, only 2% of tools use TeamzAI.
+
+**Hub-coverage-gap context (2026-04-29 audit):** Site has 2,511 tools but Tier 1 RPM hubs are nearly empty. mortgage:1 ($30-80 RPM), finance:2 ($18-45), insurance:0 ($25-60), tax:0 ($20-50), real-estate:0 ($12-28). Total gap −577 tools = **$6-20K/mo potential**. PICKs 1, 4 already fill /tax/ and /eu/csrd/ hubs. PICK 6 (mortgage) added below to fill highest-RPM × biggest-gap hub. Country-RPM modifier: Tier S (CH/NO/AU/DK/SE/NZ/IE/SG) +30-80% over US. Banned: BD/IN/PK/NG/PH/ID (2-10% of US RPM, wasted cycle).
 
 **Honest revenue projection (after AdSense fix + this plan):**
 - Now: £0/mo (broken)
@@ -270,6 +274,51 @@ But it's a 3-6 month organic ranking play, NOT a quick win. Recommend deferring 
 **Schema:** WebApplication + FAQPage + BreadcrumbList + MedicalWebPage + MedicalCondition + ScholarlyArticle (cite Levine 2018 PMID 29676998). Avoid `MedicalRiskCalculator` — stay under YMYL risk with disclaimer.
 
 **Backlinks:** peterattiamd.com newsletter (pitch free tool), reddit.com/r/longevity + r/PeterAttia, bryanjohnson.com Blueprint forum, foundmyfitness.com community, levels.com blog (guest).
+
+---
+
+### 🏅 PICK 6 — Mortgage Hub Fill (`/mortgage/` 1 → 100+) — added 2026-04-29
+
+**Why now:** Highest RPM in entire portfolio ($30-80 US) × biggest empty hub (1 tool currently). Existing tool `/mortgage/cash-out-refinance-calculator/` is the only entry. Hub index already built (Phase 1 done 2026-04-28 per `project_high_rpm_hubs_2026_04`) but content not populated.
+
+**Validation evidence:** rpm-benchmarks.json shows mortgage US RPM $30-80 (Ezoic 2025 + Mediavine data). Bankrate, NerdWallet, MortgageProfessor dominate but 4-7-word long-tail variants are blue ocean. DataForSEO mega-batch shows "mortgage refinance break-even calculator 2026" 12K vol $14.20 CPC LOW comp.
+
+**10 launch tools** (build at 2-3/night = 5 weeks to ship all 10):
+
+| Slug | Title (≤60) | Meta (120-155) |
+|---|---|---|
+| `/mortgage/refinance-savings-calculator-2026/` | Mortgage Refinance Savings Calculator 2026 — Teamz Lab | Calculate your mortgage refinance savings with current 2026 rates. Includes break-even, total interest savings, and closing-cost recovery. |
+| `/mortgage/mortgage-points-buy-down-calculator/` | Mortgage Points Buy-Down Calculator — Teamz Lab | Calculate true cost of buying mortgage points vs higher rate. Compares break-even and lifetime savings. |
+| `/mortgage/biweekly-vs-monthly-payment-calculator/` | Biweekly vs Monthly Mortgage Payment Calculator — Teamz Lab | Compare biweekly vs monthly mortgage payments. See how much interest and time you save with biweekly payoff. |
+| `/mortgage/early-payoff-calculator/` | Mortgage Early Payoff Calculator — Teamz Lab | Calculate impact of extra payments on your mortgage. See payoff date and total interest savings instantly. |
+| `/mortgage/heloc-vs-cash-out-refinance/` | HELOC vs Cash-Out Refinance Comparison — Teamz Lab | Compare HELOC vs cash-out refinance for tapping home equity. Includes 2026 rate scenarios and tax implications. |
+| `/mortgage/jumbo-loan-qualifier-2026/` | Jumbo Loan Qualifier Calculator 2026 — Teamz Lab | Check if you qualify for a jumbo mortgage in 2026. Income, DTI, reserves requirements by lender tier. |
+| `/mortgage/fha-vs-conventional-comparison/` | FHA vs Conventional Mortgage Comparison — Teamz Lab | Compare FHA and conventional mortgages. Down payment, MIP, PMI, credit score requirements 2026. |
+| `/mortgage/usda-loan-eligibility-calculator/` | USDA Rural Loan Eligibility Calculator — Teamz Lab | Check USDA rural development loan eligibility. Income limits, property location, 0% down qualification. |
+| `/mortgage/mortgage-recast-calculator/` | Mortgage Recast Calculator — Teamz Lab | Calculate impact of mortgage recast vs refinance. See payment reduction without rate reset. |
+| `/mortgage/down-payment-by-state-calculator/` | Down Payment by State Calculator 2026 — Teamz Lab | Compare typical down payment percentages and amounts across all 50 US states. 2026 home price data. |
+
+**Programmatic SEO templates:**
+- `mortgage-rates-by-state` (51 variants — each US state with current 2026 rates + state-specific lender list)
+- `mortgage-by-credit-score` (8 variants — 580/620/640/680/700/720/740/780+)
+- `mortgage-by-loan-amount` (10 variants — $100K, $200K, $300K... $1M jumbo)
+- `mortgage-affordability-by-city` (top 100 US metros)
+- **Total: 169 variants** auto-generated after base 10 ship.
+
+**GEO intro template** (use for every mortgage tool):
+> "On [Last updated: 2026-MM-DD], current US mortgage rates: 30-yr fixed 6.85-7.20%, 15-yr 6.10-6.45%, jumbo 7.05-7.40% (per Freddie Mac PMMS, week ending [date]). This calculator uses [feature] for [scenario]."
+
+**Schema stack:** WebApplication + FAQPage + BreadcrumbList + GovernmentService (for FHA/USDA/VA tools) + Dataset (rate tables).
+
+**AI integration (TeamzAI):** "Should I refinance?" — takes current rate, balance, term remaining, new rate quote → 3-sentence recommendation citing break-even months.
+
+**Backlinks:** cfpb.gov data citations, hud.gov press kit, freddiemac.com PMMS reference, fanniemae.com homepath partner, reddit.com/r/personalfinance + r/realestate, mortgagenewsdaily.com guest article.
+
+**Hub:** `/mortgage/index.html` already exists (Phase 1). Update with H2s: 2026 Rates Snapshot · Refinance Tools · Buy-Down + Points · Equity & HELOC · By State · By Credit Score. Cross-link from `/finance/`, `/us/income-tax-calculator/`, `/real-estate/`.
+
+**Y1 revenue projection:** 100 mortgage tools at 1K-5K monthly views/tool average × $30-80 RPM = $3K-40K/mo at maturity. Conservative 25% conversion to actual traffic in Y1 = **$750-10K/mo**.
+
+**Sources:** cfpb.gov, hud.gov/program_offices/housing, freddiemac.com/research/datasets, fanniemae.com/research-insights, fhfa.gov.
 
 ---
 

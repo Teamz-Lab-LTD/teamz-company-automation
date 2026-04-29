@@ -205,9 +205,14 @@ write_health_report() {
 HEALTH_ALERTS=()
 SKIPPED_PHASES=()
 REPO_DIRTY_AT_START=0
-if [ -n "$(git status --porcelain --ignore-submodules 2>/dev/null)" ]; then
+# Ignore files that pre-commit hook auto-regenerates after every commit (always "dirty")
+# and gitignored config files. Without this filter nightly always sees dirty repo and skips.
+DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^ M (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|data/research-cache/.*)$' || true)"
+if [ -n "$DIRTY_FILES" ]; then
     REPO_DIRTY_AT_START=1
     echo "  Warning: repo is dirty at start. Nightly run will not auto-commit or auto-push."
+    echo "  Dirty files (excluding auto-regenerated):"
+    echo "$DIRTY_FILES" | sed 's/^/    /'
 fi
 
 # Pull latest changes first
@@ -345,13 +350,18 @@ fi
 
 run_phase_cmd "Distribution status" 10 "python3 scripts/distribute/distribute.py list"
 
+# Phase 3.5: Refresh research cache (DataForSEO volumes, Firecrawl competitor maps,
+# Bing queries, Reddit RPM data) — feeds Phase 4 Claude agent with fresh data
+run_phase_cmd "Research cache refresh" 5 "./scripts/build-research-cache.sh"
+run_phase_cmd "Ideas brief" 2 "./scripts/build-ideas.sh --quick"
+
 # Phase 4: Run Claude to build tools (uses quota)
 echo ""
 echo "=== Phase 4: Claude Build Agent ==="
 echo "  Starting Sonnet... (live output below)"
 echo "  ─────────────────────────────────────"
 PROMPT_FILE="$PROJECT_DIR/scripts/nightly-build-prompt.md"
-BUILD_MODEL="${MODEL:-sonnet}"
+BUILD_MODEL="${MODEL:-opus}"
 echo "  Model: $BUILD_MODEL"
 if [ "$REPO_DIRTY_AT_START" -ne 0 ]; then
     skip_phase "Claude build (repo dirty at start)"

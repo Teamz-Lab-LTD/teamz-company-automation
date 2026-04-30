@@ -207,7 +207,7 @@ SKIPPED_PHASES=()
 REPO_DIRTY_AT_START=0
 # Ignore files that pre-commit hook auto-regenerates after every commit (always "dirty")
 # and gitignored config files. Without this filter nightly always sees dirty repo and skips.
-DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^[ M][ M] (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|data/research-cache/.*|data/progress/snapshots/.*|data/rising-tools-.*\.json|logs/.*\.log)$' || true)"
+DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|data/research-cache/.*|data/progress/snapshots/.*|data/rising-tools-.*\.json|logs/.*|.claude-memory/.*)$' || true)"
 if [ -n "$DIRTY_FILES" ]; then
     REPO_DIRTY_AT_START=1
     echo "  Warning: repo is dirty at start. Nightly run will not auto-commit or auto-push."

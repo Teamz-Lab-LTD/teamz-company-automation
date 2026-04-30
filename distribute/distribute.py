@@ -132,7 +132,7 @@ QUEUE_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_QUEUE", str(SCRIPT_DIR / "queue.js
 PLATFORM_LIMITS = {
     "tumblr":     {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
     "bluesky":    {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
-    "mastodon":   {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
+    "mastodon":   {"daily": 1, "min_gap_hours": 8, "weekly": 5, "queue_mode": True},
     "devto":      {"daily": 1, "min_gap_hours": 6, "weekly": 5,  "queue_mode": True},
     "hashnode":   {"daily": 1, "min_gap_hours": 24, "weekly": 3,  "queue_mode": True},
     "blogger":    {"daily": 2, "min_gap_hours": 3, "weekly": 10, "queue_mode": True},
@@ -1035,12 +1035,19 @@ def post_github_discussions(config, title, body, tags, canonical_url):
       }}
     }}'''
 
-    # Use subprocess to call gh CLI (avoids needing separate GitHub token)
+    # Use subprocess to call gh CLI. Inject teamzlab token via GH_TOKEN env so
+    # gh hits the right account even if its keyring is logged into a different one.
     import subprocess
+    env = os.environ.copy()
+    if not env.get("GH_TOKEN"):
+        token_file = os.path.expanduser("~/.config/teamzlab/github-token.txt")
+        if os.path.exists(token_file):
+            with open(token_file) as f:
+                env["GH_TOKEN"] = f.read().strip()
     try:
         result = subprocess.run(
             ["gh", "api", "graphql", "-f", f"query={query}"],
-            capture_output=True, text=True, timeout=30
+            capture_output=True, text=True, timeout=30, env=env
         )
         if result.returncode == 0:
             resp = json.loads(result.stdout)

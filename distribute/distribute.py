@@ -81,7 +81,10 @@ HISTORY_FILE = Path(os.getenv("TEAMZ_DISTRIBUTE_HISTORY", str(SCRIPT_DIR / "hist
 EXAMPLE_CONFIG = Path(os.getenv("TEAMZ_DISTRIBUTE_EXAMPLE_CONFIG", str(SCRIPT_DIR / "config.example.json")))
 ARTICLES_DIR = Path(os.getenv("TEAMZ_DISTRIBUTE_ARTICLES_DIR", str(SCRIPT_DIR / "articles")))
 
-ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "github_discussions", "gitlab", "substack", "telegraph", "google_sites", "pinterest", "youtube", "tiktok"]
+ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr", "bluesky", "mastodon", "gitlab", "substack", "telegraph", "google_sites", "pinterest", "youtube", "tiktok"]
+# github_discussions REMOVED 2026-05-08 — Teamz-Lab-LTD org suspended for spam pattern (66 auto-posts).
+# Do NOT re-enable. Ticket #4337459 with GitHub Support pending. If reinstated, GitHub access is for
+# source-control + CI/CD only — never for content distribution again.
 
 # Platforms that get UTM-tagged outbound teamzlab.com links.
 # Short-form platforms (bluesky/mastodon) are skipped — char limits break on extra params,
@@ -89,7 +92,7 @@ ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr"
 # own URL fields (pin destination, description links) — tagging handled inside those post_* fns
 # via canonical_url where it matters.
 UTM_TAG_PLATFORMS = {"devto", "hashnode", "medium", "blogger", "wordpress", "tumblr",
-                     "substack", "github_discussions", "gitlab", "telegraph", "google_sites"}
+                     "substack", "gitlab", "telegraph", "google_sites"}
 
 _TEAMZLAB_URL_RE = re.compile(r'https?://tool\.teamzlab\.com[^\s)\]"<>\'`]*', re.IGNORECASE)
 

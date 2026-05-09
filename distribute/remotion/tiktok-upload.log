@@ -1,0 +1,8 @@
+
+
+=== 2026-04-24T01:03:13.997435+00:00 — distribute.py invoked tiktok-upload ===
+
+  BLOCKED: Too soon — 0.1h since last post (min 4h)
+  TikTok rate limits protect your account from being flagged.
+  Use --force to bypass gap (safe-ish for inbox drafts).
+

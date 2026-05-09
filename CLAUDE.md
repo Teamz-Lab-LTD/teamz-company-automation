@@ -44,6 +44,27 @@ ASO research from `aso-keywords.py` already pulls Google Play autocomplete data,
 
 Why this matters: a misleading-metadata rejection blocks the release for 24-72h plus a manual appeal cycle, AND post-launch enforcement removes the app entirely. Worse: 1-star reviews citing "lied about ads" tank conversion permanently. This is non-recoverable damage.
 
+**Rule 6 — Before ANY YouTube / Shorts / Reels / thumbnail / title / tag / description copy, run `py/build-youtube-keywords.py` on real seeds. Never assume, never substitute Google Search keyword data.** YouTube is its own search engine with its own intent. A term scoring HIGH on `py/build-keyword-volume.py` (Google Search = buyer/founder intent) can near-zero on YouTube (where intent skews developer/tutorial/demo). Concrete example from 2026-04-24: `uber clone app` was 77 HIGH on Google Search but YouTube Autocomplete returned `uber clone react native`, `uber clone flutter`, `uber clone android studio kotlin`, `uber clone app source code free` — a totally different dev-tutorial audience. An agency-pitch video written on Google-Search data would tank on YouTube. Run:
+
+```bash
+# Full analysis (autocomplete + SERP top titles + YT-Score 0-100)
+python3 py/build-youtube-keywords.py "seed 1" "seed 2" "seed 3"
+
+# Autocomplete-only (fast)
+python3 py/build-youtube-keywords.py --expand "seed"
+
+# SERP top titles only (winning-pattern reverse-engineering)
+python3 py/build-youtube-keywords.py --serp "seed" --top 10
+
+# Regional targeting (Gulf, Africa, etc.)
+python3 py/build-youtube-keywords.py "seed" --hl en --gl ae   # UAE
+python3 py/build-youtube-keywords.py "seed" --hl en --gl ng   # Nigeria
+```
+
+Output: `data/youtube-keywords-latest.json`. Use the winning YT SERP title pattern for your own title; use YT Autocomplete expansions as tags (not Google Search keywords); match winning-video thumbnail style (tutorial-style for devs, shock-price for buyers, demo-phone for app showcases); write hook (first 3-10 sec) from SERP insight — YT retention-decisive. Same rule applies to Shorts and Reels: `py/build-youtube-keywords.py --expand "seed"` then tune the 60-sec vertical cut's title to the winning short-form pattern.
+
+**Never write YT copy without running the script first — applies to every project (ride-share, food delivery, DeviceGPT, No Trace Chat, NoteTube AI, Top3Picks, Toss, and every upcoming app / service launch).**
+
 ## Before ANY ASO/Store Listing Task
 
 **Use the orchestrator — one command does everything:**
@@ -67,6 +88,7 @@ The orchestrator tracks progress in `store-release-progress.json`. It calls all 
 |------|--------|
 | **Full store release** | `py/aso/aso-store-release.py` |
 | **Keyword volume** (Bing + Trends + autocomplete) | `py/build-keyword-volume.py "kw1" "kw2"` |
+| **YouTube keyword research** (YT Autocomplete + SERP scrape + YT-Score) — MUST run before any YT/Shorts/Reels copy per Rule 6 | `py/build-youtube-keywords.py "kw1" "kw2"` |
 | **Full ASO pipeline** (discover + score + CSV) | `py/aso/aso-keyword-pipeline.py` |
 | **ASO + SEO master merge** (combined_score CSV) | `py/aso/aso-seo-merge.py` |
 | **Localize iOS Fastlane metadata (all 40 locales)** | `py/aso/aso-localize.py` |

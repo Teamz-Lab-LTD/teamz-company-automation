@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-04-24T01:23:20Z",
+  "source": "YouTube Autocomplete + watch SERP",
+  "count": 4,
+  "results": [
+    {
+      "seed": "flutter uber clone",
+      "suggestions": [
+        "flutter uber clone",
+        "flutter uber clone with backend",
+        "flutter uber clone app",
+        "flutter uber clone with backend and driver app flutter taxi app",
+        "flutter uber eats clone"
+      ],
+      "serp_titles": [
+        "Flutter tutorial - Build an Uber clone with Flutter and Supabase",
+        "Intro and a demo of the final app",
+        "Adding dependencies",
+        "Displaying Google Maps on the app",
+        "Introduction to the Routes API",
+        "Writing the Edge Function to call the Routes API",
+        "Deploy and test the function",
+        "Defining the states of the app",
+        "Requesting location permission",
+        "Implementing choosing location state"
+      ],
+      "score": 70
+    },
+    {
+      "seed": "uber clone app",
+      "suggestions": [
+        "uber clone app",
+        "uber clone app react native",
+        "uber clone app android studio kotlin",
+        "uber clone app android studio",
+        "uber clone app flutter",
+        "uber clone app source code free",
+        "uber app clone android",
+        "uber clone driver app",
+        "uber eats clone app",
+        "uber clone mobile app"
+      ],
+      "serp_titles": [
+        "Build an Uber Clone App with MERN Stack | Complete 11 Hour Masterclass (2025)",
+        "Server setup and user register and login",
+        "User Profile & AuthUser middleware & logout user",
+        "Captain authentication route complete",
+        "Creating User and Captain forms",
+        "Integrating user endpoints with react",
+        "Integrating Captain endpoints with react",
+        "Creating User Home Screen UI",
+        "Creating location search panel UI",
+        "Completing User Home UI"
+      ],
+      "score": 100
+    },
+    {
+      "seed": "careem clone",
+      "suggestions": [
+        "careem captain",
+        "#careem",
+        "careem king",
+        "careem captain training"
+      ],
+      "serp_titles": [
+        "CAREEM CLONE (FUNCTIONAL)",
+        "Cost to develop an app like Careem | Careem Clone | Multi Service App Development Cost",
+        "Introduction",
+        "What is a multi-service super app like Careem?",
+        "Cost breakdown: core features, UI/UX, admin panel, backend, QA & more",
+        "Estimated development timeline: from idea to launch",
+        "Why Quickworks is the best choice for fast and scalable on-demand multi-service app development",
+        "review of careem clone",
+        "Careem Clone   Rides, Delivery & more   Google Chrome 2026 04 10 14 39 37",
+        "My Careem Clone"
+      ],
+      "score": 34
+    },
+    {
+      "seed": "bolt clone",
+      "suggestions": [
+        "bolt clone",
+        "bolt clone harkirat",
+        "bolt clone react native",
+        "bolt clone website",
+        "bolt.new clone website",
+        "bolt ai clone website",
+        "bolt app use",
+        "bolt fleet login",
+        "bolt taxi"
+      ],
+      "serp_titles": [
+        "🚀 Bolt.New Clone with Next.js, React, TailwindCSS & AI - Full Stack SAAS App Tutorial | Convex",
+        "Introduction",
+        "Project Setup",
+        "Landing Screen",
+        "Authentication",
+        "Backend Setup (Convex)",
+        "Create Workspace",
+        "Chat View",
+        "Get AI Chat Response",
+        "Code View (Code Editor)"
+      ],
+      "score": 94
+    }
+  ]
+}

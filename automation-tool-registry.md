@@ -113,6 +113,7 @@
 | **Search Console anomalies** | `py/build-gsc-anomalies.py` |
 | **Topic cluster report** | `py/build-topic-cluster-report.py` |
 | **Request indexing** | `py/build-request-indexing.py` |
+| **YouTube keyword research** (YT Autocomplete ds=yt + watch-SERP top titles + YT-Score) — MUST run before any YouTube / Shorts / Reels title, tags, description, thumbnail prompt (CLAUDE.md Rule 6) | `py/build-youtube-keywords.py "kw1" "kw2"` |
 
 ### Review snippet eligibility (MUST know before adding `review` to JSON-LD)
 Google only renders star rich-results when the `Review` / `AggregateRating` parent node is one of these types:
@@ -205,13 +206,14 @@ Auto-detects monetization model (ads-only / IAP / both / free) and adjusts check
 | Claim "Offline" without verifying network deps | Critical-path features must work without network. WebView-wrapper apps almost never qualify. |
 | Round up tool/feature counts in metadata | "2000+ tools" must mean ≥2000. Auditor counts must back the claim. |
 | Write metadata before populating `_app_constraints` in deep-research-keywords.json | The constraints block lists `forbidden_claims` per-app. Listing step must refuse strings from that list. |
+| Write YouTube / Shorts / Reels titles, tags, descriptions, or thumbnail prompts from assumption or Google Search keywords | Run `build-youtube-keywords.py` FIRST. YT is its own engine. Google Search 77 HIGH can flop on YouTube. Autocomplete + SERP titles per CLAUDE.md Rule 6. |
 
 ---
 
 ## Script Count by Category
 
 - **ASO**: 19 scripts (keyword research → competitor analysis → metadata → reviews → rank tracking → SEO merge → localization → release notes → icon audit → A/B experiments → download velocity → Gemini image edit → Play batch push → ASC Spaceship screenshot push → localize template)
-- **SEO**: 18 scripts (audit → keywords → volume → competitors → SERP → content → indexing)
+- **SEO**: 19 scripts (audit → keywords → volume → competitors → SERP → content → indexing → YouTube keywords)
 - **Auth**: 4 scripts (GSC, GA4, Google Ads, AdSense)
 - **Content**: 5 scripts (ideas, multilang, OG images, subtitles, programmatic SEO)
 - **Monitoring**: 5 scripts (brand mentions, SERP features, GSC anomalies, uptime)
@@ -220,4 +222,4 @@ Auto-detects monetization model (ads-only / IAP / both / free) and adjusts check
 - **App Store (iOS)**: Fastlane setup (Fastfile + setup script + env template)
 - **Pre-Release**: 1 shell script (`sh/pre-release-verify.sh`) — adaptive checks for all monetization models
 
-**Total: 58 Python scripts + 1 Ruby script + Fastlane iOS automation + pre-release verification. Python scripts are all standard library except `build-play-console.py`, `aso-velocity.py`, and `aso-play-batch-push.py` which need `pip3 install google-api-python-client google-auth`. Ruby script `asc-screenshots-push.rb` uses Spaceship from the Fastlane gem (already installed via Fastlane). Gemini-based scripts (`aso-gemini-edit.py`, `aso-appstore-screenshots` skill) need a Gemini API key at `~/.config/teamzlab/gemini-api-key.txt`.**
+**Total: 59 Python scripts + 1 Ruby script + Fastlane iOS automation + pre-release verification. Python scripts are all standard library except `build-play-console.py`, `aso-velocity.py`, and `aso-play-batch-push.py` which need `pip3 install google-api-python-client google-auth`. Ruby script `asc-screenshots-push.rb` uses Spaceship from the Fastlane gem (already installed via Fastlane). Gemini-based scripts (`aso-gemini-edit.py`, `aso-appstore-screenshots` skill) need a Gemini API key at `~/.config/teamzlab/gemini-api-key.txt`.**

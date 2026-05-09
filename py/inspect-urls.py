@@ -119,18 +119,24 @@ def _urls_from_sitemap():
     ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
     pages: list[str] = []
     tried = []
+    # Browser UA is needed — Cloudflare-fronted origins (teamzlab.com included)
+    # return HTTP 403 to urllib's default "Python-urllib/X.Y" identifier.
+    ua_headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "application/xml,text/xml,*/*",
+    }
     # Start from the index, fall back to sitemap-0.xml, then sitemap.xml
     for path in ("sitemap-index.xml", "sitemap-0.xml", "sitemap.xml"):
         tried.append(f"{host}/{path}")
         try:
-            r = urllib.request.urlopen(f"{host}/{path}", timeout=20)
+            r = urllib.request.urlopen(urllib.request.Request(f"{host}/{path}", headers=ua_headers), timeout=20)
             root = ET.fromstring(r.read().decode())
         except Exception:
             continue
         # sitemap index — fetch each child sitemap
         for sm in root.findall("ns:sitemap/ns:loc", ns):
             try:
-                rr = urllib.request.urlopen(sm.text, timeout=20)
+                rr = urllib.request.urlopen(urllib.request.Request(sm.text, headers=ua_headers), timeout=20)
                 sub = ET.fromstring(rr.read().decode())
                 for loc in sub.findall("ns:url/ns:loc", ns):
                     if loc.text:

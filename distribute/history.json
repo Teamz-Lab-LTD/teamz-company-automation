@@ -3843,7 +3843,48 @@
       "title": "How to Know If Someone Is Monitoring Your Phone — 8 Signs & Free Detection App (Android)",
       "hash": "6d934d7fbf7365a2",
       "created": "2026-04-04T13:24:49.177251+00:00",
-      "platforms": {},
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/how-to-know-if-someone-is-monitoring-your-phone-8-signs-free-detection-app-android-1g4h",
+          "posted_at": "2026-04-28T23:43:36.614334+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/how-to-know-if-someone-is-monitoring_0756576796.html",
+          "posted_at": "2026-04-28T23:43:40.012143+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/29/how-to-know-if-someone-is-monitoring-your-phone-8-signs-free-detection-app-android-2/",
+          "posted_at": "2026-04-28T23:43:47.571434+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/815183773761241088",
+          "posted_at": "2026-04-28T23:43:48.910609+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mklraufpj62w",
+          "posted_at": "2026-04-28T23:43:51.122049+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-195814757",
+          "posted_at": "2026-04-28T23:43:57.308393+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/How-to-Know-If-Someone-Is-Monitoring-Your-Phone--8-Signs--Free-Detection-App-Android-04-28",
+          "posted_at": "2026-04-28T23:43:58.043281+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=12339:shorts=1:tutorials=0",
+          "posted_at": "2026-04-28T23:43:58.515306+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/devicegpt-04-phone-monitoring-detection.md",
         "priority": "high",
@@ -4105,6 +4146,16 @@
           "url": "scheduled:pid=4431:count=1",
           "posted_at": "2026-04-20T22:30:05.624891+00:00",
           "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/free-aged-care-compliance-software-for-australia-acqs-2025-ready-1-1-1-1-1-1",
+          "posted_at": "2026-04-28T23:43:25.674793+00:00",
+          "status": "published"
+        },
+        "mastodon": {
+          "url": "https://mastodon.social/@teamzlabuk/116490422586261834",
+          "posted_at": "2026-04-29T22:46:26.156392+00:00",
+          "status": "published"
         }
       },
       "draft": {
@@ -4172,6 +4223,11 @@
           "url": "https://substack.com/home/post/p-194843496",
           "posted_at": "2026-04-20T20:41:11.542272+00:00",
           "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=11127:count=1",
+          "posted_at": "2026-04-28T23:43:31.594850+00:00",
+          "status": "published"
         }
       },
       "draft": {
@@ -4205,7 +4261,58 @@
       "title": "CQC Inspection Checklist 2026: The Complete Care Home Prep Guide",
       "hash": "85009a97c65e4dc5",
       "created": "2026-04-13T21:53:57.504262+00:00",
-      "platforms": {},
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/cqc-inspection-checklist-2026-the-complete-care-home-prep-guide-1pcp",
+          "posted_at": "2026-04-29T00:41:42.093081+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/cqc-inspection-checklist-2026-the-complete-care-home-prep-guide-1",
+          "posted_at": "2026-04-29T00:41:46.386203+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/cqc-inspection-checklist-2026-complete_02034671943.html",
+          "posted_at": "2026-04-29T00:41:48.508269+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/29/cqc-inspection-checklist-2026-the-complete-care-home-prep-guide-2/",
+          "posted_at": "2026-04-29T00:41:55.209841+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/815187431171244032",
+          "posted_at": "2026-04-29T00:41:56.757692+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mkluisl2mx2w",
+          "posted_at": "2026-04-29T00:41:58.871676+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-195818539",
+          "posted_at": "2026-04-29T00:42:04.117556+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/CQC-Inspection-Checklist-2026-The-Complete-Care-Home-Prep-Guide-04-29",
+          "posted_at": "2026-04-29T00:42:04.809665+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=44468:shorts=1:tutorials=0",
+          "posted_at": "2026-04-29T00:42:05.207170+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=44469:count=1",
+          "posted_at": "2026-04-29T00:42:05.209812+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/cqc-checklist-article-uk.md",
         "priority": "high",
@@ -4221,7 +4328,33 @@
       "title": "ACQS 2024: How to Be Quality Assessment Ready Under the 7 Strengthened Standards",
       "hash": "bd5d79997414d99d",
       "created": "2026-04-13T21:53:57.562878+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/acqs-2024-how-to-be-quality-assessment.html",
+          "posted_at": "2026-04-29T17:13:08.698997+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/29/acqs-2024-how-to-be-quality-assessment-ready-under-the-7-strengthened-standards/",
+          "posted_at": "2026-04-29T17:13:16.252117+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mknlvggnbh2x",
+          "posted_at": "2026-04-29T17:13:18.224179+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/ACQS-2024-How-to-Be-Quality-Assessment-Ready-Under-the-7-Strengthened-Standards-04-29",
+          "posted_at": "2026-04-29T17:13:21.889133+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=43280:count=1",
+          "posted_at": "2026-04-29T17:13:22.819993+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/acqs-standards-article-au.md",
         "priority": "high",
@@ -4237,7 +4370,53 @@
       "title": "NZS 8134 Ngā Paerewa: The Complete Rest Home Certification Guide 2026",
       "hash": "c47b07693a27444b",
       "created": "2026-04-13T21:53:57.621940+00:00",
-      "platforms": {},
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/nzs-8134-nga-paerewa-the-complete-rest-home-certification-guide-2026-1e79",
+          "posted_at": "2026-04-30T03:00:03.388069+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/nzs-8134-nga-paerewa-the-complete-rest-home-certification-guide-2026",
+          "posted_at": "2026-04-30T03:00:27.010736+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/nzs-8134-nga-paerewa-complete-rest-home.html",
+          "posted_at": "2026-04-30T03:00:31.304526+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/30/nzs-8134-nga-paerewa-the-complete-rest-home-certification-guide-2026/",
+          "posted_at": "2026-04-30T03:00:42.007144+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/815286758886490112",
+          "posted_at": "2026-04-30T03:00:43.099293+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mkompv7qf52x",
+          "posted_at": "2026-04-30T03:00:45.916704+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/NZS-8134-Ngā-Paerewa-The-Complete-Rest-Home-Certification-Guide-2026-04-30",
+          "posted_at": "2026-04-30T03:00:47.552908+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=71195:shorts=1:tutorials=0",
+          "posted_at": "2026-04-30T03:00:47.562169+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=71196:count=1",
+          "posted_at": "2026-04-30T03:00:47.567810+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/nzs-8134-article-nz.md",
         "priority": "high",
@@ -4253,7 +4432,28 @@
       "title": "HIQA Inspection Guide 2026: Designated Centre Prep for Irish Nursing Homes",
       "hash": "9e691bb269ad6a03",
       "created": "2026-04-13T21:53:57.679941+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/hiqa-inspection-guide-2026-designated.html",
+          "posted_at": "2026-04-30T07:00:10.607315+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/04/30/hiqa-inspection-guide-2026-designated-centre-prep-for-irish-nursing-homes/",
+          "posted_at": "2026-04-30T07:00:20.421298+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mkp24ekrf72j",
+          "posted_at": "2026-04-30T07:00:23.259513+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/HIQA-Inspection-Guide-2026-Designated-Centre-Prep-for-Irish-Nursing-Homes-04-30",
+          "posted_at": "2026-04-30T07:00:24.939651+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/hiqa-inspection-article-ie.md",
         "priority": "high",
@@ -4269,7 +4469,13 @@
       "title": "MD-Prüfung 2026: Der komplette Vorbereitungsleitfaden für Pflegeeinrichtungen",
       "hash": "06ea4d1f5e976faa",
       "created": "2026-04-13T21:53:57.739954+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/MD-Prüfung-2026-Der-komplette-Vorbereitungsleitfaden-für-Pflegeeinrichtungen-04-29",
+          "posted_at": "2026-04-29T21:06:40.984412+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/apps/always-ready-care/distribution/md-pruefung-article-de.md",
         "priority": "high",
@@ -4285,7 +4491,13 @@
       "title": "Free CSRD & Carbon Reporting Tools for EU SMEs (2026)",
       "hash": "aa1eb6677e9d5f67",
       "created": "2026-04-14T09:29:55.519884+00:00",
-      "platforms": {},
+      "platforms": {
+        "substack": {
+          "url": "https://substack.com/home/post/p-195971447",
+          "posted_at": "2026-04-30T08:36:55.300749+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/free-csrd-tools-eu-sme-2026.md",
         "priority": "high",
@@ -4301,7 +4513,13 @@
       "title": "2027 Tax Bracket Sunset: How TCJA Expiring Hits Your Paycheck (Free Calculator)",
       "hash": "81aec74e032efdae",
       "created": "2026-04-14T09:29:55.577944+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/2027-Tax-Bracket-Sunset-How-TCJA-Expiring-Hits-Your-Paycheck-Free-Calculator-04-30",
+          "posted_at": "2026-04-30T10:06:34.805752+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/tcja-2027-tax-sunset-calculator.md",
         "priority": "high",
@@ -4317,7 +4535,48 @@
       "title": "Your Body Has Two Ages. A Free PhenoAge Calculator Shows the Gap",
       "hash": "21a823ee4e1f1310",
       "created": "2026-04-14T09:29:55.637115+00:00",
-      "platforms": {},
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/your-body-has-two-ages-a-free-phenoage-calculator-shows-the-gap-4i46",
+          "posted_at": "2026-05-01T03:00:03.263386+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/04/your-body-has-two-ages-free-phenoage.html",
+          "posted_at": "2026-05-01T03:00:14.333589+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/01/your-body-has-two-ages-a-free-phenoage-calculator-shows-the-gap/",
+          "posted_at": "2026-05-01T03:00:25.518202+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/815377338626883584",
+          "posted_at": "2026-05-01T03:00:26.340858+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mkr56clrx62w",
+          "posted_at": "2026-05-01T03:00:29.002897+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Your-Body-Has-Two-Ages-A-Free-PhenoAge-Calculator-Shows-the-Gap-05-01",
+          "posted_at": "2026-05-01T03:00:30.577396+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=48804:shorts=1:tutorials=0",
+          "posted_at": "2026-05-01T03:00:30.587619+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=48805:count=1",
+          "posted_at": "2026-05-01T03:00:30.595287+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/biological-age-calculator-phenoage-free.md",
         "priority": "high",
@@ -4356,7 +4615,28 @@
       "title": "Your NZ Mortgage Rate Is About to Reset — Here's a Free Calculator That Shows the Damage",
       "hash": "e7c1d4a225097fba",
       "created": "2026-04-14T19:35:39.688181+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/your-nz-mortgage-rate-is-about-to-reset.html",
+          "posted_at": "2026-05-01T07:00:05.569420+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/01/your-nz-mortgage-rate-is-about-to-reset-heres-a-free-calculator-that-shows-the-damage/",
+          "posted_at": "2026-05-01T07:00:14.126740+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mkrkl43rds2w",
+          "posted_at": "2026-05-01T07:00:16.972122+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Your-NZ-Mortgage-Rate-Is-About-to-Reset--Heres-a-Free-Calculator-That-Shows-the-Damage-05-01",
+          "posted_at": "2026-05-01T07:00:18.719433+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/nz-mortgage-rate-rise-calculator.md",
         "priority": "high",
@@ -4372,7 +4652,13 @@
       "title": "Renting Out Your HDB or Condo in Singapore? Here's a Free IRAS Tax Calculator",
       "hash": "10b913770058a2e8",
       "created": "2026-04-14T19:35:39.751808+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Renting-Out-Your-HDB-or-Condo-in-Singapore-Heres-a-Free-IRAS-Tax-Calculator-05-01",
+          "posted_at": "2026-05-01T11:00:07.792811+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/sg-rental-income-tax-calculator.md",
         "priority": "high",
@@ -4388,7 +4674,48 @@
       "title": "Ireland's Auto-Enrolment Pension Launches Soon — Here's a Free Calculator That Actually Explains It",
       "hash": "aed9560471f810fc",
       "created": "2026-04-14T19:35:39.813556+00:00",
-      "platforms": {},
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/irelands-auto-enrolment-pension-launches-soon-heres-a-free-calculator-that-actually-explains-it-3n9h",
+          "posted_at": "2026-05-02T01:06:41.661002+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/irelands-auto-enrolment-pension.html",
+          "posted_at": "2026-05-02T01:06:45.534870+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/02/irelands-auto-enrolment-pension-launches-soon-heres-a-free-calculator-that-actually-explains-it/",
+          "posted_at": "2026-05-02T01:06:55.667527+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/815460795365392384",
+          "posted_at": "2026-05-02T01:06:56.958414+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mkthcbq7lb2r",
+          "posted_at": "2026-05-02T01:06:59.203847+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-196179543",
+          "posted_at": "2026-05-02T01:07:05.144825+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Irelands-Auto-Enrolment-Pension-Launches-Soon--Heres-a-Free-Calculator-That-Actually-Explains-It-05-02",
+          "posted_at": "2026-05-02T01:07:05.888692+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=39934:shorts=1:tutorials=0",
+          "posted_at": "2026-05-02T01:07:05.899486+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/ie-auto-enrolment-pension-calculator.md",
         "priority": "high",
@@ -4404,7 +4731,28 @@
       "title": "86% of Remote Workers Report Burnout — Here's a Free Risk Score That Takes 3 Minutes",
       "hash": "313952fc5bc3e7d6",
       "created": "2026-04-14T19:35:39.875059+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/86-of-remote-workers-report-burnout.html",
+          "posted_at": "2026-05-02T15:00:12.640501+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/02/86-of-remote-workers-report-burnout-heres-a-free-risk-score-that-takes-3-minutes/",
+          "posted_at": "2026-05-02T15:00:23.642965+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mkuvun3gwc2q",
+          "posted_at": "2026-05-02T15:00:27.209798+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/86-of-Remote-Workers-Report-Burnout--Heres-a-Free-Risk-Score-That-Takes-3-Minutes-05-02",
+          "posted_at": "2026-05-02T15:00:29.582544+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/remote-worker-burnout-risk-score.md",
         "priority": "high",
@@ -4420,7 +4768,33 @@
       "title": "The UK Employment Rights Bill 2025 Changes Your Job — Here's a Free Checker That Shows How",
       "hash": "69dc9d6cc93d61ad",
       "created": "2026-04-14T19:35:39.934981+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/the-uk-employment-rights-bill-2025.html",
+          "posted_at": "2026-05-03T10:02:11.934706+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/03/the-uk-employment-rights-bill-2025-changes-your-job-heres-a-free-checker-that-shows-how/",
+          "posted_at": "2026-05-03T10:02:22.757097+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mkwvorpvyr22",
+          "posted_at": "2026-05-03T10:02:30.287615+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-196296932",
+          "posted_at": "2026-05-03T10:02:46.567102+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/The-UK-Employment-Rights-Bill-2025-Changes-Your-Job--Heres-a-Free-Checker-That-Shows-How-05-03",
+          "posted_at": "2026-05-03T10:02:51.500720+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/uk-employment-rights-bill-checker.md",
         "priority": "high",
@@ -4484,7 +4858,13 @@
       "title": "Free Crypto Tax Calculators for 5 Countries — UK, India, Canada, Australia, US",
       "hash": "bc52ef11d078f587",
       "created": "2026-04-15T22:30:32.432261+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Free-Crypto-Tax-Calculators-for-5-Countries--UK-India-Canada-Australia-US-05-03",
+          "posted_at": "2026-05-03T13:28:54.085780+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/crypto-tax-calculator-5-countries-uk-india-canada-australia-us.md",
         "priority": "high",
@@ -4500,7 +4880,13 @@
       "title": "Free Monthly Budget Planner — 50/30/20 Rule, Custom Splits, Save Plans Month to Month",
       "hash": "468950e4f3cf0dce",
       "created": "2026-04-15T22:30:32.491012+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Free-Monthly-Budget-Planner--503020-Rule-Custom-Splits-Save-Plans-Month-to-Month-05-04",
+          "posted_at": "2026-05-04T11:00:07.510885+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/free-monthly-budget-planner-50-30-20-custom-splits.md",
         "priority": "high",
@@ -4516,7 +4902,13 @@
       "title": "Free Freelancer Tax Calculators — US Self-Employment, UK IR35, Quarterly 1040-ES",
       "hash": "748baaa129ab6567",
       "created": "2026-04-15T22:30:32.551290+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Free-Freelancer-Tax-Calculators--US-Self-Employment-UK-IR35-Quarterly-1040-ES-05-05",
+          "posted_at": "2026-05-05T03:00:03.331998+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/free-freelancer-tax-calculators-us-se-tax-uk-ir35-quarterly-estimator.md",
         "priority": "high",
@@ -4565,7 +4957,13 @@
       "title": "Dart Types, Null Safety & Variables",
       "hash": "ecd66f72d383c283",
       "created": "2026-04-21T10:09:39.057136+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Dart-Types-Null-Safety--Variables-05-05",
+          "posted_at": "2026-05-05T07:03:13.817950+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-lab-learning/distribution/dart-types-null-safety-variables-flutter-interview-mastery.md",
         "priority": "high",
@@ -4588,7 +4986,13 @@
       "title": "What is a Monorepo?",
       "hash": "4fa494dfcdbfcef7",
       "created": "2026-04-21T10:09:39.120690+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/What-is-a-Monorepo-05-05",
+          "posted_at": "2026-05-05T11:00:04.865530+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-lab-learning/distribution/what-is-a-monorepo-js-ts-fun-book.md",
         "priority": "high",
@@ -4768,6 +5172,1329 @@
           "posted_at": "2026-04-24T00:46:18.505615+00:00",
           "status": "published"
         }
+      }
+    },
+    {
+      "slug": "at-kapitalertragsteuer-rechner-kest-2025",
+      "title": "Kapitalertragsteuer (KESt) in Österreich 2025 kostenlos berechnen",
+      "hash": "7f9377ea8dfce02c",
+      "created": "2026-04-28T23:43:16.411712+00:00",
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/kapitalertragsteuer-kest-in-osterreich-2025-kostenlos-berechnen-47lc",
+          "posted_at": "2026-05-06T03:05:16.834140+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/kapitalertragsteuer-kest-in-osterreich-2025-kostenlos-berechnen",
+          "posted_at": "2026-05-06T03:05:21.312156+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/kapitalertragsteuer-kest-in-osterreich.html",
+          "posted_at": "2026-05-06T03:05:25.714158+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/06/kapitalertragsteuer-kest-in-osterreich-2025-kostenlos-berechnen/",
+          "posted_at": "2026-05-06T03:05:35.900595+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/815830649150783488",
+          "posted_at": "2026-05-06T03:05:37.387378+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3ml5ps6j3fv2w",
+          "posted_at": "2026-05-06T03:05:40.017404+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Kapitalertragsteuer-KESt-in-Österreich-2025-kostenlos-berechnen-05-06",
+          "posted_at": "2026-05-06T03:05:42.636684+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=21267:shorts=1:tutorials=0",
+          "posted_at": "2026-05-06T03:05:42.649181+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=21268:count=1",
+          "posted_at": "2026-05-06T03:05:42.658224+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/at-kapitalertragsteuer-rechner-kest-2025.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-28T23:43:16.411907+00:00"
+      }
+    },
+    {
+      "slug": "be-precompte-mobilier-calculateur-2025",
+      "title": "Précompte mobilier en Belgique 2025 : calculez votre retenue gratuitement",
+      "hash": "a46597bb0a78f248",
+      "created": "2026-04-28T23:43:16.472753+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/precompte-mobilier-en-belgique-2025.html",
+          "posted_at": "2026-05-06T07:09:43.527508+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/06/precompte-mobilier-en-belgique-2025-calculez-votre-retenue-gratuitement/",
+          "posted_at": "2026-05-06T07:09:55.932942+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3ml65h2ryfl2r",
+          "posted_at": "2026-05-06T07:09:59.416457+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Précompte-mobilier-en-Belgique-2025--calculez-votre-retenue-gratuitement-05-06",
+          "posted_at": "2026-05-06T07:10:02.888732+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=22824:count=1",
+          "posted_at": "2026-05-06T07:10:02.900330+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/be-precompte-mobilier-calculateur-2025.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-28T23:43:16.472913+00:00"
+      }
+    },
+    {
+      "slug": "no-enk-skattekalkulator-selvstendig-2025",
+      "title": "ENK skattekalkulator 2025: Beregn skatten din som selvstendig næringsdrivende gratis",
+      "hash": "bfe8ef3074ec020b",
+      "created": "2026-04-28T23:43:16.533026+00:00",
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/ENK-skattekalkulator-2025-Beregn-skatten-din-som-selvstendig-næringsdrivende-gratis-05-06",
+          "posted_at": "2026-05-06T11:00:02.227104+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/no-enk-skattekalkulator-selvstendig-2025.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-28T23:43:16.533199+00:00"
+      }
+    },
+    {
+      "slug": "uk-inheritance-tax-calculator-2025-26",
+      "title": "UK Inheritance Tax Calculator 2025/26 — Free IHT Estimator with Gift Taper",
+      "hash": "3a0eea8d01a93a27",
+      "created": "2026-04-28T23:43:16.591950+00:00",
+      "platforms": {
+        "substack": {
+          "url": "https://substack.com/home/post/p-196684728",
+          "posted_at": "2026-05-06T17:17:29.633997+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/uk-inheritance-tax-calculator-2025-26.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-28T23:43:16.592107+00:00"
+      }
+    },
+    {
+      "slug": "cash-out-refinance-calculator-2025-free",
+      "title": "Cash-Out Refinance Calculator 2025 — Free Payment & Break-Even Estimator",
+      "hash": "917b66cadc24aae2",
+      "created": "2026-04-28T23:43:16.649811+00:00",
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/cash-out-refinance-calculator-2025-free-payment-break-even-estimator-1il1",
+          "posted_at": "2026-05-07T01:02:20.646097+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/cash-out-refinance-calculator-2025-free-payment-break-even-estimator",
+          "posted_at": "2026-05-07T01:02:25.320376+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/cash-out-refinance-calculator-2025-free.html",
+          "posted_at": "2026-05-07T01:02:29.408465+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/07/cash-out-refinance-calculator-2025-free-payment-break-even-estimator/",
+          "posted_at": "2026-05-07T01:02:38.885971+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/815913510937804800",
+          "posted_at": "2026-05-07T01:02:40.113573+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3ml7zfaiwip2j",
+          "posted_at": "2026-05-07T01:02:42.812041+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Cash-Out-Refinance-Calculator-2025--Free-Payment--Break-Even-Estimator-05-07",
+          "posted_at": "2026-05-07T01:02:44.961211+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=86591:shorts=1:tutorials=0",
+          "posted_at": "2026-05-07T01:02:44.974192+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=86592:count=1",
+          "posted_at": "2026-05-07T01:02:44.983599+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/cash-out-refinance-calculator-2025-free.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-28T23:43:16.649984+00:00"
+      }
+    },
+    {
+      "slug": "es-calculadora-pension-jubilacion-espana-2025",
+      "title": "Calculadora de pensión de jubilación en España 2025 — Gratis y privada",
+      "hash": "a0f67741412f6823",
+      "created": "2026-04-28T23:43:16.707504+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/calculadora-de-pension-de-jubilacion-en.html",
+          "posted_at": "2026-05-07T07:00:07.812000+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/07/calculadora-de-pension-de-jubilacion-en-espana-2025-gratis-y-privada/",
+          "posted_at": "2026-05-07T07:00:16.873680+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mlaneppwb22f",
+          "posted_at": "2026-05-07T07:00:19.983841+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Calculadora-de-pensión-de-jubilación-en-España-2025--Gratis-y-privada-05-07",
+          "posted_at": "2026-05-07T07:00:22.103103+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=28540:count=1",
+          "posted_at": "2026-05-07T07:00:22.111434+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/es-calculadora-pension-jubilacion-espana-2025.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-28T23:43:16.707686+00:00"
+      }
+    },
+    {
+      "slug": "pt-calculadora-inss-brasil-2025-aliquotas",
+      "title": "Calculadora INSS 2025 — Alíquotas progressivas e desconto grátis",
+      "hash": "c36bb49f6ebfc675",
+      "created": "2026-04-28T23:43:16.766031+00:00",
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Calculadora-INSS-2025--Alíquotas-progressivas-e-desconto-grátis-05-07",
+          "posted_at": "2026-05-07T11:00:05.625027+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/pt-calculadora-inss-brasil-2025-aliquotas.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-28T23:43:16.766201+00:00"
+      }
+    },
+    {
+      "slug": "home-equity-loan-calculator-2026-free",
+      "title": "Free Home Equity Loan Calculator — Compare HEL vs HELOC in 2026",
+      "hash": "aaf87265a93302e5",
+      "created": "2026-04-29T00:41:33.299335+00:00",
+      "platforms": {
+        "substack": {
+          "url": "https://substack.com/home/post/p-196809159",
+          "posted_at": "2026-05-07T17:46:37.527298+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/home-equity-loan-calculator-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T00:41:33.299503+00:00"
+      }
+    },
+    {
+      "slug": "installment-loan-calculator-2026-free",
+      "title": "Installment Loan Calculator — Payments, Interest & Amortization",
+      "hash": "d95fd7a6a539db7b",
+      "created": "2026-04-29T00:41:33.361698+00:00",
+      "platforms": {
+        "youtube": {
+          "url": "scheduled:pid=18398:shorts=1:tutorials=0",
+          "posted_at": "2026-05-08T03:03:35.215339+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/installment-loan-calculator-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T00:41:33.361860+00:00"
+      }
+    },
+    {
+      "slug": "au-fbt-calculator-2025-26-free",
+      "title": "FBT Calculator Australia 2025-26 — Free Fringe Benefits Tax Tool",
+      "hash": "fd66b13b90f0bbfc",
+      "created": "2026-04-29T00:41:33.424551+00:00",
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/fbt-calculator-australia-2025-26-free-fringe-benefits-tax-tool-5h4e",
+          "posted_at": "2026-05-08T07:00:04.025669+00:00",
+          "status": "published"
+        },
+        "hashnode": {
+          "url": "https://teamzlab.hashnode.dev/fbt-calculator-australia-2025-26-free-fringe-benefits-tax-tool",
+          "posted_at": "2026-05-08T07:00:08.341960+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/fbt-calculator-australia-2025-26-free.html",
+          "posted_at": "2026-05-08T07:00:11.563604+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/08/fbt-calculator-australia-2025-26-free-fringe-benefits-tax-tool/",
+          "posted_at": "2026-05-08T07:00:19.607567+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/816026610637701120",
+          "posted_at": "2026-05-08T07:00:20.360047+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mld5tq4dzx2j",
+          "posted_at": "2026-05-08T07:00:23.118017+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/FBT-Calculator-Australia-2025-26--Free-Fringe-Benefits-Tax-Tool-05-08",
+          "posted_at": "2026-05-08T07:00:24.157675+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=19074:count=1",
+          "posted_at": "2026-05-08T07:00:24.174957+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/au-fbt-calculator-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T00:41:33.424720+00:00"
+      }
+    },
+    {
+      "slug": "il-rental-income-tax-calculator-3-tracks",
+      "title": "Israeli Rental Income Tax Calculator — Compare All 3 Tax Tracks",
+      "hash": "18b6be333f09b6c0",
+      "created": "2026-04-29T00:41:33.486233+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/israeli-rental-income-tax-calculator.html",
+          "posted_at": "2026-05-08T11:00:04.340510+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/08/israeli-rental-income-tax-calculator-compare-all-3-tax-tracks/",
+          "posted_at": "2026-05-08T11:00:13.491021+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mldlaoecbc2y",
+          "posted_at": "2026-05-08T11:00:16.104672+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Israeli-Rental-Income-Tax-Calculator--Compare-All-3-Tax-Tracks-05-08",
+          "posted_at": "2026-05-08T11:00:17.176234+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/il-rental-income-tax-israel-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T00:41:33.486395+00:00"
+      }
+    },
+    {
+      "slug": "mortgage-refinance-savings-calculator",
+      "title": "Mortgage Refinance Savings Calculator — Is Refinancing Worth It in 2026?",
+      "hash": "892b13841a8d6ccd",
+      "created": "2026-04-29T17:12:58.089528+00:00",
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Mortgage-Refinance-Savings-Calculator--Is-Refinancing-Worth-It-in-2026-05-08",
+          "posted_at": "2026-05-08T15:00:14.412936+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/mortgage-refinance-savings-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T17:12:58.089700+00:00"
+      }
+    },
+    {
+      "slug": "term-vs-whole-life-insurance",
+      "title": "Term vs Whole Life Insurance — Free Side-by-Side Comparison Calculator",
+      "hash": "4e32bdb8eaf2acca",
+      "created": "2026-04-29T17:12:58.150265+00:00",
+      "platforms": {
+        "youtube": {
+          "url": "scheduled:pid=1575:shorts=1:tutorials=0",
+          "posted_at": "2026-05-09T03:03:03.295008+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/term-vs-whole-life-insurance.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T17:12:58.150455+00:00"
+      }
+    },
+    {
+      "slug": "itemize-vs-standard-deduction-2026",
+      "title": "Itemize or Standard Deduction in 2026? Free Calculator Shows Which Saves More",
+      "hash": "c79bc450c50c8853",
+      "created": "2026-04-29T17:12:58.212520+00:00",
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/itemize-or-standard-deduction-in-2026-free-calculator-shows-which-saves-more-2de4",
+          "posted_at": "2026-05-09T11:00:05.518071+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/itemize-or-standard-deduction-in-2026.html",
+          "posted_at": "2026-05-09T11:00:09.799488+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/09/itemize-or-standard-deduction-in-2026-free-calculator-shows-which-saves-more/",
+          "posted_at": "2026-05-09T11:00:17.817238+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/816132306326732800",
+          "posted_at": "2026-05-09T11:00:19.554965+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mlg3psprso2w",
+          "posted_at": "2026-05-09T11:00:23.035909+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Itemize-or-Standard-Deduction-in-2026-Free-Calculator-Shows-Which-Saves-More-05-09",
+          "posted_at": "2026-05-09T11:00:24.575752+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/itemize-vs-standard-deduction-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T17:12:58.212719+00:00"
+      }
+    },
+    {
+      "slug": "heloc-vs-cash-out-refinance-2026",
+      "title": "HELOC vs Cash-Out Refinance — Which Costs Less in 2026?",
+      "hash": "bb23f3d937ff356c",
+      "created": "2026-04-29T21:53:47.156711+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/heloc-vs-cash-out-refinance-which-costs.html",
+          "posted_at": "2026-05-09T22:48:15.356992+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/10/heloc-vs-cash-out-refinance-which-costs-less-in-2026/",
+          "posted_at": "2026-05-09T22:48:22.241480+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mlhdbtsxzj2r",
+          "posted_at": "2026-05-09T22:48:24.505163+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/HELOC-vs-Cash-Out-Refinance--Which-Costs-Less-in-2026-05-09",
+          "posted_at": "2026-05-09T22:48:27.280328+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/heloc-vs-cash-out-refinance-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T21:53:47.156863+00:00"
+      }
+    },
+    {
+      "slug": "disability-insurance-calculator-2026",
+      "title": "How Much Disability Insurance Do You Actually Need? Free Calculator",
+      "hash": "da4e406e4934ba0f",
+      "created": "2026-04-29T21:53:47.216436+00:00",
+      "platforms": {
+        "substack": {
+          "url": "https://substack.com/home/post/p-197052234",
+          "posted_at": "2026-05-09T22:48:38.251118+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/disability-insurance-calculator-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T21:53:47.216606+00:00"
+      }
+    },
+    {
+      "slug": "capital-gains-vs-ordinary-income-tax-2026",
+      "title": "Capital Gains vs Ordinary Income Tax — See How Much You Save Holding 1+ Year",
+      "hash": "a34d24dbb527e046",
+      "created": "2026-04-29T21:53:47.276093+00:00",
+      "platforms": {
+        "youtube": {
+          "url": "scheduled:pid=99457:shorts=1:tutorials=0",
+          "posted_at": "2026-05-10T03:03:00.860926+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/capital-gains-vs-ordinary-income-tax-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-29T21:53:47.276258+00:00"
+      }
+    },
+    {
+      "slug": "jumbo-loan-qualifier-2026",
+      "title": "Is Your Dream Home a Jumbo Loan? Free Qualifier Tells You in 30 Seconds",
+      "hash": "0519bae3953552d3",
+      "created": "2026-04-30T10:06:02.220871+00:00",
+      "platforms": {
+        "devto": {
+          "url": "https://dev.to/teamzlab/is-your-dream-home-a-jumbo-loan-free-qualifier-tells-you-in-30-seconds-239b",
+          "posted_at": "2026-05-10T10:05:04.257008+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/is-your-dream-home-jumbo-loan-free.html",
+          "posted_at": "2026-05-10T10:05:09.290326+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/10/is-your-dream-home-a-jumbo-loan-free-qualifier-tells-you-in-30-seconds/",
+          "posted_at": "2026-05-10T10:05:18.796954+00:00",
+          "status": "published"
+        },
+        "tumblr": {
+          "url": "https://teamzlabltd.tumblr.com/post/816219443070910464",
+          "posted_at": "2026-05-10T10:05:20.238734+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mlij4eyv6c2z",
+          "posted_at": "2026-05-10T10:05:23.366027+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Is-Your-Dream-Home-a-Jumbo-Loan-Free-Qualifier-Tells-You-in-30-Seconds-05-10",
+          "posted_at": "2026-05-10T10:05:24.469217+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/jumbo-loan-qualifier-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T10:06:02.221044+00:00"
+      }
+    },
+    {
+      "slug": "fha-vs-conventional-comparison-2026",
+      "title": "FHA vs Conventional Loan: This Free Calculator Shows Which Costs Less Over 30 Years",
+      "hash": "c57ac370bce0eb85",
+      "created": "2026-04-30T10:06:02.277644+00:00",
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/05/fha-vs-conventional-loan-this-free.html",
+          "posted_at": "2026-05-11T03:00:06.948654+00:00",
+          "status": "published"
+        },
+        "wordpress": {
+          "url": "https://teamzlab.wordpress.com/2026/05/11/fha-vs-conventional-loan-this-free-calculator-shows-which-costs-less-over-30-years/",
+          "posted_at": "2026-05-11T03:00:17.391746+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mlkbtdkxsl26",
+          "posted_at": "2026-05-11T03:00:23.161150+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/FHA-vs-Conventional-Loan-This-Free-Calculator-Shows-Which-Costs-Less-Over-30-Years-05-11",
+          "posted_at": "2026-05-11T03:00:24.301298+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/fha-vs-conventional-comparison-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T10:06:02.277833+00:00"
+      }
+    },
+    {
+      "slug": "barista-fire-calculator-2026",
+      "title": "Barista FIRE: When Can You Quit Your Career for Part-Time Work? Free Calculator",
+      "hash": "2e8a56c321a9a2f7",
+      "created": "2026-04-30T10:06:02.334287+00:00",
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Barista-FIRE-When-Can-You-Quit-Your-Career-for-Part-Time-Work-Free-Calculator-05-11",
+          "posted_at": "2026-05-11T07:00:03.371059+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/barista-fire-calculator-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T10:06:02.334497+00:00"
+      }
+    },
+    {
+      "slug": "usda-loan-eligibility-calculator",
+      "title": "USDA Loan Eligibility 2026 — Free Calculator Shows If You Qualify for Zero Down",
+      "hash": "4fdab991ee8635b2",
+      "created": "2026-04-30T10:22:10.976537+00:00",
+      "platforms": {
+        "substack": {
+          "url": "https://substack.com/home/post/p-197189354",
+          "posted_at": "2026-05-11T08:42:53.165359+00:00",
+          "status": "published"
+        }
+      },
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/usda-loan-eligibility-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T10:22:10.976698+00:00"
+      }
+    },
+    {
+      "slug": "obbb-2026-vs-2025-tax-comparison",
+      "title": "OBBB 2026 Tax Changes — Free Calculator Compares Your 2025 vs 2026 Federal Taxes",
+      "hash": "1731a2503c2d040c",
+      "created": "2026-04-30T10:22:11.039443+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/obbb-2026-vs-2025-tax-comparison.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T10:22:11.039621+00:00"
+      }
+    },
+    {
+      "slug": "health-insurance-deductible-comparison",
+      "title": "High vs Low Deductible Health Insurance — Free Comparison Tool Finds Your Cheapest Plan",
+      "hash": "0815481f29dc72ba",
+      "created": "2026-04-30T10:22:11.100528+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/health-insurance-deductible-comparison.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T10:22:11.100792+00:00"
+      }
+    },
+    {
+      "slug": "personal-balance-sheet-calculator",
+      "title": "Build Your Personal Balance Sheet — Free Calculator Shows Net Worth + Financial Ratios",
+      "hash": "6792709c39a565d3",
+      "created": "2026-04-30T10:22:11.162462+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/personal-balance-sheet-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T10:22:11.162655+00:00"
+      }
+    },
+    {
+      "slug": "home-improvement-loan-calculator",
+      "title": "Home Improvement Loan Calculator: Compare 3 Financing Options Free",
+      "hash": "5fe62ea8b46470ce",
+      "created": "2026-04-30T11:56:04.266161+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/home-improvement-loan-calculator-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T11:56:04.266308+00:00"
+      }
+    },
+    {
+      "slug": "rrsp-2027-limit-calculator",
+      "title": "RRSP 2027 Contribution Limit Calculator — New $35,390 Cap",
+      "hash": "0772547762736d72",
+      "created": "2026-04-30T11:56:04.331390+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/rrsp-2027-limit-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T11:56:04.331557+00:00"
+      }
+    },
+    {
+      "slug": "super-concessions-calculator-2026",
+      "title": "Australian Super Tax Concessions Calculator 2026-27 — Free Tool",
+      "hash": "a4406928fa48df70",
+      "created": "2026-04-30T11:56:04.392842+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/au-super-concessions-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T11:56:04.393021+00:00"
+      }
+    },
+    {
+      "slug": "auto-insurance-coverage-needs",
+      "title": "How Much Auto Insurance Do You Actually Need? Free Coverage Calculator",
+      "hash": "b0ea2d22b777b95f",
+      "created": "2026-04-30T17:43:55.260041+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/auto-insurance-coverage-needs.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T17:43:55.260275+00:00"
+      }
+    },
+    {
+      "slug": "seller-net-sheet-calculator",
+      "title": "Selling Your Home? Calculate Your Actual Net Proceeds — Free Seller Net Sheet",
+      "hash": "fd6f2cc3caf55526",
+      "created": "2026-04-30T17:43:55.322149+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/seller-net-sheet-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T17:43:55.322372+00:00"
+      }
+    },
+    {
+      "slug": "down-payment-calculator",
+      "title": "Down Payment Calculator — Compare 3.5% vs 20% and See the PMI Impact",
+      "hash": "5153d039c10f1432",
+      "created": "2026-04-30T17:43:55.380430+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/down-payment-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T17:43:55.380641+00:00"
+      }
+    },
+    {
+      "slug": "renters-insurance-calculator",
+      "title": "Do You Really Need Renters Insurance? A Free Calculator Shows Exactly What You'd Lose",
+      "hash": "053aa4e1c80b21b8",
+      "created": "2026-04-30T19:10:30.698210+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/renters-insurance-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T19:10:30.698412+00:00"
+      }
+    },
+    {
+      "slug": "uk-mtd-itsa-penalty-calculator",
+      "title": "MTD for Income Tax Starts April 2026 — Calculate Your Penalty Risk Before It's Too Late",
+      "hash": "7e52d349d5428fcd",
+      "created": "2026-04-30T19:10:30.756991+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/uk-mtd-itsa-penalty-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T19:10:30.757246+00:00"
+      }
+    },
+    {
+      "slug": "no-bsu-sparing-kalkulator",
+      "title": "BSU-sparing i 2026: Gratis kalkulator viser skattefradrag og total oppsparing",
+      "hash": "4dcc74ffcdfcd948",
+      "created": "2026-04-30T19:10:30.815324+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/no-bsu-sparing-kalkulator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T19:10:30.815522+00:00"
+      }
+    },
+    {
+      "slug": "mortgage-recast-vs-refinance-comparison",
+      "title": "Mortgage Recast vs Refinance — Free Calculator Shows Which Saves More",
+      "hash": "49fe81f8f3550559",
+      "created": "2026-04-30T21:39:12.870545+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/mortgage-recast-vs-refinance.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T21:39:12.870786+00:00"
+      }
+    },
+    {
+      "slug": "home-warranty-calculator",
+      "title": "Home Warranty: Worth It or Waste? Free Calculator Shows the Math",
+      "hash": "dbd9bae75e617b1d",
+      "created": "2026-04-30T21:39:12.941375+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/home-warranty-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T21:39:12.941620+00:00"
+      }
+    },
+    {
+      "slug": "kiwisaver-fees-comparison-calculator",
+      "title": "KiwiSaver Fees: A 1% Difference Could Cost You $70,000 by Retirement",
+      "hash": "642c2eb5323220cb",
+      "created": "2026-04-30T21:39:13.009957+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/kiwisaver-fees-comparison.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-04-30T21:39:13.010160+00:00"
+      }
+    },
+    {
+      "slug": "build-30-finance-tax-tools-may-2026",
+      "title": "6 New Finance & Tax Calculators — Auto Loan Refinance, Wash Sale, Div 296, HK Stamp Duty",
+      "hash": "b3a8c8c175291da8",
+      "created": "2026-05-01T00:06:10.128711+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/build-30-finance-tax-tools-may-2026.md",
+        "priority": "medium",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-01T00:06:10.128884+00:00"
+      }
+    },
+    {
+      "slug": "inherited-ira-10-year-rule-calculator",
+      "title": "Inherited IRA 10-Year Rule Calculator: Your Complete 2026 Distribution Schedule",
+      "hash": "c2257e9d9f26f572",
+      "created": "2026-05-01T15:17:49.483012+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/inherited-ira-10-year-rule-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-01T15:17:49.483167+00:00"
+      }
+    },
+    {
+      "slug": "cpf-budget-2026-top-up-calculator",
+      "title": "Singapore Budget 2026 CPF Top-Ups: MRSS, Majulah Package & Silver Support Checker",
+      "hash": "5719e4cf18289b48",
+      "created": "2026-05-01T15:17:53.725895+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/cpf-budget-2026-top-up-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-01T15:17:53.726092+00:00"
+      }
+    },
+    {
+      "slug": "epf-i-saraan-savings-calculator",
+      "title": "EPF i-Saraan Calculator: Self-Employed Malaysians Get 15% Government Incentive",
+      "hash": "23dcaad47709518f",
+      "created": "2026-05-01T15:17:53.784286+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/epf-i-saraan-savings-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-01T15:17:53.784453+00:00"
+      }
+    },
+    {
+      "slug": "mpf-2026-prescribed-savings-rate-calculator",
+      "title": "HK MPF Voluntary Contributions Planner 2026: TVC Tax Savings + Retirement Projection",
+      "hash": "a2e34f83462bacb4",
+      "created": "2026-05-01T15:17:53.842329+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/mpf-2026-voluntary-contributions.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-01T15:17:53.842494+00:00"
+      }
+    },
+    {
+      "slug": "nightly-35-finance-calculators",
+      "title": "5 Free Finance Calculators You Didn't Know You Needed — DCA, Rule of 72, Pension Lump Sum vs Annuity",
+      "hash": "db0ff00064b9e1b7",
+      "created": "2026-05-03T13:28:48.659497+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/nightly-35-finance-calculators.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-03T13:28:48.659689+00:00"
+      }
+    },
+    {
+      "slug": "nightly-35-country-tax-tools",
+      "title": "Free Tax Calculators for Switzerland, Hong Kong & Ireland — 2026 Rates, Zero Sign-Up",
+      "hash": "c078ac1a99289605",
+      "created": "2026-05-03T13:28:48.720869+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/nightly-35-country-tax-tools.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-03T13:28:48.721037+00:00"
+      }
+    },
+    {
+      "slug": "nightly-35-au-nz-updates",
+      "title": "Australia & New Zealand Tax Updates for 2026-27 — HECS-HELP, Capital Gains, ACC Levies",
+      "hash": "5a727fcc7c68b193",
+      "created": "2026-05-03T13:28:48.781160+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/nightly-35-au-nz-updates.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-03T13:28:48.781357+00:00"
+      }
+    },
+    {
+      "slug": "nightly-37-piti-mortgage-calculator",
+      "title": "Free PITI Mortgage Calculator — Principal, Interest, Taxes & Insurance in One Click",
+      "hash": "87e47fd4bea00b95",
+      "created": "2026-05-05T01:14:33.237626+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/nightly-37-piti-mortgage-calculator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": "piti calculator, piti mortgage payment, principal interest taxes insurance, 28% rule mortgage, front end dti",
+        "competition": "",
+        "drafted_at": "2026-05-05T01:14:33.237830+00:00",
+        "updated_at": "2026-05-05T01:19:18.213939+00:00"
+      }
+    },
+    {
+      "slug": "nightly-37-norsk-mva-kalkulator",
+      "title": "Gratis MVA-kalkulator for Norge 2026 — Beregn 25%, 15% og 12% moms",
+      "hash": "a9d83b5ff6334972",
+      "created": "2026-05-05T01:14:44.514447+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/nightly-37-norsk-mva-kalkulator.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-05T01:14:44.514672+00:00",
+        "updated_at": "2026-05-05T01:20:09.812994+00:00"
+      }
+    },
+    {
+      "slug": "nightly-37-amt-tax-calculator-2026",
+      "title": "Alternative Minimum Tax (AMT) Calculator 2026 — Check If You Owe Extra Before Filing",
+      "hash": "d9c2a39e2ff8e483",
+      "created": "2026-05-05T01:14:52.418939+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/nightly-37-amt-tax-calculator-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-05T01:14:52.419146+00:00",
+        "updated_at": "2026-05-05T01:19:19.014159+00:00"
+      }
+    },
+    {
+      "slug": "uk-employment-rights-calculators-2025-26",
+      "title": "UK Employment Rights Calculators 2025/26 — Redundancy, Holiday, SSP, Notice Period",
+      "hash": "62707930ba067a55",
+      "created": "2026-05-05T14:24:50.932034+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/uk-employment-rights-calculators-2025-26.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-05T14:24:50.932220+00:00"
+      }
+    },
+    {
+      "slug": "free-fps-business-day-calculators-2026",
+      "title": "Free FPS Calculator + Business Day Calculator — Two Tools I Use Every Week",
+      "hash": "031b54734d039a95",
+      "created": "2026-05-05T14:24:58.102318+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/free-fps-business-day-calculators-2026.md",
+        "priority": "medium",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-05T14:24:58.102555+00:00"
+      }
+    },
+    {
+      "slug": "nightly-39-mortgage-insurance-tax-2026",
+      "title": "16 New Free 2026 Calculators — Mortgage, Insurance, Tax, Multi-Country",
+      "hash": "fce8d02b31398e0b",
+      "created": "2026-05-06T17:17:17.104619+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/nightly-39-mortgage-insurance-tax-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-06T17:17:17.104792+00:00"
+      }
+    },
+    {
+      "slug": "nightly-40-multi-country-finance-2026",
+      "title": "15 New Free 2026 Calculators — Debt, Mortgage, UK SMP, AU Super, SG CPF LIFE",
+      "hash": "4724e340d4b14653",
+      "created": "2026-05-07T01:02:14.588010+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/nightly-40-2026-05-07-multi-country-finance.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-07T01:02:14.588316+00:00"
+      }
+    },
+    {
+      "slug": "build-15-multi-country-finance-tax-tools-may-2026",
+      "title": "15 New Free Finance & Tax Calculators — PSLF, Medicaid Spend-Down, NZ Super, EII Ireland & More (2026)",
+      "hash": "00b4113a65844898",
+      "created": "2026-05-10T10:04:51.918119+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/build-15-multi-country-finance-tax-tools-may-2026.md",
+        "priority": "high",
+        "series": "nightly-2026-05",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-10T10:04:51.918330+00:00"
+      }
+    },
+    {
+      "slug": "nightly-44-retirement-medicare-2026",
+      "title": "15 New Free 2026 Retirement Calculators — FERS, QLAC, QCD, Bond Tent & Monte Carlo",
+      "hash": "d0f12f0d7806ce18",
+      "created": "2026-05-10T20:45:07.518690+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/nightly-44-retirement-medicare-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-10T20:45:07.518864+00:00"
+      }
+    },
+    {
+      "slug": "usda-guarantee-fee-calculator-2026",
+      "title": "USDA Guarantee Fee Calculator 2026 — 1.00% Upfront + 0.35% Annual",
+      "hash": "d2d1a6fa5b7da503",
+      "created": "2026-05-11T05:44:53.425256+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/usda-guarantee-fee-calculator-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-11T05:44:53.425435+00:00"
+      }
+    },
+    {
+      "slug": "form-8962-ptc-reconciliation-2026",
+      "title": "Form 8962 PTC Reconciliation Calculator 2026 — APTC Repay or Refund",
+      "hash": "f97c77f74c8eca11",
+      "created": "2026-05-11T05:45:00.468653+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/form-8962-ptc-reconciliation-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-11T05:45:00.468852+00:00"
+      }
+    },
+    {
+      "slug": "457b-vs-403b-vs-401k-2026",
+      "title": "457(b) vs 403(b) vs 401(k) 2026 — Public Sector Retirement Comparison",
+      "hash": "7948cc0eec1a598c",
+      "created": "2026-05-11T05:45:00.533859+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/drafts/457b-vs-403b-vs-401k-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-11T05:45:00.534059+00:00"
+      }
+    },
+    {
+      "slug": "obbb-secure-act-2-2026-tax-calculators",
+      "title": "5 New OBBB and SECURE Act 2.0 Tax Calculators for 2026",
+      "hash": "64fceb2fbccc3271",
+      "created": "2026-05-11T08:42:38.166675+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/obbb-secure-act-2-2026-tax-calculators.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-11T08:42:38.166838+00:00"
+      }
+    },
+    {
+      "slug": "equity-comp-tax-tools-2026",
+      "title": "5 Free 2026 Equity Compensation Tax Calculators — ISO, NSO, ESPP, Nanny Tax, Mileage",
+      "hash": "b6b838d79601ecdf",
+      "created": "2026-05-11T08:42:38.227374+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/equity-comp-tax-tools-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-11T08:42:38.227554+00:00"
+      }
+    },
+    {
+      "slug": "international-tax-calculators-may-2026",
+      "title": "5 New 2026 International Tax Calculators — NL, NO, LU, IE, CA",
+      "hash": "4cfce660d34778db",
+      "created": "2026-05-11T08:42:38.287174+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/teamz-company-automation/distribute/articles/international-tax-calculators-may-2026.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-05-11T08:42:38.287356+00:00"
       }
     }
   ]

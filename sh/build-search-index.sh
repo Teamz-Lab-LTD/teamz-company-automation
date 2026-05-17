@@ -33,6 +33,13 @@ find "$BASE" -path "*/*/index.html" \
 
   desc=$(grep -o 'name="description" content="[^"]*"' "$f" | head -1 | sed 's/name="description" content="//;s/"$//' | sed "s/'/\\\\'/g" | head -c 150)
 
+  # English search-aliases — pages with native-language titles still findable
+  # via English queries on the homepage search bar.
+  aliases=$(grep -o 'name="search-aliases" content="[^"]*"' "$f" | head -1 | sed 's/name="search-aliases" content="//;s/"$//' | sed "s/'/\\\\'/g")
+  if [ -n "$aliases" ]; then
+    desc=$(echo "$desc · $aliases" | head -c 280)
+  fi
+
   if [ -n "$title" ] && [ "$title" != "Teamz Lab Tools" ]; then
     echo "  {t:'$title',d:'$desc',h:'/$slug/'}," >> "$OUTPUT"
   fi
@@ -45,7 +52,7 @@ echo "  Search: $search_count tools indexed"
 
 # === Auto-update cache buster ===
 DATEVER=$(date +%Y%m%d%H%M)
-sed -i '' "s|search-index.js?v=[0-9]*|search-index.js?v=$DATEVER|" "$BASE/index.html" 2>/dev/null
+sed -i '' "s|search-index.js?v=[0-9]*|search-index.js?v=$DATEVER|" "$BASE/index.html"
 
 # === Auto-update homepage card counts ===
 echo ""
@@ -55,13 +62,13 @@ for hub in ai evergreen dev text image uidesign tools freelance work diagnostic 
   if [ "$actual" -gt 0 ]; then
     # Update the count in the homepage card for this hub
     # Match: href="/hub/" ... <p>NUMBER free ... and replace NUMBER with actual
-    sed -i '' "s|href=\"/$hub/\" class=\"tool-card\"><div class=\"card\"><h3>\([^<]*\)</h3><p>[0-9]* free|href=\"/$hub/\" class=\"tool-card\"><div class=\"card\"><h3>\1</h3><p>$actual free|" "$BASE/index.html" 2>/dev/null
+    sed -i '' "s|href=\"/$hub/\" class=\"tool-card\"><div class=\"card\"><h3>\([^<]*\)</h3><p>[0-9]* free|href=\"/$hub/\" class=\"tool-card\"><div class=\"card\"><h3>\1</h3><p>$actual free|" "$BASE/index.html"
   fi
 done
 
 # Update search placeholder count
 total_tools=$(find "$BASE" -path "*/*/index.html" -not -path "*/about/*" -not -path "*/contact/*" -not -path "*/privacy/*" -not -path "*/terms/*" -not -path "*/docs/*" -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/.claude/*" | wc -l | tr -d ' ')
-sed -i '' "s|Search [0-9]*+ tools|Search ${total_tools}+ tools|" "$BASE/index.html" 2>/dev/null
+sed -i '' "s|Search [0-9]*+ tools|Search ${total_tools}+ tools|" "$BASE/index.html"
 echo "  Homepage: updated all card counts + search shows ${total_tools}+ tools"
 
 echo ""
@@ -71,8 +78,10 @@ echo "=== Done ==="
 # Spec: https://llmstxt.org — by Jeremy Howard
 # llms.txt = curated navigation index (under 10KB, like Stripe/Vercel)
 # llms-full.txt = complete tool index (can be large, for RAG/deep reference)
+echo ""
+echo "=== Rebuilding llms.txt + llms-full.txt (AI search index) ==="
 (
-cd "$BASE" || exit 1
+cd "$BASE" || { echo "ERROR: cd \$BASE failed" >&2; exit 1; }
 python3 -c "
 import glob, re, html
 
@@ -126,12 +135,14 @@ hubs_count = len(tools_by_hub)
 main = sorted([h for h in tools_by_hub if len(h)>2 or h in ('ai','us','uk','eu','3d')], key=lambda h: hub_names.get(h,h))
 country = sorted([h for h in tools_by_hub if len(h)<=2 and h not in ('ai','us','uk','eu','3d')], key=lambda h: hub_names.get(h,h))
 
-# ─── llms.txt (curated index, spec-compliant, under 10KB) ───
-# Per llmstxt.org: H1, blockquote summary, metadata, then curated H2 sections
+# ─── llms.txt (curated index, spec-compliant, under 10KB per llmstxt.org) ───
+# GEO-optimized per Princeton research: authority-first blockquote, statistics,
+# data-driven Popular Tools picked by 90-day GSC clicks. AlwaysReady block is
+# NOT folded in (lives in llms-full only) to keep this file under spec cap.
 L = [
 '# Teamz Lab Tools',
 '',
-f'> {total}+ free browser-based tools and calculators. All tools run client-side with zero data collection, no login, and no server processing. Covers finance, health, developer utilities, AI writing, design, and country-specific calculators across {hubs_count} categories.',
+f'> {total}+ free browser-based calculators and SEO/dev/AI tools across {hubs_count} categories. All tools run 100% client-side — zero data collection, no login, no server processing, no telemetry. Calculator data sourced from official regulators including IRS, HMRC, ATO, IRAS, UEFA, FIFA, BMF, Bundesbank, and national tax authorities of 40+ countries. Year stamps reflect the current tax and regulatory cycle and are updated continuously.',
 '',
 '- Website: https://tool.teamzlab.com',
 '- Full tool index: https://tool.teamzlab.com/llms-full.txt',
@@ -139,41 +150,40 @@ f'> {total}+ free browser-based tools and calculators. All tools run client-side
 '',
 '## Popular Tools',
 '',
-'- [Einkommensteuer Rechner 2026 Deutschland](https://tool.teamzlab.com/de/einkommensteuer-rechner/): German income tax calculator with Solidaritätszuschlag and Kirchensteuer for 2026',
-'- [Grundsteuer Rechner Thüringen 2026](https://tool.teamzlab.com/de/grundsteuer-rechner-thueringen/): Thuringia property tax calculator using the 2026 Bundesmodell with Hebesatz and Steuermessbetrag',
-'- [Grundsteuer Rechner RLP 2026](https://tool.teamzlab.com/de/grundsteuer-rechner-rheinland-pfalz/): Rhineland-Palatinate property tax calculator under the 2026 federal Grundsteuer reform',
-'- [Einkommensteuer Rechner 2026 Österreich](https://tool.teamzlab.com/at/einkommensteuer-rechner/): Austrian income tax calculator for the 2026 Steuertarif with all brackets',
-'- [Familienbeihilfe Rechner 2026 Österreich](https://tool.teamzlab.com/at/familienbeihilfe-rechner/): Austrian family allowance calculator by age, siblings, and Mehrkindzuschlag',
-'- [ACA Subsidy Calculator 2026](https://tool.teamzlab.com/us/aca-subsidy-calculator/): Check US Affordable Care Act subsidy eligibility and 2026 subsidy-cliff impact on premiums',
-'- [Roth IRA Calculator 2026](https://tool.teamzlab.com/evergreen/roth-ira-calculator/): Project Roth IRA growth with 2026 contribution limits and tax-free withdrawal scenarios',
-'- [Notice Period Calculator UK 2026](https://tool.teamzlab.com/work/notice-period-calculator/): UK 1, 2, 3 month notice period calculator with statutory minimums and business-day counting',
-'- [通勤手当 計算サイト 2026](https://tool.teamzlab.com/jp/tsuukin-hi-keisan/): Japanese commuting allowance calculator with tax-exempt limit (非課税限度額) for train, bus, and car',
-'- [ISBN Finder & Book Search](https://tool.teamzlab.com/tools/book-search/): Look up any book by ISBN, title, or author — cover, description, publication details',
-'- [Amazon Sales Estimator](https://tool.teamzlab.com/amazon/sales-estimator/): Estimate monthly Amazon product sales from Best Sellers Rank across US, UK, DE marketplaces',
-'- [Skincare Ingredient Conflict Checker](https://tool.teamzlab.com/skincare/ingredient-conflict-checker/): Detect conflicts between retinol, AHA, BHA, vitamin C, niacinamide, and other actives',
-'- [KD Ratio Calculator](https://tool.teamzlab.com/gaming/kd-ratio-calculator/): Kill-death ratio calculator for Call of Duty, Fortnite, Valorant with improvement targets',
-'- [Resume ATS Checker](https://tool.teamzlab.com/career/ats-resume-checker/): Score your resume for applicant tracking system compatibility and keyword match rate',
-'- [AI Text Summarizer](https://tool.teamzlab.com/ai/article-summarizer/): Summarize articles in-browser with on-device AI — key points, TL;DR, teaser, or headline',
+'Ranked by 90-day Google Search clicks. Mix of evergreen calculators and active tournament / seasonal tools.',
+'',
+'- [IPL 2026 Playoff Calculator](https://tool.teamzlab.com/cricket/ipl-playoff-calculator/): IPL playoff qualification scenarios — Net Run Rate (NRR), points table permutations, top-4 paths for all 10 franchises with live IPL 2026 fixtures.',
+'- [UK Probation Period Calculator](https://tool.teamzlab.com/work/probation-period-calculator/): UK probation end-date calculator with statutory notice rules per Employment Rights Act 1996 and business-day counting.',
+'- [通勤手当 計算サイト](https://tool.teamzlab.com/jp/tsuukin-hi-keisan/): Japanese commuting allowance calculator with non-taxable limit (非課税限度額) per National Tax Agency rules for train, bus, bicycle, and car.',
+'- [Bangladesh Electricity Bill Calculator](https://tool.teamzlab.com/bd/electricity-bill-calculator/): DESCO, DPDC, REB, BPDB tariff slab calculator using current BERC rates, demand charge, VAT, and meter rent.',
+'- [UCL Bracket Predictor 2025/26](https://tool.teamzlab.com/football/ucl-bracket-predictor/): Predict the 2025/26 UEFA Champions League bracket from Round of 16 to the Munich Final on 30 May 2026.',
+'- [UCL League Phase Simulator](https://tool.teamzlab.com/football/ucl-group-stage-simulator/): Simulate the new 36-team UEFA Champions League league phase (8 matches each, top 8 auto-qualify to R16).',
+'- [FIFA World Cup 2026 Bracket Maker](https://tool.teamzlab.com/football/fifa-world-cup-2026-bracket-maker/): 48-team World Cup 2026 bracket — 12 groups of 4, top 2 + 8 best third-placed advance, 32-team knockout, MetLife Stadium final 19 July 2026.',
+'- [Football Salary Calculator](https://tool.teamzlab.com/football/football-salary-calculator/): Net weekly / monthly wage after tax for EPL, La Liga, Bundesliga, Serie A, Ligue 1 with country-specific income tax rates.',
+'- [ACA Subsidy Calculator 2026](https://tool.teamzlab.com/us/aca-subsidy-calculator/): US Affordable Care Act premium subsidy eligibility for 2026 plan year using federal poverty level and modified AGI.',
+'- [Bangladesh Government Salary Calculator](https://tool.teamzlab.com/bd/govt-salary-calculator/): Bangladesh National Pay Scale 2015 grade-by-grade salary breakdown with house rent, medical, and 9% annual increment.',
+'- [Student Attendance Percentage Calculator](https://tool.teamzlab.com/student/attendance-percentage-calculator/): Attendance percentage with classes-to-attend or classes-to-skip calculations against required threshold.',
+'- [Einkommensteuer Rechner 2026](https://tool.teamzlab.com/de/einkommensteuer-rechner/): German income tax (Einkommensteuer) calculator with Solidaritätszuschlag, Kirchensteuer, and 2026 Grundfreibetrag per BMF Steuertarif.',
 '',
 '## Categories',
 '',
 ]
-# List each hub as a category with tool count and hub page link
+# Compact one-line per hub (general/topical categories) — count without the word tools as suffix saves ~700B
 for hub in main:
     name = hub_names.get(hub, hub.title())
     count = len(tools_by_hub[hub])
-    L.append(f'- [{name}](https://tool.teamzlab.com/{hub}/): {count} tools')
+    L.append(f'- [{name}](https://tool.teamzlab.com/{hub}/): {count}')
 L.append('')
 
-# Country hubs as Optional section (per spec)
+# Country hubs as Optional section (per llmstxt.org spec — secondary content)
 L.append('## Optional')
 L.append('')
-L.append('Country-specific finance, tax, and utility tools:')
+L.append('Country-specific tax, payroll, and finance tools per local regulations:')
 L.append('')
 for hub in country:
     name = hub_names.get(hub, hub.title())
     count = len(tools_by_hub[hub])
-    L.append(f'- [{name}](https://tool.teamzlab.com/{hub}/): {count} tools')
+    L.append(f'- [{name}](https://tool.teamzlab.com/{hub}/): {count}')
 L.append('')
 
 with open('llms.txt','w') as f: f.write('\n'.join(L))
@@ -227,17 +237,10 @@ ARC_TOOLS = [
     ('5 Key Questions Framework', '/framework/', 'CQC Single Assessment Framework guide — Safe, Effective, Caring, Responsive, Well-led'),
 ]
 
-arc_llms = ['', '## AlwaysReady Care — Care Home Compliance SaaS', '',
-    'Free care home compliance software covering 14 countries and 13 regulatory frameworks (CQC, ACQS, NZS 8134, HIQA, MD/QPR, CMS, HAS, MHLW, DoH/MoHAP, IGJ, IVO, Provincial CA, IMSERSO). Continuous evidence capture, real-time readiness scoring, inspection pack generation. AI-tagged to regulator criteria.',
-    '']
-for name, path, desc in ARC_REGIONS:
-    arc_llms.append(f'- [AlwaysReady Care — {name}]({ARC_BASE}{path}): {desc}')
-arc_llms.append('')
-arc_llms.append('### AlwaysReady Care — Free Tools & Resources')
-arc_llms.append('')
-for name, path, desc in ARC_TOOLS:
-    arc_llms.append(f'- [{name}]({ARC_BASE}{path}): {desc}')
-with open('llms.txt','a') as f: f.write('\n'.join(arc_llms))
+# NOTE: AlwaysReady block intentionally NOT appended to llms.txt — it pushed
+# the file 3.4KB over the llmstxt.org 10KB spec target. The product hub is
+# already linked from the header bullets and the full block lives in
+# llms-full.txt below for AI tools that need the deep regional breakdown.
 
 arc_full = ['', '## AlwaysReady Care — Care Home Compliance Across 14 Countries', '',
     'AlwaysReady Care is a free care home compliance SaaS supporting 14 countries and 13 regulatory frameworks. Built for care managers, registered managers, deputy managers, quality leads, and PDLs. Captures evidence in 60 seconds, AI-tags to regulator criteria, generates inspection packs in one click. Works alongside existing systems (no rip-and-replace).',
@@ -270,11 +273,21 @@ arc_full.append('- Sweden: IVO closed 58 facilities in 2024 (47 care + 11 health
 arc_full.append('')
 with open('llms-full.txt','a') as f: f.write('\n'.join(arc_full))
 
-print(f'  AlwaysReady Care: 14 country pages + 4 tools appended to both llms files')
+print(f'  AlwaysReady Care: 14 country pages + 4 tools appended to llms-full.txt only (kept out of llms.txt to stay under spec cap)')
 
-print(f'  llms.txt: {llms_size // 1024}KB, {hubs_count} categories (spec target: <10KB)')
-print(f'  llms-full.txt: {total} tools (full descriptions)')
-" 2>/dev/null
+# Compute REAL final on-disk size (previous bug: reported pre-append size)
+import os
+real_llms = os.path.getsize('llms.txt')
+real_full = os.path.getsize('llms-full.txt')
+spec_cap = 10240  # llmstxt.org target
+status = 'OK' if real_llms <= spec_cap else f'OVER BY {real_llms - spec_cap}B'
+print(f'  llms.txt: {real_llms}B ({real_llms/1024:.1f}KB), {hubs_count} categories, spec target <{spec_cap}B → {status}')
+print(f'  llms-full.txt: {real_full}B ({real_full/1024:.1f}KB), {total} tools (full descriptions)')
+if real_llms > spec_cap:
+    import sys
+    print(f'  ERROR: llms.txt exceeds llmstxt.org 10KB spec target by {real_llms - spec_cap}B. Trim Popular Tools or Categories.', file=sys.stderr)
+    sys.exit(2)
+"
 )
 
 # === Build tools.json for mobile app ===

@@ -474,6 +474,27 @@ Account Credentials JSON ← `~/.config/teamzlab/play-console-service-account.js
 `iap_doctor.py` check 8 catches it from a purchase token whose
 `acknowledgementState` is stuck at 0.
 
+**Rule IAP8 — store credentials: which configure via REST API, which are dashboard-only. DO NOT GUESS.**
+A wrong guess cost real time (chopstick, 2026-05-22 — iOS was assumed
+dashboard-only "like Android"; it is not). The RevenueCat v2
+`POST /v2/projects/{pid}/apps/{app_id}` ("update app") endpoint accepts
+some store credentials directly in the request body:
+
+| Credential | How to configure |
+|---|---|
+| Android Play service account JSON | **Dashboard only** — `update-app` has NO field for it. RC dashboard → Android app → Service Account Credentials JSON. |
+| iOS App Store Connect API key | **REST API** — `update-app` body `app_store`: `app_store_connect_api_key` (the `.p8` contents, PEM), `app_store_connect_api_key_id`, `app_store_connect_api_key_issuer`. |
+| iOS In-App Purchase Key | **REST API** — `update-app` body `app_store`: `subscription_private_key`, `subscription_key_id`, `subscription_key_issuer`. |
+| iOS app-specific shared secret | **REST API** — `update-app` body `app_store.shared_secret` (32 chars). |
+
+So for iOS there is NO RC dashboard step — set the credential with a
+`POST` using the project secret key from `.env.local`. Verify with
+`GET .../apps/{id}` → `app_store.*_configured` boolean flags (the
+secret itself is never returned). The ASC keys still must be GENERATED
+in the App Store Connect website (Users and Access → Integrations) —
+Apple has no key-minting API and the `.p8` downloads once — but
+handing them to RevenueCat is a REST call, not a dashboard click.
+
 ### Apple ASC quirks — encoded as constants in `py/iap_discovery.py`
 
 - `APPLE_IAP_NAME_MAX = 30` (display name)

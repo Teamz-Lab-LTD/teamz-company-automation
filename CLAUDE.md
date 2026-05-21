@@ -441,6 +441,39 @@ bash team_mvp_kit/teamz-company-automation/sh/iap-smoke-test.sh
 Exit 0 = safe to push. Non-zero on any of the 5 gates = fix before
 merging.
 
+**Rule IAP7 — When a LIVE app's purchases fail, run `iap_doctor.py` FIRST.**
+`iap_preflight.py` is a gate BEFORE creating an IAP. `iap_doctor.py` is
+the diagnosis AFTER one breaks in production — a user reports "I bought
+it but still see ads", or the app log shows purchase errors. Do NOT
+hand-investigate; run the doctor from the host app root:
+
+```bash
+python3 team_mvp_kit/teamz-company-automation/py/iap_doctor.py
+# with a failing purchase token copied from the app log:
+python3 team_mvp_kit/teamz-company-automation/py/iap_doctor.py \
+    --purchase-token <token> --sku com.teamz.<app>.<bundle_slug>
+```
+
+It checks env, RC project reachability, the `remove_ads` entitlement +
+attached products, both RC apps, the Play service account against the
+live Google API, and — with a token — the RC↔Play credential link.
+
+**Always use the RC REST API with the secret key from `.env.local`.
+NEVER the RevenueCat MCP** — its key is bound to a different account
+(project `proj65089cc9`) and returns 403 for the TeamzLab umbrella
+project `proj8d8322e7`.
+
+**The #1 silent IAP killer (chopstick_landing_games, 2026-05-22):**
+RevenueCat returns `InvalidCredentialsError / Invalid Play Store
+credentials`, no entitlement ever grants, every Android purchase
+auto-voids unacknowledged within days (test purchases within minutes),
+and IAP revenue reads $0 — because the RC dashboard has **no Play
+Service Account credentials uploaded**. The RC REST API cannot see
+this; it is a dashboard-only file upload (the Android app → Service
+Account Credentials JSON ← `~/.config/teamzlab/play-console-service-account.json`).
+`iap_doctor.py` check 8 catches it from a purchase token whose
+`acknowledgementState` is stuck at 0.
+
 ### Apple ASC quirks — encoded as constants in `py/iap_discovery.py`
 
 - `APPLE_IAP_NAME_MAX = 30` (display name)

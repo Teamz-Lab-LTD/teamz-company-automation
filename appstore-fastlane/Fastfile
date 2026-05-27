@@ -52,9 +52,9 @@ platform :ios do
     auth
 
     create_app_online(
-      name: ENV["APP_NAME"],
+      app_name: ENV["APP_NAME"],
       language: ENV["APP_PRIMARY_LANGUAGE"] || "English",
-      bundle_identifier: ENV["APP_BUNDLE_ID"],
+      app_identifier: ENV["APP_BUNDLE_ID"],
       sku: ENV["APP_SKU"] || ENV["APP_BUNDLE_ID"],
       team_id: ENV["ASC_TEAM_ID"],
       company_name: ENV["COMPANY_NAME"] || "Teamz Lab LTD",

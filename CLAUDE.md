@@ -75,6 +75,9 @@ The orchestrator tracks progress in `store-release-progress.json`. It calls all 
 | **A/B experiment tracker** (icon, screenshots, subtitle) | `py/aso/aso-experiments.py add\|snapshot\|list\|report` |
 | **Download velocity** (Play + ASC, no new auth) | `py/aso/aso-velocity.py [--history]` |
 | **AI image edit** (Nano Banana, no MCP) | `py/aso/aso-gemini-edit.py --prompt "..." --image src.jpg --output out.jpg` |
+| **AI image edit via OpenRouter** (cheaper routing to Gemini 2.5 Flash Image, ~$0.04/image) | `py/aso/aso-openrouter-image-edit.py --prompt "..." --image src.png --output out.png` |
+| **Toss-style store screenshots** (Apple frame + Poppins headline, zero API cost) | `py/aso/aso-compose-screenshot.py --raw src.png --hero "FIND" --subtitle "LINE A" "LINE B" --output out.jpg` |
+| **Batch screenshots from project presets** (JSON-driven, zero API cost) | `py/aso/aso-generate-batch.py --presets automation_data/aso_screenshot_presets.json` |
 | **Play Console batch push** (listings + graphics, 39 locales) | `python3 py/aso/aso-play-batch-push.py [--commit]` |
 | **ASC screenshot direct push** (bypasses fastlane silent-fail) | `bundle exec ruby py/aso/asc-screenshots-push.rb` |
 | **Localize metadata template** (per-project translation scaffold) | `cp py/aso/aso-localize-metadata-template.py <project>/automation_data/localize_metadata.py` |
@@ -760,6 +763,25 @@ Mapping:
 Use `py/aso/pad_resize.py` or the skill's padding script to derive the 3 missing sizes from the 6.7" + 12.9" canonical sets (zero API cost).
 
 **Rule P4.5 — Derive Android screenshots from iOS, not regenerate.** Play accepts iPhone-framed screenshots (suboptimal but fine). Pad iOS outputs to 1080×1920 (phone) + 1200×1920 (tablet) via `pad_resize.py` — zero API cost vs $2-3 for native Pixel regen. Deploy to `android/app/src/main/play/listings/en-US/graphics/{phone,tablet-10-inch}-screenshots/`.
+
+**Rule P4.6 — Use `aso-compose-screenshot.py` + project presets JSON for the toss-style screenshot pipeline.** The full hybrid pipeline lives at `py/aso/aso-compose-screenshot.py` (composer) + `py/aso/aso-generate-batch.py` (batch driver). Per project, ship a single JSON file at `automation_data/aso_screenshot_presets.json` containing `device`, `bg`, `text_color`, `frame`, `output_dir`, and a list of `shots` (each with `name`, `raw`, `hero`, `subtitle`, `keywords`). Run:
+
+```bash
+python3 teamz-company-automation/py/aso/aso-generate-batch.py \
+  --presets automation_data/aso_screenshot_presets.json
+```
+
+Output lands in `<project>/screenshots/store-ready/NN-name.jpg`. Zero API cost. Reference implementation: `debugger/automation_data/aso_screenshot_presets.json`.
+
+**Rule P4.7 — Bugs that cost hours, baked into the composer (do not re-derive these):**
+1. *Aspect mismatch leaks BG.* Android source 1344×2992 (ratio 0.449) vs iPhone 16 Pro Max screen area (~0.460) — 1-2px gap visible as colored wedge at corners. Fix: **center-crop source to iPhone screen aspect before resize**, never pad.
+2. *Frame PNG corners leak BG through anti-alias.* The frame alpha is partly transparent at the rounded outer corner pixels. Fix: dilate frame-alpha silhouette by ~14px and fill BLACK underneath the frame.
+3. *Hero text overflows canvas with long words.* Fix: auto-fit by shrinking font size by 10 until text ≤88% canvas width. Same logic per subtitle line (shrink by 5).
+4. *Android status bar + nav bar look wrong inside iPhone frame.* Fix: crop source top 3.2% + bottom 4.8% before further processing (only when input dims are Pixel 1344×2992).
+5. *Skip AI "polish" on the composed image.* Sending the composed PNG through Nano Banana / Gemini 2.5 Flash Image re-renders the phone frame at slightly different proportions and reintroduces corner leaks. The composer is the final step.
+6. *Spacing.* `HERO_TO_SUB_GAP ≥ 110`, `SUB_LINE_GAP ≥ 55`. Tighter than that looks cramped.
+
+**Rule P4.8 — Feature graphic (Play Store, 1024×500) goes through OpenRouter image-edit, not the composer.** Compose is portrait-only. For the 1024×500 banner, use `py/aso/aso-openrouter-image-edit.py` with `--model google/gemini-2.5-flash-image` and a prompt that hard-locks: solid neon BG, BLACK headline + product mockup or icon centered, no emoji/sparkles, no Android/Samsung/Pixel chassis (Apple iPhone 16 Pro Max only if a device is shown).
 
 ### Phase 5 — Pushing to stores
 

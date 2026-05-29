@@ -124,6 +124,11 @@ def main() -> int:
         page_schemas = []
 
         for raw_block in blocks:
+            # Skip blocks that aren't JSON (tool pages that print script tags
+            # as strings inside JS — e.g. /seo/schema-markup-generator/).
+            stripped = raw_block.strip()
+            if not stripped or stripped[0] not in "{[":
+                continue
             try:
                 obj = json.loads(raw_block)
             except json.JSONDecodeError as e:

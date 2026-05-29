@@ -1,14 +1,17 @@
-NIGHTLY BUILD REPORT — 2026-04-15 00:54
+NIGHTLY BUILD REPORT — 2026-05-28 21:52
 Status: ALERT
-Repo dirty at start: no
-New tools built: 1
-Total commits: 4
+Repo dirty at start: yes
+New tools built: 0
+Total commits: 0
 ---
 SCRIPT HEALTH:
-  Alerts (4):
-  - Static schema rebuild failed (exit 1)
-  - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Rank tracker record:   ERROR: No Search Console token. Run: python3 build-search-console-auth.py
+  Alerts (3):
+  - Search index rebuild:   ERROR: llms.txt exceeds llmstxt.org 10KB spec target by 105B. Trim Popular Tools or Categories.
+  - Freshness validation:   - Search index rebuild:   ERROR: llms.txt exceeds llmstxt.org 10KB spec target by 105B. Trim Popular Tools or Categories.
   - Internal link health failed (exit 1)
-  - Clarity pull:   ERROR: API request failed
+  Skipped phases (3):
+  - git pull (repo dirty at start or github.com unavailable)
+  - Claude build (repo dirty at start)
+  - auto-fix commit and push (protecting existing local work)
 ---
 If script health is not OK, review logs/nightly-build.log before the next automated run.

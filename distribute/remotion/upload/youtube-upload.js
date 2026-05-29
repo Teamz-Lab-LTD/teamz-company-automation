@@ -728,9 +728,10 @@ async function addToPlaylist(playlistId, videoId) {
     process.exit(0);
   }
 
-  const scheduledTime = getNextOptimalTime(lang);
+  const publishNow = hasFlag("--now");
+  const scheduledTime = publishNow ? null : getNextOptimalTime(lang);
   console.log(`Uploading: ${filePath}`);
-  console.log(`Scheduled: ${scheduledTime.toISOString()}`);
+  console.log(publishNow ? "Publishing: NOW (public, immediate)" : `Scheduled: ${scheduledTime.toISOString()}`);
 
   try {
     const result = await uploadVideo({ filePath, title, description, tags, categoryId: 28, language: lang, scheduledTime });

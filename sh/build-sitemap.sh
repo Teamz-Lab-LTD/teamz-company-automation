@@ -61,6 +61,13 @@ find "$BASE" -path "*/*/index.html" \
   if [ "$slug" = "index.html" ] || [ -z "$slug" ]; then
     continue
   fi
+  # Skip noindex pages and redirect stubs
+  if grep -qE '<meta[[:space:]]+name="robots"[[:space:]]+content="[^"]*noindex' "$BASE/$slug/index.html" 2>/dev/null; then
+    continue
+  fi
+  if grep -q 'http-equiv="refresh"' "$BASE/$slug/index.html" 2>/dev/null; then
+    continue
+  fi
   mod=$(get_lastmod "$slug/index.html")
   echo "  <url>"
   echo "    <loc>https://tool.teamzlab.com/$slug/</loc>"

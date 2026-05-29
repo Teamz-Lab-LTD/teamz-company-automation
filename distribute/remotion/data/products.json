@@ -1092,6 +1092,112 @@
       "instagram": {
         "caption": "Why are you still paying for take home pay calculator?\n\nPaycheck & Freelance Calc \u2014 Paycheck & Freelance Calc: real take-home pay, freelance day rate, invoice due date, mortgage, loan,\n\nFree. No signup. 100% private.\n\nTry it free \u2014 link in bio \ud83d\udd17\n\nLink in bio: apps.teamzlab.com/toss\n\n#lifehack #productivity #techtok #freetools #reels #explorepage #smallbusiness #freetools #takehomepaycalculator"
       }
+    },
+    {
+      "id": "diagnostic_website-up-checker",
+      "type": "tool",
+      "category": "diagnostic",
+      "title": "Is My Website Down Checker",
+      "description": "Instant website up or down check from your browser. Free alternative to IsItDownRightNow and UptimeRobot. Response time, DNS, server IP in 5 seconds. No signup.",
+      "url": "tool.teamzlab.com/diagnostic/website-up-checker/",
+      "hook": "Instead of IsItDownRightNow I built this free browser-side checker",
+      "template": "InstantFix",
+      "themeIndex": 4,
+      "audioFile": "audio/beat3.mp3",
+      "ctaText": "Check any site free",
+      "ctaBadge": "LINK IN BIO",
+      "brandName": "tool.teamzlab.com",
+      "youtube": {
+        "title": "Is My Website Down? Free Instant Checker (No Signup)",
+        "description": "Is My Website Down Right Now? \u2014 A free browser-side checker that tells you in 5 seconds whether any site is up, down, or down just for you.\n\nTry it FREE: https://tool.teamzlab.com/diagnostic/website-up-checker/\n\nFour probes in parallel: Cloudflare DNS, HTTP reachability, favicon image, Resource Timing. Everything runs in your browser \u2014 no account, no email, no cloud polling, no data sharing.\n\nFree alternative to:\n\u2022 IsItDownRightNow\n\u2022 DownForEveryoneOrJustMe\n\u2022 UptimeRobot\n\u2022 DownDetector\n\nBonus: status-badge generator gives you a live img.shields.io pill you can paste into any GitHub README.\n\nPre-filled quick-check chips for Facebook, Instagram, X (Twitter), ChatGPT, GitHub, Gmail, YouTube, WhatsApp \u2014 click instead of typing during the next outage spike.\n\n---\nWebsite Up Checker is one of 2000+ free browser tools at tool.teamzlab.com\n\n#uptime #websitedown #freetools #uptimerobot #isitdown #privacy #nosignup #shorts",
+        "tags": [
+          "is my website down",
+          "is the website down",
+          "website down checker",
+          "isitdownrightnow alternative",
+          "uptimerobot alternative",
+          "free website down checker",
+          "website uptime checker",
+          "website status check",
+          "downforeveryoneorjustme",
+          "website monitoring free",
+          "is my site down",
+          "how to check if a website is down",
+          "free tools",
+          "browser tools",
+          "no signup",
+          "privacy"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "en",
+        "hashtags": [
+          "#uptime",
+          "#websitedown",
+          "#freetools",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "Is my website down or just me? Free browser checker, 5 seconds, no signup \u2014 pure IsItDownRightNow alt.\n\nTry it: tool.teamzlab.com/diagnostic/website-up-checker/\n\n#uptime #websitedown #freetools #isitdown #devtools"
+      },
+      "instagram": {
+        "caption": "Is my website down right now? Free browser-side checker. 5 seconds, no signup, no tracking.\n\nResponse time + DNS + server IP. Pre-filled chips for Facebook, Instagram, ChatGPT, GitHub so you can one-tap during outages. Status-badge generator for GitHub READMEs.\n\nFree alternative to IsItDownRightNow, UptimeRobot, DownDetector.\n\nLink in bio: tool.teamzlab.com/diagnostic/website-up-checker/\n\n#uptime #websitedown #freetools #uptimerobot #privacy #devtools #nosignup #browsertools"
+      }
+    },
+    {
+      "id": "diagnostic_website-monitor-dashboard",
+      "type": "tool",
+      "category": "diagnostic",
+      "title": "Free Website Uptime Monitor Dashboard",
+      "description": "Free UptimeRobot and Pingdom alternative. Track unlimited websites in your browser with live status, uptime percentage, response-time charts. Zero signup.",
+      "url": "tool.teamzlab.com/diagnostic/website-monitor-dashboard/",
+      "hook": "I built a free UptimeRobot alternative that runs entirely in your browser",
+      "template": "BeforeAfter",
+      "themeIndex": 5,
+      "audioFile": "audio/beat7.mp3",
+      "ctaText": "Track unlimited sites free",
+      "ctaBadge": "LINK IN BIO",
+      "brandName": "tool.teamzlab.com",
+      "youtube": {
+        "title": "Free UptimeRobot Alternative \u2014 Unlimited Monitors, No Signup",
+        "description": "Free Website Uptime Monitor Dashboard \u2014 the fastest UptimeRobot alternative for a quick deploy or a quick NOC-style view. Runs entirely in your browser.\n\nTry it FREE: https://tool.teamzlab.com/diagnostic/website-monitor-dashboard/\n\nAdd unlimited sites. Every 60 seconds the dashboard runs three probes per monitor (Cloudflare DNS, no-cors HTTP, favicon image). Each card shows live UP/DOWN, uptime percentage over the last 30 cycles, average response time, and an SVG sparkline of the trend.\n\nWhy browser-side:\n\u2022 Checks from your network (not a datacenter) \u2014 the honest answer to \"is it up from my ISP\"\n\u2022 No email, no account, no credit card, no paywall\n\u2022 Unlimited monitors (UptimeRobot Free caps at 50, Better Uptime Free at 10)\n\u2022 Close the tab, polling stops \u2014 the tradeoff is tab-open = monitoring, tab-closed = nothing\n\nComplements a 24/7 service \u2014 not a replacement when you need push / email / SMS alerts.\n\n---\nOne of 2000+ free browser tools at tool.teamzlab.com\n\n#uptimerobot #pingdom #freetools #uptime #devops #sre #browsertools #shorts",
+        "tags": [
+          "uptimerobot alternative",
+          "free uptime monitor",
+          "pingdom alternative",
+          "better uptime alternative",
+          "free website monitor",
+          "website uptime monitor",
+          "browser uptime monitor",
+          "uptime dashboard free",
+          "website monitoring dashboard",
+          "free server uptime monitor",
+          "self hosted uptime monitor",
+          "statuscake alternative",
+          "free tools",
+          "devops tools",
+          "no signup",
+          "privacy"
+        ],
+        "categoryId": 28,
+        "privacy": "public",
+        "madeForKids": false,
+        "defaultLanguage": "en",
+        "hashtags": [
+          "#uptimerobot",
+          "#devops",
+          "#freetools",
+          "#shorts"
+        ]
+      },
+      "tiktok": {
+        "caption": "I built a free UptimeRobot alternative that runs in your browser. Unlimited monitors. Zero signup. Live uptime + response time charts.\n\nTry it: tool.teamzlab.com/diagnostic/website-monitor-dashboard/\n\n#uptimerobot #pingdom #freetools #devops #sre #coding"
+      },
+      "instagram": {
+        "caption": "Free UptimeRobot alternative that runs in your browser \u2014 unlimited monitors, no signup.\n\n\u2022 Add any number of sites\n\u2022 Live status grid with UP / DOWN / uptime %\n\u2022 Response-time sparkline per monitor\n\u2022 Pause / check-all / remove\n\u2022 All state in localStorage \u2014 nothing touches our servers\n\nFor deploy-time checks, vendor incidents, or NOC-style watch mode. Complements (does not replace) a 24/7 alerting service.\n\nLink in bio: tool.teamzlab.com/diagnostic/website-monitor-dashboard/\n\n#uptimerobot #pingdom #freetools #uptime #devops #sre #browsertools #privacy #nosignup"
+      }
     }
   ]
 }

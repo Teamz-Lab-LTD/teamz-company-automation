@@ -589,9 +589,12 @@ if (FROM_PLANS) {
 // RENDER
 // ═════════════════════════════════════════════════════════════════════════════
 
-// Stockpile warning — don't render if too many unposted
+// Stockpile warning — count only YouTube-unposted reels.
+// IG isn't auto-posted (manual), TikTok has weekly quota — counting them
+// here causes a permanent BLOCKED state once IG backlog grows past 30.
+// YouTube is the only fully-automated platform, so it's the right signal.
 const unpostedCount = history.reels.filter(
-  (r) => r.platforms && (!r.platforms.youtube.posted || !r.platforms.instagram.posted || !r.platforms.tiktok.posted) && r.video && fs.existsSync(r.video)
+  (r) => r.platforms && !r.platforms.youtube.posted && r.video && fs.existsSync(r.video)
 ).length;
 
 if (unpostedCount >= 15 && !DRY_RUN) {

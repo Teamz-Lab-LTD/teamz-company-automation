@@ -1,0 +1,634 @@
+{
+  "last_updated": "2026-04-30",
+  "sources": [
+    "AdMob official benchmarks (Google publisher help, 2024)",
+    "AppLovin Mobile Ad Benchmarks Report 2024",
+    "ironSource State of Mobile Gaming 2024",
+    "AppsFlyer Performance Index 2024",
+    "GameAnalytics Mobile Game Industry Report 2024",
+    "Sensor Tower / data.ai free preview tier reports 2024",
+    "Reddit r/AdMob + r/iOSProgramming + r/androiddev community averages",
+    "Statista Mobile Ad CPM by Country 2024"
+  ],
+  "units": "USD eCPM (per 1000 impressions). iap_arpdau is per Daily Active User per day.",
+  "caveats": [
+    "eCPM is what publisher actually receives per 1000 impressions, AFTER mediation losses.",
+    "Real eCPM varies \u00b150% from these benchmarks depending on app age, fill rate, mediation stack.",
+    "Rewarded video has highest eCPM but limited slots/user \u2014 total revenue depends on placements \u00d7 engagement.",
+    "IAP ARPDAU figures are MEDIAN \u2014 top quartile apps earn 5-10x median.",
+    "Tier-4 countries (BD/IN/PK) are revenue-banned per Teamz strategy \u2014 listed for context only.",
+    "Crypto/web3 ads are restricted in EU/UK/many APAC markets \u2014 verify eligibility per country before assuming.",
+    "Kids/Education apps are COPPA-limited (no behavioral targeting) \u2192 eCPM ~50% of equivalent adult-targeted app.",
+    "New AdMob accounts (<30 days, <10K impressions) earn 30-60% below mature account benchmarks."
+  ],
+  "benchmarks": {
+    "finance-apps": {
+      "banner": {
+        "low": 1.5,
+        "high": 5.0,
+        "source": "AdMob/AppsFlyer 2024"
+      },
+      "interstitial": {
+        "low": 8.0,
+        "high": 25.0,
+        "source": "AdMob 2024"
+      },
+      "rewarded": {
+        "low": 12.0,
+        "high": 40.0,
+        "source": "AdMob 2024 (highest non-gaming)"
+      },
+      "native": {
+        "low": 3.0,
+        "high": 12.0,
+        "source": "AppsFlyer 2024"
+      },
+      "app-open": {
+        "low": 2.0,
+        "high": 8.0,
+        "source": "AdMob 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.05,
+        "high": 0.4,
+        "source": "GameAnalytics non-gaming median"
+      }
+    },
+    "shopping-apps": {
+      "banner": {
+        "low": 1.0,
+        "high": 3.5,
+        "source": "AdMob 2024"
+      },
+      "interstitial": {
+        "low": 6.0,
+        "high": 18.0,
+        "source": "AdMob 2024"
+      },
+      "rewarded": {
+        "low": 10.0,
+        "high": 25.0,
+        "source": "AppsFlyer 2024"
+      },
+      "native": {
+        "low": 2.5,
+        "high": 9.0,
+        "source": "AppsFlyer 2024"
+      },
+      "app-open": {
+        "low": 1.5,
+        "high": 6.0,
+        "source": "AdMob 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.02,
+        "high": 0.15,
+        "source": "GameAnalytics 2024"
+      }
+    },
+    "web3-crypto-apps": {
+      "banner": {
+        "low": 0.8,
+        "high": 3.0,
+        "source": "Reddit/AdMob 2024 (volatile)"
+      },
+      "interstitial": {
+        "low": 4.0,
+        "high": 15.0,
+        "source": "Reddit r/AdMob"
+      },
+      "rewarded": {
+        "low": 8.0,
+        "high": 25.0,
+        "source": "Reddit r/AdMob"
+      },
+      "native": {
+        "low": 2.0,
+        "high": 8.0,
+        "source": "Reddit"
+      },
+      "app-open": {
+        "low": 1.0,
+        "high": 5.0,
+        "source": "Reddit"
+      },
+      "iap_arpdau": {
+        "low": 0.1,
+        "high": 1.5,
+        "source": "High-LTV but small audience"
+      },
+      "notes": "Many regions restrict crypto ads. Eligibility check required per country."
+    },
+    "photo-video-apps": {
+      "banner": {
+        "low": 0.8,
+        "high": 2.5,
+        "source": "AppLovin 2024"
+      },
+      "interstitial": {
+        "low": 5.0,
+        "high": 12.0,
+        "source": "AppLovin 2024"
+      },
+      "rewarded": {
+        "low": 8.0,
+        "high": 22.0,
+        "source": "AppsFlyer 2024 (filter unlocks)"
+      },
+      "native": {
+        "low": 2.0,
+        "high": 7.0,
+        "source": "AppLovin 2024"
+      },
+      "app-open": {
+        "low": 1.0,
+        "high": 4.0,
+        "source": "AppLovin 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.03,
+        "high": 0.25,
+        "source": "GameAnalytics 2024"
+      }
+    },
+    "social-dating-apps": {
+      "banner": {
+        "low": 0.8,
+        "high": 3.0,
+        "source": "AdMob 2024"
+      },
+      "interstitial": {
+        "low": 5.0,
+        "high": 15.0,
+        "source": "AdMob 2024"
+      },
+      "rewarded": {
+        "low": 10.0,
+        "high": 30.0,
+        "source": "Sensor Tower preview 2024"
+      },
+      "native": {
+        "low": 2.0,
+        "high": 8.0,
+        "source": "AdMob 2024"
+      },
+      "app-open": {
+        "low": 1.5,
+        "high": 5.0,
+        "source": "AdMob 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.1,
+        "high": 1.2,
+        "source": "Dating sub LTV high"
+      }
+    },
+    "health-fitness-apps": {
+      "banner": {
+        "low": 0.7,
+        "high": 2.2,
+        "source": "AppLovin 2024"
+      },
+      "interstitial": {
+        "low": 4.0,
+        "high": 10.0,
+        "source": "AppLovin 2024"
+      },
+      "rewarded": {
+        "low": 7.0,
+        "high": 18.0,
+        "source": "AppsFlyer 2024"
+      },
+      "native": {
+        "low": 1.8,
+        "high": 6.0,
+        "source": "AppLovin 2024"
+      },
+      "app-open": {
+        "low": 1.0,
+        "high": 3.5,
+        "source": "AppLovin 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.05,
+        "high": 0.5,
+        "source": "GameAnalytics 2024"
+      }
+    },
+    "productivity-apps": {
+      "banner": {
+        "low": 0.5,
+        "high": 2.0,
+        "source": "AdMob 2024"
+      },
+      "interstitial": {
+        "low": 3.0,
+        "high": 10.0,
+        "source": "AdMob 2024"
+      },
+      "rewarded": {
+        "low": 5.0,
+        "high": 18.0,
+        "source": "AdMob 2024"
+      },
+      "native": {
+        "low": 1.5,
+        "high": 5.0,
+        "source": "AdMob 2024"
+      },
+      "app-open": {
+        "low": 0.8,
+        "high": 3.0,
+        "source": "AdMob 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.02,
+        "high": 0.3,
+        "source": "GameAnalytics 2024"
+      }
+    },
+    "utility-apps": {
+      "banner": {
+        "low": 0.5,
+        "high": 2.0,
+        "source": "AdMob 2024"
+      },
+      "interstitial": {
+        "low": 3.0,
+        "high": 10.0,
+        "source": "AdMob 2024"
+      },
+      "rewarded": {
+        "low": 5.0,
+        "high": 18.0,
+        "source": "AppsFlyer 2024"
+      },
+      "native": {
+        "low": 1.5,
+        "high": 5.0,
+        "source": "AdMob 2024"
+      },
+      "app-open": {
+        "low": 0.8,
+        "high": 3.0,
+        "source": "AdMob 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.01,
+        "high": 0.15,
+        "source": "GameAnalytics 2024"
+      }
+    },
+    "rpg-strategy-games": {
+      "banner": {
+        "low": 0.5,
+        "high": 2.0,
+        "source": "ironSource 2024"
+      },
+      "interstitial": {
+        "low": 5.0,
+        "high": 12.0,
+        "source": "ironSource 2024"
+      },
+      "rewarded": {
+        "low": 10.0,
+        "high": 30.0,
+        "source": "ironSource 2024 (top game eCPM)"
+      },
+      "native": {
+        "low": 1.5,
+        "high": 5.0,
+        "source": "ironSource 2024"
+      },
+      "app-open": {
+        "low": 1.5,
+        "high": 5.0,
+        "source": "ironSource 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.2,
+        "high": 3.0,
+        "source": "GameAnalytics 2024 RPG/strategy median"
+      }
+    },
+    "casual-games": {
+      "banner": {
+        "low": 0.4,
+        "high": 1.5,
+        "source": "AppLovin 2024"
+      },
+      "interstitial": {
+        "low": 4.0,
+        "high": 8.0,
+        "source": "AppLovin 2024"
+      },
+      "rewarded": {
+        "low": 8.0,
+        "high": 20.0,
+        "source": "AppLovin 2024"
+      },
+      "native": {
+        "low": 1.0,
+        "high": 4.0,
+        "source": "AppLovin 2024"
+      },
+      "app-open": {
+        "low": 1.0,
+        "high": 3.5,
+        "source": "AppLovin 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.05,
+        "high": 0.5,
+        "source": "GameAnalytics 2024 casual median"
+      }
+    },
+    "word-trivia-games": {
+      "banner": {
+        "low": 0.4,
+        "high": 1.5,
+        "source": "ironSource 2024"
+      },
+      "interstitial": {
+        "low": 4.0,
+        "high": 10.0,
+        "source": "ironSource 2024"
+      },
+      "rewarded": {
+        "low": 8.0,
+        "high": 18.0,
+        "source": "ironSource 2024"
+      },
+      "native": {
+        "low": 1.0,
+        "high": 4.0,
+        "source": "ironSource 2024"
+      },
+      "app-open": {
+        "low": 1.0,
+        "high": 3.5,
+        "source": "ironSource 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.1,
+        "high": 1.0,
+        "source": "GameAnalytics 2024"
+      }
+    },
+    "simulation-games": {
+      "banner": {
+        "low": 0.4,
+        "high": 1.8,
+        "source": "AppLovin 2024"
+      },
+      "interstitial": {
+        "low": 4.0,
+        "high": 9.0,
+        "source": "AppLovin 2024"
+      },
+      "rewarded": {
+        "low": 8.0,
+        "high": 22.0,
+        "source": "AppLovin 2024"
+      },
+      "native": {
+        "low": 1.0,
+        "high": 4.0,
+        "source": "AppLovin 2024"
+      },
+      "app-open": {
+        "low": 1.0,
+        "high": 3.5,
+        "source": "AppLovin 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.1,
+        "high": 1.5,
+        "source": "GameAnalytics 2024 sim/idle"
+      }
+    },
+    "lifestyle-apps": {
+      "banner": {
+        "low": 0.5,
+        "high": 1.8,
+        "source": "AppLovin 2024"
+      },
+      "interstitial": {
+        "low": 3.0,
+        "high": 8.0,
+        "source": "AppLovin 2024"
+      },
+      "rewarded": {
+        "low": 5.0,
+        "high": 15.0,
+        "source": "AppLovin 2024"
+      },
+      "native": {
+        "low": 1.2,
+        "high": 4.0,
+        "source": "AppLovin 2024"
+      },
+      "app-open": {
+        "low": 0.8,
+        "high": 3.0,
+        "source": "AppLovin 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.02,
+        "high": 0.4,
+        "source": "GameAnalytics 2024"
+      }
+    },
+    "news-magazines": {
+      "banner": {
+        "low": 0.4,
+        "high": 1.5,
+        "source": "AdMob 2024"
+      },
+      "interstitial": {
+        "low": 3.0,
+        "high": 8.0,
+        "source": "AdMob 2024"
+      },
+      "rewarded": {
+        "low": 5.0,
+        "high": 15.0,
+        "source": "AdMob 2024"
+      },
+      "native": {
+        "low": 1.5,
+        "high": 5.0,
+        "source": "AdMob 2024 (native fits content)"
+      },
+      "app-open": {
+        "low": 0.6,
+        "high": 2.5,
+        "source": "AdMob 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.01,
+        "high": 0.2,
+        "source": "Subscription model dominates"
+      }
+    },
+    "kids-education-apps": {
+      "banner": {
+        "low": 0.4,
+        "high": 1.5,
+        "source": "AdMob 2024 (COPPA-limited)"
+      },
+      "interstitial": {
+        "low": 2.0,
+        "high": 6.0,
+        "source": "AdMob 2024"
+      },
+      "rewarded": {
+        "low": 5.0,
+        "high": 12.0,
+        "source": "AdMob 2024"
+      },
+      "native": {
+        "low": 0.8,
+        "high": 3.0,
+        "source": "AdMob 2024"
+      },
+      "app-open": {
+        "low": 0.5,
+        "high": 2.0,
+        "source": "AdMob 2024"
+      },
+      "iap_arpdau": {
+        "low": 0.05,
+        "high": 0.8,
+        "source": "GameAnalytics 2024 (subscription parents)"
+      },
+      "notes": "COPPA/Apple Kids Category bans behavioral targeting \u2014 eCPM ~50% of equivalent adult app."
+    }
+  },
+  "tier_multipliers": {
+    "US": 1.0,
+    "CH": 1.1,
+    "NO": 1.0,
+    "AU": 1.0,
+    "NZ": 0.9,
+    "CA": 0.95,
+    "SG": 0.8,
+    "UK": 0.85,
+    "GB": 0.85,
+    "DK": 0.9,
+    "SE": 0.85,
+    "LU": 0.85,
+    "IL": 0.7,
+    "JP": 0.7,
+    "KR": 0.65,
+    "HK": 0.6,
+    "IE": 0.7,
+    "DE": 0.7,
+    "FR": 0.6,
+    "NL": 0.7,
+    "FI": 0.7,
+    "AT": 0.7,
+    "BE": 0.6,
+    "CH-DE": 1.1,
+    "ES": 0.4,
+    "IT": 0.4,
+    "PT": 0.35,
+    "PL": 0.25,
+    "CZ": 0.3,
+    "GR": 0.25,
+    "MX": 0.2,
+    "BR": 0.18,
+    "AR": 0.12,
+    "CL": 0.18,
+    "CO": 0.15,
+    "TR": 0.15,
+    "RU": 0.15,
+    "MY": 0.2,
+    "TH": 0.15,
+    "PH": 0.1,
+    "ID": 0.08,
+    "VN": 0.08,
+    "AE": 0.5,
+    "SA": 0.4,
+    "QA": 0.5,
+    "KW": 0.45,
+    "IN": 0.08,
+    "BD": 0.05,
+    "PK": 0.06,
+    "NG": 0.05,
+    "EG": 0.07,
+    "KE": 0.06,
+    "LK": 0.06,
+    "MA": 0.1,
+    "DZ": 0.08,
+    "OTHER": 0.3
+  },
+  "tier_labels": {
+    "S+": [
+      "US",
+      "CH",
+      "NO",
+      "AU",
+      "NZ",
+      "CA",
+      "SG"
+    ],
+    "S": [
+      "UK",
+      "GB",
+      "DK",
+      "SE",
+      "LU",
+      "IL",
+      "JP",
+      "KR",
+      "HK",
+      "IE"
+    ],
+    "1": [
+      "DE",
+      "FR",
+      "NL",
+      "FI",
+      "AT",
+      "BE"
+    ],
+    "2": [
+      "ES",
+      "IT",
+      "PT",
+      "PL",
+      "CZ",
+      "GR",
+      "MX",
+      "BR",
+      "AR",
+      "CL",
+      "CO"
+    ],
+    "3": [
+      "TR",
+      "RU",
+      "MY",
+      "TH",
+      "PH",
+      "ID",
+      "VN",
+      "AE",
+      "SA",
+      "QA",
+      "KW"
+    ],
+    "4": [
+      "IN",
+      "BD",
+      "PK",
+      "NG",
+      "EG",
+      "KE",
+      "LK",
+      "MA",
+      "DZ"
+    ]
+  }
+}

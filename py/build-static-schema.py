@@ -69,9 +69,16 @@ def extract_faqs(content):
     if "injectFAQSchema" not in content:
         return None
 
-    # Try all variable name patterns
+    # Try all variable name patterns (var + const + let, lower + upper)
     start = -1
-    for varname in ("var faqs = [", "var faqs=[", "var FAQS = [", "var FAQS=["):
+    for varname in (
+        "var faqs = [", "var faqs=[",
+        "var FAQS = [", "var FAQS=[",
+        "const faqs = [", "const faqs=[",
+        "const FAQS = [", "const FAQS=[",
+        "let faqs = [", "let faqs=[",
+        "let FAQS = [", "let FAQS=[",
+    ):
         start = content.find(varname)
         if start != -1:
             break
@@ -205,14 +212,59 @@ def extract_webapp(content, filepath=""):
 
 
 twitter_fixed = 0
+ahrefs_fixed = 0
+
+AHREFS_SNIPPET = '  <script src="https://analytics.ahrefs.com/analytics.js" data-key="ZQ0gF0rxGwTEy//NGtIzxQ" async></script>\n'
+
+def fix_ahrefs_analytics(content):
+    """Ensure every page has the Ahrefs Web Analytics script before </head>."""
+    global ahrefs_fixed
+    if 'analytics.ahrefs.com/analytics.js' in content:
+        return content
+    if '</head>' not in content:
+        return content
+    ahrefs_fixed += 1
+    return content.replace('</head>', AHREFS_SNIPPET + '</head>', 1)
+
 
 def fix_twitter_tags(content):
-    """Auto-inject missing twitter:title and twitter:description from OG tags."""
+    """Auto-inject missing twitter:card/title/description from OG tags."""
     global twitter_fixed
     changed = False
 
+    # If twitter:card missing entirely, inject a full block after og:description
+    # (or after og:title if og:description missing, else before </head>).
     if 'twitter:card' not in content:
-        return content  # No twitter card at all — skip (likely not a tool page)
+        og_title = re.search(r'property="og:title"\s+content="([^"]*)"', content)
+        og_desc = re.search(r'property="og:description"\s+content="([^"]*)"', content)
+        og_image = re.search(r'property="og:image"\s+content="([^"]*)"', content)
+        if not og_title:
+            return content  # No OG tags — probably not a real tool page, skip
+
+        lines = ['  <meta name="twitter:card" content="summary">']
+        lines.append(f'  <meta name="twitter:title" content="{og_title.group(1)}">')
+        if og_desc:
+            lines.append(f'  <meta name="twitter:description" content="{og_desc.group(1)[:200]}">')
+        if og_image:
+            lines.append(f'  <meta name="twitter:image" content="{og_image.group(1)}">')
+        block = "\n".join(lines) + "\n"
+
+        # Insert after og:image if present, else after og:description, else og:title, else before </head>
+        anchor_match = None
+        for pat in (r'<meta property="og:image"[^>]*>', r'<meta property="og:description"[^>]*>', r'<meta property="og:title"[^>]*>'):
+            m = re.search(pat, content)
+            if m:
+                anchor_match = m
+                break
+        if anchor_match:
+            i = anchor_match.end()
+            content = content[:i] + "\n" + block.rstrip() + content[i:]
+        elif '</head>' in content:
+            content = content.replace('</head>', block + '</head>', 1)
+        else:
+            return content
+        twitter_fixed += 1
+        return content
 
     # Fix missing twitter:title
     if 'twitter:title' not in content:
@@ -257,6 +309,7 @@ def process_file(filepath):
 
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
+        original = content
 
     # Skip redirect pages
     if 'http-equiv="refresh"' in content:
@@ -264,6 +317,7 @@ def process_file(filepath):
 
     # Auto-fix missing twitter tags
     content = fix_twitter_tags(content)
+    content = fix_ahrefs_analytics(content)
 
     # Extract all schemas from JS calls
     schema_blocks = []
@@ -281,7 +335,11 @@ def process_file(filepath):
         schema_blocks.append(json.dumps(webapp, ensure_ascii=False))
 
     if not schema_blocks:
-        # No JS schema calls found — check if static schemas already exist
+        # No JS schema calls found — but twitter fix may have mutated content.
+        # Persist twitter fix even when no schemas were extracted.
+        if content != original:
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(content)
         if MARKER in content:
             marker_match = re.search(rf"{re.escape(MARKER)}(.*?){re.escape(MARKER)}", content, re.DOTALL)
             if marker_match and 'application/ld+json' in marker_match.group(1):
@@ -308,6 +366,17 @@ def process_file(filepath):
         content = re.sub(r'\s*TeamzTools\.injectBreadcrumbSchema\([^)]*\);?', '', content)
     if webapp:
         content = re.sub(r'\n?\s*TeamzTools\.injectWebAppSchema\([^;]*;', '', content)
+
+    # After stripping calls, also strip any dangling `if (TeamzTools.injectXxx)`
+    # guard whose body was just removed. Without this, the next statement gets
+    # silently absorbed as the body, which at best is a semantic bug and at worst
+    # is a JS syntax error when followed by `}`.
+    content = re.sub(
+        r'^[ \t]*if\s*\(\s*TeamzTools\.(?:injectBreadcrumbSchema|injectFAQSchema|injectWebAppSchema)\s*\)\s*;?\s*$\n',
+        '',
+        content,
+        flags=re.MULTILINE,
+    )
 
     # Build the injection block
     lines = [MARKER]

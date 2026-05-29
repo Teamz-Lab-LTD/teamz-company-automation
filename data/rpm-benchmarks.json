@@ -1,0 +1,567 @@
+{
+  "last_updated": "2026-04-13",
+  "sources": [
+    "Ezoic Big Data Analytics 2025",
+    "Mediavine 2025 EPMV report",
+    "NicheSiteProject case studies 2024",
+    "Reddit r/Adsense + r/juststart community averages",
+    "AdSense Help Center CPC ranges"
+  ],
+  "units": "USD CPM (per 1000 impressions). Exception: b2b-leadgen is per-lead.",
+  "caveats": [
+    "Numbers are public benchmarks. Your actual RPM depends on account age, CWV, traffic quality, and content relevance.",
+    "Tier-S countries (CH/NO/AU/DK/SE/NZ/IE/SG) get +30-80% over US in same niche.",
+    "Emerging markets (BD/IN/PK/NG/PH/ID) RPM is 2-10% of US for the same niche.",
+    "New AdSense accounts (<60 days) earn 30-80% below mature account RPM."
+  ],
+  "benchmarks": {
+    "finance": [
+      {
+        "country": "US",
+        "low": 18,
+        "high": 45,
+        "source": "Ezoic 2025 + Mediavine"
+      },
+      {
+        "country": "UK",
+        "low": 12,
+        "high": 30,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "CA",
+        "low": 14,
+        "high": 32,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "AU",
+        "low": 16,
+        "high": 35,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "SG",
+        "low": 12,
+        "high": 28,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "JP",
+        "low": 6,
+        "high": 14,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "CH",
+        "low": 25,
+        "high": 60,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "NO",
+        "low": 22,
+        "high": 50,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "tax": [
+      {
+        "country": "US",
+        "low": 20,
+        "high": 50,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 15,
+        "high": 35,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "CA",
+        "low": 16,
+        "high": 38,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "AU",
+        "low": 18,
+        "high": 40,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "SG",
+        "low": 14,
+        "high": 32,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "JP",
+        "low": 5,
+        "high": 12,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "DE",
+        "low": 14,
+        "high": 30,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "insurance": [
+      {
+        "country": "US",
+        "low": 25,
+        "high": 60,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "UK",
+        "low": 18,
+        "high": 40,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "CA",
+        "low": 20,
+        "high": 45,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "AU",
+        "low": 22,
+        "high": 48,
+        "source": "Mediavine 2025"
+      }
+    ],
+    "mortgage": [
+      {
+        "country": "US",
+        "low": 30,
+        "high": 80,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "UK",
+        "low": 22,
+        "high": 55,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "CA",
+        "low": 25,
+        "high": 60,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "AU",
+        "low": 28,
+        "high": 65,
+        "source": "NSP 2024"
+      }
+    ],
+    "legal": [
+      {
+        "country": "US",
+        "low": 22,
+        "high": 55,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 16,
+        "high": 38,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "CA",
+        "low": 18,
+        "high": 42,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "business-saas": [
+      {
+        "country": "US",
+        "low": 14,
+        "high": 30,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "UK",
+        "low": 10,
+        "high": 22,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "CA",
+        "low": 11,
+        "high": 24,
+        "source": "Mediavine 2025"
+      }
+    ],
+    "b2b-leadgen": [
+      {
+        "country": "US",
+        "low": 50,
+        "high": 300,
+        "source": "NSP 2024 (per-lead, not CPM)",
+        "notes": "B2B is lead-gen not impression-based. Per qualified email lead."
+      },
+      {
+        "country": "EU",
+        "low": 40,
+        "high": 250,
+        "source": "NSP 2024 (per-lead)"
+      }
+    ],
+    "health-supplements": [
+      {
+        "country": "US",
+        "low": 12,
+        "high": 28,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 9,
+        "high": 20,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "CA",
+        "low": 10,
+        "high": 22,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "AU",
+        "low": 11,
+        "high": 24,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "longevity": [
+      {
+        "country": "US",
+        "low": 15,
+        "high": 35,
+        "source": "NSP 2024 (high-CPC niche)"
+      },
+      {
+        "country": "UK",
+        "low": 11,
+        "high": 25,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "AU",
+        "low": 13,
+        "high": 28,
+        "source": "NSP 2024"
+      }
+    ],
+    "real-estate": [
+      {
+        "country": "US",
+        "low": 12,
+        "high": 28,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 9,
+        "high": 20,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "CA",
+        "low": 10,
+        "high": 22,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "AU",
+        "low": 11,
+        "high": 25,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "SG",
+        "low": 13,
+        "high": 30,
+        "source": "NSP 2024 (HDB/BTO)"
+      }
+    ],
+    "career-jobs": [
+      {
+        "country": "US",
+        "low": 10,
+        "high": 22,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 7,
+        "high": 16,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "AU",
+        "low": 9,
+        "high": 20,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "health-general": [
+      {
+        "country": "US",
+        "low": 8,
+        "high": 18,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "UK",
+        "low": 6,
+        "high": 14,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "CA",
+        "low": 7,
+        "high": 15,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "AU",
+        "low": 7,
+        "high": 16,
+        "source": "Mediavine 2025"
+      }
+    ],
+    "parenting-family": [
+      {
+        "country": "US",
+        "low": 7,
+        "high": 16,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "UK",
+        "low": 5,
+        "high": 12,
+        "source": "Mediavine 2025"
+      }
+    ],
+    "education": [
+      {
+        "country": "US",
+        "low": 6,
+        "high": 15,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 4,
+        "high": 11,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "travel": [
+      {
+        "country": "US",
+        "low": 6,
+        "high": 14,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "UK",
+        "low": 5,
+        "high": 11,
+        "source": "Mediavine 2025"
+      }
+    ],
+    "home-improvement": [
+      {
+        "country": "US",
+        "low": 7,
+        "high": 16,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "UK",
+        "low": 5,
+        "high": 12,
+        "source": "Mediavine 2025"
+      }
+    ],
+    "auto": [
+      {
+        "country": "US",
+        "low": 6,
+        "high": 14,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 4,
+        "high": 10,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "technology": [
+      {
+        "country": "US",
+        "low": 4,
+        "high": 10,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 3,
+        "high": 8,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "productivity": [
+      {
+        "country": "US",
+        "low": 4,
+        "high": 9,
+        "source": "NSP 2024"
+      },
+      {
+        "country": "UK",
+        "low": 3,
+        "high": 7,
+        "source": "NSP 2024"
+      }
+    ],
+    "lifestyle": [
+      {
+        "country": "US",
+        "low": 3,
+        "high": 8,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 2,
+        "high": 6,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "fitness-workout": [
+      {
+        "country": "US",
+        "low": 4,
+        "high": 10,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "UK",
+        "low": 3,
+        "high": 8,
+        "source": "Mediavine 2025"
+      }
+    ],
+    "food-recipes": [
+      {
+        "country": "US",
+        "low": 5,
+        "high": 13,
+        "source": "Mediavine 2025"
+      },
+      {
+        "country": "UK",
+        "low": 4,
+        "high": 10,
+        "source": "Mediavine 2025"
+      }
+    ],
+    "entertainment": [
+      {
+        "country": "US",
+        "low": 1,
+        "high": 4,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 1,
+        "high": 3,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "gaming": [
+      {
+        "country": "US",
+        "low": 2,
+        "high": 5,
+        "source": "Ezoic 2025"
+      },
+      {
+        "country": "UK",
+        "low": 1,
+        "high": 4,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "memes-jokes": [
+      {
+        "country": "US",
+        "low": 0.5,
+        "high": 2,
+        "source": "NSP 2024 (saturated)"
+      }
+    ],
+    "creative-art": [
+      {
+        "country": "US",
+        "low": 2,
+        "high": 6,
+        "source": "Ezoic 2025"
+      }
+    ],
+    "_emerging_markets_multiplier": [
+      {
+        "country": "BD",
+        "low": 0.05,
+        "high": 0.3,
+        "source": "AdSense data",
+        "notes": "Multiply ANY niche RPM by 0.02-0.06 for BD audience"
+      },
+      {
+        "country": "IN",
+        "low": 0.1,
+        "high": 0.5,
+        "source": "AdSense data"
+      },
+      {
+        "country": "PK",
+        "low": 0.05,
+        "high": 0.25,
+        "source": "AdSense data"
+      },
+      {
+        "country": "NG",
+        "low": 0.05,
+        "high": 0.2,
+        "source": "AdSense data"
+      },
+      {
+        "country": "PH",
+        "low": 0.2,
+        "high": 0.8,
+        "source": "AdSense data"
+      },
+      {
+        "country": "ID",
+        "low": 0.15,
+        "high": 0.6,
+        "source": "AdSense data"
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 {
   "ping_indexnow": {
-    "submitted_at": "2026-04-14T05:57:08.158815",
+    "submitted_at": "2026-05-29T03:50:58.749610",
     "url": "https://api.indexnow.org/indexnow",
     "notes": "Submitted via build-request-indexing.py --indexnow-only",
     "status": "submitted"

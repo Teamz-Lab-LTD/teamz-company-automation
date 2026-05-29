@@ -23,10 +23,12 @@
       "lastRendered": "2026-04-23T23:44:28.934Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 1
+          "posted": true,
+          "url": "https://youtube.com/shorts/4iRc2BQdctQ",
+          "videoId": "4iRc2BQdctQ",
+          "postedAt": "2026-04-28T23:44:07.728Z",
+          "scheduledAt": "2026-04-29T19:00:00.000Z",
+          "retries": 0
         },
         "instagram": {
           "posted": false,
@@ -35,9 +37,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7633959346842257416",
+          "postedAt": "2026-04-28T23:43:38.513Z",
           "retries": 0
         }
       }
@@ -51,11 +54,11 @@
       "themeIndex": 2,
       "durationInFrames": 330,
       "format": "short",
-      "hook": "paycheck calculator app in 10 seconds \u2014 for free",
+      "hook": "paycheck calculator app in 10 seconds — for free",
       "audio": "audio/beat1.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/toss__paycheck-calculator-app.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/toss__paycheck-calculator-app.txt",
-      "youtubeTitle": "Paycheck Calculator App in Seconds \u2014 Free Tool",
+      "youtubeTitle": "Paycheck Calculator App in Seconds — Free Tool",
       "backlinks": {
         "landing": "https://apps.teamzlab.com/toss/",
         "play_store": "https://play.google.com/store/apps/details?id=com.teamz.toss.toss",
@@ -65,9 +68,11 @@
       "lastRendered": "2026-04-24T00:51:06.124Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/qqtLjfqbYI4",
+          "videoId": "qqtLjfqbYI4",
+          "postedAt": "2026-04-28T23:45:05.799Z",
+          "scheduledAt": "2026-04-30T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -77,9 +82,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7634229900852955154",
+          "postedAt": "2026-04-29T17:13:33.415Z",
           "retries": 0
         }
       }
@@ -107,9 +113,11 @@
       "lastRendered": "2026-04-24T00:51:06.124Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/nL0jjmzqPjk",
+          "videoId": "nL0jjmzqPjk",
+          "postedAt": "2026-04-28T23:46:13.320Z",
+          "scheduledAt": "2026-05-01T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -119,9 +127,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7634381693487253512",
+          "postedAt": "2026-04-30T03:00:56.324Z",
           "retries": 0
         }
       }
@@ -139,7 +148,7 @@
       "audio": "audio/beat8.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/toss__take-home-pay-calculator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/toss__take-home-pay-calculator.txt",
-      "youtubeTitle": "Take Home Pay Calculator in Seconds \u2014 Free Tool",
+      "youtubeTitle": "Take Home Pay Calculator in Seconds — Free Tool",
       "backlinks": {
         "landing": "https://apps.teamzlab.com/toss/",
         "play_store": "https://play.google.com/store/apps/details?id=com.teamz.toss.toss",
@@ -149,9 +158,11 @@
       "lastRendered": "2026-04-24T00:51:06.124Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/ZtOFgHyfPbo",
+          "videoId": "ZtOFgHyfPbo",
+          "postedAt": "2026-04-28T23:46:21.990Z",
+          "scheduledAt": "2026-04-29T19:08:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -161,9 +172,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7636672005080746002",
+          "postedAt": "2026-05-06T07:10:14.893Z",
           "retries": 0
         }
       }
@@ -258,7 +270,7 @@
       "audio": "audio/beat8.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-readiness-quiz.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-readiness-quiz.txt",
-      "youtubeTitle": "CQC Readiness Quiz \u2014 15 Questions for Care Homes",
+      "youtubeTitle": "CQC Readiness Quiz — 15 Questions for Care Homes",
       "rendered": "2026-04-10T19:04:00.074Z",
       "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
@@ -277,9 +289,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7637040929040254994",
+          "postedAt": "2026-05-07T07:00:37.343Z",
           "retries": 0
         }
       }
@@ -295,7 +308,7 @@
       "audio": "audio/beat9.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-australia-checklist.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-australia-checklist.txt",
-      "youtubeTitle": "Aged Care Quality Standards Checklist \u2014 Australia 2026",
+      "youtubeTitle": "Aged Care Quality Standards Checklist — Australia 2026",
       "rendered": "2026-04-10T19:35:01.897Z",
       "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
@@ -317,9 +330,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7637412222884890631",
+          "postedAt": "2026-05-08T07:00:32.168Z",
           "retries": 0
         }
       }
@@ -335,7 +349,7 @@
       "audio": "audio/beat3.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-hiqa-ireland.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-hiqa-ireland.txt",
-      "youtubeTitle": "HIQA Inspection Checklist \u2014 Ireland Nursing Homes",
+      "youtubeTitle": "HIQA Inspection Checklist — Ireland Nursing Homes",
       "rendered": "2026-04-10T19:35:01.897Z",
       "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
@@ -354,9 +368,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7639390882818590728",
+          "postedAt": "2026-05-13T15:00:25.798Z",
           "retries": 0
         }
       }
@@ -372,7 +387,7 @@
       "audio": "audio/beat5.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-nz-rest-home.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/arc-nz-rest-home.txt",
-      "youtubeTitle": "Rest Home Audit Checklist \u2014 New Zealand NZS 8134",
+      "youtubeTitle": "Rest Home Audit Checklist — New Zealand NZS 8134",
       "rendered": "2026-04-10T19:35:01.897Z",
       "lastRendered": "2026-04-10T19:35:01.897Z",
       "platforms": {
@@ -394,9 +409,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7639700578935785490",
+          "postedAt": "2026-05-14T11:00:33.002Z",
           "retries": 0
         }
       }
@@ -408,7 +424,7 @@
       "language": "en",
       "template": "InstantFix",
       "themeIndex": 1,
-      "hook": "Care homes are paying \u00a3700/mo for this. It is free.",
+      "hook": "Care homes are paying £700/mo for this. It is free.",
       "audio": "audio/beat5.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_uk_cqc_compliance.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_uk_cqc_compliance.txt",
@@ -431,9 +447,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7640011066118293512",
+          "postedAt": "2026-05-15T07:09:03.708Z",
           "retries": 0
         }
       }
@@ -468,9 +485,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7641926697025259527",
+          "postedAt": "2026-05-20T11:00:29.516Z",
           "retries": 0
         }
       }
@@ -505,9 +523,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7642174497520388104",
+          "postedAt": "2026-05-21T03:00:30.636Z",
           "retries": 0
         }
       }
@@ -542,9 +561,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7642297259669129224",
+          "postedAt": "2026-05-21T11:00:14.237Z",
           "retries": 0
         }
       }
@@ -560,7 +580,7 @@
       "audio": "audio/beat9.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_sirs_reporting_au.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_sirs_reporting_au.txt",
-      "youtubeTitle": "Free SIRS Reporting Tool for Aged Care \u2014 Priority 1 and 2 #shorts",
+      "youtubeTitle": "Free SIRS Reporting Tool for Aged Care — Priority 1 and 2 #shorts",
       "rendered": "2026-04-11T20:39:21.016Z",
       "lastRendered": "2026-04-11T20:39:21.016Z",
       "platforms": {
@@ -579,9 +599,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7642545514818373640",
+          "postedAt": "2026-05-22T03:00:33.859Z",
           "retries": 0
         }
       }
@@ -597,7 +618,7 @@
       "audio": "audio/beat4.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_60sec_evidence.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/care_60sec_evidence.txt",
-      "youtubeTitle": "Record Care Evidence in 60 Seconds \u2014 AI Does the Rest #shorts",
+      "youtubeTitle": "Record Care Evidence in 60 Seconds — AI Does the Rest #shorts",
       "rendered": "2026-04-11T20:39:21.016Z",
       "lastRendered": "2026-04-11T20:39:21.016Z",
       "platforms": {
@@ -616,9 +637,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7642669269410400274",
+          "postedAt": "2026-05-22T11:00:34.688Z",
           "retries": 0
         }
       }
@@ -634,7 +656,7 @@
       "audio": "audio/beat10.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_qr-code-generator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_qr-code-generator.txt",
-      "youtubeTitle": "Qr Code Generator Lifetime \u2014 Free Browser Tool",
+      "youtubeTitle": "Qr Code Generator Lifetime — Free Browser Tool",
       "rendered": "2026-04-08T23:21:55.249Z",
       "lastRendered": "2026-04-08T23:21:55.250Z",
       "platforms": {
@@ -653,9 +675,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7644526201520048135",
+          "postedAt": "2026-05-27T11:09:42.624Z",
           "retries": 0
         }
       }
@@ -693,25 +716,26 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7644774442660562962",
+          "postedAt": "2026-05-28T03:11:58.032Z",
           "retries": 0
         }
       }
     },
     {
       "slug": "evergreen_invoice-generator",
-      "title": "Free Private Invoice Generator \u2014 No Upload, No Data Stored",
+      "title": "Free Private Invoice Generator — No Upload, No Data Stored",
       "hub": "evergreen",
       "language": "en",
       "template": "InstantFix",
       "themeIndex": 5,
-      "hook": "invoice generator in 10 seconds \u2014 for free",
+      "hook": "invoice generator in 10 seconds — for free",
       "audio": "audio/beat7.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_invoice-generator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_invoice-generator.txt",
-      "youtubeTitle": "Free Invoice Generator \u2014 No Signup, No Install",
+      "youtubeTitle": "Free Invoice Generator — No Signup, No Install",
       "rendered": "2026-04-08T23:28:28.523Z",
       "lastRendered": "2026-04-08T23:28:28.524Z",
       "platforms": {
@@ -733,9 +757,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7644896348013201416",
+          "postedAt": "2026-05-28T11:03:06.686Z",
           "retries": 0
         }
       }
@@ -751,7 +776,7 @@
       "audio": "audio/beat1.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/uidesign_color-palette-generator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/uidesign_color-palette-generator.txt",
-      "youtubeTitle": "Free Color Palette Generator \u2014 No Signup",
+      "youtubeTitle": "Free Color Palette Generator — No Signup",
       "rendered": "2026-04-08T23:28:28.524Z",
       "lastRendered": "2026-04-08T23:28:28.524Z",
       "platforms": {
@@ -821,11 +846,11 @@
       "language": "en",
       "template": "InstantFix",
       "themeIndex": 7,
-      "hook": "Best free text counter gaan \u2014 no signup required",
+      "hook": "Best free text counter gaan — no signup required",
       "audio": "audio/beat1.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/text_word-counter.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/text_word-counter.txt",
-      "youtubeTitle": "Text Counter Gaan in Seconds \u2014 Free Tool",
+      "youtubeTitle": "Text Counter Gaan in Seconds — Free Tool",
       "rendered": "2026-04-10T19:45:34.462Z",
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
@@ -858,11 +883,11 @@
       "language": "en",
       "template": "InstantFix",
       "themeIndex": 7,
-      "hook": "Best free resume builder websites \u2014 no signup required",
+      "hook": "Best free resume builder websites — no signup required",
       "audio": "audio/beat1.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/career_simple-resume-builder.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/career_simple-resume-builder.txt",
-      "youtubeTitle": "Resume Builder Websites \u2014 Free Browser Tool",
+      "youtubeTitle": "Resume Builder Websites — Free Browser Tool",
       "rendered": "2026-04-10T19:45:34.462Z",
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
@@ -899,7 +924,7 @@
       "audio": "audio/beat4.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/mobile_app-icon-sizes.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/mobile_app-icon-sizes.txt",
-      "youtubeTitle": "Resume Builder App For Android in Seconds \u2014 Free Tool",
+      "youtubeTitle": "Resume Builder App For Android in Seconds — Free Tool",
       "rendered": "2026-04-10T19:45:34.462Z",
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
@@ -939,7 +964,7 @@
       "audio": "audio/beat9.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/diagnostic_photo-booth.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/diagnostic_photo-booth.txt",
-      "youtubeTitle": "Photo Booth Online Free \u2014 100% Private & Free",
+      "youtubeTitle": "Photo Booth Online Free — 100% Private & Free",
       "rendered": "2026-04-10T19:45:34.462Z",
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
@@ -976,7 +1001,7 @@
       "audio": "audio/beat1.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_ai-text-summarizer.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_ai-text-summarizer.txt",
-      "youtubeTitle": "Ai Summarizer in Seconds \u2014 Free Tool",
+      "youtubeTitle": "Ai Summarizer in Seconds — Free Tool",
       "rendered": "2026-04-10T19:45:34.462Z",
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
@@ -1009,11 +1034,11 @@
       "language": "en",
       "template": "InstantFix",
       "themeIndex": 3,
-      "hook": "ai tutorial in 10 seconds \u2014 for free",
+      "hook": "ai tutorial in 10 seconds — for free",
       "audio": "audio/beat8.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/3d_ai-3d-prompt-generator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/3d_ai-3d-prompt-generator.txt",
-      "youtubeTitle": "Ai Tutorial \u2014 Free Browser Tool",
+      "youtubeTitle": "Ai Tutorial — Free Browser Tool",
       "rendered": "2026-04-10T19:45:34.462Z",
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
@@ -1044,7 +1069,7 @@
     },
     {
       "slug": "tools_image-to-pdf",
-      "title": "Image to PDF Converter \u2014 Free Online, No Upload",
+      "title": "Image to PDF Converter — Free Online, No Upload",
       "hub": "tools",
       "language": "en",
       "template": "BeforeAfter",
@@ -1053,7 +1078,7 @@
       "audio": "audio/beat3.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_image-to-pdf.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tools_image-to-pdf.txt",
-      "youtubeTitle": "Best Free Image Converter \u2014 No Signup",
+      "youtubeTitle": "Best Free Image Converter — No Signup",
       "rendered": "2026-04-10T19:45:34.462Z",
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
@@ -1090,7 +1115,7 @@
       "audio": "audio/beat6.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/image_ai-image-upscaler.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/image_ai-image-upscaler.txt",
-      "youtubeTitle": "AI Image Upscaler \u2014 100% Private & Free",
+      "youtubeTitle": "AI Image Upscaler — 100% Private & Free",
       "rendered": "2026-04-10T19:45:34.462Z",
       "lastRendered": "2026-04-10T19:45:34.462Z",
       "platforms": {
@@ -1126,7 +1151,7 @@
       "language": "en",
       "template": "BeforeAfter",
       "themeIndex": 4,
-      "hook": "Best free image to text converter app \u2014 no signup required",
+      "hook": "Best free image to text converter app — no signup required",
       "audio": "audio/beat6.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/design_text-on-image.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/design_text-on-image.txt",
@@ -1170,7 +1195,7 @@
       "audio": "audio/beat5.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_calorie-deficit-calculator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_calorie-deficit-calculator.txt",
-      "youtubeTitle": "Calorie Deficit Calculator \u2014 Free, No Signup",
+      "youtubeTitle": "Calorie Deficit Calculator — Free, No Signup",
       "rendered": "2026-04-11T20:36:41.994Z",
       "lastRendered": "2026-04-11T20:36:41.994Z",
       "platforms": {
@@ -1210,7 +1235,7 @@
       "audio": "audio/beat10.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_recovery-readiness-calculator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_recovery-readiness-calculator.txt",
-      "youtubeTitle": "Recovery Readiness Score \u2014 Free, No Signup",
+      "youtubeTitle": "Recovery Readiness Score — Free, No Signup",
       "rendered": "2026-04-11T20:36:41.994Z",
       "lastRendered": "2026-04-11T20:36:41.994Z",
       "platforms": {
@@ -1247,7 +1272,7 @@
       "audio": "audio/beat6.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ai_social-media-post-generator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ai_social-media-post-generator.txt",
-      "youtubeTitle": "Social Media Post Generator \u2014 Free, No Signup",
+      "youtubeTitle": "Social Media Post Generator — Free, No Signup",
       "rendered": "2026-04-11T20:36:41.994Z",
       "lastRendered": "2026-04-11T20:36:41.994Z",
       "platforms": {
@@ -1284,7 +1309,7 @@
       "audio": "audio/beat3.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_tdee-calculator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_tdee-calculator.txt",
-      "youtubeTitle": "TDEE Calculator \u2014 Free, No Signup",
+      "youtubeTitle": "TDEE Calculator — Free, No Signup",
       "rendered": "2026-04-11T20:36:41.994Z",
       "lastRendered": "2026-04-11T20:36:41.994Z",
       "platforms": {
@@ -1321,7 +1346,7 @@
       "audio": "audio/beat6.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_emotional-intelligence-test.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_emotional-intelligence-test.txt",
-      "youtubeTitle": "EQ Test  Measure Your Emotional Intelligence \u2014 Free, No Signup",
+      "youtubeTitle": "EQ Test  Measure Your Emotional Intelligence — Free, No Signup",
       "rendered": "2026-04-11T20:36:41.994Z",
       "lastRendered": "2026-04-11T20:36:41.994Z",
       "platforms": {
@@ -1360,7 +1385,7 @@
       "audio": "audio/beat2.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/csrd-scope-1-2-calculator-eu-sme.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/csrd-scope-1-2-calculator-eu-sme.txt",
-      "youtubeTitle": "Free CSRD Scope 1+2 Calculator \u2014 EU SMEs, No Signup",
+      "youtubeTitle": "Free CSRD Scope 1+2 Calculator — EU SMEs, No Signup",
       "rendered": "2026-04-14T10:13:02.610Z",
       "lastRendered": "2026-04-20T20:59:16.574Z",
       "platforms": {
@@ -1399,7 +1424,7 @@
       "audio": "audio/beat4.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tcja-2027-tax-bracket-sunset-calculator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tcja-2027-tax-bracket-sunset-calculator.txt",
-      "youtubeTitle": "Your 2027 Taxes Are Going UP \u2014 Free TCJA Sunset Calculator",
+      "youtubeTitle": "Your 2027 Taxes Are Going UP — Free TCJA Sunset Calculator",
       "rendered": "2026-04-14T10:13:02.611Z",
       "lastRendered": "2026-04-20T20:59:16.575Z",
       "platforms": {
@@ -1438,7 +1463,7 @@
       "audio": "audio/beat3.mp3",
       "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/phenoage-biological-age-calculator.mp4",
       "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/phenoage-biological-age-calculator.txt",
-      "youtubeTitle": "Your Body Has Two Ages \u2014 Free PhenoAge Calculator (Levine 2018)",
+      "youtubeTitle": "Your Body Has Two Ages — Free PhenoAge Calculator (Levine 2018)",
       "rendered": "2026-04-14T10:13:02.611Z",
       "lastRendered": "2026-04-20T20:59:16.575Z",
       "platforms": {
@@ -1448,6 +1473,666 @@
           "videoId": "ahlIrLrEbHk",
           "postedAt": "2026-04-15T22:29:53.767Z",
           "scheduledAt": "2026-04-17T19:04:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "au_income-tax-calculator__income-tax-calculator",
+      "title": "Income Tax Calculator Australia 2025-26",
+      "hub": "au",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 7,
+      "durationInFrames": 390,
+      "format": "short",
+      "hook": "Don't install software for income tax calculator",
+      "audio": "audio/beat10.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/au_income-tax-calculator__income-tax-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/au_income-tax-calculator__income-tax-calculator.txt",
+      "youtubeTitle": "Income Tax Calculator — Free Browser Tool",
+      "backlinks": null,
+      "rendered": "2026-04-30T13:20:25.957Z",
+      "lastRendered": "2026-04-30T13:20:25.957Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/Sl5c63NVp6U",
+          "videoId": "Sl5c63NVp6U",
+          "postedAt": "2026-04-30T13:20:48.076Z",
+          "scheduledAt": "2026-04-30T19:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "ca_income-tax-calculator__online-income-tax-calculator-canada",
+      "title": "Canada Income Tax Calculator 2025",
+      "hub": "ca",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 7,
+      "durationInFrames": 360,
+      "format": "short",
+      "hook": "You're wasting time doing online income tax calculator canada manually",
+      "audio": "audio/beat8.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ca_income-tax-calculator__online-income-tax-calculator-canada.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ca_income-tax-calculator__online-income-tax-calculator-canada.txt",
+      "youtubeTitle": "Canada Income Tax Calculator 2025 — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-04-30T13:20:25.957Z",
+      "lastRendered": "2026-04-30T13:20:25.957Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/He_rGWrGPZA",
+          "videoId": "He_rGWrGPZA",
+          "postedAt": "2026-04-30T13:21:41.074Z",
+          "scheduledAt": "2026-05-01T19:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "in_income-tax-calculator-india__income-tax-calculator-online-india__hi",
+      "title": "Income Tax Calculator India — Old vs New Regime",
+      "hub": "in",
+      "language": "hi",
+      "template": "InstantFix",
+      "themeIndex": 7,
+      "durationInFrames": 360,
+      "format": "short",
+      "hook": "Don't install software for income tax calculator online india",
+      "audio": "audio/beat10.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/in_income-tax-calculator-india__income-tax-calculator-online-india__hi.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/in_income-tax-calculator-india__income-tax-calculator-online-india__hi.txt",
+      "youtubeTitle": "Stop Paying for Income Tax Calculator Online India",
+      "backlinks": null,
+      "rendered": "2026-04-30T13:20:25.957Z",
+      "lastRendered": "2026-04-30T13:20:25.957Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/1JQr7q1qtsM",
+          "videoId": "1JQr7q1qtsM",
+          "postedAt": "2026-04-30T13:23:07.834Z",
+          "scheduledAt": "2026-05-02T19:04:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "evergreen_treasury-bill-calculator__how-to-treasury-bill-calculator-tagalog",
+      "title": "Treasury Bill Calculator",
+      "hub": "evergreen",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 0,
+      "durationInFrames": 390,
+      "format": "short",
+      "hook": "Free how to treasury bill calculator tagalog that actually works",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_treasury-bill-calculator__how-to-treasury-bill-calculator-tagalog.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/evergreen_treasury-bill-calculator__how-to-treasury-bill-calculator-tagalog.txt",
+      "youtubeTitle": "Stop Paying for How To Treasury Bill Calculator Tagalog",
+      "backlinks": null,
+      "rendered": "2026-04-30T13:28:22.916Z",
+      "lastRendered": "2026-04-30T13:28:22.916Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/6rOPgZoKDcw",
+          "videoId": "6rOPgZoKDcw",
+          "postedAt": "2026-04-30T13:28:32.322Z",
+          "scheduledAt": "2026-04-30T19:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "health_glp-1-eligibility-checker__glp-1-eligibility-checker",
+      "title": "GLP-1 Eligibility Checker",
+      "hub": "health",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 0,
+      "durationInFrames": 330,
+      "format": "short",
+      "hook": "Don't install software for glp-1 eligibility checker",
+      "audio": "audio/beat1.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_glp-1-eligibility-checker__glp-1-eligibility-checker.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_glp-1-eligibility-checker__glp-1-eligibility-checker.txt",
+      "youtubeTitle": "Free GLP-1 Eligibility Checker Online (No Install)",
+      "backlinks": null,
+      "rendered": "2026-04-30T13:28:22.916Z",
+      "lastRendered": "2026-04-30T13:28:22.916Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/a5QzZ70a9lM",
+          "videoId": "a5QzZ70a9lM",
+          "postedAt": "2026-04-30T13:29:38.792Z",
+          "scheduledAt": "2026-05-01T19:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "health_kidney-health-risk-calculator",
+      "title": "Kidney Health Risk Calculator",
+      "hub": "health",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 2,
+      "durationInFrames": 330,
+      "format": "short",
+      "hook": "Wait till you see what this does",
+      "audio": "audio/beat5.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_kidney-health-risk-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_kidney-health-risk-calculator.txt",
+      "youtubeTitle": "Kidney Health Risk Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-01T03:00:38.492Z",
+      "lastRendered": "2026-05-01T03:00:38.492Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/5rvbFV9NqXM",
+          "videoId": "5rvbFV9NqXM",
+          "postedAt": "2026-05-01T03:00:48.796Z",
+          "scheduledAt": "2026-05-01T19:09:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "health_autism-screening-test",
+      "title": "Autism Screening Test (AQ-10)",
+      "hub": "health",
+      "language": "en",
+      "template": "CompareThree",
+      "themeIndex": 5,
+      "durationInFrames": 480,
+      "format": "short",
+      "hook": "I can't believe this is free",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_autism-screening-test.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_autism-screening-test.txt",
+      "youtubeTitle": "Autism Screening Test (AQ-10) — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-02T01:07:13.487Z",
+      "lastRendered": "2026-05-02T01:07:13.488Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/rmUytsNUgJ0",
+          "videoId": "rmUytsNUgJ0",
+          "postedAt": "2026-05-02T01:07:23.439Z",
+          "scheduledAt": "2026-05-02T19:02:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "tax_capital-gains-tax-calculator",
+      "title": "Capital Gains Tax Calculator 2026",
+      "hub": "tax",
+      "language": "en",
+      "template": "CompareThree",
+      "themeIndex": 0,
+      "durationInFrames": 510,
+      "format": "short",
+      "hook": "Delete your paid subscription",
+      "audio": "audio/beat2.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tax_capital-gains-tax-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tax_capital-gains-tax-calculator.txt",
+      "youtubeTitle": "Capital Gains Tax Calculator 2026 — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-06T03:05:54.237Z",
+      "lastRendered": "2026-05-06T03:05:54.238Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 1
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "tax_home-sale-section-121-exclusion-2026-calculator",
+      "title": "Home Sale Section 121 Exclusion Calculator 2026",
+      "hub": "tax",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 2,
+      "durationInFrames": 390,
+      "format": "short",
+      "hook": "Wait till you see what this does",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tax_home-sale-section-121-exclusion-2026-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tax_home-sale-section-121-exclusion-2026-calculator.txt",
+      "youtubeTitle": "Home Sale Section 121 Exclusion Calculator 2026 — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-07T01:02:57.978Z",
+      "lastRendered": "2026-05-07T01:02:57.978Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "health_macro-calculator",
+      "title": "Macro Calculator",
+      "hub": "health",
+      "language": "en",
+      "template": "ProofCase",
+      "themeIndex": 6,
+      "durationInFrames": 390,
+      "format": "short",
+      "hook": "Nobody talks about this free tool",
+      "audio": "audio/beat2.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_macro-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/health_macro-calculator.txt",
+      "youtubeTitle": "Macro Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-08T03:03:43.402Z",
+      "lastRendered": "2026-05-08T03:03:43.403Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "ai_email-subject-line-generator",
+      "title": "Email Subject Line Generator",
+      "hub": "ai",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 6,
+      "durationInFrames": 420,
+      "format": "short",
+      "hook": "Nobody talks about this free tool",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ai_email-subject-line-generator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ai_email-subject-line-generator.txt",
+      "youtubeTitle": "Email Subject Line Generator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-09T03:03:12.285Z",
+      "lastRendered": "2026-05-09T03:03:12.286Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "ai_ai-deepfake-detector",
+      "title": "AI Deepfake Detector",
+      "hub": "ai",
+      "language": "en",
+      "template": "BeforeAfter",
+      "themeIndex": 0,
+      "durationInFrames": 450,
+      "format": "short",
+      "hook": "Why are people still paying for this?",
+      "audio": "audio/beat8.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ai_ai-deepfake-detector.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/ai_ai-deepfake-detector.txt",
+      "youtubeTitle": "AI Deepfake Detector — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-10T03:03:08.588Z",
+      "lastRendered": "2026-05-10T03:03:08.588Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "legal_personal-injury-medical-multiplier-calculator",
+      "title": "Personal Injury Medical Multiplier Calculator",
+      "hub": "legal",
+      "language": "en",
+      "template": "ProofCase",
+      "themeIndex": 5,
+      "durationInFrames": 480,
+      "format": "short",
+      "hook": "POV: You found a free tool that works",
+      "audio": "audio/beat9.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_personal-injury-medical-multiplier-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_personal-injury-medical-multiplier-calculator.txt",
+      "youtubeTitle": "Personal Injury Medical Multiplier Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-13T07:00:36.931Z",
+      "lastRendered": "2026-05-13T07:00:36.932Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "finance_nua-net-unrealized-appreciation-calculator",
+      "title": "NUA Net Unrealized Appreciation Calculator",
+      "hub": "finance",
+      "language": "en",
+      "template": "CompareThree",
+      "themeIndex": 3,
+      "durationInFrames": 480,
+      "format": "short",
+      "hook": "I can't believe this is free",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/finance_nua-net-unrealized-appreciation-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/finance_nua-net-unrealized-appreciation-calculator.txt",
+      "youtubeTitle": "NUA Net Unrealized Appreciation Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-14T01:59:26.048Z",
+      "lastRendered": "2026-05-14T01:59:26.049Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "insurance_disability-insurance-own-occupation-vs-any-occupation-calculator",
+      "title": "Disability Insurance Own-Occupation vs Any-Occupation Calculator",
+      "hub": "insurance",
+      "language": "en",
+      "template": "CompareThree",
+      "themeIndex": 0,
+      "durationInFrames": 540,
+      "format": "short",
+      "hook": "How is this free??",
+      "audio": "audio/beat5.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/insurance_disability-insurance-own-occupation-vs-any-occupation-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/insurance_disability-insurance-own-occupation-vs-any-occupation-calculator.txt",
+      "youtubeTitle": "Disability Insurance Own-Occupation vs Any-Occupation Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-15T03:10:41.532Z",
+      "lastRendered": "2026-05-15T03:10:41.533Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "legal_ssdi-back-pay-calculator",
+      "title": "SSDI Back Pay Calculator",
+      "hub": "legal",
+      "language": "en",
+      "template": "ProofCase",
+      "themeIndex": 4,
+      "durationInFrames": 480,
+      "format": "short",
+      "hook": "Delete your paid subscription",
+      "audio": "audio/beat6.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_ssdi-back-pay-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_ssdi-back-pay-calculator.txt",
+      "youtubeTitle": "SSDI Back Pay Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-16T07:15:16.410Z",
+      "lastRendered": "2026-05-16T07:15:16.411Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "legal_slip-and-fall-settlement-calculator",
+      "title": "Slip and Fall Settlement Calculator",
+      "hub": "legal",
+      "language": "en",
+      "template": "ProofCase",
+      "themeIndex": 3,
+      "durationInFrames": 480,
+      "format": "short",
+      "hook": "This free tool is actually insane",
+      "audio": "audio/beat9.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_slip-and-fall-settlement-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_slip-and-fall-settlement-calculator.txt",
+      "youtubeTitle": "Slip and Fall Settlement Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-05-17T03:42:11.726Z",
+      "lastRendered": "2026-05-17T03:42:11.727Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
           "retries": 0
         },
         "instagram": {

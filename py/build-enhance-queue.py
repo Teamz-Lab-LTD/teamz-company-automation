@@ -312,6 +312,54 @@ def pool_gsc_anomalies(host_root, cfg):
 
 
 # -----------------------------------------------------------------------------
+# Pool 7: Canonical mismatches — read data/canonical-mismatches-latest.json
+# Pages where Google chose a different canonical than the page declared
+# ('Alternate page with proper canonical tag' or worse — duplicate signals
+# cannibalizing rankings). Mode C = canonical fix; Phase 4 Claude reviews each
+# (NOT auto-rewritten because wrong canonical change can de-index a page).
+# -----------------------------------------------------------------------------
+
+def pool_canonical_mismatches(host_root, cfg):
+    """Reads canonical-mismatches-latest.json from build-request-indexing.py
+    output. Emits Mode C (canonical fix) candidates for the Claude agent to
+    review in Phase 4. Conservative — only flagged pages, no auto-rewrite."""
+    candidate_paths = [
+        host_root / 'teamz-company-automation' / 'data' / 'canonical-mismatches-latest.json',
+        host_root / 'data' / 'canonical-mismatches-latest.json',
+    ]
+    data = None
+    for path in candidate_paths:
+        data = safe_read_json(path)
+        if data:
+            break
+    if not data:
+        return [], "canonical-mismatches-latest.json missing (run build-request-indexing.py)"
+    site = cfg['site_url']
+    cands = []
+    for entry in data.get('mismatches', []):
+        url = entry.get('url', '')
+        slug = url_to_slug(url, site)
+        if not slug or not slug_exists(slug, host_root):
+            continue
+        user_canon = entry.get('user_canonical', '')
+        google_canon = entry.get('google_canonical', '')
+        coverage = entry.get('coverage', '')
+        # Higher score for "Duplicate" issues — actively cannibalizing
+        # vs "Alternate page" which is a softer mismatch.
+        is_duplicate = 'duplicate' in coverage.lower()
+        score = 55 if is_duplicate else 35
+        cands.append({
+            'slug': slug,
+            'query': f"canonical: yours={user_canon[:40]} vs google={google_canon[:40]}",
+            'signal_score': score,
+            'mode': 'C',
+            'source': 'canonical-mismatch',
+            'citation': f"GSC '{coverage}' (declared {user_canon} → Google picked {google_canon}) [build-request-indexing.py]",
+        })
+    return cands, None
+
+
+# -----------------------------------------------------------------------------
 # Pool 5 (enrichment): Google Autocomplete + Trends via build-keyword-volume
 # Not pulling here per-hub because it's slow (3-5 sec per kw). Instead read
 # the cached /tmp/nightly-suggestions.txt + /tmp/nightly-trends.txt written
@@ -366,6 +414,8 @@ def main():
     if e3: errors['bing'] = e3
     p6, e6 = pool_gsc_anomalies(host_root, cfg)
     if e6: errors['gsc_anomalies'] = e6
+    p7, e7 = pool_canonical_mismatches(host_root, cfg)
+    if e7: errors['canonical_mismatches'] = e7
     p4 = pool_gaps_seasonal(host_root)
     p5 = pool_autocomplete_trends()
 
@@ -373,6 +423,7 @@ def main():
     print(f"[enhance-queue] pool2 gsc-opportunities: {len(p2)}")
     print(f"[enhance-queue] pool3 bing:              {len(p3)}")
     print(f"[enhance-queue] pool6 gsc-ctr-drops:     {len(p6)}")
+    print(f"[enhance-queue] pool7 canonical-fix:     {len(p7)}")
     print(f"[enhance-queue] pool4 gaps:              {len(p4['gaps'])}")
     print(f"[enhance-queue] pool4 seasonal:          {len(p4['seasonal'])}")
     print(f"[enhance-queue] pool5 autocomplete:      {len(p5['suggestions'])}")
@@ -381,9 +432,9 @@ def main():
         for k, v in errors.items():
             print(f"[enhance-queue]   ! {k}: {v}")
 
-    # Merge target pools (1-3, 6), dedupe by slug, apply cooldown
+    # Merge target pools (1-3, 6, 7), dedupe by slug, apply cooldown
     by_slug = {}
-    for c in p1 + p2 + p3 + p6:
+    for c in p1 + p2 + p3 + p6 + p7:
         if c['slug'] in cooldown_set:
             continue
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
@@ -422,6 +473,7 @@ def main():
             'scripts/build-keyword-intel.py --opportunities --export json',
             'data/bing-data-latest.json',
             'data/gsc-anomalies-latest.json (CTR-drop alerts)',
+            'data/canonical-mismatches-latest.json (Pool 7 canonical fix)',
             'scripts/build-content-ideas.py --gaps',
             'scripts/build-content-ideas.py --seasonal',
             '/tmp/nightly-{suggestions,trends}.txt (Phase 0 cron outputs)',
@@ -431,6 +483,7 @@ def main():
             'opportunities': len(p2),
             'bing': len(p3),
             'gsc_ctr_drops': len(p6),
+            'canonical_mismatches': len(p7),
             'gaps': len(p4['gaps']),
             'seasonal': len(p4['seasonal']),
             'autocomplete': len(p5['suggestions']),

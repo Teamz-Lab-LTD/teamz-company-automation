@@ -296,6 +296,7 @@ run_phase_cmd "Uptime check" 3 "python3 scripts/build-uptime-check.py"
 run_phase_cmd "Schema validation" 5 "python3 scripts/build-schema-validate.py"
 run_phase_cmd "Crawl snapshot + diff" 5 "python3 scripts/build-crawl-diff.py"
 run_phase_cmd "GSC anomalies" 10 "python3 scripts/build-gsc-anomalies.py --json-only"
+run_phase_cmd "GSC broken pages → auto-redirect" 10 "python3 scripts/build-gsc-broken-pages.py"
 
 echo "  Checking freshness (stale data)..."
 run_phase_cmd "Freshness validation" 10 "./scripts/build-validate-freshness.sh"

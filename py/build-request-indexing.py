@@ -323,6 +323,7 @@ def main():
         need_manual = []
         indexed_urls = []
         not_indexed_details = []
+        canonical_mismatches = []  # Pool 7 input for build-enhance-queue.py
         import time
 
         for i, url in enumerate(full_urls):
@@ -393,6 +394,18 @@ def main():
             coverage = index_status.get('coverageState', 'UNKNOWN')
             verdict = index_status.get('verdict', 'UNKNOWN')
             crawled = index_status.get('lastCrawlTime', 'never')
+            google_canon = index_status.get('googleCanonical', '') or ''
+            user_canon = index_status.get('userCanonical', '') or ''
+
+            # Capture canonical mismatches for Pool 7 (Mode C — Claude rewrites in Phase 4)
+            if google_canon and user_canon and google_canon != user_canon:
+                canonical_mismatches.append({
+                    'url': url,
+                    'user_canonical': user_canon,
+                    'google_canonical': google_canon,
+                    'coverage': coverage,
+                    'verdict': verdict,
+                })
 
             short_url = url.replace(SITE_URL, '')
 
@@ -443,6 +456,24 @@ def main():
                     f.write(f'- {page}\n')
 
         print(f'\n  Report saved: docs/indexing-report.md')
+
+        # Persist canonical mismatches for Pool 7 (build-enhance-queue.py)
+        if canonical_mismatches is not None:
+            from datetime import datetime as _dt
+            canon_report = {
+                'generated_at': _dt.now().isoformat(),
+                'site': SITE_URL,
+                'window_checked': len(full_urls),
+                'count': len(canonical_mismatches),
+                'mismatches': canonical_mismatches,
+            }
+            canon_dir = _CFG['data_dir']
+            os.makedirs(str(canon_dir), exist_ok=True)
+            canon_path = os.path.join(str(canon_dir), 'canonical-mismatches-latest.json')
+            with open(canon_path, 'w') as f:
+                json.dump(canon_report, f, indent=2)
+            if canonical_mismatches:
+                print(f'  Canonical mismatches: {len(canonical_mismatches)} → {canon_path}')
     else:
         print('\n  Skipping Google URL Inspection (no token)')
         need_manual = full_urls

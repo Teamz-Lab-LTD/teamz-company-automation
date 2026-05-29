@@ -257,6 +257,61 @@ def pool_gaps_seasonal(host_root):
 
 
 # -----------------------------------------------------------------------------
+# Pool 6: GSC anomalies — read data/gsc-anomalies-latest.json directly
+# Picks up CTR-drop pages (recent CTR < 65% of prior CTR with >=8 recent impr)
+# that Pool 2's --opportunities filter misses because the page already ranks
+# but lost clicks week-over-week. Mode B (title/meta rewrite) is the right
+# tool: same content, fresher framing to recover lost CTR.
+# -----------------------------------------------------------------------------
+
+def pool_gsc_anomalies(host_root, cfg):
+    """Reads gsc-anomalies-latest.json and emits Mode B candidates for CTR-drop
+    alerts. Impression-drop entries are skipped (root cause is usually SERP
+    volatility, not on-page)."""
+    candidates_paths = [
+        host_root / 'teamz-company-automation' / 'data' / 'gsc-anomalies-latest.json',
+        host_root / 'data' / 'gsc-anomalies-latest.json',
+    ]
+    data = None
+    for path in candidates_paths:
+        data = safe_read_json(path)
+        if data:
+            break
+    if not data:
+        return [], "gsc-anomalies-latest.json missing (run build-gsc-anomalies.py)"
+    site = cfg['site_url']
+    cands = []
+    for alert in data.get('alerts', {}).get('ctr_drop', []):
+        page = alert.get('page', '')
+        slug = url_to_slug(page, site)
+        if not slug or not slug_exists(slug, host_root):
+            continue
+        query = alert.get('query', '')
+        prior_ctr = alert.get('prior_ctr', 0)
+        recent_ctr = alert.get('recent_ctr', 0)
+        recent_impr = alert.get('recent_impressions', 0)
+        ctr_loss = max(0, prior_ctr - recent_ctr)
+        # Weight: CTR drop on an already-ranking page is higher priority than
+        # a generic striking-distance opportunity — the user is BLEEDING clicks
+        # week-over-week. /3 (vs /10) and +15 baseline puts these in contention
+        # with Pool 2 opportunities. Cap at 80 so a single huge alert can't
+        # monopolize the queue.
+        score = min(80, recent_impr * ctr_loss / 3 + 15)
+        cands.append({
+            'slug': slug,
+            'query': query[:80] if query else '(CTR drop — title/meta refresh)',
+            'signal_score': round(score, 2),
+            'mode': 'B',
+            'source': 'gsc-anomalies-ctr-drop',
+            'citation': (
+                f"CTR {prior_ctr:.1f}% -> {recent_ctr:.1f}% on {recent_impr} impr "
+                f"[build-gsc-anomalies.py]"
+            ),
+        })
+    return cands, None
+
+
+# -----------------------------------------------------------------------------
 # Pool 5 (enrichment): Google Autocomplete + Trends via build-keyword-volume
 # Not pulling here per-hub because it's slow (3-5 sec per kw). Instead read
 # the cached /tmp/nightly-suggestions.txt + /tmp/nightly-trends.txt written
@@ -309,12 +364,15 @@ def main():
     if e2: errors['opportunities'] = e2
     p3, e3 = pool_bing(host_root, cfg)
     if e3: errors['bing'] = e3
+    p6, e6 = pool_gsc_anomalies(host_root, cfg)
+    if e6: errors['gsc_anomalies'] = e6
     p4 = pool_gaps_seasonal(host_root)
     p5 = pool_autocomplete_trends()
 
     print(f"[enhance-queue] pool1 rising-tools:      {len(p1)}")
     print(f"[enhance-queue] pool2 gsc-opportunities: {len(p2)}")
     print(f"[enhance-queue] pool3 bing:              {len(p3)}")
+    print(f"[enhance-queue] pool6 gsc-ctr-drops:     {len(p6)}")
     print(f"[enhance-queue] pool4 gaps:              {len(p4['gaps'])}")
     print(f"[enhance-queue] pool4 seasonal:          {len(p4['seasonal'])}")
     print(f"[enhance-queue] pool5 autocomplete:      {len(p5['suggestions'])}")
@@ -323,9 +381,9 @@ def main():
         for k, v in errors.items():
             print(f"[enhance-queue]   ! {k}: {v}")
 
-    # Merge target pools (1-3), dedupe by slug, apply cooldown
+    # Merge target pools (1-3, 6), dedupe by slug, apply cooldown
     by_slug = {}
-    for c in p1 + p2 + p3:
+    for c in p1 + p2 + p3 + p6:
         if c['slug'] in cooldown_set:
             continue
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
@@ -363,6 +421,7 @@ def main():
             'scripts/build-rising-tools.py --json',
             'scripts/build-keyword-intel.py --opportunities --export json',
             'data/bing-data-latest.json',
+            'data/gsc-anomalies-latest.json (CTR-drop alerts)',
             'scripts/build-content-ideas.py --gaps',
             'scripts/build-content-ideas.py --seasonal',
             '/tmp/nightly-{suggestions,trends}.txt (Phase 0 cron outputs)',
@@ -371,6 +430,7 @@ def main():
             'rising': len(p1),
             'opportunities': len(p2),
             'bing': len(p3),
+            'gsc_ctr_drops': len(p6),
             'gaps': len(p4['gaps']),
             'seasonal': len(p4['seasonal']),
             'autocomplete': len(p5['suggestions']),

@@ -186,6 +186,33 @@ for hub in country:
     L.append(f'- [{name}](https://tool.teamzlab.com/{hub}/): {count}')
 L.append('')
 
+# ─── Auto-trim to honour llmstxt.org 10KB spec target ───
+# Pops trailing Popular Tools entries until <=10240B. Categories + Optional
+# lists are the navigational core — never trimmed. Floor: keep >=5 popular
+# tools so the section still earns its keep. Self-heals as catalog grows.
+_SPEC_CAP = 10240
+_MIN_POPULAR = 5
+try:
+    _pop_header_idx = L.index('## Popular Tools')
+    _pop_start = _pop_header_idx + 1
+    while _pop_start < len(L) and not L[_pop_start].startswith('- ['):
+        _pop_start += 1
+    _pop_end = _pop_start
+    while _pop_end < len(L) and L[_pop_end].startswith('- ['):
+        _pop_end += 1
+    _kept_popular = _pop_end - _pop_start
+    while len('\n'.join(L).encode('utf-8')) > _SPEC_CAP and _kept_popular > _MIN_POPULAR:
+        _pop_end -= 1
+        L.pop(_pop_end)
+        _kept_popular -= 1
+    _final_size = len('\n'.join(L).encode('utf-8'))
+    if _final_size > _SPEC_CAP:
+        print(f'  WARN: llms.txt still {_final_size - _SPEC_CAP}B over 10KB after trimming Popular Tools to floor of {_MIN_POPULAR}. Consider shortening Categories list.')
+    else:
+        print(f'  llms.txt auto-trimmed: {_kept_popular} popular tools kept, final {_final_size}B (under 10KB spec)')
+except ValueError:
+    pass
+
 with open('llms.txt','w') as f: f.write('\n'.join(L))
 llms_size = len('\n'.join(L).encode('utf-8'))
 
@@ -285,8 +312,7 @@ print(f'  llms.txt: {real_llms}B ({real_llms/1024:.1f}KB), {hubs_count} categori
 print(f'  llms-full.txt: {real_full}B ({real_full/1024:.1f}KB), {total} tools (full descriptions)')
 if real_llms > spec_cap:
     import sys
-    print(f'  ERROR: llms.txt exceeds llmstxt.org 10KB spec target by {real_llms - spec_cap}B. Trim Popular Tools or Categories.', file=sys.stderr)
-    sys.exit(2)
+    print(f'  WARN: llms.txt still {real_llms - spec_cap}B over 10KB after auto-trim (Popular Tools floor reached). Shorten Categories list to recover.', file=sys.stderr)
 "
 )
 

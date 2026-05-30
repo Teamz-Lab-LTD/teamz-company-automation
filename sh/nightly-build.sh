@@ -286,10 +286,25 @@ echo "  Research done. All results saved for Claude to use."
 # Phase 1: Run all maintenance scripts (no Claude needed, zero quota)
 echo ""
 echo "=== Phase 1: Maintenance Scripts (zero quota) ==="
-run_phase_cmd "Static schema rebuild" 3 "python3 scripts/build-static-schema.py"
+# Search index always runs — its output (tools.json, search-index.js, sitemap,
+# llms*, webview-incompat.json, index.html counts) is in the dirty-exclusion
+# list above, so it self-heals and never traps the guard.
 run_phase_cmd "Search index rebuild" 5 "./scripts/build-search-index.sh"
-run_phase_cmd "Orphan fix" 3 "python3 scripts/build-fix-orphans.py fix"
-run_phase_cmd "SEO auto-fix" 5 "./scripts/build-seo-audit.sh --fix"
+
+# Tool-HTML-editing maintenance runs ONLY on a clean start. On a dirty start
+# Phase 5 skips the commit, so any tool-page edit these scripts make (schema
+# blocks, orphan cross-links, SEO autofixes) would persist as UN-excluded dirt
+# and permanently re-trip REPO_DIRTY_AT_START on every future run = self-lock.
+# (Root cause of the 2026-05-30 4-run enhance/deploy stall.) Skip them when
+# dirty; they resume automatically on the next clean run.
+if [ "$REPO_DIRTY_AT_START" -eq 0 ]; then
+    run_phase_cmd "Static schema rebuild" 3 "python3 scripts/build-static-schema.py"
+    run_phase_cmd "Orphan fix" 3 "python3 scripts/build-fix-orphans.py fix"
+    run_phase_cmd "SEO auto-fix" 5 "./scripts/build-seo-audit.sh --fix"
+else
+    echo "  - Skipping tool-editing maintenance (static-schema, orphan-fix, seo-fix):"
+    echo "    repo dirty at start; their edits can't be committed and would re-lock the guard."
+fi
 
 echo "  SEO monitoring..."
 run_phase_cmd "Uptime check" 3 "python3 scripts/build-uptime-check.py"

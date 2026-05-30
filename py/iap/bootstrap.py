@@ -198,27 +198,74 @@ def stage_rc(cfg: dict) -> None:
     project_id = cfg["revenuecat"]["project_id"]
     apps = rc.list_apps(key, project_id)
     print(f"  [+] {len(apps)} RC apps in project {project_id}")
-    # Upload ASC API key to iOS apps that don't have it yet
+
+    ios_public_key: str | None = None
+    android_public_key: str | None = None
+
+    # Upload ASC API key to iOS apps + fetch public SDK keys.
     for app in apps:
-        if app["type"] != "app_store":
-            continue
-        ios_app_id = app["id"]
-        configured = app.get("app_store", {}).get(
-            "app_store_connect_api_key_configured"
-        )
-        if configured:
-            print(f"  [=] {app['name']}: ASC key already configured")
-            continue
-        # Try the shared TeamzLab key
-        try:
-            p8 = asc.DEFAULT_KEY_PATH.read_text()
-            ok = rc.upload_asc_api_key(
-                key, project_id, ios_app_id,
-                p8, asc.DEFAULT_KEY_ID, asc.DEFAULT_ISSUER_ID,
+        if app["type"] == "app_store":
+            ios_app_id = app["id"]
+            configured = app.get("app_store", {}).get(
+                "app_store_connect_api_key_configured"
             )
-            print(f"  [{'+' if ok else '!'}] {app['name']}: ASC key uploaded")
-        except Exception as e:
-            print(f"  [!] {app['name']}: ASC key upload failed: {e}")
+            if not configured:
+                try:
+                    p8 = asc.DEFAULT_KEY_PATH.read_text()
+                    ok = rc.upload_asc_api_key(
+                        key, project_id, ios_app_id,
+                        p8, asc.DEFAULT_KEY_ID, asc.DEFAULT_ISSUER_ID,
+                    )
+                    print(
+                        f"  [{'+' if ok else '!'}] "
+                        f"{app['name']}: ASC key uploaded"
+                    )
+                except Exception as e:
+                    print(f"  [!] {app['name']}: ASC key failed: {e}")
+            else:
+                print(f"  [=] {app['name']}: ASC key already configured")
+            ios_public_key = rc.get_app_public_sdk_key(
+                key, project_id, ios_app_id,
+            )
+        elif app["type"] == "play_store":
+            android_public_key = rc.get_app_public_sdk_key(
+                key, project_id, app["id"],
+            )
+
+    # Paywall theming — if config has design_tokens, push to RC paywall.
+    pw_cfg = cfg.get("paywall", {})
+    if pw_cfg.get("design_tokens"):
+        offering_id = pw_cfg.get("offering_id")
+        if not offering_id:
+            # Best-effort: pick the first non-archived offering
+            offerings = rc.list_offerings(key, project_id)
+            if offerings:
+                offering_id = offerings[0]["id"]
+        if offering_id:
+            pw = rc.get_paywall(key, project_id, offering_id)
+            pw_id = pw.get("id") if pw else None
+            if pw_id:
+                ok = rc.update_paywall_theme(
+                    key, project_id, pw_id, pw_cfg["design_tokens"],
+                )
+                print(
+                    f"  [{'+' if ok else '!'}] "
+                    f"paywall theme synced to design tokens"
+                )
+            else:
+                print(
+                    "  [!] no paywall attached to offering "
+                    f"{offering_id}; create one in RC dashboard first"
+                )
+
+    # Emit Flutter snippet (printed at end of stage).
+    entitlement = pw_cfg.get("default_entitlement_id", "premium")
+    snippet = rc.emit_flutter_revenuecat_snippet(
+        ios_public_key, android_public_key, entitlement,
+    )
+    print("\n  --- Flutter snippet (paste into main.dart) ---")
+    for line in snippet.splitlines():
+        print(f"  {line}")
 
 
 def main() -> int:

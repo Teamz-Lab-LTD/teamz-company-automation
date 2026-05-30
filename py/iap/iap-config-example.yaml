@@ -64,3 +64,33 @@ global_availability: true
 # PNG (works for first submission), or 'file:/path/to/screenshot.png'
 # to upload your own.
 review_screenshot: placeholder
+
+# ─── Paywall ───────────────────────────────────────────────────────
+# RC's hosted paywall (rendered by purchases_ui_flutter's PaywallView)
+# can be themed to match your host app's design system. Provide the
+# canonical token values from your `BaseDesignSystem` subclass and
+# the orchestrator pushes them to RC via the v2 REST API.
+#
+# Hex colors (without alpha). RC respects light/dark variants if you
+# pass them as a `{ light, dark }` dict (advanced — see lib_rc.py).
+paywall:
+  # The offering whose paywall gets themed. Leave empty to auto-pick
+  # the first non-archived offering in the project.
+  offering_id: ""
+
+  # Entitlement ID the SDK gates premium features by. Emitted into the
+  # Flutter snippet's `defaultEntitlementId`.
+  default_entitlement_id: premium
+
+  # Design system tokens → RC paywall colors. Pull these from your
+  # host app's BaseDesignSystem instance. Omit any field to keep RC's
+  # current value for it.
+  design_tokens:
+    primary: "#1ED760"          # CTA button + accents (your brand)
+    background: "#0F1115"       # full-bleed dark
+    surface: "#1A1D24"          # card backgrounds
+    text_primary: "#F5F7FA"     # heading + body
+    text_secondary: "#9AA0A8"   # captions + helper text
+    on_primary: "#000000"       # text on CTA button (contrast pair)
+    font_family: "Poppins"      # CSS family — must be loaded on RC side
+

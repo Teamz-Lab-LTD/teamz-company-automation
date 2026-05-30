@@ -127,3 +127,127 @@ def list_products(secret_key: str, project_id: str) -> list[dict]:
         if not next_token:
             break
     return items
+
+
+def list_public_api_keys(
+    secret_key: str, project_id: str, app_id: str,
+) -> list[dict]:
+    """SDK-side public keys (start with `appl_` or `goog_`) — what
+    Flutter passes to `RevenueCatConfig(apiKey: ...)`."""
+    r = requests.get(
+        f"{API_BASE}/projects/{project_id}/apps/{app_id}/public_api_keys",
+        headers={"Authorization": f"Bearer {secret_key}"},
+        timeout=30,
+    )
+    if r.status_code >= 400:
+        return []
+    return r.json().get("items", [])
+
+
+def get_app_public_sdk_key(
+    secret_key: str, project_id: str, app_id: str,
+) -> str | None:
+    """Return the single production public SDK key for an app
+    (or sandbox if no prod yet — RC's behavior)."""
+    keys = list_public_api_keys(secret_key, project_id, app_id)
+    for k in keys:
+        if k.get("type") == "public":
+            return k.get("key")
+    return keys[0].get("key") if keys else None
+
+
+def list_offerings(secret_key: str, project_id: str) -> list[dict]:
+    r = requests.get(
+        f"{API_BASE}/projects/{project_id}/offerings?limit=20",
+        headers={"Authorization": f"Bearer {secret_key}"},
+        timeout=30,
+    )
+    r.raise_for_status()
+    return r.json().get("items", [])
+
+
+def get_paywall(
+    secret_key: str, project_id: str, offering_id: str,
+) -> dict | None:
+    """RC v2 returns the paywall config attached to an offering, if
+    any. Used to read the existing paywall before applying a theme."""
+    r = requests.get(
+        f"{API_BASE}/projects/{project_id}/offerings/{offering_id}/paywall",
+        headers={"Authorization": f"Bearer {secret_key}"},
+        timeout=30,
+    )
+    if r.status_code == 404:
+        return None
+    if r.status_code >= 400:
+        return None
+    return r.json()
+
+
+def update_paywall_theme(
+    secret_key: str, project_id: str, paywall_id: str,
+    design_tokens: dict,
+) -> bool:
+    """Apply a host-app's design-system colors + typography to RC's
+    hosted paywall (RemotePaywall — purchases_ui_flutter's PaywallView
+    renders this).
+
+    `design_tokens` shape (all fields optional — RC keeps existing
+    values for any field omitted):
+      {
+        "primary":        "#RRGGBB",  # CTA button + accents
+        "background":     "#RRGGBB",  # full-bleed background
+        "surface":        "#RRGGBB",  # card backgrounds
+        "text_primary":   "#RRGGBB",  # body + heading text
+        "text_secondary": "#RRGGBB",  # captions
+        "on_primary":     "#RRGGBB",  # text on CTA button
+        "font_family":    "Poppins",  # CSS font-family (must be loaded)
+      }
+
+    The paywall must already exist (created via RC dashboard or
+    the create-paywall endpoint). This call patches only color +
+    font tokens; layout/copy untouched.
+    """
+    # Build the PATCH body — only include fields the user supplied.
+    components = {}
+    if "primary" in design_tokens:
+        components["primary_color"] = design_tokens["primary"]
+    if "background" in design_tokens:
+        components["background_color"] = design_tokens["background"]
+    if "surface" in design_tokens:
+        components["surface_color"] = design_tokens["surface"]
+    if "text_primary" in design_tokens:
+        components["text_color"] = design_tokens["text_primary"]
+    if "text_secondary" in design_tokens:
+        components["secondary_text_color"] = design_tokens["text_secondary"]
+    if "on_primary" in design_tokens:
+        components["primary_text_color"] = design_tokens["on_primary"]
+    if "font_family" in design_tokens:
+        components["font_family"] = design_tokens["font_family"]
+    body = {"theme": components}
+    r = requests.patch(
+        f"{API_BASE}/projects/{project_id}/paywalls/{paywall_id}",
+        headers=_headers(secret_key),
+        json=body, timeout=30,
+    )
+    return r.status_code in (200, 204)
+
+
+def emit_flutter_revenuecat_snippet(
+    ios_public_key: str | None,
+    android_public_key: str | None,
+    entitlement_id: str = "premium",
+) -> str:
+    """Return a ready-to-paste Dart snippet for main.dart that wires
+    `RevenueCatConfig` with the discovered public keys. Drop into
+    `AppInitializer.createApp(revenueCatConfig: ...)`."""
+    ios = ios_public_key or "<paste-from-rc-dashboard>"
+    android = android_public_key or "<paste-from-rc-dashboard>"
+    return f"""// In main.dart — pass to AppInitializer.createApp:
+revenueCatConfig: kIsWeb ? null : RevenueCatConfig(
+  apiKey: defaultTargetPlatform == TargetPlatform.iOS
+      ? '{ios}'
+      : '{android}',
+  defaultEntitlementId: '{entitlement_id}',
+  useStoreKit2IfAvailable: true,
+),
+"""

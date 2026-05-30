@@ -1,0 +1,66 @@
+# TeamzLab IAP bootstrap config — config-driven product creation
+# across App Store Connect + Google Play Console + RevenueCat.
+#
+# Copy this to your project as `iap-config.yaml` (gitignored — it
+# only carries product metadata + IDs, not secrets) and fill in.
+# Secrets stay in ~/.config/teamzlab/.
+#
+# Run from project root: python3 team_mvp_kit/teamz-company-automation/py/iap/bootstrap.py
+#
+# All TeamzLab apps share one ASC API key + one Play SA. You only
+# need to set per-project values here.
+
+app:
+  ios_bundle_id: com.teamzlab.YOURAPP
+  android_package_name: com.teamzlab.YOURAPP
+  apple_app_id: ""  # Filled by discovery on first run + cached
+  app_name: "Your App"  # ≤30 chars; shown as subscription group label
+
+revenuecat:
+  project_id: proj8d8322e7  # NoteTube uses this — change per project
+  ios_app_id: ""             # RC app ID (auto-discovered if empty)
+  android_app_id: ""
+
+subscription_group:
+  reference_name: "{ios_bundle_id}_pro_group"  # ASC-internal label
+
+# Auto-renewable subscriptions. All live inside `subscription_group`
+# so users can upgrade Pro → Creator without cancel/resubscribe.
+subscriptions:
+  - product_id_ios: com.teamzlab.YOURAPP.pro_monthly
+    product_id_android: yourapp_pro:monthly
+    reference_name: Pro Monthly
+    locale_en_us_name: "Pro Monthly"
+    locale_en_us_description: "Unlimited features. Renews monthly."
+    period: ONE_MONTH        # iOS: ONE_MONTH/ONE_YEAR/ONE_WEEK/etc
+    play_period: P1M          # Android: ISO 8601 duration
+    price_usd: 9.99
+
+  - product_id_ios: com.teamzlab.YOURAPP.pro_annual
+    product_id_android: yourapp_pro:annual
+    reference_name: Pro Annual
+    locale_en_us_name: "Pro Annual"
+    locale_en_us_description: "All features for a year. Save 40%."
+    period: ONE_YEAR
+    play_period: P1Y
+    price_usd: 59.99
+
+# One-time products: non_renewing (subscription with no auto-renew)
+# OR non_consumable (lifetime). Set `play_kind: managed`.
+one_time_products:
+  - product_id_ios: com.teamzlab.YOURAPP.lifetime
+    product_id_android: yourapp_lifetime
+    reference_name: Lifetime
+    locale_en_us_name: "Lifetime"
+    locale_en_us_description: "All features forever. One-time."
+    ios_kind: non_consumable  # or 'non_renewing' or 'consumable'
+    price_usd: 199.99
+
+# Global availability: set true to deploy to all 175 ASC territories
+# (subscriptions) + use Google Play auto-spread (one-time + subs)
+global_availability: true
+
+# Review screenshot mode: 'placeholder' generates a 640x920 dark-gray
+# PNG (works for first submission), or 'file:/path/to/screenshot.png'
+# to upload your own.
+review_screenshot: placeholder

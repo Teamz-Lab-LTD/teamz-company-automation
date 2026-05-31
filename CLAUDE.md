@@ -944,3 +944,76 @@ Scripts read `.teamz-automation.env` from the host project. Key vars for ASO:
 - `TEAMZ_APP_IDS` — Apple numeric app ID
 - `TEAMZ_PLAY_PACKAGE_NAME` — Android package name
 - `TEAMZ_DATA_DIR` — where to write project-level output
+- `TEAMZ_PLAY_DEV_ACCOUNT_ID` — Play developer numeric ID (the long
+  number in `play.google.com/console/u/0/developers/<this>/...`). Used
+  by the bulk-reports puller to address the
+  `pubsite_prod_<dev>` Cloud Storage bucket.
+
+## ASO + landing + blog: run the master orchestrator FIRST
+
+**This is the single canonical workflow for any ASO listing, app
+landing page, or app-related blog post.** Skipping it (sampling 1-2
+sources and guessing the rest) is the failure mode that ships wrong
+free-tier copy + misses the conversion-killer angles competitors
+expose in their reviews.
+
+### What to run
+
+```bash
+cd teamz-company-automation
+TEAMZ_PLAY_DEV_ACCOUNT_ID=<long-number-from-Play-Console-URL> \
+TEAMZ_PLAY_SERVICE_ACCOUNT_JSON=$HOME/.config/teamzlab/play-console-service-account.json \
+py/aso/aso-master-precheck.sh \
+  --package com.your.app \
+  --keywords-file kws.txt \
+  --competitors-play <pkg1>,<pkg2>,<pkg3> \
+  --competitors-asc <asc-id1>,<asc-id2> \
+  --app-slug <landing-page-slug> \
+  --firebase-project <firebase-project-id> \
+  --months 3 \
+  --out data/master.json
+```
+
+### What you get back in one JSON
+
+1. **Play bulk reports** — daily installs by country/language/device,
+   store_performance visitors + acquisitions + conversion rate by
+   country + traffic source, reviews. Source: Cloud Storage bulk
+   reports bucket (the only API path to acquisition data; the
+   Reporting API exposes only crash/ANR/render vitals).
+2. **Free keyword volume + Google Trends** — via
+   `build-keyword-volume.py` (Trends + autocomplete + Bing Webmaster
+   volume + Google result counts).
+3. **Competitor Play reviews** — last 500 negative reviews per
+   competitor classified into pain themes: `missing_feature`,
+   `slow_performance`, `broken_bug`, `privacy_concern`,
+   `price_complaint`, `ui_complaint`. Use as raw material for
+   "what to attack" angles in your copy.
+4. **iTunes Search competitor cards** — when `--competitors-asc` provided.
+5. **Firebase Analytics events + sequential funnel** — when
+   `--firebase-project` provided AND the Firebase project is on Blaze
+   with BigQuery Analytics export enabled.
+6. **ChatGPT Deep Research prompt** — `aso-deep-research-prompt.py`
+   emits a strict-format prompt; user pastes into ChatGPT, saves the
+   result, the orchestrator re-merges.
+
+### Mandatory order
+
+1. Run orchestrator. Inspect `data/aso-master-table-<pkg>-<date>.json`.
+2. Show the table to the user. Get approval.
+3. Paste the deep-research prompt to ChatGPT yourself (the script
+   does not call ChatGPT). Save the response as
+   `<workdir>/deep-research-result.json`. Re-merge.
+4. **Only now** write ASO name / subtitle / keywords / description /
+   promo OR landing-page hero/meta OR blog post outline.
+
+### Hard rules
+
+- Do not write metadata "from memory" or "from the app card alone".
+  The card was a starting point; the orchestrator output is the
+  source of truth.
+- Do not shortcut by reading 1-2 source JSON keys and skipping the
+  rest. If a source returns empty, name it in the report.
+- If the orchestrator script itself is missing from the submodule
+  (it was added 2026-06), `git pull` the submodule first; do not
+  write a workaround.

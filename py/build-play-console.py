@@ -54,11 +54,30 @@ except ImportError:
 SCOPES = (
     "https://www.googleapis.com/auth/androidpublisher",
     "https://www.googleapis.com/auth/playdeveloperreporting",
+    "https://www.googleapis.com/auth/devstorage.read_only",
 )
 
 
 def _credentials(json_path: Path):
     return service_account.Credentials.from_service_account_file(str(json_path), scopes=SCOPES)
+
+
+def _bulk_bucket(creds) -> str:
+    """Bulk reports bucket name = ``pubsite_prod_<devAccountId>``.
+
+    The dev account id is part of the Play Console URL the user opens, e.g.
+    ``play.google.com/console/u/0/developers/7194763656319643086/...``. We
+    accept it via env var ``TEAMZ_PLAY_DEV_ACCOUNT_ID`` so this script stays
+    org-agnostic. As a fallback we try to read it from
+    ``play_dev_account_id`` in the runtime config.
+    """
+    raw = os.getenv("TEAMZ_PLAY_DEV_ACCOUNT_ID", "").strip()
+    if not raw:
+        raise RuntimeError(
+            "Set TEAMZ_PLAY_DEV_ACCOUNT_ID to your Play developer account id "
+            "(the long number in the Play Console URL after /developers/)."
+        )
+    return f"pubsite_prod_{raw}"
 
 
 def _package_name(cfg: dict, override: Optional[str]) -> str:
@@ -88,6 +107,144 @@ def _require_paths(cfg: dict, package: str) -> Path:
         )
         sys.exit(1)
     return Path(sa)
+
+
+def _bulk_get(creds, bucket: str, name: str) -> Optional[bytes]:
+    import google.auth.transport.requests
+    import urllib.request
+    import urllib.parse
+
+    creds.refresh(google.auth.transport.requests.Request())
+    encoded = urllib.parse.quote(name, safe="")
+    url = f"https://storage.googleapis.com/storage/v1/b/{bucket}/o/{encoded}?alt=media"
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {creds.token}"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return resp.read()
+    except Exception:
+        return None
+
+
+def _parse_bulk_csv(blob: bytes) -> list[dict]:
+    text = blob.decode("utf-16", errors="replace")
+    lines = [ln for ln in text.splitlines() if ln.strip()]
+    if not lines:
+        return []
+    header = [h.strip() for h in lines[0].split(",")]
+    rows = []
+    for ln in lines[1:]:
+        cells = ln.split(",")
+        if len(cells) < len(header):
+            continue
+        rows.append({header[i]: cells[i].strip() for i in range(len(header))})
+    return rows
+
+
+def cmd_bulk_reports(
+    cfg: dict,
+    package: str,
+    months: int,
+    out: Optional[Path],
+) -> int:
+    """Pull installs + store_performance + reviews from the bulk-reports bucket.
+
+    Bulk-reports bucket is the only source for Play Console acquisition data
+    — the Reporting API exposes only crash/ANR/render vitals. We fetch the
+    last ``months`` months of CSVs and roll them up to a single JSON shaped
+    for downstream content/ASO tools.
+    """
+    sa_path = _require_paths(cfg, package)
+    creds = _credentials(sa_path)
+    bucket = _bulk_bucket(creds)
+    today = date.today()
+
+    payload: Dict[str, Any] = {
+        "package": package,
+        "bucket": bucket,
+        "generated_at": today.isoformat(),
+        "months_requested": months,
+        "installs": {"overview": [], "country": [], "language": [], "device": [], "os_version": [], "app_version": [], "carrier": []},
+        "store_performance": {"country": [], "traffic_source": []},
+        "reviews": [],
+        "missing_files": [],
+    }
+
+    # Start at the first day of the LAST COMPLETED month — Play generates
+    # monthly bulk CSVs after the month closes, so the current month is not
+    # available until day 1 of next month.
+    cursor = (today.replace(day=1) - timedelta(days=1)).replace(day=1)
+    yyyymm_list: list[str] = []
+    for _ in range(months):
+        yyyymm_list.append(cursor.strftime("%Y%m"))
+        prev = (cursor - timedelta(days=1)).replace(day=1)
+        cursor = prev
+
+    install_dims = ["overview", "country", "language", "device", "os_version", "app_version", "carrier"]
+    perf_dims = ["country", "traffic_source"]
+
+    for yyyymm in yyyymm_list:
+        for dim in install_dims:
+            name = f"stats/installs/installs_{package}_{yyyymm}_{dim}.csv"
+            blob = _bulk_get(creds, bucket, name)
+            if blob is None:
+                payload["missing_files"].append(name)
+                continue
+            payload["installs"][dim].extend(_parse_bulk_csv(blob))
+
+        for dim in perf_dims:
+            name = f"stats/store_performance/store_performance_{package}_{yyyymm}_{dim}.csv"
+            blob = _bulk_get(creds, bucket, name)
+            if blob is None:
+                payload["missing_files"].append(name)
+                continue
+            payload["store_performance"][dim].extend(_parse_bulk_csv(blob))
+
+        name = f"reviews/reviews_{package}_{yyyymm}.csv"
+        blob = _bulk_get(creds, bucket, name)
+        if blob is not None:
+            payload["reviews"].extend(_parse_bulk_csv(blob))
+
+    # Roll up totals for the headline numbers any caller will want first.
+    perf_country = payload["store_performance"]["country"]
+    if perf_country:
+        total_visitors = sum(int(r.get("Store listing visitors", 0) or 0) for r in perf_country)
+        total_acq = sum(int(r.get("Store listing acquisitions", 0) or 0) for r in perf_country)
+        payload["summary"] = {
+            "total_store_listing_visitors": total_visitors,
+            "total_store_listing_acquisitions": total_acq,
+            "store_listing_conversion_rate": (total_acq / total_visitors) if total_visitors else 0.0,
+        }
+
+    install_overview = payload["installs"]["overview"]
+    if install_overview:
+        try:
+            payload.setdefault("summary", {})["total_install_events"] = sum(
+                int(r.get("Install events", 0) or 0) for r in install_overview
+            )
+            payload["summary"]["active_devices_latest"] = int(
+                install_overview[-1].get("Active Device Installs", 0) or 0
+            )
+        except Exception:
+            pass
+
+    if out is None:
+        out = cfg["data_dir"] / f"play-bulk-reports-{package.replace('.', '-')}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    print(f"wrote {out}")
+    if "summary" in payload:
+        s = payload["summary"]
+        print(
+            "summary: visitors={v}  acquisitions={a}  conv={c:.2%}  "
+            "installs={i}  active={ad}".format(
+                v=s.get("total_store_listing_visitors", "?"),
+                a=s.get("total_store_listing_acquisitions", "?"),
+                c=s.get("store_listing_conversion_rate", 0.0),
+                i=s.get("total_install_events", "?"),
+                ad=s.get("active_devices_latest", "?"),
+            )
+        )
+    return 0
 
 
 def cmd_report(cfg: dict, package: str, days: int, out: Optional[Path]) -> int:
@@ -469,6 +626,14 @@ def main() -> int:
     p_settings.add_argument("--category", default="Shopping", help="Category name (set manually in console, printed as reminder)")
     p_settings.add_argument("--commit", action="store_true", help="Commit changes")
 
+    p_bulk = sub.add_parser(
+        "bulk-reports",
+        help="Pull installs + store_performance + reviews CSVs from the bulk-reports GCS bucket",
+    )
+    p_bulk.add_argument("--package", help=pkg_help)
+    p_bulk.add_argument("--months", type=int, default=3, help="How many recent months to pull (default 3)")
+    p_bulk.add_argument("--out", type=Path, help="Output JSON path (default: TEAMZ_DATA_DIR/play-bulk-reports-<pkg>.json)")
+
     p_upload = sub.add_parser("upload", help="Upload AAB to a Play Console track")
     p_upload.add_argument("--package", help=pkg_help)
     p_upload.add_argument("--aab", type=Path, required=True, help="Path to .aab file")
@@ -496,6 +661,8 @@ def main() -> int:
         return cmd_listing_push(cfg, pkg, args.file, args.commit)
     if args.cmd == "upload":
         return cmd_upload(cfg, pkg, args.aab, args.track, args.release_name, args.notes, args.commit)
+    if args.cmd == "bulk-reports":
+        return cmd_bulk_reports(cfg, pkg, args.months, args.out)
     return 1
 
 

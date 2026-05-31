@@ -589,6 +589,97 @@ def print_single_results(results):
                 print(f"  {kw:<40} {vol:>12} {comp:>12} {cpc:>12}")
 
 
+def fetch_dataforseo_volume(keywords, location_code=2840, language_code="en"):
+    """DataForSEO Live Search Volume — paid, real Google data.
+
+    Requires ``~/.config/teamzlab/dataforseo-credentials.json`` with
+    ``login`` and ``password`` keys. Caches per (keyword, location, language,
+    YYYYMM) under data/dataforseo-volume-cache.json so re-runs in the same
+    month don't double-bill.
+    """
+    import base64
+    import datetime as _dt
+    import urllib.request
+
+    cred_path = os.path.expanduser("~/.config/teamzlab/dataforseo-credentials.json")
+    if not os.path.exists(cred_path):
+        print(f"  DataForSEO credentials missing at {cred_path}; skipping paid source.")
+        return {}
+    with open(cred_path, "r") as fh:
+        creds = json.load(fh)
+    login = creds.get("login") or creds.get("username")
+    password = creds.get("password")
+    if not login or not password:
+        print("  DataForSEO credentials malformed; need login + password.")
+        return {}
+
+    cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "dataforseo-volume-cache.json")
+    cache_path = os.path.abspath(cache_path)
+    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+    cache = {}
+    if os.path.exists(cache_path):
+        try:
+            with open(cache_path, "r") as fh:
+                cache = json.load(fh)
+        except Exception:
+            cache = {}
+
+    yyyymm = _dt.date.today().strftime("%Y%m")
+    cache_key = f"{location_code}:{language_code}:{yyyymm}"
+    cache.setdefault(cache_key, {})
+
+    to_fetch = [kw for kw in keywords if kw not in cache[cache_key]]
+    results = {kw: cache[cache_key][kw] for kw in keywords if kw in cache[cache_key]}
+
+    if to_fetch:
+        auth = base64.b64encode(f"{login}:{password}".encode()).decode()
+        # DataForSEO accepts up to 1000 keywords per request; we batch 100 for safety.
+        for i in range(0, len(to_fetch), 100):
+            batch = to_fetch[i:i + 100]
+            body = json.dumps([{
+                "location_code": location_code,
+                "language_code": language_code,
+                "keywords": batch,
+            }]).encode("utf-8")
+            req = urllib.request.Request(
+                "https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live",
+                data=body,
+                headers={
+                    "Authorization": f"Basic {auth}",
+                    "Content-Type": "application/json",
+                },
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    payload = json.load(resp)
+            except Exception as e:
+                print(f"  DataForSEO error: {e}")
+                continue
+            for task in payload.get("tasks", []) or []:
+                for item in (task.get("result") or []):
+                    kw = item.get("keyword")
+                    if not kw:
+                        continue
+                    rec = {
+                        "search_volume": item.get("search_volume"),
+                        "competition": item.get("competition"),
+                        "cpc": item.get("cpc"),
+                        "low_top_of_page_bid": item.get("low_top_of_page_bid"),
+                        "high_top_of_page_bid": item.get("high_top_of_page_bid"),
+                    }
+                    cache[cache_key][kw] = rec
+                    results[kw] = rec
+            time.sleep(0.5)
+
+        try:
+            with open(cache_path, "w") as fh:
+                json.dump(cache, fh, indent=2)
+        except Exception as e:
+            print(f"  cache write failed: {e}")
+
+    return results
+
+
 def main():
     if len(sys.argv) < 2:
         print("Usage:")
@@ -596,7 +687,38 @@ def main():
         print('  python3 scripts/build-keyword-volume.py "kw1" "kw2" "kw3"')
         print('  python3 scripts/build-keyword-volume.py --bulk')
         print('  python3 scripts/build-keyword-volume.py --top 20')
+        print('  python3 scripts/build-keyword-volume.py --source dataforseo "kw1" "kw2"')
+        print('  python3 scripts/build-keyword-volume.py --source dataforseo --keywords-file kws.txt --out volumes.json')
         sys.exit(1)
+
+    if sys.argv[1] == "--source" and len(sys.argv) > 2 and sys.argv[2] == "dataforseo":
+        rest = sys.argv[3:]
+        kws = []
+        out_path = None
+        i = 0
+        while i < len(rest):
+            tok = rest[i]
+            if tok == "--keywords-file" and i + 1 < len(rest):
+                with open(rest[i + 1], "r") as fh:
+                    kws.extend([ln.strip() for ln in fh if ln.strip()])
+                i += 2
+            elif tok == "--out" and i + 1 < len(rest):
+                out_path = rest[i + 1]
+                i += 2
+            else:
+                kws.append(tok)
+                i += 1
+        if not kws:
+            print("ERROR: provide keywords inline or --keywords-file path")
+            sys.exit(2)
+        data = fetch_dataforseo_volume(kws)
+        if out_path:
+            with open(out_path, "w") as fh:
+                json.dump(data, fh, indent=2)
+            print(f"wrote {out_path}")
+        else:
+            print(json.dumps(data, indent=2))
+        return
 
     print("=" * 70)
     print("  KEYWORD VOLUME ESTIMATOR (Free — No Paid APIs)")

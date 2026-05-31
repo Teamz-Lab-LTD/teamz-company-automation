@@ -21,6 +21,7 @@ import json
 import sys
 import os
 from datetime import datetime, timezone
+from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
@@ -503,9 +504,94 @@ def cmd_release_history(app_id):
         print(f"{ver:<12} {dt:<24} {preview}")
 
 
+def cmd_play_reviews(packages, count_per_app, score_max, lang, country, out_path):
+    """Scrape Play Store reviews for a list of competitor packages.
+
+    Pulls negative reviews (default score <= 3) so the output is a
+    pain-points feed an ASO/content writer can mine for missing-feature,
+    bug, or pricing complaints. Requires ``pip install google-play-scraper``.
+    """
+    try:
+        from google_play_scraper import reviews as gp_reviews, Sort
+    except ImportError:
+        print(
+            "ERROR: google-play-scraper not installed. Run:\n"
+            "  pip3 install google-play-scraper",
+            file=sys.stderr,
+        )
+        return 1
+
+    aggregate = {"generated_at": _now_iso(), "competitors": {}, "themes": {}}
+    keyword_buckets = {
+        "missing_feature": ["missing", "lacks", "needs", "wish", "should have", "doesn't have", "no feature"],
+        "slow_performance": ["slow", "lag", "freeze", "crash", "hang", "stuck", "loading"],
+        "broken_bug": ["bug", "broken", "doesn't work", "not working", "error", "fail"],
+        "privacy_concern": ["privacy", "data", "tracking", "leak", "spy"],
+        "price_complaint": ["expensive", "subscription", "price", "paywall", "free trial", "scam"],
+        "ui_complaint": ["confusing", "ugly", "outdated", "hard to use", "complicated"],
+    }
+    aggregate["themes"] = {k: [] for k in keyword_buckets}
+
+    for pkg in packages:
+        try:
+            rows, _ = gp_reviews(
+                pkg,
+                lang=lang,
+                country=country,
+                sort=Sort.NEWEST,
+                count=count_per_app,
+            )
+        except Exception as e:
+            aggregate["competitors"][pkg] = {"error": str(e)}
+            continue
+
+        negatives = [r for r in rows if int(r.get("score") or 5) <= score_max]
+        aggregate["competitors"][pkg] = {
+            "total_pulled": len(rows),
+            "negative_count": len(negatives),
+            "sample_negative": [
+                {
+                    "score": r.get("score"),
+                    "at": r.get("at").isoformat() if r.get("at") else None,
+                    "content": (r.get("content") or "")[:300],
+                }
+                for r in negatives[:25]
+            ],
+        }
+
+        for r in negatives:
+            text = (r.get("content") or "").lower()
+            for theme, terms in keyword_buckets.items():
+                if any(t in text for t in terms):
+                    aggregate["themes"][theme].append({
+                        "app": pkg,
+                        "score": r.get("score"),
+                        "content": (r.get("content") or "")[:300],
+                    })
+
+    # Rank themes by frequency for quick read.
+    aggregate["theme_counts"] = {k: len(v) for k, v in aggregate["themes"].items()}
+
+    if out_path:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(aggregate, indent=2), encoding="utf-8")
+        print(f"wrote {out_path}")
+    else:
+        print(json.dumps(aggregate, indent=2))
+    print("\ntheme counts:")
+    for k, v in sorted(aggregate["theme_counts"].items(), key=lambda x: -x[1]):
+        print(f"  {k:18s}  {v}")
+    return 0
+
+
+def _now_iso():
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat()
+
+
 def main():
     parser = argparse.ArgumentParser(
-        description="ASO competitor intelligence (iTunes Search / Lookup)."
+        description="ASO competitor intelligence (iTunes Search / Lookup + Play reviews)."
     )
     g = parser.add_mutually_exclusive_group(required=True)
     g.add_argument("--find", metavar="KEYWORD", help="Search App Store; show top 10")
@@ -542,6 +628,18 @@ def main():
         metavar="APP_ID",
         help="Track release versions over time (appends to aso-release-history.json)",
     )
+    g.add_argument(
+        "--play-reviews",
+        nargs="+",
+        metavar="PACKAGE",
+        help="Scrape Play Store negative reviews for one or more competitor packages "
+             "(e.g. org.thoughtcrime.securesms ch.threema.app network.loki.messenger)",
+    )
+    parser.add_argument("--count", type=int, default=500, help="Reviews per app (default 500, --play-reviews only)")
+    parser.add_argument("--score-max", type=int, default=3, help="Max star rating to keep (default 3 = complaints)")
+    parser.add_argument("--lang", default="en", help="Reviews language code (default en, --play-reviews only)")
+    parser.add_argument("--country", default="us", help="Reviews country code (default us, --play-reviews only)")
+    parser.add_argument("--out", type=Path, help="Output JSON path (--play-reviews only)")
     args = parser.parse_args()
 
     if args.find is not None:
@@ -560,6 +658,15 @@ def main():
         cmd_developer(args.developer)
     elif args.release_history is not None:
         cmd_release_history(args.release_history)
+    elif args.play_reviews is not None:
+        cmd_play_reviews(
+            args.play_reviews,
+            args.count,
+            args.score_max,
+            args.lang,
+            args.country,
+            args.out,
+        )
 
 
 if __name__ == "__main__":

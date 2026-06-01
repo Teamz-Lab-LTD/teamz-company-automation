@@ -34,3 +34,5 @@ data/aso-reviews-history.json
 data/aso-rank-history.json
 data/aso-rank-watchlist.json
 data/aso-guide-latest.md
+py/android/
+py/fastlane/

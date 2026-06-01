@@ -77,9 +77,9 @@ def main():
     # 3. Push graphics (en-US only — Play applies them across locales)
     en_graphics = PLAY_DIR / "en-US" / "graphics"
     graphic_jobs = [
-        ("phoneScreenshots", en_graphics / "phone-screenshots", "*.jpg", 6),
-        ("sevenInchScreenshots", en_graphics / "tablet-10-inch-screenshots", "*.jpg", 6),
-        ("tenInchScreenshots", en_graphics / "tablet-10-inch-screenshots", "*.jpg", 6),
+        ("phoneScreenshots", en_graphics / "phone-screenshots", "*.jpg", 8),
+        ("sevenInchScreenshots", en_graphics / "tablet-10-inch-screenshots", "*.jpg", 8),
+        ("tenInchScreenshots", en_graphics / "tablet-10-inch-screenshots", "*.jpg", 8),
         ("featureGraphic", en_graphics / "feature-graphic", "*.png", 1),
         ("icon", en_graphics / "icon", "*.png", 1),
     ]

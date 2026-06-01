@@ -207,7 +207,7 @@ SKIPPED_PHASES=()
 REPO_DIRTY_AT_START=0
 # Ignore files that pre-commit hook auto-regenerates after every commit (always "dirty")
 # and gitignored config files. Without this filter nightly always sees dirty repo and skips.
-DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|\.htaccess|data/research-cache/.*|data/progress/snapshots/.*|data/rising-tools-.*\.json|data/gsc-broken-pages-.*\.json|data/canonical-mismatches-.*\.json|data/enhance-queue\.json|data/enhancement-log\.json|data/last-night-enhance\.md|data/bing-data-.*\.json|data/gsc-anomalies-.*\.json|data/keyword-mega-batch/.*|logs/.*|.claude-memory/.*)$' || true)"
+DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|\.htaccess|data/research-cache/.*|data/progress/.*|data/rising-tools-.*\.json|data/gsc-broken-pages-.*\.json|data/canonical-mismatches-.*\.json|data/enhance-queue\.json|data/enhancement-log\.json|data/last-night-enhance\.md|data/bing-data-.*\.json|data/gsc-anomalies-.*\.json|data/keyword-mega-batch/.*|logs/.*|.claude-memory/.*)$' || true)"
 if [ -n "$DIRTY_FILES" ]; then
     REPO_DIRTY_AT_START=1
     echo "  Warning: repo is dirty at start. Nightly run will not auto-commit or auto-push."
@@ -389,8 +389,25 @@ elif ! can_resolve_host api.anthropic.com; then
     skip_phase "Claude build (api.anthropic.com unavailable)"
     BUILD_EXIT=0
 else
-    claude --print --verbose --dangerously-skip-permissions --model "$BUILD_MODEL" -p "$(cat "$PROMPT_FILE")" 2>&1
+    # Hang-watchdog (macOS has no `timeout` binary): run the agent in the
+    # background with a sleeper-killer beside it. A frozen agent gets TERM at
+    # AGENT_MAX_SECONDS, KILL 60s later — so it can NEVER zombie for hours and
+    # block later launchd fires (the 29h-freeze that locked 2026-05-31→06-01).
+    # A normal finish cancels the watchdog immediately.
+    AGENT_MAX_SECONDS="${AGENT_MAX_SECONDS:-2700}"
+    claude --print --verbose --dangerously-skip-permissions --model "$BUILD_MODEL" -p "$(cat "$PROMPT_FILE")" 2>&1 &
+    AGENT_PID=$!
+    ( sleep "$AGENT_MAX_SECONDS"; kill -TERM "$AGENT_PID" 2>/dev/null; sleep 60; kill -KILL "$AGENT_PID" 2>/dev/null ) &
+    AGENT_WATCHDOG_PID=$!
+    wait "$AGENT_PID"
     BUILD_EXIT=$?
+    kill "$AGENT_WATCHDOG_PID" 2>/dev/null
+    wait "$AGENT_WATCHDOG_PID" 2>/dev/null
+    if [ "$BUILD_EXIT" -eq 143 ] || [ "$BUILD_EXIT" -eq 137 ]; then
+        echo "  ✗ Claude agent TIMED OUT (>${AGENT_MAX_SECONDS}s) — killed to prevent zombie. Next run retries fresh."
+        record_health_alert "Claude agent timed out (${AGENT_MAX_SECONDS}s) — killed to prevent zombie"
+        osascript -e "display notification \"Claude agent TIMED OUT, killed to avoid zombie. Next run retries.\" with title \"Teamz Build TIMEOUT\" sound name \"Basso\"" 2>/dev/null
+    fi
 
     if [ "$BUILD_EXIT" -ne 0 ]; then
         echo "  ✗ Claude build failed (exit code $BUILD_EXIT)"
@@ -563,6 +580,16 @@ if can_resolve_host github.com; then
         if [ "$RETRY_EXIT" -ne 0 ]; then
             record_health_alert "git push failed after retry"
         fi
+    fi
+
+    # Deploy step: purge Cloudflare so freshly-pushed HTML serves immediately.
+    # Cloudflare caches HTML — without this users get stale pages for hours
+    # after a successful push (hard rule: purge after every real deploy).
+    if { [ "${PUSH_EXIT:-1}" -eq 0 ] || [ "${RETRY_EXIT:-1}" -eq 0 ]; } && \
+       ! printf '%s %s' "$PUSH_OUTPUT" "$RETRY_OUTPUT" | grep -q 'Everything up-to-date'; then
+        echo "  Purging Cloudflare cache (fresh deploy)..."
+        python3 "$_SCRIPT_DIR/../py/cloudflare-purge.py" --site https://tool.teamzlab.com/ 2>&1 | tail -3 \
+            || echo "  ⚠ Cloudflare purge failed — pushed but cache may be stale until next purge."
     fi
 else
     skip_phase "git push (github.com unavailable)"

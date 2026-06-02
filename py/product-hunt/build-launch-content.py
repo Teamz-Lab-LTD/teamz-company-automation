@@ -11,8 +11,21 @@ Reads the app's existing artifacts and produces paste-ready PH launch content:
     - teamz-lab-generic-landing-pages/public/<slug>/screenshots/*.jpg  (gallery sources)
     - <app-repo>/fastlane/metadata/en-US/{name,subtitle,promotional_text}.txt
 
+  STOP-RULE-001 compliance:
+  ----------------------------
+  Before any tagline/description/first-comment is emitted, this script:
+    1. Detects product type (app | web | unknown)
+    2. Audits data sources (master_keywords.csv, apple-store-keywords-en-US.json,
+       aso-competitors-latest.json for apps; landing yaml + keyword-volume cache for web)
+    3. If sources are MISSING or STALE (>14d), calls the underlying kit scripts to
+       refresh: aso-keyword-pipeline.py, aso-competitors.py, build-keyword-volume.py
+    4. Builds a winnability table per RULE-001 — emitted as section 0 of the
+       paste-ready Markdown AND as `data-audit.json` for machine consumption
+    5. Tagline + description are derived FROM that audit, not from assumption
+
   Outputs (under <app-repo>/automation_data/product_hunt/):
-    - launch-content.auto.md     — kit-generated minimal copy (rewritten each run)
+    - data-audit.json            — structured audit (kws + winnability + sources)
+    - launch-content.auto.md     — kit-generated copy (rewritten each run)
     - launch-content.md          — ONLY created if missing (canonical, hand-curated)
     - thumbnail-240.png          — 240x240 (PH thumbnail spec)
     - gallery/01-og-card.png     — 1270x760 OG/social preview
@@ -23,7 +36,9 @@ Usage:
     python build-launch-content.py --app-slug top3picks
     python build-launch-content.py --app-slug top3picks --landing-repo /path/to/landing
     python build-launch-content.py --app-slug top3picks --dry-run
-    python build-launch-content.py --app-slug top3picks --force-canonical  # overwrite launch-content.md too
+    python build-launch-content.py --app-slug top3picks --force-canonical
+    python build-launch-content.py --app-slug top3picks --no-refresh   # use existing data, skip fresh scripts
+    python build-launch-content.py --app-slug top3picks --strict        # abort if winnability table can't be built
 
 Default behavior NEVER clobbers a hand-edited launch-content.md — kit only
 writes launch-content.auto.md and (if no canonical exists) seeds launch-content.md.
@@ -31,11 +46,14 @@ writes launch-content.auto.md and (if no canonical exists) seeds launch-content.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import os
 import re
+import subprocess
 import sys
 import textwrap
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -93,6 +111,18 @@ class AppContext:
     og_path: Optional[Path] = None
     screenshot_paths: list[Path] = field(default_factory=list)
 
+    # Product type + data audit (set by detect_product_type + audit_data_sources)
+    product_type: str = "unknown"  # "app" | "web" | "unknown"
+    secondary_keywords: list[str] = field(default_factory=list)
+
+    # Data audit results
+    top_keywords: list[dict] = field(default_factory=list)  # [{keyword, score, source}]
+    winnability_rows: list[dict] = field(default_factory=list)  # [{keyword, competitor, reviews, installs, verdict}]
+    data_sources_used: list[str] = field(default_factory=list)
+    data_sources_stale: list[str] = field(default_factory=list)
+    data_sources_missing: list[str] = field(default_factory=list)
+    fresh_calls_made: list[str] = field(default_factory=list)
+
     @property
     def out_dir(self) -> Path:
         return self.app_repo / "automation_data" / "product_hunt"
@@ -100,6 +130,14 @@ class AppContext:
     @property
     def gallery_dir(self) -> Path:
         return self.out_dir / "gallery"
+
+    @property
+    def aso_data_dir(self) -> Path:
+        return self.app_repo / "automation_data"
+
+    @property
+    def automation_kit_root(self) -> Path:
+        return self.app_repo / "packages" / "team_mvp_kit" / "teamz-company-automation"
 
 
 # ---------- discovery ----------
@@ -156,6 +194,404 @@ def read_text(p: Path) -> str:
         return ""
 
 
+# ---------- product-type detection ----------
+
+def detect_product_type(app_repo: Path) -> str:
+    """app: native mobile (Flutter/RN/iOS/Android). web: SaaS / web product. unknown otherwise.
+
+    Detection signals (checked in order):
+      app   : pubspec.yaml | android/ | ios/ | fastlane/ at repo root
+      web   : package.json + (next.config* | astro.config* | vite.config*) | index.html only
+    """
+    app_signals = [
+        app_repo / "pubspec.yaml",
+        app_repo / "android" / "app",
+        app_repo / "ios" / "Runner",
+        app_repo / "fastlane",
+    ]
+    if any(s.exists() for s in app_signals):
+        return "app"
+
+    web_signals = [
+        app_repo / "package.json",
+        app_repo / "next.config.js",
+        app_repo / "next.config.mjs",
+        app_repo / "next.config.ts",
+        app_repo / "astro.config.mjs",
+        app_repo / "vite.config.js",
+        app_repo / "vite.config.ts",
+    ]
+    if any(s.exists() for s in web_signals):
+        return "web"
+
+    return "unknown"
+
+
+# ---------- data audit + fresh calls ----------
+
+STALE_DAYS = 14  # ASO cadence locked at 14d (see memory: aso_cadence.md)
+
+
+def _mtime_days(p: Path) -> Optional[float]:
+    if not p.exists():
+        return None
+    return (time.time() - p.stat().st_mtime) / 86400.0
+
+
+def _load_master_keywords_csv(path: Path) -> list[dict]:
+    """Returns rows sorted by score desc. master_keywords.csv schema:
+       keyword,platform,category,avg_score,max_score,trending_days,score"""
+    if not path.exists():
+        return []
+    out = []
+    with path.open(encoding="utf-8") as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            try:
+                row["_score"] = float(row.get("score", 0) or 0)
+            except ValueError:
+                row["_score"] = 0.0
+            out.append(row)
+    out.sort(key=lambda r: -r["_score"])
+    return out
+
+
+def _load_apple_kws_json(path: Path) -> dict:
+    """apple-store-keywords-en-US.json — has 'en' subdoc with 'keywords' (csv string of stems)."""
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _load_competitors_json(path: Path) -> list[dict]:
+    """aso-competitors-latest.json — schema varies by --mode of the last run.
+
+    Expected for winnability: output of `aso-competitors.py --matrix "<seed>"`
+    which produces {"apps": [...]} or {"matches": [...]} — list of competitor
+    apps with userRatingCount/trackName fields.
+
+    If the file contains a single-app output (--keywords or --analyze mode), it
+    has top-level "app_id" / "trackId" and no apps list. We return [] so the
+    caller can fall back gracefully.
+    """
+    if not path.exists():
+        return []
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    if isinstance(d, list):
+        return d
+    if isinstance(d, dict):
+        # Preferred shapes — matrix output
+        for k in ("apps", "results", "competitors", "matches", "ranked"):
+            if k in d and isinstance(d[k], list):
+                return d[k]
+        # Single-app output (--keywords / --analyze mode) — not usable for matrix
+        if "app_id" in d or "trackId" in d:
+            return []
+        # Generic fallback: first list-of-dicts found
+        for v in d.values():
+            if isinstance(v, list) and v and isinstance(v[0], dict):
+                return v
+    return []
+
+
+def _call_kit_script(ctx: AppContext, script_relpath: str, args: list[str]) -> tuple[bool, str]:
+    """Run a kit script as subprocess. Returns (ok, tail_of_output)."""
+    script_path = ctx.automation_kit_root / "py" / script_relpath
+    if not script_path.exists():
+        return False, f"script not found: {script_path}"
+    cmd = ["python3", str(script_path)] + args
+    try:
+        # Long timeout because keyword pipelines can take 5-10 min
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=900,
+            cwd=str(ctx.app_repo),
+        )
+        tail = (result.stdout or "")[-400:] + (result.stderr or "")[-400:]
+        return (result.returncode == 0), tail
+    except subprocess.TimeoutExpired:
+        return False, f"timeout after 900s running {script_relpath}"
+    except Exception as e:
+        return False, f"exception running {script_relpath}: {e}"
+
+
+def audit_data_sources(ctx: AppContext, refresh_stale: bool = True) -> None:
+    """Populate ctx.top_keywords + ctx.data_sources_* by reading ASO/SEO artifacts.
+
+    For apps: master_keywords.csv + apple-store-keywords + aso-competitors.
+    For web:  landing-page secondaryKeywords + (optional) build-keyword-volume output.
+
+    If files are missing OR stale beyond STALE_DAYS, attempts refresh by calling
+    the underlying kit scripts. Records every attempt in ctx.fresh_calls_made.
+    """
+    if ctx.product_type == "app":
+        _audit_app(ctx, refresh_stale=refresh_stale)
+    elif ctx.product_type == "web":
+        _audit_web(ctx, refresh_stale=refresh_stale)
+    else:
+        # Unknown product type: fall back to landing-yaml kws only
+        _audit_landing_only(ctx)
+
+
+def _audit_app(ctx: AppContext, *, refresh_stale: bool) -> None:
+    master = ctx.aso_data_dir / "master_keywords.csv"
+    apple_kws = ctx.aso_data_dir / "apple-store-keywords-en-US.json"
+    competitors = ctx.aso_data_dir / "aso-competitors-latest.json"
+
+    for label, path in [("master_keywords.csv", master),
+                        ("apple-store-keywords-en-US.json", apple_kws),
+                        ("aso-competitors-latest.json", competitors)]:
+        age = _mtime_days(path)
+        if age is None:
+            ctx.data_sources_missing.append(label)
+        elif age > STALE_DAYS:
+            ctx.data_sources_stale.append(f"{label} ({age:.0f}d old, >{STALE_DAYS}d)")
+        else:
+            ctx.data_sources_used.append(f"{label} ({age:.0f}d old)")
+
+    # Refresh if needed
+    if refresh_stale and (ctx.data_sources_missing or ctx.data_sources_stale):
+        seeds = ctx.primaryKeyword or "shopping assistant"
+        if master in (
+            *(ctx.aso_data_dir / m for m in ctx.data_sources_missing if "master" in m),
+        ) or any("master" in s for s in (*ctx.data_sources_missing, *ctx.data_sources_stale)):
+            print(f"  → refreshing master_keywords.csv (seeds: {seeds[:60]})...")
+            ok, tail = _call_kit_script(ctx, "aso/aso-keyword-pipeline.py",
+                                        ["--seeds", seeds])
+            ctx.fresh_calls_made.append(
+                f"aso-keyword-pipeline.py {'OK' if ok else 'FAIL: ' + tail[-160:]}"
+            )
+
+        if any("competitor" in s for s in (*ctx.data_sources_missing, *ctx.data_sources_stale)):
+            print(f"  → refreshing aso-competitors-latest.json (matrix: {seeds[:60]})...")
+            ok, tail = _call_kit_script(ctx, "aso/aso-competitors.py",
+                                        ["--matrix", seeds])
+            ctx.fresh_calls_made.append(
+                f"aso-competitors.py {'OK' if ok else 'FAIL: ' + tail[-160:]}"
+            )
+
+    # Priority 1 — primaryKeyword from landing (always the anchor)
+    if ctx.primaryKeyword:
+        ctx.top_keywords.append({
+            "keyword": ctx.primaryKeyword,
+            "score": None,
+            "source": "landing.md primaryKeyword",
+        })
+
+    # Priority 2 — Apple keywords field (already top-scored by aso-metadata pipeline)
+    # These are single-word stems ranked by Apple search ads volume + difficulty.
+    apple = _load_apple_kws_json(apple_kws)
+    en = apple.get("en", {}) if isinstance(apple, dict) else {}
+    apple_csv = en.get("keywords", "")
+    if apple_csv:
+        for kw in [k.strip() for k in apple_csv.split(",") if k.strip()][:12]:
+            if not any(t["keyword"].lower() == kw.lower() for t in ctx.top_keywords):
+                ctx.top_keywords.append({
+                    "keyword": kw,
+                    "score": None,
+                    "source": "apple-store-keywords (top-ordered)",
+                })
+
+    # Priority 3 — landing.md secondaryKeywords (curated compound phrases)
+    # These pair well with the Apple single-stems above to form ranking-friendly text.
+    for kw in ctx.secondary_keywords[:8]:
+        if not any(t["keyword"].lower() == kw.lower() for t in ctx.top_keywords):
+            ctx.top_keywords.append({
+                "keyword": kw,
+                "score": None,
+                "source": "landing.md secondaryKeywords",
+            })
+
+    # Priority 4 — master_keywords.csv (ONLY use if its scores are differentiated;
+    # the pipeline often emits uniform scores which makes alphabetic sort = noise)
+    rows = _load_master_keywords_csv(master)
+    if rows:
+        # Check score variance — if all top scores are identical, the CSV is
+        # un-ranked and we skip it to avoid alphabetic noise pollution
+        top_scores = {r["_score"] for r in rows[:20]}
+        if len(top_scores) > 1:
+            for r in rows[:6]:
+                kw = r.get("keyword", "")
+                if kw and not any(t["keyword"].lower() == kw.lower() for t in ctx.top_keywords):
+                    ctx.top_keywords.append({
+                        "keyword": kw,
+                        "score": r["_score"],
+                        "source": "master_keywords.csv",
+                    })
+        else:
+            ctx.data_sources_stale.append(
+                f"master_keywords.csv (uniform score {next(iter(top_scores)):.3f} — needs re-run)"
+            )
+
+    # Build winnability rows from competitor data — pair each top kw against
+    # competitors that mention any stem from it (short-stem matching catches more)
+    comps = _load_competitors_json(competitors)
+    ctx.winnability_rows = _build_winnability_rows(ctx, comps)
+
+
+def _audit_web(ctx: AppContext, *, refresh_stale: bool) -> None:
+    """For web products: secondaryKeywords from landing yaml + optional volume data."""
+    # Landing yaml secondaryKeywords already populated by discover()
+    for kw in ctx.secondary_keywords[:12]:
+        ctx.top_keywords.append({
+            "keyword": kw,
+            "score": None,
+            "source": "landing.md secondaryKeywords",
+        })
+
+    if ctx.primaryKeyword:
+        ctx.top_keywords.insert(0, {
+            "keyword": ctx.primaryKeyword,
+            "score": None,
+            "source": "landing.md primaryKeyword",
+        })
+
+    # Try keyword-volume cache for web
+    vol_cache = ctx.app_repo / "automation_data" / f"keyword-volume-{ctx.slug}.json"
+    age = _mtime_days(vol_cache)
+    if age is None:
+        ctx.data_sources_missing.append(f"keyword-volume-{ctx.slug}.json")
+        if refresh_stale and ctx.top_keywords:
+            print(f"  → estimating keyword volume for top {min(6, len(ctx.top_keywords))} kws...")
+            kws_to_check = [t["keyword"] for t in ctx.top_keywords[:6]]
+            ok, tail = _call_kit_script(ctx, "build-keyword-volume.py", kws_to_check)
+            ctx.fresh_calls_made.append(
+                f"build-keyword-volume.py {'OK' if ok else 'FAIL: ' + tail[-160:]}"
+            )
+    else:
+        ctx.data_sources_used.append(f"keyword-volume-{ctx.slug}.json ({age:.0f}d old)")
+
+    # Web doesn't have ASO competitors — winnability skipped, leave empty rows.
+    # User MUST hand-fill or run dedicated SERP tracker separately.
+    ctx.winnability_rows = []
+
+
+def _audit_landing_only(ctx: AppContext) -> None:
+    """Fallback path: only landing yaml available."""
+    if ctx.primaryKeyword:
+        ctx.top_keywords.append({
+            "keyword": ctx.primaryKeyword,
+            "score": None,
+            "source": "landing.md primaryKeyword",
+        })
+    for kw in ctx.secondary_keywords[:11]:
+        ctx.top_keywords.append({
+            "keyword": kw,
+            "score": None,
+            "source": "landing.md secondaryKeywords",
+        })
+
+
+def _build_winnability_rows(ctx: AppContext, comps: list[dict]) -> list[dict]:
+    """For top 6 keywords, find the toughest competitor across loaded comp data
+    and emit a winnability verdict using review/install proxies.
+
+    Verdict thresholds (apps < 10k installs target):
+      Winnable     : top competitor < 5_000 reviews
+      Contested    : 5_000 ≤ reviews < 50_000
+      Hard         : 50_000 ≤ reviews < 500_000
+      Locked       : ≥ 500_000 reviews (don't pick as title kw)
+    """
+    # Stopwords to drop when extracting matchable stems from compound kws
+    STOPS = {"a", "an", "the", "for", "of", "to", "in", "on", "and", "or",
+             "with", "app", "best", "free", "online", "your"}
+
+    rows = []
+    for tk in ctx.top_keywords[:6]:
+        kw = tk["keyword"].lower()
+        # Build matchable stems: full phrase + each significant word
+        stems = [kw] + [w for w in re.findall(r"[a-z0-9]+", kw) if w not in STOPS and len(w) > 2]
+        # Find toughest competitor whose haystack mentions ANY stem
+        best = None
+        for c in comps:
+            haystack = " ".join([
+                str(c.get("trackName", "") or c.get("name", "") or ""),
+                str(c.get("description", "") or "")[:500],
+                str(c.get("keywords", "") or ""),
+            ]).lower()
+            if any(s in haystack for s in stems):
+                reviews = int(c.get("userRatingCount", c.get("reviews", 0)) or 0)
+                if best is None or reviews > int(best.get("userRatingCount", best.get("reviews", 0)) or 0):
+                    best = c
+
+        if best is None:
+            verdict = "Unknown — run `aso-competitors.py --matrix`"
+            if not comps:
+                verdict = "Unknown — no matrix data; run `aso-competitors.py --matrix \"<seed>\"`"
+            rows.append({
+                "keyword": tk["keyword"],
+                "competitor": "—",
+                "reviews": "—",
+                "installs": "—",
+                "verdict": verdict,
+            })
+            continue
+
+        reviews = int(best.get("userRatingCount", best.get("reviews", 0)) or 0)
+        installs = best.get("installs", "—")
+        comp_name = best.get("trackName") or best.get("name") or "?"
+
+        if reviews < 5_000:
+            verdict = "Winnable ✓"
+        elif reviews < 50_000:
+            verdict = "Contested"
+        elif reviews < 500_000:
+            verdict = "Hard"
+        else:
+            verdict = "Locked ✗"
+
+        rows.append({
+            "keyword": tk["keyword"],
+            "competitor": comp_name,
+            "reviews": f"{reviews:,}",
+            "installs": str(installs) if installs != "—" else "—",
+            "verdict": verdict,
+        })
+    return rows
+
+
+def render_winnability_table(ctx: AppContext) -> str:
+    """Markdown table per STOP-RULE-001. ALWAYS emitted; if data missing → row says so."""
+    lines = ["| Keyword | Top competitor | Reviews | Installs | Winnable? |",
+             "|---|---|---|---|---|"]
+    if not ctx.winnability_rows:
+        if ctx.product_type == "web":
+            lines.append("| *(web product — SERP competitor check skipped; run build-serp-tracker.py for full audit)* | — | — | — | — |")
+        else:
+            lines.append("| *(no competitor data — run `py/aso/aso-competitors.py --matrix \"<seed>\"` to populate)* | — | — | — | — |")
+        return "\n".join(lines)
+    for r in ctx.winnability_rows:
+        lines.append(f"| {r['keyword']} | {r['competitor']} | {r['reviews']} | {r['installs']} | {r['verdict']} |")
+    return "\n".join(lines)
+
+
+def write_data_audit_json(ctx: AppContext) -> Path:
+    """Persist the audit so the user can verify exactly what kws drove the copy."""
+    out = ctx.out_dir / "data-audit.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "slug": ctx.slug,
+        "product_type": ctx.product_type,
+        "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "primary_keyword": ctx.primaryKeyword,
+        "top_keywords": ctx.top_keywords,
+        "winnability_rows": ctx.winnability_rows,
+        "data_sources": {
+            "used": ctx.data_sources_used,
+            "stale": ctx.data_sources_stale,
+            "missing": ctx.data_sources_missing,
+        },
+        "fresh_calls_made": ctx.fresh_calls_made,
+    }
+    out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return out
+
+
 def discover(slug: str, app_repo: Path, landing_repo: Path,
              brand_bg: Optional[str], brand_fg: Optional[str]) -> AppContext:
     ctx = AppContext(slug=slug, app_repo=app_repo, landing_repo=landing_repo)
@@ -165,17 +601,29 @@ def discover(slug: str, app_repo: Path, landing_repo: Path,
     if brand_fg:
         ctx.brand_fg = brand_fg
 
+    # Landing yaml — try apps/<slug>.md first, fall back to web/<slug>.md
     landing_md = landing_repo / "src" / "content" / "apps" / f"{slug}.md"
+    if not landing_md.exists():
+        landing_md_web = landing_repo / "src" / "content" / "web" / f"{slug}.md"
+        if landing_md_web.exists():
+            landing_md = landing_md_web
+
     fm = parse_yaml_frontmatter(landing_md)
-    ctx.app_name = fm.get("appName", slug)
+    ctx.app_name = fm.get("appName") or fm.get("siteName") or slug
     ctx.metaTitle = fm.get("metaTitle", "")
     ctx.tagline = fm.get("tagline", "")
     ctx.shortDescription = fm.get("shortDescription", "")
     ctx.primaryKeyword = fm.get("primaryKeyword", "")
+    sec = fm.get("secondaryKeywords") or []
+    if isinstance(sec, list):
+        ctx.secondary_keywords = [s for s in sec if isinstance(s, str)]
     ctx.play_url = fm.get("playStoreUrl", "")
     ctx.apple_url = fm.get("appStoreUrl", "")
     ctx.category = fm.get("category", "Shopping")
     ctx.landing_url = f"https://apps.teamzlab.com/{slug}/"
+
+    # Product type detection
+    ctx.product_type = detect_product_type(app_repo)
 
     # Fastlane Apple metadata
     fl_en = app_repo / "fastlane" / "metadata" / "en-US"
@@ -363,29 +811,143 @@ def truncate(s: str, n: int) -> str:
     return s[: n - 1].rstrip() + "…"
 
 
+def _top_winnable_kws(ctx: AppContext, n: int = 4) -> list[str]:
+    """Return up to n top kws that pass the winnability gate.
+
+    For apps with winnability data: returns kws labelled Winnable/Contested.
+    For web or missing data: returns top kws unfiltered (best-effort).
+    """
+    out = []
+    if ctx.winnability_rows:
+        for row in ctx.winnability_rows:
+            v = row.get("verdict", "")
+            if v.startswith("Winnable") or v.startswith("Contested") or v.startswith("Unknown"):
+                out.append(row["keyword"])
+                if len(out) >= n:
+                    return out
+    # Fallback to top_keywords order
+    for tk in ctx.top_keywords:
+        kw = tk["keyword"]
+        if kw and kw not in out:
+            out.append(kw)
+            if len(out) >= n:
+                break
+    return out
+
+
 def tagline_candidates(ctx: AppContext) -> list[str]:
-    base = ctx.apple_subtitle or ctx.primaryKeyword or "AI shopping assistant"
-    cands = [
-        f"AI picks 3 best products for your budget — skip 300 tabs",
-        f"{ctx.primaryKeyword.title()} — type budget, AI picks 3" if ctx.primaryKeyword else None,
-        f"Stuck shopping? Type budget. AI compares + picks your 3.",
-        f"{base[:50]}",
-    ]
-    return [c for c in cands if c and len(c) <= 60][:4]
+    """Generate kw-anchored tagline candidates from audit data, NOT assumption."""
+    pkw = ctx.primaryKeyword
+    winnable = _top_winnable_kws(ctx, n=4)
+
+    # Try to build candidates that combine 2 high-value kws under 60 chars
+    cands: list[str] = []
+    if pkw and len(winnable) >= 2:
+        # Pattern A: "<primary> + <2nd kw> — 3 picks, your budget"
+        for second in winnable:
+            if second.lower() == pkw.lower():
+                continue
+            c = f"{pkw.title()} + {second.title()} — 3 picks, your budget"
+            if len(c) <= 60:
+                cands.append(c)
+                break
+
+    if pkw:
+        cands.append(f"{pkw.title()} — type budget, AI picks 3")
+
+    # Subtitle as natural fallback
+    if ctx.apple_subtitle:
+        cands.append(ctx.apple_subtitle[:60])
+
+    if ctx.tagline:
+        cands.append(ctx.tagline[:60])
+
+    # Dedupe + length filter
+    seen: set = set()
+    out: list[str] = []
+    for c in cands:
+        if not c or len(c) > 60:
+            continue
+        key = c.lower().strip()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(c)
+    return out[:4]
 
 
 def description_500(ctx: AppContext) -> str:
-    """Returns a 500-char-max paragraph anchored on the app's primary positioning."""
-    if ctx.shortDescription and len(ctx.shortDescription) <= 500:
-        return ctx.shortDescription
-    if ctx.shortDescription:
-        return truncate(ctx.shortDescription, 500)
-    # Fallback assembly
+    """Returns ≤500-char paragraph anchored on top winnable kws from audit.
+
+    Prefers landing.shortDescription if it ALREADY uses top kws (data-driven).
+    Otherwise composes new copy that injects them.
+    """
+    winnable = _top_winnable_kws(ctx, n=6)
+    short = ctx.shortDescription or ""
+
+    # If landing copy already covers ≥60% of top kws, trust it
+    if short:
+        hits = sum(1 for kw in winnable if kw.lower() in short.lower())
+        if winnable and (hits / len(winnable)) >= 0.6 and len(short) <= 500:
+            return short
+        if winnable and (hits / len(winnable)) >= 0.6:
+            return truncate(short, 500)
+
+    # Compose from top kws
+    if winnable:
+        kw_phrase = ", ".join(winnable[:3])
+        s = (
+            f"{ctx.app_name} is built for {kw_phrase}. "
+            f"{ctx.tagline} "
+            f"No affiliate links, no tracking, no signup. "
+            f"Free."
+        )
+        return truncate(s, 500)
+
+    # Final fallback
     s = (
         f"{ctx.app_name} — {ctx.tagline}. "
-        f"Free on iOS + Android. No affiliate links, no tracking, no signup."
+        f"Free. No affiliate links, no tracking, no signup."
     )
     return truncate(s, 500)
+
+
+def render_data_audit_block(ctx: AppContext) -> list[str]:
+    """STOP-RULE-001 compliance: winnability table FIRST, every run, no exceptions."""
+    lines: list[str] = []
+    a = lines.append
+    a("## 0. Data audit (RULE-001: winnability before recommendation)")
+    a("")
+    a(f"**Product type:** `{ctx.product_type}`  |  **Primary keyword:** `{ctx.primaryKeyword or '(none in landing yaml)'}`")
+    a("")
+    a("### Winnability check — top keyword candidates")
+    a("")
+    a(render_winnability_table(ctx))
+    a("")
+    if ctx.top_keywords:
+        a(f"**Top {min(8, len(ctx.top_keywords))} keywords** (anchored into tagline + description below):")
+        for tk in ctx.top_keywords[:8]:
+            src = tk.get("source", "?")
+            score = tk.get("score")
+            score_str = f" · score={score:.2f}" if isinstance(score, (int, float)) else ""
+            a(f"- `{tk['keyword']}`  *(source: {src}{score_str})*")
+        a("")
+    a("### Data sources")
+    if ctx.data_sources_used:
+        a("- ✓ Used: " + ", ".join(ctx.data_sources_used))
+    if ctx.data_sources_stale:
+        a("- ⚠ Stale: " + ", ".join(ctx.data_sources_stale))
+    if ctx.data_sources_missing:
+        a("- ✗ Missing: " + ", ".join(ctx.data_sources_missing))
+    if ctx.fresh_calls_made:
+        a("- 🔄 Fresh calls: " + "; ".join(ctx.fresh_calls_made))
+    if not (ctx.data_sources_used or ctx.data_sources_stale or ctx.data_sources_missing):
+        a("- *(no ASO/SEO artifacts available — copy below uses landing yaml only)*")
+    a("")
+    a(f"_Full structured audit: `automation_data/product_hunt/data-audit.json`._")
+    a("")
+    a("---\n")
+    return lines
 
 
 def render_launch_md(ctx: AppContext) -> str:
@@ -406,6 +968,8 @@ def render_launch_md(ctx: AppContext) -> str:
     a("Maker: Teamz Lab LTD")
     a("")
     a("---\n")
+    # STOP-RULE-001: winnability table BEFORE any tagline/description
+    lines.extend(render_data_audit_block(ctx))
     a("## 1. Main info\n")
     a(f"### Name (≤40 chars)")
     a(f"Recommended: `{(ctx.apple_name or ctx.app_name)[:40]}`")
@@ -516,6 +1080,12 @@ def main():
     ap.add_argument("--force-canonical", action="store_true",
                     help="Overwrite launch-content.md even if it already exists "
                          "(default: never touch canonical file once created)")
+    ap.add_argument("--no-refresh", action="store_true",
+                    help="Skip auto-calling ASO/SEO refresh scripts even if data is stale/missing. "
+                         "Use existing artifacts as-is. Default: refresh stale data automatically.")
+    ap.add_argument("--strict", action="store_true",
+                    help="STOP-RULE-001 strict mode — abort if winnability table cannot be built "
+                         "(missing competitor data for apps). Default: emit table with 'no data' rows.")
     args = ap.parse_args()
 
     app_repo = Path(args.app_repo) if args.app_repo else Path.cwd()
@@ -534,16 +1104,36 @@ def main():
     )
 
     print(f"=== Product Hunt launch builder ===")
-    print(f"  slug       : {ctx.slug}")
-    print(f"  app_repo   : {ctx.app_repo}")
-    print(f"  landing    : {ctx.landing_repo}")
-    print(f"  app_name   : {ctx.app_name}")
-    print(f"  apple_name : {ctx.apple_name}")
-    print(f"  primary kw : {ctx.primaryKeyword}")
-    print(f"  logo       : {ctx.logo_path}")
-    print(f"  og.png     : {ctx.og_path}")
-    print(f"  screenshots: {len(ctx.screenshot_paths)} found")
-    print(f"  out_dir    : {ctx.out_dir}")
+    print(f"  slug         : {ctx.slug}")
+    print(f"  app_repo     : {ctx.app_repo}")
+    print(f"  landing      : {ctx.landing_repo}")
+    print(f"  product_type : {ctx.product_type}")
+    print(f"  app_name     : {ctx.app_name}")
+    print(f"  apple_name   : {ctx.apple_name}")
+    print(f"  primary kw   : {ctx.primaryKeyword}")
+    print(f"  logo         : {ctx.logo_path}")
+    print(f"  og.png       : {ctx.og_path}")
+    print(f"  screenshots  : {len(ctx.screenshot_paths)} found")
+    print(f"  out_dir      : {ctx.out_dir}")
+    print()
+
+    # Step 1 — data audit (STOP-RULE-001: must come before any copy)
+    print(f"--- Data audit ({ctx.product_type}) ---")
+    audit_data_sources(ctx, refresh_stale=not args.no_refresh)
+    print(f"  top_keywords    : {len(ctx.top_keywords)} loaded")
+    print(f"  winnability rows: {len(ctx.winnability_rows)}")
+    if ctx.data_sources_used:
+        print(f"  used    : {ctx.data_sources_used}")
+    if ctx.data_sources_stale:
+        print(f"  stale   : {ctx.data_sources_stale}")
+    if ctx.data_sources_missing:
+        print(f"  missing : {ctx.data_sources_missing}")
+    if ctx.fresh_calls_made:
+        print(f"  fresh   : {ctx.fresh_calls_made}")
+
+    if args.strict and ctx.product_type == "app" and not ctx.winnability_rows:
+        print("ERROR: --strict and no winnability data. Run aso-competitors.py first.", file=sys.stderr)
+        sys.exit(2)
     print()
 
     if args.dry_run:
@@ -552,7 +1142,11 @@ def main():
 
     ctx.out_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Copy
+    # 1. Data audit JSON (machine-readable companion)
+    audit_path = write_data_audit_json(ctx)
+    print(f"✓ wrote {audit_path} (structured audit — what kws drove the copy)")
+
+    # 2. Copy
     rendered = render_launch_md(ctx)
     auto_path = ctx.out_dir / "launch-content.auto.md"
     auto_path.write_text(rendered, encoding="utf-8")
@@ -569,11 +1163,11 @@ def main():
         print("[--skip-images] image generation skipped")
         return
 
-    # 2. Thumbnail
+    # 3. Thumbnail
     thumb = make_thumbnail(ctx)
     print(f"✓ wrote {thumb} (240×240)")
 
-    # 3. Gallery
+    # 4. Gallery
     if not ctx.screenshot_paths and not ctx.og_path:
         print("WARN: no og.png or screenshots found — skipping gallery")
         return
@@ -582,7 +1176,7 @@ def main():
         print(f"✓ wrote {g} (1270×760)")
 
     print()
-    print(f"Done. Paste content from {md_path} into Product Hunt launch form.")
+    print(f"Done. Paste content from {canonical_path} into Product Hunt launch form.")
     print(f"Upload thumbnail + gallery files from {ctx.out_dir}/")
 
 

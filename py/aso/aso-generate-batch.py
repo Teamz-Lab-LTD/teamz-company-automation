@@ -76,6 +76,10 @@ def main():
     # explicit control or scripts other than Bengali.
     font_hero = cfg.get("font_hero", None)
     font_sub = cfg.get("font_sub", None)
+    # Optional phone-shape width / canvas width override. Tablets auto-pick a
+    # smaller default via the compose script's DEVICE_PHONE_RATIO map; this
+    # JSON key only matters when the auto default needs tweaking per project.
+    phone_ratio = cfg.get("phone_ratio", None)
     out_dir_str = args.output_dir or cfg.get("output_dir", "screenshots/store-ready")
     out_dir = (base / out_dir_str).resolve() if not Path(out_dir_str).is_absolute() else Path(out_dir_str)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -120,6 +124,9 @@ def main():
                 kwargs["font_hero_path"] = str(Path(shot_hero_font).expanduser())
             if shot_sub_font:
                 kwargs["font_sub_path"] = str(Path(shot_sub_font).expanduser())
+            shot_phone_ratio = s.get("phone_ratio", phone_ratio)
+            if shot_phone_ratio is not None:
+                kwargs["phone_ratio"] = float(shot_phone_ratio)
             compose_mod.compose(**kwargs)
         except Exception as e:
             print(f"  [err] {name}: {e}", file=sys.stderr)

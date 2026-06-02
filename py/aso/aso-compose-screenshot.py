@@ -60,11 +60,30 @@ except ImportError:
 
 # === DEVICE SPECS (App Store + Play Store canonical portrait sizes) ===
 DEVICES = {
-    "iphone-6.7": {"width": 1290, "height": 2796},
-    "iphone-6.5": {"width": 1284, "height": 2778},
-    "iphone-5.5": {"width": 1242, "height": 2208},
-    "ipad-12.9":  {"width": 2048, "height": 2732},
-    "play-phone": {"width": 1080, "height": 1920},
+    "iphone-6.7":     {"width": 1290, "height": 2796},
+    "iphone-6.5":     {"width": 1284, "height": 2778},
+    "iphone-5.5":     {"width": 1242, "height": 2208},
+    "ipad-12.9":      {"width": 2048, "height": 2732},
+    "ipad-11":        {"width": 1668, "height": 2388},
+    "play-phone":     {"width": 1080, "height": 1920},
+    "play-tablet-7":  {"width": 1200, "height": 1920},
+    "play-tablet-10": {"width": 1600, "height": 2560},
+}
+
+# Phone-shape width as a fraction of canvas width. Tablets get a smaller
+# ratio so the phone-shape silhouette fits inside the wider tablet canvas
+# without clipping the bottom (phone aspect ≈ 0.5 means a phone at 0.80 of
+# 2048px-wide iPad would be 3342px tall — taller than the 2732px canvas).
+# Override via "phone_ratio" key in the preset JSON when needed.
+DEVICE_PHONE_RATIO = {
+    "iphone-6.7":     0.80,
+    "iphone-6.5":     0.80,
+    "iphone-5.5":     0.80,
+    "ipad-12.9":      0.52,
+    "ipad-11":        0.54,
+    "play-phone":     0.80,
+    "play-tablet-7":  0.52,
+    "play-tablet-10": 0.52,
 }
 
 DEFAULT_BG = "#D9FE06"
@@ -110,7 +129,7 @@ HERO_Y = 60
 HERO_TO_SUB_GAP = 110
 SUB_LINE_GAP = 55
 TEXT_TO_PHONE_GAP = 90
-PHONE_WIDTH_RATIO = 0.80
+PHONE_WIDTH_RATIO = 0.80  # Default; per-device override comes from DEVICE_PHONE_RATIO
 
 
 def hex_to_rgb(hex_str: str) -> tuple:
@@ -136,6 +155,7 @@ def compose(
     frame_path: str = FRAME_PATH_DEFAULT,
     font_hero_path: str = None,
     font_sub_path: str = None,
+    phone_ratio: float = None,
 ):
     spec = DEVICES[device]
     W, H = spec["width"], spec["height"]
@@ -196,7 +216,15 @@ def compose(
         device_frame = Image.open(frame_path)
         fw, fh = device_frame.size
 
-    target_phone_w = int(W * PHONE_WIDTH_RATIO)
+    # Tablets need a smaller phone silhouette so it fits in the wider canvas
+    # without overflowing the bottom (phone aspect ≈ 2.04 means a phone at
+    # 0.80 of an iPad would be taller than the canvas).
+    effective_phone_ratio = (
+        phone_ratio
+        if phone_ratio is not None
+        else DEVICE_PHONE_RATIO.get(device, PHONE_WIDTH_RATIO)
+    )
+    target_phone_w = int(W * effective_phone_ratio)
     if use_real_frame:
         scale = target_phone_w / fw
         target_phone_h = int(fh * scale)
@@ -316,6 +344,8 @@ def main():
     p.add_argument("--frame", default=FRAME_PATH_DEFAULT, help="Apple device frame PNG path")
     p.add_argument("--font-hero", default=None, help="Override hero TTF path (auto-Bengali if hero has BN script)")
     p.add_argument("--font-sub", default=None, help="Override subtitle TTF path")
+    p.add_argument("--phone-ratio", type=float, default=None,
+                   help="Phone-shape width / canvas width. Auto-picked per device if omitted.")
     args = p.parse_args()
 
     compose(
@@ -329,6 +359,7 @@ def main():
         frame_path=args.frame,
         font_hero_path=args.font_hero,
         font_sub_path=args.font_sub,
+        phone_ratio=args.phone_ratio,
     )
 
 

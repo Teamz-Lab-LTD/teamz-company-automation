@@ -90,6 +90,56 @@ if [ -d "$SCRIPT_DIR/skills" ]; then
   done
 fi
 
+# Claude Code user-global config — slash commands + memory files.
+# Source-of-truth lives at claude-config/ in this submodule (git-tracked).
+# Symlinks go into ~/.claude/ so Claude Code finds them at the standard
+# paths. On a new machine, run this script after cloning + the files come
+# right back. Memory file path is project-specific (encodes absolute project
+# path), so we compute it from CWD.
+if [ -d "$SCRIPT_DIR/claude-config" ]; then
+  user_created=0; user_skipped=0
+
+  # 1) Slash commands -> ~/.claude/commands/
+  mkdir -p "$HOME/.claude/commands"
+  for cmd_file in "$SCRIPT_DIR"/claude-config/commands/*.md; do
+    [ -f "$cmd_file" ] || continue
+    cmd_base="$(basename "$cmd_file")"
+    link_path="$HOME/.claude/commands/$cmd_base"
+    if [ -L "$link_path" ] && [ "$(readlink "$link_path")" = "$cmd_file" ]; then
+      user_skipped=$((user_skipped + 1))
+    else
+      rm -f "$link_path" 2>/dev/null
+      ln -sf "$cmd_file" "$link_path"
+      user_created=$((user_created + 1))
+    fi
+  done
+
+  # 2) Per-project memory files -> ~/.claude/projects/<encoded-cwd>/memory/
+  # The "encoded cwd" replaces / AND space with - in the absolute project path
+  # (matches how Claude Code's harness encodes project paths).
+  proj_encoded="$(echo "$HOST_ROOT" | sed -e 's|/|-|g' -e 's| |-|g')"
+  proj_memory_dir="$HOME/.claude/projects/$proj_encoded/memory"
+  if [ -d "$proj_memory_dir" ]; then
+    for mem_file in "$SCRIPT_DIR"/claude-config/memory/*.md; do
+      [ -f "$mem_file" ] || continue
+      mem_base="$(basename "$mem_file")"
+      link_path="$proj_memory_dir/$mem_base"
+      if [ -L "$link_path" ] && [ "$(readlink "$link_path")" = "$mem_file" ]; then
+        user_skipped=$((user_skipped + 1))
+      else
+        rm -f "$link_path" 2>/dev/null
+        ln -sf "$mem_file" "$link_path"
+        user_created=$((user_created + 1))
+      fi
+    done
+  else
+    echo "  (memory dir $proj_memory_dir does not exist yet — skip memory symlinks; run Claude once in this project first)"
+  fi
+
+  echo "claude-config: linked $user_created (skipped $user_skipped) into ~/.claude/"
+  echo "  NOTE: CLAUDE.md global rules — paste manually from claude-config/CLAUDE-md-additions.md (user-specific file, not symlinked)"
+fi
+
 echo "setup-symlinks: created $created, skipped $skipped (already exist)"
 echo "Run scripts via: python3 scripts/<name>.py  or  ./scripts/<name>.sh"
 if [ -d "$SCRIPT_DIR/skills" ]; then

@@ -275,7 +275,8 @@ def make_og_card(ctx: AppContext) -> Path:
 def make_gallery_card(ctx: AppContext, idx: int, ss_path: Path,
                       headline: str, sub: str) -> Path:
     """Compose portrait screenshot onto 1270x760 brand bg with headline + subline."""
-    out = ctx.gallery_dir / f"{idx:02d}-{headline.lower().replace(' ', '-')[:40]}.png"
+    slug = re.sub(r"[^a-z0-9]+", "-", headline.lower()).strip("-")[:50]
+    out = ctx.gallery_dir / f"{idx:02d}-{slug}.png"
     out.parent.mkdir(parents=True, exist_ok=True)
 
     canvas = Image.new("RGB", PH_GALLERY_SIZE, ctx.brand_bg)
@@ -334,12 +335,15 @@ def generate_gallery(ctx: AppContext) -> list[Path]:
     """Generate up to 5 gallery cards. Slot 1 = OG. Slots 2-5 = screenshots + text."""
     outputs = [make_og_card(ctx)]
 
-    # Pick up to 4 screenshots for slots 2-5
+    # Pick up to 4 screenshots for slots 2-5.
+    # Headlines drive both on-card text AND output filename slug — pre-bake the app's
+    # top kws into the headline so the gallery filename ranks in Google Image Search.
+    pkw = (ctx.primaryKeyword or ctx.app_name).lower()
     captions = [
-        ("3 picks, not 30 tabs", "AI compares Amazon, Best Buy, Walmart, Flipkart, Daraz — hands back 3."),
-        ("Side-by-side winner", "Tap two picks. See the winner with explained reasoning."),
-        ("AI pros + cons per pick", "No more scrolling 200 reviews. AI summarizes what matters."),
-        ("Gift finder + budget mode", "Type the budget. AI respects it. 160+ currencies, auto-detected."),
+        (f"{ctx.app_name} {pkw}", "AI compares prices across stores — hands back 3 picks."),
+        ("Price comparison side by side", "Tap two picks. See the winner with explained reasoning."),
+        ("AI shopping assistant pros cons", "No more scrolling 200 reviews. AI summarizes what matters."),
+        ("Deal finder + budget shopping", "Type the budget. AI respects it. 160+ currencies, auto-detected."),
     ]
     for i, ss in enumerate(ctx.screenshot_paths[:4]):
         if i >= len(captions):

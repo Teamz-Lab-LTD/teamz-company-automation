@@ -30,6 +30,11 @@ Lessons baked in (do not strip these — each was a real bug we burned time on):
   2. Frame PNG alpha has anti-aliased rounded corners — those leak BG through
      transparency. Fix: dilate the frame alpha by ~14px and fill BLACK underneath
      the frame.
+  2b. The dilate+underfill in #2 hides BG leak at the OUTER bezel curve, but
+      the INNER screen rounded corners stay visible as 4 white wedges if the
+      app is pasted as a square rect. Fix: paste the app through a rounded-
+      rect mask whose radius matches the frame's screen aperture (~7.2% of
+      screen width on iPhone 16 Pro Max).
   3. Android source has status bar + nav bar that look wrong inside an iPhone
      frame. Crop top ~3.2% + bottom ~4.8% before further processing.
   4. Hero font must auto-fit to ≤88% canvas width or long words overflow.
@@ -230,7 +235,17 @@ def compose(
 
         phone_layer = Image.new("RGBA", (target_phone_w, target_phone_h), (0, 0, 0, 0))
         phone_layer = Image.alpha_composite(phone_layer, underfill)
-        phone_layer.paste(app, (s_left, s_top))
+        # Round the app's corners to match the iPhone screen aperture. Without
+        # this, the app pixels fill a SQUARE rect and the 4 square wedges show
+        # through where the frame PNG's rounded screen edge is anti-aliased.
+        # The fallback (no-frame) branch already does this — the bug was that
+        # the real-frame branch skipped it.
+        screen_radius = max(20, int(round(s_w * 0.072)))
+        app_mask = Image.new("L", (s_w, s_h), 0)
+        ImageDraw.Draw(app_mask).rounded_rectangle(
+            [0, 0, s_w, s_h], radius=screen_radius, fill=255,
+        )
+        phone_layer.paste(app, (s_left, s_top), app_mask)
         phone_layer = Image.alpha_composite(phone_layer, frame_resized)
         canvas.paste(phone_layer, (phone_x, phone_y), phone_layer)
     else:

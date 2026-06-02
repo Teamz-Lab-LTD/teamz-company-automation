@@ -142,15 +142,64 @@ platform :ios do
     UI.success("✅ Build uploaded to TestFlight for #{ENV['APP_BUNDLE_ID']}")
   end
 
-  desc "Distribute TestFlight build to external testers"
+  desc "Distribute a TestFlight build that's already uploaded to external testers"
+  desc "Pass app_version + build_number to pick the existing build (no IPA re-upload)."
+  desc "Usage: fastlane ios distribute_testflight app_version:1.0.0 build_number:9 groups:\"External Testers\""
   lane :distribute_testflight do |options|
     auth
 
     pilot(
       app_identifier: ENV["APP_BUNDLE_ID"],
+      # distribute_only skips the upload step — pick an existing build by
+      # app_version + build_number instead of providing a fresh IPA.
+      distribute_only: true,
+      # app_platform must be set explicitly or pilot prompts on a TTY (which
+      # we don't have in non-interactive shells) and crashes with
+      # "Could not retrieve response as fastlane runs in non-interactive
+      # mode" from Pilot::Manager#fetch_app_platform.
+      app_platform: "ios",
+      app_version: options[:app_version] || ENV["TESTFLIGHT_APP_VERSION"],
+      build_number: options[:build_number] || ENV["TESTFLIGHT_BUILD_NUMBER"],
       distribute_external: true,
-      groups: options[:groups] || ENV["TESTFLIGHT_GROUPS"] || "External Testers",
-      changelog: options[:changelog] || "Bug fixes and improvements"
+      notify_external_testers: true,
+      groups: (options[:groups] || ENV["TESTFLIGHT_GROUPS"] || "External Testers").split(","),
+      changelog: options[:changelog] || "Bug fixes and improvements",
+      # Apple requires Beta App Description + Beta App Feedback Email before
+      # accepting a build for external testing. Setting them on every run
+      # is harmless — they just update the existing values in App Store
+      # Connect. Without them, distribute fails with "Beta App Description
+      # is missing" on the post_beta_app_review_submissions API call.
+      beta_app_description: options[:beta_app_description] || ENV["BETA_APP_DESCRIPTION"] || "InterviewBoss — voice-based AI interview practice for jobseekers in Bangladesh, the Gulf, and South Asia. Voice answers, instant AI scoring, Bangla feedback.",
+      beta_app_feedback_email: options[:beta_app_feedback_email] || ENV["BETA_APP_FEEDBACK_EMAIL"] || "emon.info2013@gmail.com",
+      # Apple requires Beta App Description to exist on EVERY localization
+      # the app declares — not just the primary locale. InterviewBoss has
+      # bn-BD primary + en-US secondary in App Store Connect, so without
+      # this hash explicitly seeding both, the submission API returns
+      # "Beta App Description is missing" even after the app-level set
+      # call reports success.
+      localized_app_info: {
+        "en-US" => {
+          feedback_email: "emon.info2013@gmail.com",
+          description: "InterviewBoss — voice-based AI interview practice for jobseekers in Bangladesh, the Gulf, and South Asia. Voice answers, instant AI scoring, Bangla feedback."
+        },
+        "bn-BD" => {
+          feedback_email: "emon.info2013@gmail.com",
+          description: "InterviewBoss — ভয়েস-ভিত্তিক AI ইন্টারভিউ প্র্যাকটিস। বাংলাদেশ, গাল্ফ ও দক্ষিণ এশিয়ার চাকরিপ্রার্থীদের জন্য। বাংলায় ফিডব্যাক, AI স্কোরিং।"
+        }
+      },
+      # Apple Beta App Review requires a real human contact (email, phone,
+      # first + last name) before accepting a build for external testing.
+      # Without these, the patch_beta_app_review_detail API call returns
+      # 400s for every contact* attribute. They persist across runs in
+      # App Store Connect — set once, reused after.
+      beta_app_review_info: {
+        contact_email: ENV["BETA_REVIEW_CONTACT_EMAIL"] || "emon.info2013@gmail.com",
+        contact_first_name: ENV["BETA_REVIEW_CONTACT_FIRST_NAME"] || "Golam Kibria",
+        contact_last_name: ENV["BETA_REVIEW_CONTACT_LAST_NAME"] || "Emon",
+        contact_phone: ENV["BETA_REVIEW_CONTACT_PHONE"] || "+8801955747864",
+        demo_account_required: false,
+        notes: "Voice-first AI interview practice. To test the bKash payment screen on iOS, tap any paid plan and the Safari hand-off opens — no in-app payment surface on iOS per Apple 3.1.1."
+      }
     )
 
     UI.success("✅ TestFlight build distributed for #{ENV['APP_BUNDLE_ID']}")

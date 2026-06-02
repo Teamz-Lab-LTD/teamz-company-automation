@@ -70,6 +70,12 @@ def main():
     bg = cfg.get("bg", "#D9FE06")
     text_color = cfg.get("text_color", "#000000")
     frame = cfg.get("frame", None)
+    # Optional global font overrides (per-locale Bengali / Arabic / Japanese
+    # presets ship a font_hero + font_sub here). compose() also auto-picks a
+    # Bengali font if hero/subtitle contains BN script, so this is mostly for
+    # explicit control or scripts other than Bengali.
+    font_hero = cfg.get("font_hero", None)
+    font_sub = cfg.get("font_sub", None)
     out_dir_str = args.output_dir or cfg.get("output_dir", "screenshots/store-ready")
     out_dir = (base / out_dir_str).resolve() if not Path(out_dir_str).is_absolute() else Path(out_dir_str)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -106,6 +112,14 @@ def main():
             }
             if frame:
                 kwargs["frame_path"] = str(Path(frame).expanduser())
+            # Per-shot font overrides win; otherwise fall back to global
+            # font_hero/font_sub from the JSON top level.
+            shot_hero_font = s.get("font_hero", font_hero)
+            shot_sub_font = s.get("font_sub", font_sub)
+            if shot_hero_font:
+                kwargs["font_hero_path"] = str(Path(shot_hero_font).expanduser())
+            if shot_sub_font:
+                kwargs["font_sub_path"] = str(Path(shot_sub_font).expanduser())
             compose_mod.compose(**kwargs)
         except Exception as e:
             print(f"  [err] {name}: {e}", file=sys.stderr)

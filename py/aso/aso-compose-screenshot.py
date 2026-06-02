@@ -82,6 +82,27 @@ FRAME_SCREEN_BOTTOM = 2933
 FONT_HERO_PATH = os.path.expanduser("~/Library/Fonts/Poppins-Black.ttf")
 FONT_SUB_PATH = os.path.expanduser("~/Library/Fonts/Poppins-ExtraBold.ttf")
 FONT_FALLBACK = "/System/Library/Fonts/HelveticaNeue.ttc"
+# Latin Poppins has zero Bengali glyphs — text shows as tofu boxes. When the
+# hero/subtitle contains any character in the Bengali Unicode block
+# (U+0980 to U+09FF), swap to a Bengali-capable font automatically. macOS
+# ships Kohinoor Bangla; user fonts may have Kalpurush. First hit wins.
+FONT_BN_CANDIDATES = [
+    "/System/Library/Fonts/KohinoorBangla.ttc",
+    os.path.expanduser("~/Library/Fonts/Kalpurush.ttf"),
+    os.path.expanduser("~/Library/Fonts/kalpurush.ttf"),
+    os.path.expanduser("~/Library/Fonts/Siyamrupali.ttf"),
+]
+
+
+def _has_bengali(text: str) -> bool:
+    return any("ঀ" <= ch <= "৿" for ch in text)
+
+
+def _pick_bn_font():
+    for p in FONT_BN_CANDIDATES:
+        if os.path.exists(p):
+            return p
+    return None
 
 HERO_FONT_SIZE = 300
 SUB_FONT_SIZE = 110
@@ -113,11 +134,27 @@ def compose(
     bg_color: str = DEFAULT_BG,
     text_color: str = DEFAULT_TEXT,
     frame_path: str = FRAME_PATH_DEFAULT,
+    font_hero_path: str = None,
+    font_sub_path: str = None,
 ):
     spec = DEVICES[device]
     W, H = spec["width"], spec["height"]
     BG = hex_to_rgb(bg_color)
     TEXT_CLR = hex_to_rgb(text_color)
+
+    # Auto-pick Bengali font when text contains Bengali script — Poppins has
+    # no Bengali glyphs and would render tofu boxes. Explicit JSON overrides
+    # take precedence.
+    auto_hero = font_hero_path or FONT_HERO_PATH
+    auto_sub = font_sub_path or FONT_SUB_PATH
+    if _has_bengali(hero_text) and not font_hero_path:
+        bn = _pick_bn_font()
+        if bn:
+            auto_hero = bn
+    if any(_has_bengali(l) for l in subtitle_lines) and not font_sub_path:
+        bn = _pick_bn_font()
+        if bn:
+            auto_sub = bn
 
     canvas = Image.new("RGBA", (W, H), BG + (255,))
     draw = ImageDraw.Draw(canvas)
@@ -125,9 +162,9 @@ def compose(
     # === HERO TEXT (auto-fit to 88% canvas width) ===
     max_text_w = int(W * 0.88)
     hero_size = HERO_FONT_SIZE
-    font_h = _load_font(FONT_HERO_PATH, hero_size)
+    font_h = _load_font(auto_hero, hero_size)
     while hero_size > 100:
-        font_h = _load_font(FONT_HERO_PATH, hero_size)
+        font_h = _load_font(auto_hero, hero_size)
         bb = draw.textbbox((0, 0), hero_text, font=font_h)
         if (bb[2] - bb[0]) <= max_text_w:
             break
@@ -140,9 +177,9 @@ def compose(
     y = HERO_Y + th + HERO_TO_SUB_GAP
     for line in subtitle_lines:
         sub_size = SUB_FONT_SIZE
-        font_s = _load_font(FONT_SUB_PATH, sub_size)
+        font_s = _load_font(auto_sub, sub_size)
         while sub_size > 50:
-            font_s = _load_font(FONT_SUB_PATH, sub_size)
+            font_s = _load_font(auto_sub, sub_size)
             bb = draw.textbbox((0, 0), line, font=font_s)
             if (bb[2] - bb[0]) <= max_text_w:
                 break
@@ -277,6 +314,8 @@ def main():
     p.add_argument("--bg", default=DEFAULT_BG, help=f"Background hex (default {DEFAULT_BG})")
     p.add_argument("--text-color", default=DEFAULT_TEXT, help=f"Text hex (default {DEFAULT_TEXT})")
     p.add_argument("--frame", default=FRAME_PATH_DEFAULT, help="Apple device frame PNG path")
+    p.add_argument("--font-hero", default=None, help="Override hero TTF path (auto-Bengali if hero has BN script)")
+    p.add_argument("--font-sub", default=None, help="Override subtitle TTF path")
     args = p.parse_args()
 
     compose(
@@ -288,6 +327,8 @@ def main():
         bg_color=args.bg,
         text_color=args.text_color,
         frame_path=args.frame,
+        font_hero_path=args.font_hero,
+        font_sub_path=args.font_sub,
     )
 
 

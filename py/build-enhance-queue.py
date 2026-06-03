@@ -389,6 +389,65 @@ def pool_autocomplete_trends():
 # Main
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# Pool 8 (cold-start): hidden pages — zero GSC impressions but crawlable + about
+# a real keyword. Give each ONE keyword-aligned enhance + index push so it earns
+# its first impressions; after that the normal pools (1-3,6,7) take over.
+#
+# OPT-IN + ISOLATED: runs ONLY for a host that has data/.cold-start-enabled.
+# Every other repo lacks that marker -> returns [] -> zero behaviour change.
+# Lowest signal_score + a hard cold-quota -> can only ever use LEFTOVER capacity,
+# never displacing a proven target. Each page is cold-started at most once
+# (tracked in data/cold-start-done.txt). Inputs are the read-only audit CSVs.
+# -----------------------------------------------------------------------------
+def pool_cold_start(host_root, cfg):
+    marker = host_root / 'data' / '.cold-start-enabled'
+    if not marker.exists():
+        return [], None  # opt-in only — other repos unaffected
+
+    import csv as _csv
+    audit = host_root / 'data' / 'zero-visitor-audit'
+    done_file = host_root / 'data' / 'cold-start-done.txt'
+    done = set()
+    if done_file.exists():
+        done = {l.strip() for l in done_file.read_text().splitlines() if l.strip()}
+
+    # candidates the zero-visitor audit already identified as hidden-but-wanted:
+    #   index-status-prune.csv rows verdict=NOT_CRAWLED  (Google never fetched it)
+    #   rescue.csv                                        (0 impr but has demand)
+    sources = [(audit / 'index-status-prune.csv', 'NOT_CRAWLED'),
+               (audit / 'rescue.csv', None)]
+    seen, cands = set(), []
+    for path, verdict_filter in sources:
+        if not path.exists():
+            continue
+        try:
+            rows = list(_csv.DictReader(path.open()))
+        except Exception:
+            continue
+        for row in rows:
+            if verdict_filter and row.get('verdict') != verdict_filter:
+                continue
+            key = (row.get('key') or row.get('path') or '').strip()
+            if not key:
+                continue
+            slug = '/' + key.strip('/').removesuffix('/index.html') + '/'
+            if slug in done or slug in seen or not slug_exists(slug, host_root):
+                continue
+            seen.add(slug)
+            kw = slug.strip('/').split('/')[-1].replace('-', ' ')
+            cands.append({
+                'slug': slug,
+                'query': kw,
+                'signal_score': 0.5,        # lowest — never outranks a proven pool
+                'mode': 'A',                # content align to earn first impressions
+                'source': 'cold-start',
+                'citation': f"hidden page (0 GSC impressions) — cold-start rescue, "
+                            f"target '{kw}'",
+            })
+    return cands, None
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--cap', type=int, default=7)
@@ -416,6 +475,8 @@ def main():
     if e6: errors['gsc_anomalies'] = e6
     p7, e7 = pool_canonical_mismatches(host_root, cfg)
     if e7: errors['canonical_mismatches'] = e7
+    p8c, e8 = pool_cold_start(host_root, cfg)
+    if e8: errors['cold_start'] = e8
     p4 = pool_gaps_seasonal(host_root)
     p5 = pool_autocomplete_trends()
 
@@ -424,6 +485,7 @@ def main():
     print(f"[enhance-queue] pool3 bing:              {len(p3)}")
     print(f"[enhance-queue] pool6 gsc-ctr-drops:     {len(p6)}")
     print(f"[enhance-queue] pool7 canonical-fix:     {len(p7)}")
+    print(f"[enhance-queue] pool8 cold-start:        {len(p8c)}")
     print(f"[enhance-queue] pool4 gaps:              {len(p4['gaps'])}")
     print(f"[enhance-queue] pool4 seasonal:          {len(p4['seasonal'])}")
     print(f"[enhance-queue] pool5 autocomplete:      {len(p5['suggestions'])}")
@@ -432,9 +494,9 @@ def main():
         for k, v in errors.items():
             print(f"[enhance-queue]   ! {k}: {v}")
 
-    # Merge target pools (1-3, 6, 7), dedupe by slug, apply cooldown
+    # Merge target pools (1-3, 6, 7, 8-cold-start), dedupe by slug, apply cooldown
     by_slug = {}
-    for c in p1 + p2 + p3 + p6 + p7:
+    for c in p1 + p2 + p3 + p6 + p7 + p8c:
         if c['slug'] in cooldown_set:
             continue
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
@@ -447,10 +509,16 @@ def main():
     a_quota = max(1, args.cap // 2)
     b_quota = max(1, args.cap // 4)
     bing_quota = max(1, args.cap // 7)
-    counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0}
+    cold_quota = max(1, args.cap // 7)   # cold-start hard cap (<=1 at cap 7)
+    counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0}
     for c in ranked:
         if len(final) >= args.cap:
             break
+        if c['source'] == 'cold-start':          # lowest priority + hard quota:
+            if counts['cold'] >= cold_quota:      # only ever uses leftover capacity,
+                continue                          # never displaces a proven target
+            final.append(c); counts['cold'] += 1
+            continue
         is_bing = 'bing' in c['source']
         is_a = c['mode'] == 'A'
         is_b = c['mode'] == 'B'
@@ -484,6 +552,7 @@ def main():
             'bing': len(p3),
             'gsc_ctr_drops': len(p6),
             'canonical_mismatches': len(p7),
+            'cold_start': len(p8c),
             'gaps': len(p4['gaps']),
             'seasonal': len(p4['seasonal']),
             'autocomplete': len(p5['suggestions']),
@@ -507,6 +576,15 @@ def main():
     else:
         out_path.write_text(json.dumps(queue, indent=2))
         print(f"[enhance-queue] wrote {len(final)} targets → {out_path}")
+        # cold-start is one-shot per page: record the ones queued tonight
+        picked_cold = [c['slug'] for c in final if c['source'] == 'cold-start']
+        if picked_cold:
+            done_file = host_root / 'data' / 'cold-start-done.txt'
+            with done_file.open('a') as f:
+                for s in picked_cold:
+                    f.write(s + '\n')
+            print(f"[enhance-queue] cold-start: marked {len(picked_cold)} done "
+                  f"(one-shot) → {done_file.name}")
 
     print()
     print(f"  {'#':<3} {'slug':<48} {'mode':<6} {'source':<32} score")

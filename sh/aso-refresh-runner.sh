@@ -168,10 +168,12 @@ is_fresh() {
 }
 
 run_step() {
-  # run_step "<name>" "<expected-output-file-or-empty>" <cmd...>
+  # run_step "<name>" "<expected-output-file-or-empty>" <argv...>
+  # Reads STEP_DISPLAY_CMD env for the human-readable command to log
+  # (the executor sets it; argv handles execution correctly with spaces).
   local name="$1"; shift
   local expected_out="$1"; shift
-  local cmd_str="$*"
+  local cmd_str="${STEP_DISPLAY_CMD:-$*}"
 
   local idx=${#STEP_NAMES[@]}
   local num=$(( idx + 1 ))
@@ -254,7 +256,7 @@ case "$APP_CANONICAL" in
     APPLE_APP_ID="${APPLE_APP_ID:-6739454718}"
     ;;
   devicegpt)
-    PACKAGE="${PACKAGE:-com.teamz.debugger}"
+    PACKAGE="${PACKAGE:-com.teamz.lab.debugger}"
     ;;
   no-trace-chat)
     PACKAGE="${PACKAGE:-com.teamzlab.no_trace_code_chat}"
@@ -354,13 +356,38 @@ fi
 
 PLAN_NAMES=()
 PLAN_OUTS=()
-PLAN_CMDS=()
+PLAN_CMDS=()          # argv joined by ASCII 30 (record separator) — handles paths-with-spaces
+PLAN_DISPLAY=()       # human-readable command for logging (quoted)
+
+# Record-separator delimiter: ASCII 30, never appears in filesystem paths or
+# CLI flags. Lets us serialize argv arrays through a flat string array (Bash
+# 3.2 has no array-of-arrays support).
+PLAN_RS=$'\x1e'
+
+# Helper: shell-quote a single arg for display (best-effort, not for eval)
+_quote_arg() {
+  case "$1" in
+    *' '*|*$'\t'*|*$'\n'*|*'$'*|*'"'*|*"'"*|*'\\'*|*'`'*) printf "'%s'" "${1//\'/\'\\\'\'}" ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
 
 plan_add() {
-  # plan_add "<name>" "<expected-out>" "<inline-cmd-string-for-display>"
-  PLAN_NAMES+=("$1")
-  PLAN_OUTS+=("$2")
-  PLAN_CMDS+=("$3")
+  # plan_add "<name>" "<expected-out>" <argv...>
+  # Each argv element is preserved verbatim — spaces in paths OK.
+  local name="$1" outf="$2"
+  shift 2
+  PLAN_NAMES+=("$name")
+  PLAN_OUTS+=("$outf")
+  local joined="" sep="" display="" dsep=""
+  for arg in "$@"; do
+    joined="${joined}${sep}${arg}"
+    sep="$PLAN_RS"
+    display="${display}${dsep}$(_quote_arg "$arg")"
+    dsep=" "
+  done
+  PLAN_CMDS+=("$joined")
+  PLAN_DISPLAY+=("$display")
 }
 
 # Helper: only plan a step if its tool exists on disk.
@@ -370,80 +397,94 @@ have() { [ -x "$1" ] || [ -f "$1" ]; }
 
 # 1. app-stats pull (optional)
 if have "$APP_STATS_PULL"; then
-  plan_add "app-stats pull_all" "" "bash $APP_STATS_PULL last-30d"
+  plan_add "app-stats pull_all" "" bash "$APP_STATS_PULL" last-30d
 fi
 
 # 2. Play Console drift check (listing-pull)
 if have "$PLAY_CONSOLE" && [ -n "$PACKAGE" ]; then
   plan_add "play-console listing-pull" "" \
-    "$PY_BIN $PLAY_CONSOLE listing-pull --package $PACKAGE"
+    "$PY_BIN" "$PLAY_CONSOLE" listing-pull --package "$PACKAGE"
 fi
 
 # 3. Master precheck
 if have "$PRECHECK" && [ -n "$PACKAGE" ] && [ -n "$KEYWORDS_FILE" ]; then
-  plan_add "aso-master-precheck" "$OUT_PRECHECK" \
-    "bash $PRECHECK --package $PACKAGE --keywords-file $KEYWORDS_FILE${COMPETITORS_PLAY:+ --competitors-play $COMPETITORS_PLAY}${FIREBASE_PROJECT:+ --firebase-project $FIREBASE_PROJECT} --app-slug $APP_CANONICAL"
+  PRECHECK_ARGS=(bash "$PRECHECK" --package "$PACKAGE" --keywords-file "$KEYWORDS_FILE")
+  [ -n "$COMPETITORS_PLAY" ] && PRECHECK_ARGS+=(--competitors-play "$COMPETITORS_PLAY")
+  [ -n "$FIREBASE_PROJECT" ] && PRECHECK_ARGS+=(--firebase-project "$FIREBASE_PROJECT")
+  PRECHECK_ARGS+=(--app-slug "$APP_CANONICAL")
+  plan_add "aso-master-precheck" "$OUT_PRECHECK" "${PRECHECK_ARGS[@]}"
 fi
 
 # 4. Keyword volume (free)
 if have "$KW_VOLUME" && [ -n "$SEED_KWS" ]; then
-  plan_add "build-keyword-volume" "$OUT_KW_VOLUME" \
-    "$PY_BIN $KW_VOLUME ${SEED_KWS//|/ } --top 20"
+  # Split SEED_KWS on '|' into separate args
+  KW_VOL_ARGS=("$PY_BIN" "$KW_VOLUME")
+  OLDIFS="$IFS"
+  IFS='|'
+  for kw in $SEED_KWS; do
+    [ -n "$kw" ] && KW_VOL_ARGS+=("$kw")
+  done
+  IFS="$OLDIFS"
+  KW_VOL_ARGS+=(--top 20)
+  plan_add "build-keyword-volume" "$OUT_KW_VOLUME" "${KW_VOL_ARGS[@]}"
 fi
 
 # 5. Keyword intel
 if have "$KW_INTEL"; then
   plan_add "build-keyword-intel" "$OUT_KW_INTEL" \
-    "$PY_BIN $KW_INTEL --top 30 --export csv"
+    "$PY_BIN" "$KW_INTEL" --top 30 --export csv
 fi
 
 # 6. ASO keyword pipeline
 if have "$ASO_PIPELINE"; then
-  plan_add "aso-keyword-pipeline" "$OUT_PIPELINE" \
-    "$PY_BIN $ASO_PIPELINE${SEED_KWS:+ --seeds ${SEED_KWS//|/,}}"
+  PIPELINE_ARGS=("$PY_BIN" "$ASO_PIPELINE")
+  if [ -n "$SEED_KWS" ]; then
+    # convert | to , for --seeds arg
+    PIPELINE_ARGS+=(--seeds "${SEED_KWS//|/,}")
+  fi
+  plan_add "aso-keyword-pipeline" "$OUT_PIPELINE" "${PIPELINE_ARGS[@]}"
 fi
 
 # 7. ASO + SEO merge
 if have "$ASO_SEO_MERGE"; then
-  plan_add "aso-seo-merge" "$OUT_SEO_MERGE" \
-    "$PY_BIN $ASO_SEO_MERGE"
+  plan_add "aso-seo-merge" "$OUT_SEO_MERGE" "$PY_BIN" "$ASO_SEO_MERGE"
 fi
 
 # 8. Competitors (top 10)
 if have "$ASO_COMPETITORS" && [ -n "$SEED_KWS" ]; then
   FIRST_SEED="$(echo "$SEED_KWS" | awk -F'|' '{print $1}')"
   plan_add "aso-competitors" "$OUT_COMPETITORS" \
-    "$PY_BIN $ASO_COMPETITORS --find $FIRST_SEED --top 10"
+    "$PY_BIN" "$ASO_COMPETITORS" --find "$FIRST_SEED" --top 10
 fi
 
 # 9. Reviews (competitors)
 if have "$ASO_REVIEWS"; then
   plan_add "aso-reviews" "$OUT_REVIEWS" \
-    "$PY_BIN $ASO_REVIEWS --competitors"
+    "$PY_BIN" "$ASO_REVIEWS" --competitors
 fi
 
 # 10. Firebase events — only if project configured
 if have "$ASO_FIREBASE" && [ -n "$FIREBASE_PROJECT" ]; then
   plan_add "aso-firebase-events" "$OUT_FIREBASE" \
-    "$PY_BIN $ASO_FIREBASE --project $FIREBASE_PROJECT --days 30"
+    "$PY_BIN" "$ASO_FIREBASE" --project "$FIREBASE_PROJECT" --days 30
 fi
 
 # 11. AdMob RPM benchmarks
 if have "$ASO_ADMOB"; then
   plan_add "aso-admob-rpm-benchmarks" "$OUT_ADMOB" \
-    "$PY_BIN $ASO_ADMOB --category utilities"
+    "$PY_BIN" "$ASO_ADMOB" --category utilities
 fi
 
 # 12. Rank tracker
 if have "$ASO_TRACK"; then
   plan_add "aso-track" "$OUT_TRACK" \
-    "$PY_BIN $ASO_TRACK --record"
+    "$PY_BIN" "$ASO_TRACK" --record
 fi
 
 # 13. Velocity
 if have "$ASO_VELOCITY"; then
   plan_add "aso-velocity" "$OUT_VELOCITY" \
-    "$PY_BIN $ASO_VELOCITY --history"
+    "$PY_BIN" "$ASO_VELOCITY" --history
 fi
 
 # --- FULL_REWRITE_* extras ---
@@ -458,8 +499,9 @@ if [ "$MODE" != "SIGNAL_ONLY" ]; then
     FULL_REWRITE_BOTH)    BLITZ_ARGS="" ;;
   esac
   if have "$ASO_BLITZ"; then
-    plan_add "aso-store-blitz DRY-RUN ($MODE)" "" \
-      "$PY_BIN $ASO_BLITZ --dry-run $BLITZ_ARGS"
+    BLITZ_ARGV=("$PY_BIN" "$ASO_BLITZ" --dry-run)
+    [ -n "$BLITZ_ARGS" ] && BLITZ_ARGV+=($BLITZ_ARGS)
+    plan_add "aso-store-blitz DRY-RUN ($MODE)" "" "${BLITZ_ARGV[@]}"
   fi
 fi
 
@@ -476,15 +518,24 @@ log "Planned $TOTAL_STEPS step(s) for mode=$MODE."
 
 # ----- Execute plan ----------------------------------------------------------
 
+# Executor — reconstruct argv from RS-joined cmdstr. Each PLAN_CMDS entry
+# was built by plan_add joining argv with ASCII 30 (PLAN_RS). Splitting back
+# on $PLAN_RS preserves arguments that contain spaces (file paths like
+# "Teamz Lab Projects/..." were truncated when we split on whitespace).
 i=0
 while [ $i -lt $TOTAL_STEPS ]; do
   name="${PLAN_NAMES[$i]}"
   outf="${PLAN_OUTS[$i]}"
   cmdstr="${PLAN_CMDS[$i]}"
-  # Reconstruct argv from cmdstr by splitting on whitespace.
-  # Word-splitting is fine here — we built cmdstr ourselves from known args.
-  # shellcheck disable=SC2086
-  run_step "$name" "$outf" $cmdstr
+  display="${PLAN_DISPLAY[$i]}"
+  # Split RS-joined cmdstr back to argv array
+  oldIFS="$IFS"
+  IFS="$PLAN_RS"
+  # shellcheck disable=SC2206
+  argv=($cmdstr)
+  IFS="$oldIFS"
+  # Pass the human-readable display string via env so run_step can log it
+  STEP_DISPLAY_CMD="$display" run_step "$name" "$outf" "${argv[@]}"
   i=$(( i + 1 ))
 done
 

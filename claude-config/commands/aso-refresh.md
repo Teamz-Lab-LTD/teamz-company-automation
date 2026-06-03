@@ -25,6 +25,7 @@ This skill ONLY adds:
 2. `teamz-company-automation/aso-research/<latest-date>/SYNTHESIS.md` — current research insights
 3. `teamz-company-automation/CLAUDE.md` — Rule 0–6 + Phase 1–8 playbook
 4. `teamz-company-automation/py/aso/aso-store-blitz.py` header docstring — confirm step list current
+5. **`teamz-company-automation/claude-config/aso-script-registry.md`** — **MANDATORY READ.** Exhaustive list of every ASO + leading-indicator SEO script + installed skill, with WHEN to call each. If you proceed without reading this file you WILL skip scripts and produce incomplete recommendations. The cost: months of script-building that goes unused per `/aso-refresh` run.
 
 ## Flow
 
@@ -94,6 +95,39 @@ python3 teamz-company-automation/py/aso/aso-store-blitz.py
 ```
 
 If iOS-only rewrite: `--skip play-push`. If Android-only rewrite: `--skip apple-version --skip apple-metadata --skip apple-screenshots --skip apple-submit`.
+
+### Step 3a — Cross-reference registry to catch scripts aso-store-blitz.py skips
+
+Read `claude-config/aso-script-registry.md` Section A-N. For each script marked "always-call" in the relevant mode, verify aso-store-blitz.py either (a) called it, or (b) you call it as a sidecar. Missed scripts to typically backfill:
+
+**SIGNAL mode sidecars (always run alongside aso-master-precheck.sh):**
+- `build-keyword-volume.py` (Bing + Trends + autocomplete + Google result counts)
+- `build-keyword-intel.py` (intent classification + question keywords)
+- `build-rank-tracker.py` (weekly rank tracking — leading indicator)
+- `build-gsc-anomalies.py` (sudden CTR/position drops)
+- `build-brand-mentions-log.py` (branded-search leading indicator)
+- `aso-velocity.py` (Play Reporting + ASC Sales & Trends history)
+- `aso-track.py --record` (lock today's positions for 14-day delta)
+- **Skills:** `seo-dataforseo` (if DataForSEO MCP installed), `seo-google` (GSC field data)
+
+**REWRITE mode sidecars (always run alongside aso-store-blitz.py):**
+- `build-competitor-gaps.py` (keywords competitor ranks for, we don't)
+- `build-reddit-scanner.py` (pain phrases from Reddit competitor threads)
+- `build-reddit-rpm-tracker.py` (Rule 4a complement)
+- `build-content-ideas.py` (content gap)
+- `build-topic-cluster-report.py` (landing page integration)
+- `inspect-urls.py` (Rule 0 — schema/canonical validation)
+- `aso-copy-helper.py` (generate Play paste files)
+- `aso-priority-export.py` (Rule P5.7 — in-app list must mirror store positioning)
+- `aso-tablet-from-phone.py` (Universal-app submit blocker prevention)
+- `aso-experiments.py add` (register A/B variants)
+- **Skills:** `seo-firecrawl` (competitor landing page crawl), `seo-backlinks` (competitor authority), `competitive-ads-extractor` (FB/LinkedIn ad teardown), `seo-content` (E-E-A-T on full description)
+
+**Both modes (idempotent — call always):**
+- `admob.py report --days 7` (live revenue context check)
+- `build-youtube-keywords.py` IF any video/Shorts/Reels asset planned (Rule 6 — YT intent ≠ Google intent)
+
+If you skip ANY of the above, you produce incomplete data. The registry exists so the LLM does not have to remember which scripts to call.
 
 ### Step 4 — Research overlays (NEW signals NOT yet in aso-store-blitz.py)
 

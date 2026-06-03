@@ -14,7 +14,9 @@
 
 set -e
 
-AUDIT_LOG="$(cd "$(dirname "$0")/.." && pwd)/audit/skill-invocations.log"
+# Single user-global audit log shared across every app project (see
+# skill-invocation-audit.sh for rationale).
+AUDIT_LOG="$HOME/.config/teamzlab/audit/skill-invocations.log"
 
 # Read hook input
 input="$(cat)"

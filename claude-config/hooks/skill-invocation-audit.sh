@@ -11,7 +11,13 @@
 
 set -e
 
-AUDIT_LOG="$(cd "$(dirname "$0")/.." && pwd)/audit/skill-invocations.log"
+# User-global audit log. Lives at ~/.config/teamzlab/audit/ (same parent as
+# the cred files in CLAUDE.md). Works from ANY app project — you open a
+# conversation in debugger/, toss_app/, top_3_picks/, etc., and every Skill
+# call lands in the same log. Grep from anywhere:
+#   grep aso-refresh ~/.config/teamzlab/audit/skill-invocations.log
+# Not git-tracked (audit is transient forensic, not source state).
+AUDIT_LOG="$HOME/.config/teamzlab/audit/skill-invocations.log"
 mkdir -p "$(dirname "$AUDIT_LOG")"
 
 # Read JSON from stdin (Claude Code passes hook input as JSON)

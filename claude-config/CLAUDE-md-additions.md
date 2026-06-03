@@ -53,7 +53,12 @@ After running `setup-symlinks.sh` on a new PC, open `~/.claude/settings.json` (c
 ```
 
 What they do:
-- **`skill-invocation-audit.sh`** appends every Skill tool call to `teamz-company-automation/claude-config/audit/skill-invocations.log` (git-tracked — full history across machines). User greps anytime for "did /aso-refresh actually run?"
+- **`skill-invocation-audit.sh`** appends every Skill tool call to `~/.config/teamzlab/audit/skill-invocations.log` (user-global, same parent as cred files — shared across EVERY app project conversation). User greps anytime for "did /aso-refresh actually run for top3picks?":
+  ```bash
+  grep aso-refresh ~/.config/teamzlab/audit/skill-invocations.log
+  grep 'top_3_picks' ~/.config/teamzlab/audit/skill-invocations.log
+  ```
+  Not git-tracked — audit is transient forensic, not source state. New PC = fresh log (acceptable, audit is per-PC anyway).
 - **`aso-bash-guard.sh`** blocks any Bash command touching `py/aso/*`, `fastlane/metadata/**`, `**/store-listing/**`, or the core ASO orchestrator scripts UNLESS `/aso-refresh` was invoked in the last 60 minutes. User overrides by typing "override aso bash" in a message (active 10 min).
 
 To verify the wiring after merging into settings.json:

@@ -89,9 +89,10 @@ else
 fi
 
 echo ""
-echo "== Audit log =="
-AUDIT_LOG="$SUBMODULE_ROOT/claude-config/audit/skill-invocations.log"
-check "audit dir writeable" "touch '$SUBMODULE_ROOT/claude-config/audit/.testwrite' && rm '$SUBMODULE_ROOT/claude-config/audit/.testwrite'"
+echo "== Audit log (user-global ~/.config/teamzlab/audit/ — shared across all app projects) =="
+AUDIT_LOG="$HOME/.config/teamzlab/audit/skill-invocations.log"
+mkdir -p "$(dirname "$AUDIT_LOG")"
+check "audit dir writeable" "touch '$(dirname "$AUDIT_LOG")/.testwrite' && rm '$(dirname "$AUDIT_LOG")/.testwrite'"
 
 if [ -f "$AUDIT_LOG" ]; then
   total_calls=$(wc -l < "$AUDIT_LOG" | tr -d ' ')

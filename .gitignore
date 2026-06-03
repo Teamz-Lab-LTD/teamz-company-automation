@@ -36,3 +36,15 @@ data/aso-rank-watchlist.json
 data/aso-guide-latest.md
 py/android/
 py/fastlane/
+
+# Ephemeral / per-app ASO+SEO outputs (regenerable) — keep OUT of the shared
+# submodule so per-app runs don't dirty every consumer's working tree.
+data/aso-pipeline-latest.json
+data/aso-velocity-latest.json
+data/aso-velocity-history.csv
+data/aso-velocity-report.md
+data/canonical-mismatches-latest.json
+data/master_keywords.csv
+data/ios_keywords.csv
+data/top_by_category/
+data/gsc-top-pages-*.json

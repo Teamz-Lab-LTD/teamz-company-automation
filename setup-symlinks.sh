@@ -136,8 +136,25 @@ if [ -d "$SCRIPT_DIR/claude-config" ]; then
     echo "  (memory dir $proj_memory_dir does not exist yet — skip memory symlinks; run Claude once in this project first)"
   fi
 
+  # 3) Hooks -> ~/.claude/hooks/
+  mkdir -p "$HOME/.claude/hooks"
+  for hook_file in "$SCRIPT_DIR"/claude-config/hooks/*.sh; do
+    [ -f "$hook_file" ] || continue
+    hook_base="$(basename "$hook_file")"
+    link_path="$HOME/.claude/hooks/$hook_base"
+    if [ -L "$link_path" ] && [ "$(readlink "$link_path")" = "$hook_file" ]; then
+      user_skipped=$((user_skipped + 1))
+    else
+      rm -f "$link_path" 2>/dev/null
+      ln -sf "$hook_file" "$link_path"
+      user_created=$((user_created + 1))
+    fi
+  done
+
   echo "claude-config: linked $user_created (skipped $user_skipped) into ~/.claude/"
   echo "  NOTE: CLAUDE.md global rules — paste manually from claude-config/CLAUDE-md-additions.md (user-specific file, not symlinked)"
+  echo "  NOTE: hooks symlinked but NOT auto-registered in settings.json"
+  echo "        Register manually: see claude-config/CLAUDE-md-additions.md hooks section"
 fi
 
 echo "setup-symlinks: created $created, skipped $skipped (already exist)"

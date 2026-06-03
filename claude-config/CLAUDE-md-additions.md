@@ -23,4 +23,45 @@ If user asks for ASO without naming the app, ask which app first. If user asks f
 
 ---
 
+---
+
+## Settings.json hooks — register the audit + ASO bash guard
+
+After running `setup-symlinks.sh` on a new PC, open `~/.claude/settings.json` (create if missing — `{}` is valid). Merge in these hook entries — they wire the two mechanical guards that prevent ASO-related cheating:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          { "type": "command", "command": "~/.claude/hooks/skill-invocation-audit.sh" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "~/.claude/hooks/aso-bash-guard.sh" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+What they do:
+- **`skill-invocation-audit.sh`** appends every Skill tool call to `teamz-company-automation/claude-config/audit/skill-invocations.log` (git-tracked — full history across machines). User greps anytime for "did /aso-refresh actually run?"
+- **`aso-bash-guard.sh`** blocks any Bash command touching `py/aso/*`, `fastlane/metadata/**`, `**/store-listing/**`, or the core ASO orchestrator scripts UNLESS `/aso-refresh` was invoked in the last 60 minutes. User overrides by typing "override aso bash" in a message (active 10 min).
+
+To verify the wiring after merging into settings.json:
+
+```bash
+bash teamz-company-automation/sh/aso-refresh-selftest.sh devicegpt
+```
+
+Exit 0 = all guards intact. Exit 1 = something missing — fix before any real ASO work.
+
 (Add more snippets here as new rules get formalized. Each new section gets a header + a clear "what this is" + "where it goes" line.)

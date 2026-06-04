@@ -215,6 +215,17 @@ if [ -n "$DIRTY_FILES" ]; then
     echo "$DIRTY_FILES" | sed 's/^/    /'
 fi
 
+# --- SEO toolchain health-check (non-blocking; catches silent data failures like
+#     the Google Trends bug that returned blank for months with no alarm) ---
+echo ""
+echo "=== SEO toolchain health-check ==="
+if HC_OUT="$(python3 "$_SCRIPT_DIR/../py/seo-healthcheck.py" 2>&1)"; then
+    printf '%s\n' "$HC_OUT" | sed 's/^/  /'
+else
+    printf '%s\n' "$HC_OUT" | sed 's/^/  /'
+    record_health_alert "SEO health-check found a RED — a data source may be silently broken (see log top)"
+fi
+
 # Pull latest changes first
 if [ "$REPO_DIRTY_AT_START" -eq 0 ] && can_resolve_host github.com; then
     git pull --ff-only origin main 2>/dev/null || echo "  Warning: git pull skipped (fast-forward unavailable)"

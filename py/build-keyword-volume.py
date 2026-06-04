@@ -29,6 +29,7 @@ import time
 import urllib.request
 import urllib.parse
 import urllib.error
+import http.cookiejar
 from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -90,6 +91,31 @@ def fetch_bing_keyword_volume(keyword, country='us', language='en-US'):
 
 # Cache to avoid re-fetching
 _cache = {}
+
+# Google Trends fetch state — shared cookie session + honest failure tracking
+# (bare requests to the Trends API get 429'd; a primed session helps, and we
+#  record WHY a fetch failed so the run reports a reason instead of silent "---")
+_TRENDS_OPENER = None
+_TRENDS_STATUS = {"reason": None, "fails": 0, "ok": 0}
+
+
+def _trends_session():
+    """Lazily build a cookie-backed opener and prime Google's NID cookie."""
+    global _TRENDS_OPENER
+    if _TRENDS_OPENER is None:
+        cj = http.cookiejar.CookieJar()
+        op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+        op.addheaders = [
+            ('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'),
+            ('Accept-Language', 'en-US,en;q=0.9'),
+        ]
+        try:
+            op.open('https://trends.google.com/trends/explore?geo=US', timeout=8)
+        except Exception:
+            pass
+        _TRENDS_OPENER = op
+    return _TRENDS_OPENER
 
 
 def fetch_google_autocomplete(query):
@@ -189,61 +215,84 @@ def _keyword_similarity(kw1, kw2):
     return overlap / max(len(words1), len(words2))
 
 
-def fetch_google_trends_score(keyword):
+def fetch_google_trends_score(keyword, retries=3):
     """
     Get Google Trends interest score (0-100) using the embedded data endpoint.
+    Retries with backoff on 429/transient errors and records WHY it failed,
+    so the run reports a clear reason instead of a silent "---".
     """
     cache_key = f"trends:{keyword}"
     if cache_key in _cache:
         return _cache[cache_key]
 
-    try:
-        encoded = urllib.parse.quote(keyword)
-        url = f"https://trends.google.com/trends/api/dailytrends?hl=en-US&tz=0&geo=US&ns=15"
-        # Use explore endpoint for specific keyword
-        explore_url = (
-            f"https://trends.google.com/trends/api/explore?hl=en-US&tz=0&req="
-            f'{{"comparisonItem":[{{"keyword":"{keyword}","geo":"","time":"today 12-m"}}],'
-            f'"category":0,"property":""}}'
-        )
-        req = urllib.request.Request(explore_url, headers={
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        })
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            raw = resp.read().decode('utf-8')
-            # Google Trends prepends ")]}'" to prevent XSSI
-            if raw.startswith(')]}\'\n'):
-                raw = raw[5:]
-            data = json.loads(raw)
-            # Extract the token for interest over time
-            widgets = data.get('widgets', [])
-            for widget in widgets:
-                if widget.get('id') == 'TIMESERIES':
-                    token = widget.get('token', '')
-                    req_data = widget.get('request', {})
-                    if token and req_data:
-                        score = _fetch_trends_timeseries(token, req_data)
-                        _cache[cache_key] = score
-                        return score
-    except Exception:
-        pass
+    # The req= value is a JSON blob; it MUST be percent-encoded or urllib raises
+    # InvalidURL (raw braces/quotes/spaces). This was the real reason Trends always
+    # returned "---" — the request never even reached Google.
+    _req_payload = (
+        '{"comparisonItem":[{"keyword":"' + keyword + '","geo":"","time":"today 12-m"}],'
+        '"category":0,"property":""}'
+    )
+    explore_url = (
+        "https://trends.google.com/trends/api/explore?hl=en-US&tz=0&req="
+        + urllib.parse.quote(_req_payload)
+    )
+    op = _trends_session()
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(explore_url)
+            with op.open(req, timeout=10) as resp:
+                raw = resp.read().decode('utf-8')
+                # Google prepends an XSSI guard like ")]}'" (length varies per
+                # endpoint) — strip to the first '{' instead of a fixed prefix.
+                i = raw.find('{')
+                if i > 0:
+                    raw = raw[i:]
+                data = json.loads(raw)
+                for widget in data.get('widgets', []):
+                    if widget.get('id') == 'TIMESERIES':
+                        token = widget.get('token', '')
+                        req_data = widget.get('request', {})
+                        if token and req_data:
+                            score = _fetch_trends_timeseries(token, req_data, op)
+                            _cache[cache_key] = score
+                            _TRENDS_STATUS["ok"] += 1
+                            return score
+                # parsed OK but no timeseries widget -> genuine no-data, do not retry
+                _cache[cache_key] = None
+                return None
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                _TRENDS_STATUS["reason"] = "rate-limited (HTTP 429)"
+                if attempt == 0:
+                    sys.stderr.write("  WARN Google Trends: HTTP 429 (rate-limited) — backing off + retrying...\n")
+                time.sleep(3 * (attempt + 1))   # 3s, 6s, 9s
+                continue
+            _TRENDS_STATUS["reason"] = f"HTTP {e.code}"
+            break
+        except Exception as e:
+            _TRENDS_STATUS["reason"] = type(e).__name__
+            time.sleep(2)
+            continue
 
+    _TRENDS_STATUS["fails"] += 1
     _cache[cache_key] = None
     return None
 
 
-def _fetch_trends_timeseries(token, req_data):
-    """Fetch actual trend data using the widget token."""
+def _fetch_trends_timeseries(token, req_data, opener=None):
+    """Fetch actual trend data using the widget token (reuses the cookie session)."""
     try:
         req_json = urllib.parse.quote(json.dumps(req_data))
         url = f"https://trends.google.com/trends/api/widgetdata/multiline?hl=en-US&tz=0&req={req_json}&token={token}"
-        req = urllib.request.Request(url, headers={
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        })
-        with urllib.request.urlopen(req, timeout=8) as resp:
+        req = urllib.request.Request(url)
+        _open = (opener.open if opener is not None else urllib.request.urlopen)
+        with _open(req, timeout=10) as resp:
             raw = resp.read().decode('utf-8')
-            if raw.startswith(')]}\'\n'):
-                raw = raw[5:]
+            # strip the XSSI guard robustly (this endpoint uses a different
+            # prefix than /explore — the real reason scores never came back)
+            i = raw.find('{')
+            if i > 0:
+                raw = raw[i:]
             data = json.loads(raw)
             timeline = data.get('default', {}).get('timelineData', [])
             if timeline:
@@ -558,6 +607,10 @@ def print_single_results(results):
         bing_broad = f"{bing['broad_monthly']:,}" if bing and bing.get('broad_monthly') else "---"
         impr = f"{r['console_impressions']}" if r['console_impressions'] is not None else "---"
         print(f"  {kw:<35} {score:>5}/100 {tier:<10} {ac:>4} {trends:>7} {bing_exact:>9} {bing_broad:>9} {impr:>6}")
+
+    if _TRENDS_STATUS["fails"]:
+        print(f"\n  WARN Google Trends MISSING for {_TRENDS_STATUS['fails']} keyword(s) — {_TRENDS_STATUS['reason']}.")
+        print(f"       Score used Autocomplete + Bing + GSC only (Trends not counted). Re-run later / smaller batch.")
 
     # Recommendations
     print(f"\n  LEGEND:")

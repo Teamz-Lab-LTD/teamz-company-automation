@@ -161,6 +161,18 @@ def main():
     else:
         sys.exit(f"ERROR: no tools.json or sitemap.xml in {root} — pass --sitemap URL_OR_PATH")
 
+    # --expand: also probe nearby intent variations per topic (discovery, not just validation
+    # of existing pages). Off by default so default batches stay lean. Planner returns 0 for
+    # the junk ones and we skip them — the upside is catching demand the bare slug misses.
+    if "--expand" in sys.argv:
+        EXPAND = ["best {}", "{} 2026", "{} free", "{} online", "{} examples", "{} vs"]
+        extra = set()
+        for p in list(phrases):
+            base = core_of(p)
+            for tmpl in EXPAND:
+                extra.add(tmpl.format(base))
+        phrases |= extra
+
     done = already_pulled(data_dir)
     keep = sorted(p for p in phrases
                   if p and len(p) > 2 and len(p.split()) <= MAX_WORDS and p.lower() not in done)

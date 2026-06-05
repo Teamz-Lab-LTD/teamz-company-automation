@@ -98,14 +98,131 @@ def read_dead_slugs():
     return slugs
 
 
+# ----------------------------------------------------------- manual Google volume
+# Exact search volume exported by hand from Google Ads Keyword Planner (free, no API
+# token). This is the AUTHORITATIVE demand source — when a topic is present here we
+# trust it over the free-signal estimate (autocomplete/Bing/GSC), which only guesses.
+# Export how-to: Keyword Planner -> Get search volume -> Saved keywords -> Download .csv
+MANUAL_DIR = os.path.join(DATA, "manual-pull")   # drop any number of Planner .csv exports here
+REVIVE_MIN_VOL = 100        # real Google searches/mo below this = not worth re-targeting
+WALL_VOL       = 100000     # above this = head term, a re-targeted tool page can't win it
+import math, glob
+
+
+def _norm(s):
+    return re.sub(r"\s+", " ", (s or "").strip().lower())
+
+
+def _parse_planner_csv(path):
+    """One Planner export -> {normalized keyword: {'vol': float, 'comp': str}}.
+    Tab-delimited; some exports are UTF-16 (Excel) — try both. Header is the first row
+    that contains 'Keyword' + 'Avg. monthly searches' (rows above are title + date range)."""
+    raw = None
+    for enc in ("utf-8", "utf-16"):
+        try:
+            txt = open(path, encoding=enc).read()
+            if "Avg. monthly searches" in txt:
+                raw = txt
+                break
+        except Exception:
+            continue
+    if raw is None:
+        return {}
+    rows = list(csv.reader(raw.splitlines(), delimiter="\t"))
+    hdr = next((r for r in rows[:5] if "Keyword" in r and "Avg. monthly searches" in r), None)
+    if not hdr:
+        return {}
+    ki, vi = hdr.index("Keyword"), hdr.index("Avg. monthly searches")
+    ci = hdr.index("Competition") if "Competition" in hdr else -1
+    out = {}
+    for r in rows[rows.index(hdr) + 1:]:
+        if len(r) <= vi or not r[ki].strip():
+            continue
+        try:
+            vol = float(r[vi]) if r[vi].strip() else 0.0
+        except ValueError:
+            vol = 0.0
+        out[_norm(r[ki])] = {"vol": vol, "comp": r[ci].strip() if ci >= 0 and len(r) > ci else ""}
+    return out
+
+
+def load_manual_volume():
+    """Merge EVERY *.csv in data/manual-pull/ into one master volume map. Drop a new
+    Planner export in that folder and it's picked up automatically next run. On a keyword
+    collision the higher volume wins (a later, fuller pull supersedes an empty earlier one)."""
+    merged = {}
+    for p in sorted(glob.glob(os.path.join(MANUAL_DIR, "*.csv"))):
+        for k, v in _parse_planner_csv(p).items():
+            if k not in merged or v["vol"] > merged[k]["vol"]:
+                merged[k] = v
+    return merged
+
+
+def manual_lookup(mv, kw):
+    """Exact match, else strip a trailing tool/intent word and match the core topic."""
+    k = _norm(kw)
+    if k in mv:
+        return mv[k]
+    parts = k.split()
+    if len(parts) > 1 and parts[-1] in (TOOL_TYPES | set(INTENT_SUFFIXES)):
+        core = " ".join(parts[:-1])
+        if core in mv:
+            return mv[core]
+    return None
+
+
+def vol_to_score(vol, comp):
+    s = min(100.0, 30.0 + 14.0 * math.log10(max(vol, 1)))   # 100->58, 5k->82, 50k->96
+    if comp == "Medium":
+        s -= 8
+    return round(max(0.0, s), 1)
+
+
+def vol_to_tier(vol):
+    return "HIGH" if vol >= 10000 else "MEDIUM" if vol >= 1000 else "LOW"
+
+
 # ----------------------------------------------------------------- find targets
 def find_targets():
     kv = load_kv()
+    mv = load_manual_volume()
     slugs = read_dead_slugs()
-    print(f"  INDEXED_NO_DEMAND pages available: {len(slugs)}  (processing {min(CAP,len(slugs))})")
+    # Manual lookups are instant (no network), so when the Planner export is present we
+    # classify EVERY dead page from real Google data instead of the network-capped sample.
+    work = slugs if mv else slugs[:CAP]
+    print(f"  INDEXED_NO_DEMAND pages: {len(slugs)}  |  manual Google volume: "
+          f"{len(mv)} keywords  |  processing {len(work)}")
     revive, prune = [], []
-    for slug in slugs[:CAP]:
+    for slug in work:
         core, current = topic_and_current(slug)
+
+        # --- authoritative path: real Google volume for this topic ---
+        m = manual_lookup(mv, core) or manual_lookup(mv, current)
+        if m is not None:
+            vol, comp = m["vol"], m["comp"]
+            if vol < REVIVE_MIN_VOL:
+                prune.append({"slug": slug, "old_target": current,
+                              "reason": f"google: {int(vol)}/mo — real no demand"})
+                print(f"    prune   /{slug}/  ('{current}' — Google {int(vol)}/mo)")
+            elif vol > WALL_VOL or comp == "High":
+                prune.append({"slug": slug, "old_target": current,
+                              "reason": f"google: {int(vol)}/mo {comp} — head-term wall, can't win"})
+                print(f"    wall    /{slug}/  ('{core}' — Google {int(vol)}/mo {comp})")
+            else:
+                # The page's own topic cluster has real, winnable Google demand. It's "dead"
+                # only because the page doesn't RANK (0 GSC impressions) — not because nobody
+                # searches. So enhance toward the page's specific tool phrase (current), which
+                # sits in a proven-demand cluster — never dumb it down to a bare head noun.
+                target = current
+                score = vol_to_score(vol, comp)
+                revive.append({"slug": slug, "old_target": current, "new_target": target,
+                               "score": score, "tier": vol_to_tier(vol), "cluster": core,
+                               "google_vol": int(vol), "competition": comp,
+                               "source": "google-planner"})
+                print(f"    REVIVE  /{slug}/  enhance for '{target}'  (cluster '{core}' Google {int(vol)}/mo {comp}, {score})")
+            continue
+
+        # --- fallback: topic not in the manual pull -> free-signal estimate ---
         best = None
         for kw in candidates(core, current):
             try:
@@ -120,8 +237,9 @@ def find_targets():
                 best = {"keyword": kw, "score": score, "tier": r.get("volume_tier"), "bing": bing}
         if best:
             revive.append({"slug": slug, "old_target": current, "new_target": best["keyword"],
-                           "score": best["score"], "tier": best["tier"], "bing_exact": best["bing"]})
-            print(f"    REVIVE  /{slug}/  '{current}' -> '{best['keyword']}'  ({best['tier']} {best['score']})")
+                           "score": best["score"], "tier": best["tier"], "bing_exact": best["bing"],
+                           "source": "free-signal"})
+            print(f"    revive? /{slug}/  '{current}' -> '{best['keyword']}'  ({best['tier']} {best['score']} est)")
         else:
             prune.append({"slug": slug, "old_target": current, "reason": "no winnable demand sibling"})
             print(f"    prune   /{slug}/  ('{current}' — nothing winnable)")

@@ -333,6 +333,9 @@ run_phase_cmd "Internal link health" 5 "scripts/build-internal-links.sh --quick"
 echo "  Running QA check..."
 run_phase_cmd "QA check" 10 "./scripts/build-qa-check.sh"
 
+echo "  Mobile UX gate (changed tools, 390x844 iPhone)..."
+run_phase_cmd "Mobile UX gate" 10 "python3 teamz-company-automation/py/qa-mobile-ux.py --changed || true"
+
 # Phase 2: Request indexing for any new pages
 echo ""
 echo "=== Phase 2: Request Indexing ==="

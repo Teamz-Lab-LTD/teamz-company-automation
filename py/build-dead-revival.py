@@ -248,7 +248,37 @@ def find_targets():
             prune.append({"slug": slug, "old_target": current, "reason": "no winnable demand sibling"})
             print(f"    prune   /{slug}/  ('{current}' — nothing winnable)")
 
-    revive.sort(key=lambda x: -x["score"])
+    # --- revenue + SERP-difficulty re-ranking: enhance the highest-EARNING winnable page
+    # first, not just the highest-volume one. Reuses the existing revenue-velocity scorer
+    # (revenue_priority) + organic SERP difficulty (serp_difficulty). Both degrade safely:
+    # if a module/network fails we fall back to the old volume sort. ---
+    try:
+        sys.path.insert(0, HERE)
+        import revenue_priority as rp
+        import serp_difficulty as sd
+        for r in revive:
+            hub = r["slug"].split("/")[0]
+            vol = r.get("google_vol") or r.get("bing_exact") or 0
+            r["est_visitors_mo"] = int(vol * 0.10)          # rough mo3 capture if it ranks
+            ed = rp.expected_dollars(r["slug"], hub, "", r["est_visitors_mo"], serp_winnability=5)
+            r.update({"niche": ed["niche"], "rpm_mid": ed["rpm_mid"],
+                      "expected_dollars_mo": ed["expected_dollars_mo"]})
+        revive.sort(key=lambda x: -x["expected_dollars_mo"])
+        # refine real SERP difficulty ONLY for the top targets (DDG throttles; cap the calls)
+        import time as _t
+        for r in revive[:8]:
+            w = sd.winnability(r["new_target"], DATA)
+            r["serp_winnability"] = w
+            ed = rp.expected_dollars(r["slug"], r["slug"].split("/")[0], "",
+                                     r.get("est_visitors_mo", 0), serp_winnability=w)
+            r["expected_dollars_mo"] = ed["expected_dollars_mo"]
+            _t.sleep(2)
+        revive.sort(key=lambda x: -x["expected_dollars_mo"])
+        print(f"  ranked {len(revive)} targets by expected $/mo (RPM x winnability); "
+              f"top: /{revive[0]['slug']}/ ~${revive[0]['expected_dollars_mo']}/mo" if revive else "")
+    except Exception as e:
+        print(f"  (revenue/SERP re-rank skipped: {type(e).__name__} — using volume sort)")
+        revive.sort(key=lambda x: -x["score"])
     with open(os.path.join(DATA, "dead-revival-targets.json"), "w") as f:
         json.dump({"generated": TODAY, "targets": revive}, f, indent=2)
     with open(os.path.join(DATA, "dead-revival-prune.json"), "w") as f:

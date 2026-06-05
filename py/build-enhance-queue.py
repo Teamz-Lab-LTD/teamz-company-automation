@@ -547,7 +547,26 @@ def main():
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
             by_slug[c['slug']] = c
 
-    ranked = sorted(by_slug.values(), key=lambda x: x['signal_score'], reverse=True)
+    # Revenue weighting: bias the queue toward higher-RPM niches so enhancement effort goes
+    # to pages that EARN, not just rank. Reuses revenue_priority (no new RPM math). Multiplies
+    # the SORT KEY only — signal_score itself is untouched, so the source-quota logic below is
+    # unaffected. Degrades to weight 1.0 if the module/data is unavailable.
+    try:
+        import revenue_priority as _rp
+        for c in by_slug.values():
+            hub = c['slug'].strip('/').split('/')[0]
+            ed = _rp.expected_dollars(c['slug'], hub, c.get('title', ''),
+                                      visitors_mo=1000, serp_winnability=6)
+            c['rpm_mid'] = ed['rpm_mid']
+            c['niche'] = ed['niche']
+            c['rev_weight'] = round(max(0.5, min(3.0, ed['rpm_mid'] / 10.0)), 2)  # $10 RPM = 1.0x
+    except Exception as e:
+        print(f"[enhance-queue] revenue weighting skipped ({type(e).__name__}) — raw signal sort")
+        for c in by_slug.values():
+            c['rev_weight'] = 1.0
+
+    ranked = sorted(by_slug.values(),
+                    key=lambda x: x['signal_score'] * x.get('rev_weight', 1.0), reverse=True)
 
     # Cap with mode mix: target 4 Mode A google + 2 Mode B google + 1 bing
     final = []

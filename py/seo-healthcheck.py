@@ -241,9 +241,38 @@ def check_manual_google_volume():
         add("google volume", GREEN, f"{msg} ({age_days:.0f}d old)")
 
 
+def check_revenue_serp():
+    """Verify the money layer: RPM steering (revenue_priority) + SERP difficulty
+    (serp_difficulty) import + their data is reachable. These rank the nightly by expected
+    $/mo, not just traffic — silent breakage = back to traffic-blind enhancement."""
+    sys.path.insert(0, HERE)
+    try:
+        import revenue_priority as rp
+        r = rp.expected_dollars("finance/test", "finance", "", 1000, 6)
+        if not r or r.get("rpm_mid", 0) <= 0:
+            add("revenue steering", WARN, "revenue_priority returned no RPM — check rpm-benchmarks.json");
+        else:
+            add("revenue steering", GREEN, f"RPM steering live (finance=${r['rpm_mid']})")
+    except Exception as e:
+        add("revenue steering", WARN, f"revenue_priority failed: {type(e).__name__} — run build-public-rpm-benchmarks.py")
+    try:
+        import serp_difficulty as sd
+        best = None
+        for d in DATA_DIRS:
+            st = sd.stats(d)
+            if st["cached_keywords"]:
+                best = st; break
+        if best:
+            add("SERP difficulty", GREEN, f"{best['cached_keywords']} cached ({best['winnable']} winnable, {best['walled']} walled)")
+        else:
+            add("SERP difficulty", GREEN, "module OK, cache empty (fills as revival runs)")
+    except Exception as e:
+        add("SERP difficulty", WARN, f"serp_difficulty failed: {type(e).__name__}")
+
+
 CHECKS = [check_compile_all, check_keyword_signals, check_gsc_auth,
           check_bing_key, check_dataforseo, check_output_freshness,
-          check_manual_google_volume]
+          check_manual_google_volume, check_revenue_serp]
 
 
 def main():

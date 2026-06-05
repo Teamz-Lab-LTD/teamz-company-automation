@@ -394,7 +394,7 @@ run_phase_cmd "Ideas brief" 2 "./scripts/build-ideas.sh --quick"
 if [ -f "$PROJECT_DIR/data/.dead-revival-enabled" ] && [ "$REPO_DIRTY_AT_START" -eq 0 ]; then
     echo ""
     echo "=== Dead-tool revival: find demand re-targets ==="
-    python3 "$_SCRIPT_DIR/../py/build-dead-revival.py" --cap 4 2>&1 | sed 's/^/  /' || echo "  (dead-revival skipped — non-fatal)"
+    python3 "$_SCRIPT_DIR/../py/build-dead-revival.py" --cap 20 2>&1 | sed 's/^/  /' || echo "  (dead-revival skipped — non-fatal)"
 fi
 
 # Phase 4: Run Claude to build tools (uses quota)

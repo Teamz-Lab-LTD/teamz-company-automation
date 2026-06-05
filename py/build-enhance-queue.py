@@ -573,8 +573,8 @@ def main():
     a_quota = max(1, args.cap // 2)
     b_quota = max(1, args.cap // 4)
     bing_quota = max(1, args.cap // 7)
-    cold_quota = max(1, args.cap // 7)   # cold-start hard cap (<=1 at cap 7)
-    revival_quota = max(1, args.cap // 7)  # dead-revival hard cap (<=1 at cap 7)
+    cold_quota = max(1, args.cap // 4)   # cold-start share raised (user: don't skip low) — 5 at cap 20
+    revival_quota = max(1, args.cap // 4)  # dead-revival share raised (user: don't skip dead) — 5 at cap 20
     counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0, 'revival': 0}
     for c in ranked:
         if len(final) >= args.cap:

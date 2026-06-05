@@ -207,7 +207,7 @@ SKIPPED_PHASES=()
 REPO_DIRTY_AT_START=0
 # Ignore files that pre-commit hook auto-regenerates after every commit (always "dirty")
 # and gitignored config files. Without this filter nightly always sees dirty repo and skips.
-DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|\.htaccess|data/research-cache/.*|data/progress/.*|data/rising-tools-.*\.json|data/gsc-broken-pages-.*\.json|data/canonical-mismatches-.*\.json|data/enhance-queue\.json|data/enhancement-log\.json|data/last-night-enhance\.md|data/cold-start-done\.txt|data/cold-start-enabled|data/dead-revival-.*\.json|data/\.dead-revival-enabled|data/manual-pull/.*|data/serp-difficulty-cache\.json|data/bing-data-.*\.json|data/gsc-anomalies-.*\.json|data/keyword-mega-batch/.*|logs/.*|.claude-memory/.*)$' || true)"
+DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|\.htaccess|data/research-cache/.*|data/progress/.*|data/rising-tools-.*\.json|data/gsc-broken-pages-.*\.json|data/canonical-mismatches-.*\.json|data/enhance-queue\.json|data/enhancement-log\.json|data/last-night-enhance\.md|data/cold-start-done\.txt|data/cold-start-enabled|data/dead-revival-.*\.json|data/\.dead-revival-enabled|data/manual-pull/.*|data/serp-difficulty-cache\.json|data/money-snapshots/.*|data/bing-data-.*\.json|data/gsc-anomalies-.*\.json|data/keyword-mega-batch/.*|logs/.*|.claude-memory/.*)$' || true)"
 if [ -n "$DIRTY_FILES" ]; then
     REPO_DIRTY_AT_START=1
     echo "  Warning: repo is dirty at start. Nightly run will not auto-commit or auto-push."
@@ -322,6 +322,7 @@ run_phase_cmd "Uptime check" 3 "python3 scripts/build-uptime-check.py"
 run_phase_cmd "Schema validation" 5 "python3 scripts/build-schema-validate.py"
 run_phase_cmd "Crawl snapshot + diff" 5 "python3 scripts/build-crawl-diff.py"
 run_phase_cmd "GSC anomalies" 10 "python3 scripts/build-gsc-anomalies.py --json-only"
+run_phase_cmd "Money-page growth snapshot" 10 "python3 teamz-company-automation/py/build-money-tracker.py --today $(date +%Y-%m-%d) || true"
 run_phase_cmd "GSC broken pages → auto-redirect" 10 "python3 scripts/build-gsc-broken-pages.py"
 
 echo "  Checking freshness (stale data)..."

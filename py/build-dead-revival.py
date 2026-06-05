@@ -147,11 +147,15 @@ def _parse_planner_csv(path):
 
 
 def load_manual_volume():
-    """Merge EVERY *.csv in data/manual-pull/ into one master volume map. Drop a new
-    Planner export in that folder and it's picked up automatically next run. On a keyword
-    collision the higher volume wins (a later, fuller pull supersedes an empty earlier one)."""
+    """Merge EVERY Planner export the user saved into one master volume map. Results live in
+    data/manual-pull/2-DROP-RESULTS-HERE/ (top-level *.csv also read for back-compat). Drop a
+    new export there and it's picked up automatically next run. On a keyword collision the
+    higher volume wins (a later, fuller pull supersedes an empty earlier one). Files in
+    1-UPLOAD-THESE/ are inputs (no volume column) and are safely skipped by the parser."""
+    paths = (glob.glob(os.path.join(MANUAL_DIR, "2-DROP-RESULTS-HERE", "*.csv"))
+             + glob.glob(os.path.join(MANUAL_DIR, "*.csv")))
     merged = {}
-    for p in sorted(glob.glob(os.path.join(MANUAL_DIR, "*.csv"))):
+    for p in sorted(paths):
         for k, v in _parse_planner_csv(p).items():
             if k not in merged or v["vol"] > merged[k]["vol"]:
                 merged[k] = v

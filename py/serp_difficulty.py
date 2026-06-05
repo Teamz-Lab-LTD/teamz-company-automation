@@ -13,7 +13,8 @@ script) so we never re-fetch; SERP authority barely moves, refresh maybe 1-2x/ye
   from serp_difficulty import winnability
   w = winnability("paycheck calculator", data_dir)   # 1 (walled) .. 10 (easy win)
 
-Returns 5 (neutral) on any fetch failure — never blocks the pipeline.
+Returns None when the SERP can't be fetched (caller should DEFER — do NOT treat as winnable);
+a real 1-10 otherwise. Never raises, never caches a fake neutral.
 """
 import os, json, re, time, urllib.request, urllib.parse, html
 
@@ -124,9 +125,14 @@ def winnability(keyword, data_dir, now_ts=None, force=False):
         return hit["winnability"]
     try:
         domains = _fetch_ddg_domains(keyword)
-        w, auth = _score(domains)
     except Exception:
-        return (hit or {}).get("winnability", 5)   # stale cache or neutral, never block
+        domains = []
+    if not domains:
+        # fetch failed/empty — do NOT cache a fake neutral 5 (that silently waved authority
+        # walls through for 240 days). Return a stale cached score if we have one, else None
+        # = UNKNOWN so the caller defers instead of treating the page as winnable.
+        return (hit or {}).get("winnability", None)
+    w, auth = _score(domains)
     cache[key] = {"winnability": w, "authority_count": auth,
                   "top_domains": domains[:6], "ts": now_ts}
     try:

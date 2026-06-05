@@ -105,7 +105,9 @@ def read_dead_slugs():
 # Export how-to: Keyword Planner -> Get search volume -> Saved keywords -> Download .csv
 MANUAL_DIR = os.path.join(DATA, "manual-pull")   # drop any number of Planner .csv exports here
 REVIVE_MIN_VOL = 100        # real Google searches/mo below this = not worth re-targeting
-WALL_VOL       = 100000     # above this = head term, a re-targeted tool page can't win it
+WALL_VOL       = 10000      # above this = head-term authority wall; a solo re-targeted tool
+                            #   page can't beat nerdwallet/.gov here (was 100000 — that let the
+                            #   50k Planner bucket through and aimed the agent at sure losses)
 import math
 sys.path.insert(0, HERE)
 # Use the ONE shared Planner-volume loader (no more verbatim copy living here). Behavior is
@@ -122,9 +124,9 @@ def load_manual_volume():
     return _shared_load_volume(DATA)
 
 
-def manual_lookup(mv, kw):
-    """Exact match, else strip a trailing tool/intent word and match the core topic."""
-    return _shared_manual_lookup(mv, kw, TOOL_TYPES, INTENT_SUFFIXES)
+def manual_lookup(mv, kw, core_fallback=True):
+    """Exact match, else (when core_fallback) strip a trailing tool/intent word to the core topic."""
+    return _shared_manual_lookup(mv, kw, TOOL_TYPES, INTENT_SUFFIXES, core_fallback=core_fallback)
 
 
 def vol_to_score(vol, comp):
@@ -153,8 +155,11 @@ def find_targets():
         core, current = topic_and_current(slug)
 
         # --- authoritative path: real Google volume for this topic ---
-        m = manual_lookup(mv, core) or manual_lookup(mv, current)
-        if m is not None:
+        # Exact-match the page's SPECIFIC tool phrase only — never inherit the bare head noun's
+        # (much larger, unwinnable) volume. A blank Planner cell = UNKNOWN (not zero), so it
+        # falls through to the free-signal estimate instead of being pruned as "no demand".
+        m = manual_lookup(mv, current, core_fallback=False)
+        if m is not None and m["vol"] is not None:
             vol, comp = m["vol"], m["comp"]
             if vol < REVIVE_MIN_VOL:
                 prune.append({"slug": slug, "old_target": current,
@@ -216,15 +221,31 @@ def find_targets():
             r.update({"niche": ed["niche"], "rpm_mid": ed["rpm_mid"],
                       "expected_dollars_mo": ed["expected_dollars_mo"]})
         revive.sort(key=lambda x: -x["expected_dollars_mo"])
-        # refine real SERP difficulty ONLY for the top targets (DDG throttles; cap the calls)
+        # refine real SERP difficulty ONLY for the top targets (DDG throttles; cap the calls).
+        # HARD FILTER: a confirmed authority wall (winnability <= 3) is moved to PRUNE, not
+        # revived — on-page edits can't outrank nerdwallet/.gov. A failed fetch returns None
+        # (winnability unknown) -> DEFER: keep the page, score it neutral, never wave it through
+        # as if winnable. (Only the top 8 are SERP-checked; pages below stay on the volume sort.)
         import time as _t
         for r in revive[:8]:
             w = sd.winnability(r["new_target"], DATA)
             r["serp_winnability"] = w
+            if w is not None and w <= 3:
+                r["_serp_wall"] = True
+                continue
+            wkt = w if w is not None else 5      # None = unknown -> neutral sort weight, not excluded
             ed = rp.expected_dollars(r["slug"], r["slug"].split("/")[0], "",
-                                     r.get("est_visitors_mo", 0), serp_winnability=w)
+                                     r.get("est_visitors_mo", 0), serp_winnability=wkt)
             r["expected_dollars_mo"] = ed["expected_dollars_mo"]
             _t.sleep(2)
+        walls = [r for r in revive if r.get("_serp_wall")]
+        if walls:
+            revive = [r for r in revive if not r.get("_serp_wall")]
+            for r in walls:
+                prune.append({"slug": r["slug"], "old_target": r["old_target"],
+                              "reason": f"SERP wall: top-10 owned by authority sites "
+                                        f"(winnability {r['serp_winnability']})"})
+            print(f"  SERP hard-filter: {len(walls)} authority-walled page(s) -> prune")
         revive.sort(key=lambda x: -x["expected_dollars_mo"])
         print(f"  ranked {len(revive)} targets by expected $/mo (RPM x winnability); "
               f"top: /{revive[0]['slug']}/ ~${revive[0]['expected_dollars_mo']}/mo" if revive else "")

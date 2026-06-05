@@ -59,10 +59,14 @@ def _parse_planner_csv(path):
     for r in rows[rows.index(hdr) + 1:]:
         if len(r) <= vi or not r[ki].strip():
             continue
-        try:
-            vol = float(r[vi]) if r[vi].strip() else 0.0
-        except ValueError:
-            vol = 0.0
+        cell = r[vi].strip()
+        if not cell:
+            vol = None              # blank = Planner returned no number = UNKNOWN, NOT zero demand
+        else:
+            try:
+                vol = float(cell)
+            except ValueError:
+                vol = None          # unparseable = unknown; never silently assume zero
         out[_norm(r[ki])] = {"vol": vol, "comp": r[ci].strip() if ci >= 0 and len(r) > ci else ""}
     return out
 
@@ -82,16 +86,27 @@ def load_manual_volume(data_dir):
     merged = {}
     for p in sorted(paths):
         for k, v in _parse_planner_csv(p).items():
-            if k not in merged or v["vol"] > merged[k]["vol"]:
+            if k not in merged:
+                merged[k] = v
+                continue
+            nv, ov = v["vol"], merged[k]["vol"]
+            # higher KNOWN volume wins; a known value supersedes UNKNOWN(None); None never overwrites
+            if nv is not None and (ov is None or nv > ov):
                 merged[k] = v
     return merged
 
 
-def manual_lookup(mv, kw, tool_types=DEFAULT_TOOL_TYPES, intent_suffixes=DEFAULT_INTENT_SUFFIXES):
-    """Exact match, else strip a trailing tool/intent word and match the core topic."""
+def manual_lookup(mv, kw, tool_types=DEFAULT_TOOL_TYPES, intent_suffixes=DEFAULT_INTENT_SUFFIXES,
+                  core_fallback=True):
+    """Exact match, else (when core_fallback) strip a trailing tool/intent word and match the
+    core topic. Pass core_fallback=False to FORBID the head-noun fallback — a specific tool
+    phrase ('1031 exchange calculator', 500/mo) must never inherit its bare head term's
+    ('1031 exchange', 50k/mo) volume and get mis-ranked into an unwinnable head queue."""
     k = _norm(kw)
     if k in mv:
         return mv[k]
+    if not core_fallback:
+        return None
     parts = k.split()
     if len(parts) > 1 and parts[-1] in (set(tool_types) | set(intent_suffixes)):
         core = " ".join(parts[:-1])

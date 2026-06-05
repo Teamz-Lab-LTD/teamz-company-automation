@@ -45,7 +45,7 @@ def money_pages():
         if niche not in MONEY_NICHES:
             continue
         hit = kvm.manual_lookup(mv, last)
-        vol = hit["vol"] if hit else 0
+        vol = hit["vol"] if hit and hit["vol"] is not None else 0   # blank Planner cell = unknown -> not a confirmed money page
         if vol < 1000:
             continue
         rpm = rp.expected_dollars(slug, hub, t.get("title", ""), 100, 7)["rpm_mid"]

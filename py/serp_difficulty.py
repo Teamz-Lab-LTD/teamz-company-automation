@@ -141,5 +141,5 @@ def winnability(keyword, data_dir, now_ts=None, force=False):
 def stats(data_dir):
     c = _load_cache(data_dir)
     return {"cached_keywords": len(c),
-            "walled": sum(1 for v in c.values() if v["winnability"] <= 3),
-            "winnable": sum(1 for v in c.values() if v["winnability"] >= 7)}
+            "walled": sum(1 for v in c.values() if v.get("winnability", 5) <= 3),
+            "winnable": sum(1 for v in c.values() if v.get("winnability", 5) >= 7)}

@@ -36,8 +36,33 @@ BATCH = 700
 MAX_WORDS = 10                          # Planner rejects keywords with >10 words
 
 
+VALUE_FLAGS = {"--project-root", "--sitemap", "--batch-size"}
+BOOL_FLAGS = {"--expand"}
+HELP_FLAGS = {"-h", "--help"}
+
+
 def arg(flag, default=None):
     return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else default
+
+
+def check_args():
+    """Guard BEFORE any destructive work: print help on -h/--help, refuse unknown flags.
+    Without this an unrecognized flag silently falls through to a full run that wipes the
+    existing batch-*.csv files."""
+    argv = sys.argv[1:]
+    i = 0
+    while i < len(argv):
+        tok = argv[i]
+        if tok in HELP_FLAGS:
+            print(__doc__); sys.exit(0)
+        if tok.startswith("-"):
+            if tok in VALUE_FLAGS:
+                i += 2; continue
+            if tok in BOOL_FLAGS:
+                i += 1; continue
+            sys.exit(f"ERROR: unknown flag {tok!r}. Valid: "
+                     f"{', '.join(sorted(VALUE_FLAGS | BOOL_FLAGS | HELP_FLAGS))}")
+        i += 1
 
 
 def project_root():
@@ -66,7 +91,7 @@ def core_of(phrase):
 
 def phrases_from_tools_json(path):
     d = json.load(open(path))
-    tools = d.get("tools", d if isinstance(d, list) else [])
+    tools = d if isinstance(d, list) else d.get("tools", [])
     out = set()
     for t in tools:
         slug = (t.get("slug") or t.get("path") or t.get("url", "")) if isinstance(t, dict) else str(t)
@@ -144,6 +169,7 @@ def write_readme(mp):
 
 
 def main():
+    check_args()
     root = project_root()
     data_dir = os.path.join(root, "data")
     mp = os.path.join(data_dir, "manual-pull")

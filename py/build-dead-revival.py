@@ -106,73 +106,25 @@ def read_dead_slugs():
 MANUAL_DIR = os.path.join(DATA, "manual-pull")   # drop any number of Planner .csv exports here
 REVIVE_MIN_VOL = 100        # real Google searches/mo below this = not worth re-targeting
 WALL_VOL       = 100000     # above this = head term, a re-targeted tool page can't win it
-import math, glob
-
-
-def _norm(s):
-    return re.sub(r"\s+", " ", (s or "").strip().lower())
-
-
-def _parse_planner_csv(path):
-    """One Planner export -> {normalized keyword: {'vol': float, 'comp': str}}.
-    Tab-delimited; some exports are UTF-16 (Excel) — try both. Header is the first row
-    that contains 'Keyword' + 'Avg. monthly searches' (rows above are title + date range)."""
-    raw = None
-    for enc in ("utf-8", "utf-16"):
-        try:
-            txt = open(path, encoding=enc).read()
-            if "Avg. monthly searches" in txt:
-                raw = txt
-                break
-        except Exception:
-            continue
-    if raw is None:
-        return {}
-    rows = list(csv.reader(raw.splitlines(), delimiter="\t"))
-    hdr = next((r for r in rows[:5] if "Keyword" in r and "Avg. monthly searches" in r), None)
-    if not hdr:
-        return {}
-    ki, vi = hdr.index("Keyword"), hdr.index("Avg. monthly searches")
-    ci = hdr.index("Competition") if "Competition" in hdr else -1
-    out = {}
-    for r in rows[rows.index(hdr) + 1:]:
-        if len(r) <= vi or not r[ki].strip():
-            continue
-        try:
-            vol = float(r[vi]) if r[vi].strip() else 0.0
-        except ValueError:
-            vol = 0.0
-        out[_norm(r[ki])] = {"vol": vol, "comp": r[ci].strip() if ci >= 0 and len(r) > ci else ""}
-    return out
+import math
+sys.path.insert(0, HERE)
+# Use the ONE shared Planner-volume loader (no more verbatim copy living here). Behavior is
+# unchanged: we delegate but pass THIS script's own TOOL_TYPES/INTENT_SUFFIXES so the
+# core-topic fallback strips exactly the words it always did.
+from keyword_volume_manual import (
+    load_manual_volume as _shared_load_volume,
+    manual_lookup as _shared_manual_lookup,
+)
 
 
 def load_manual_volume():
-    """Merge EVERY Planner export the user saved into one master volume map. Results live in
-    data/manual-pull/2-DROP-RESULTS-HERE/ (top-level *.csv also read for back-compat). Drop a
-    new export there and it's picked up automatically next run. On a keyword collision the
-    higher volume wins (a later, fuller pull supersedes an empty earlier one). Files in
-    1-UPLOAD-THESE/ are inputs (no volume column) and are safely skipped by the parser."""
-    paths = (glob.glob(os.path.join(MANUAL_DIR, "2-DROP-RESULTS-HERE", "*.csv"))
-             + glob.glob(os.path.join(MANUAL_DIR, "*.csv")))
-    merged = {}
-    for p in sorted(paths):
-        for k, v in _parse_planner_csv(p).items():
-            if k not in merged or v["vol"] > merged[k]["vol"]:
-                merged[k] = v
-    return merged
+    """Merge every Planner export under data/manual-pull/ into one map (shared loader)."""
+    return _shared_load_volume(DATA)
 
 
 def manual_lookup(mv, kw):
     """Exact match, else strip a trailing tool/intent word and match the core topic."""
-    k = _norm(kw)
-    if k in mv:
-        return mv[k]
-    parts = k.split()
-    if len(parts) > 1 and parts[-1] in (TOOL_TYPES | set(INTENT_SUFFIXES)):
-        core = " ".join(parts[:-1])
-        if core in mv:
-            return mv[core]
-    return None
+    return _shared_manual_lookup(mv, kw, TOOL_TYPES, INTENT_SUFFIXES)
 
 
 def vol_to_score(vol, comp):
@@ -338,7 +290,17 @@ def status():
     revived = log.get("revived", {})
     if not revived:
         print("  No pages revived yet."); return
-    cur = gsc_for(list(revived.keys()))
+    try:
+        cur = gsc_for(list(revived.keys()))
+    except Exception as e:
+        print(f"\n  GSC unavailable ({type(e).__name__}) — offline mode, showing the "
+              f"{len(revived)} revived pages from the local log:")
+        for slug, rec in revived.items():
+            b = rec.get("baseline_impr")
+            print(f"    /{slug[:45]:<45} '{rec.get('new_target','')[:22]}' "
+                  f"baseline_impr={b if b is not None else 'unset'}")
+        print("  (run online to pull live 28d impressions + rising/flat/dead buckets.)")
+        return
     rising, flat, dead = [], [], []
     for slug, rec in revived.items():
         impr, pos = cur.get(slug, (0, 0))

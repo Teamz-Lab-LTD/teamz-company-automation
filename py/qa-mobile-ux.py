@@ -39,7 +39,7 @@ AUDIT_JS = r"""
   r.scrollWidth = document.documentElement.scrollWidth; r.vw = vw;
   const m = document.querySelector('meta[name=viewport]');
   r.viewportMeta = !!m;
-  r.viewportLocked = m ? /user-scalable\s*=\s*no|maximum-scale\s*=\s*1(\.0)?(\b|,|$)/i.test(m.content||'') : false;
+  r.viewportLocked = m ? /user-scalable\s*=\s*no|maximum-scale\s*=\s*1(\.0+)?\s*(,|$)/i.test(m.content||'') : false;
   const small = [];
   document.querySelectorAll('button,a,input,select,textarea,[role=button],[onclick]').forEach(el => {
     const s = getComputedStyle(el);

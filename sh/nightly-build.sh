@@ -334,8 +334,9 @@ run_phase_cmd "Internal link health" 5 "scripts/build-internal-links.sh --quick"
 echo "  Running QA check..."
 run_phase_cmd "QA check" 10 "./scripts/build-qa-check.sh"
 
-echo "  Mobile UX gate (changed tools, 390x844 iPhone)..."
-run_phase_cmd "Mobile UX gate" 10 "python3 teamz-company-automation/py/qa-mobile-ux.py --changed || true"
+# NOTE: the Mobile UX gate is intentionally NOT here. This phase runs BEFORE the Phase-4
+# agent edits any tool, so --changed would see nothing. It now runs in Phase 5 (post-edit,
+# pre-push) where get_changed_tools() actually contains the agent's enhanced tools.
 
 # Phase 2: Request indexing for any new pages
 echo ""
@@ -566,6 +567,19 @@ if '<div class=\"ad-slot\">' not in c and '<section class=\"tool-content\">' in 
 done
 
 echo "  Auto-fixed $FIXES issues."
+
+# Mobile UX gate — runs HERE (post-edit, pre-push) so get_changed_tools() contains the
+# agent's actually-enhanced tools (390x844 iPhone: horizontal-scroll + locked-viewport =
+# HARD, small tap-targets/fonts/contrast = WARN). Non-blocking: the global shared/css 44px
+# rule already handles tap targets site-wide; this is the safety net that ALERTS on a real
+# break so it surfaces instead of shipping silently.
+echo "  Mobile UX gate (post-edit, agent's changed tools)..."
+MOBILE_OUT=$(python3 teamz-company-automation/py/qa-mobile-ux.py --changed 2>&1); MOBILE_EXIT=$?
+echo "$MOBILE_OUT" | tail -10
+if [ "$MOBILE_EXIT" -ne 0 ]; then
+    record_health_alert "Mobile UX gate HARD fail on an enhanced tool (horizontal scroll / locked viewport) — see nightly log"
+    osascript -e 'display notification "Mobile UX HARD fail on an enhanced tool — check nightly log" with title "Teamz Mobile Gate"' 2>/dev/null
+fi
 
 # Run SEO auto-fixes
 echo "  Running SEO auto-fixes..."

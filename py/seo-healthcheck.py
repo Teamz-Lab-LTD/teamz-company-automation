@@ -202,8 +202,48 @@ def check_output_freshness():
         add("output freshness", GREEN, "key data outputs present + fresh")
 
 
+def check_manual_google_volume():
+    """Recommend a free Keyword Planner pull when this project has SEO pages but no real
+    Google volume data (or it's gone stale). Exact volume is the authoritative demand
+    source — without it every enhance/revive/prune decision is a guess. This is the
+    cross-consumer nudge: any project running SEO orchestration gets told to pull batches."""
+    # does this consumer even have a public SEO surface worth pulling for?
+    has_surface = (os.path.exists(os.path.join(HOST, "sitemap.xml"))
+                   or os.path.exists(os.path.join(HOST, "tools.json")))
+    if not has_surface:
+        add("google volume", GREEN, "no public SEO surface here — pull not needed"); return
+    try:
+        sys.path.insert(0, HERE)
+        import keyword_volume_manual as kvm
+    except Exception as e:
+        add("google volume", WARN, f"loader import failed: {e}"); return
+    cov = None
+    for d in DATA_DIRS:
+        mv = kvm.load_manual_volume(d)
+        if mv:
+            cov = kvm.coverage(mv); base = os.path.join(d, "manual-pull", "2-DROP-RESULTS-HERE"); break
+    if not cov:
+        add("google volume", WARN,
+            "MISSING — no Keyword Planner data. STRONGLY RECOMMENDED: run "
+            "`python3 teamz-company-automation/py/build-keyword-batches.py` then pull each "
+            "batch from Keyword Planner (US, free, no API token). Decisions are guesses until then.")
+        return
+    # present — is it stale? (volume is a 12-mo average; refresh ~1-2x/yr)
+    newest = 0
+    import glob as _g
+    for f in _g.glob(os.path.join(base, "*.csv")):
+        newest = max(newest, os.path.getmtime(f))
+    age_days = (time.time() - newest) / 86400 if newest else 9999
+    msg = f"{cov['with_volume']}/{cov['total']} keywords with real volume"
+    if age_days > 270:
+        add("google volume", WARN, f"STALE ({age_days:.0f}d > 270d) — re-pull recommended. {msg}")
+    else:
+        add("google volume", GREEN, f"{msg} ({age_days:.0f}d old)")
+
+
 CHECKS = [check_compile_all, check_keyword_signals, check_gsc_auth,
-          check_bing_key, check_dataforseo, check_output_freshness]
+          check_bing_key, check_dataforseo, check_output_freshness,
+          check_manual_google_volume]
 
 
 def main():

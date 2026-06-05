@@ -207,7 +207,7 @@ SKIPPED_PHASES=()
 REPO_DIRTY_AT_START=0
 # Ignore files that pre-commit hook auto-regenerates after every commit (always "dirty")
 # and gitignored config files. Without this filter nightly always sees dirty repo and skips.
-DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|\.htaccess|data/research-cache/.*|data/progress/.*|data/rising-tools-.*\.json|data/gsc-broken-pages-.*\.json|data/canonical-mismatches-.*\.json|data/enhance-queue\.json|data/enhancement-log\.json|data/last-night-enhance\.md|data/bing-data-.*\.json|data/gsc-anomalies-.*\.json|data/keyword-mega-batch/.*|logs/.*|.claude-memory/.*)$' || true)"
+DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|\.htaccess|data/research-cache/.*|data/progress/.*|data/rising-tools-.*\.json|data/gsc-broken-pages-.*\.json|data/canonical-mismatches-.*\.json|data/enhance-queue\.json|data/enhancement-log\.json|data/last-night-enhance\.md|data/cold-start-done\.txt|data/cold-start-enabled|data/bing-data-.*\.json|data/gsc-anomalies-.*\.json|data/keyword-mega-batch/.*|logs/.*|.claude-memory/.*)$' || true)"
 if [ -n "$DIRTY_FILES" ]; then
     REPO_DIRTY_AT_START=1
     echo "  Warning: repo is dirty at start. Nightly run will not auto-commit or auto-push."

@@ -207,7 +207,7 @@ SKIPPED_PHASES=()
 REPO_DIRTY_AT_START=0
 # Ignore files that pre-commit hook auto-regenerates after every commit (always "dirty")
 # and gitignored config files. Without this filter nightly always sees dirty repo and skips.
-DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|\.htaccess|data/research-cache/.*|data/progress/.*|data/rising-tools-.*\.json|data/gsc-broken-pages-.*\.json|data/canonical-mismatches-.*\.json|data/enhance-queue\.json|data/enhancement-log\.json|data/last-night-enhance\.md|data/cold-start-done\.txt|data/cold-start-enabled|data/bing-data-.*\.json|data/gsc-anomalies-.*\.json|data/keyword-mega-batch/.*|logs/.*|.claude-memory/.*)$' || true)"
+DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|shared/js/search-index\.js|docs/indexing-report\.md|\.htaccess|data/research-cache/.*|data/progress/.*|data/rising-tools-.*\.json|data/gsc-broken-pages-.*\.json|data/canonical-mismatches-.*\.json|data/enhance-queue\.json|data/enhancement-log\.json|data/last-night-enhance\.md|data/cold-start-done\.txt|data/cold-start-enabled|data/dead-revival-.*\.json|data/\.dead-revival-enabled|data/bing-data-.*\.json|data/gsc-anomalies-.*\.json|data/keyword-mega-batch/.*|logs/.*|.claude-memory/.*)$' || true)"
 if [ -n "$DIRTY_FILES" ]; then
     REPO_DIRTY_AT_START=1
     echo "  Warning: repo is dirty at start. Nightly run will not auto-commit or auto-push."
@@ -381,6 +381,17 @@ run_phase_cmd "Distribution status" 10 "python3 scripts/distribute/distribute.py
 # Bing queries, Reddit RPM data) — feeds Phase 4 Claude agent with fresh data
 run_phase_cmd "Research cache refresh" 5 "./scripts/build-research-cache.sh"
 run_phase_cmd "Ideas brief" 2 "./scripts/build-ideas.sh --quick"
+
+# Dead-tool revival: find demand re-targets for indexed-but-no-demand pages.
+# Opt-in via data/.dead-revival-enabled (other consumers unaffected). Non-blocking,
+# low cap (4/night), Trends-disabled for speed. Output feeds Pool 9 of the enhance
+# queue, which Phase 4's Claude reviews before applying. Output files are in the
+# dirty-guard ignore-list so they can never self-lock the nightly.
+if [ -f "$PROJECT_DIR/data/.dead-revival-enabled" ] && [ "$REPO_DIRTY_AT_START" -eq 0 ]; then
+    echo ""
+    echo "=== Dead-tool revival: find demand re-targets ==="
+    python3 "$_SCRIPT_DIR/../py/build-dead-revival.py" --cap 4 2>&1 | sed 's/^/  /' || echo "  (dead-revival skipped — non-fatal)"
+fi
 
 # Phase 4: Run Claude to build tools (uses quota)
 echo ""

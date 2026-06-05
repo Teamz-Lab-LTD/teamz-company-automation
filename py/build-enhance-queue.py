@@ -448,6 +448,48 @@ def pool_cold_start(host_root, cfg):
     return cands, None
 
 
+# -----------------------------------------------------------------------------
+# Pool 9 (dead-revival): indexed-but-no-demand pages re-targeted to a keyword that
+# DOES have demand (from build-dead-revival.py). Turns dead weight into live pages.
+#
+# OPT-IN + ISOLATED: runs ONLY for a host with data/.dead-revival-enabled.
+# Lowest signal_score (0.4, below cold-start's 0.5) + hard quota -> can only ever
+# use LEFTOVER capacity, never displaces a proven target. Mode A = align content
+# toward the NEW demand keyword. Phase 4 Claude reviews each before applying.
+# -----------------------------------------------------------------------------
+def pool_dead_revival(host_root, cfg):
+    marker = host_root / 'data' / '.dead-revival-enabled'
+    if not marker.exists():
+        return [], None  # opt-in only — other repos unaffected
+    targets_file = host_root / 'data' / 'dead-revival-targets.json'
+    if not targets_file.exists():
+        return [], None
+    try:
+        data = json.loads(targets_file.read_text())
+    except Exception as e:
+        return [], str(e)
+    cands = []
+    for t in data.get('targets', []):
+        slug = '/' + t.get('slug', '').strip('/') + '/'
+        if slug == '//' or not slug_exists(slug, host_root):
+            continue
+        new_kw = t.get('new_target', '')
+        old_kw = t.get('old_target', '')
+        if not new_kw:
+            continue
+        cands.append({
+            'slug': slug,
+            'query': new_kw,
+            'signal_score': 0.4,        # absolute lowest — below cold-start (0.5)
+            'mode': 'A',                # content-align toward the new demand keyword
+            'source': 'dead-revival',
+            'citation': f"DEAD-REVIVAL: re-target '{old_kw}' (no demand) -> "
+                        f"'{new_kw}' ({t.get('tier','')} {t.get('score','')}) "
+                        f"[build-dead-revival.py]",
+        })
+    return cands, None
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--cap', type=int, default=7)
@@ -477,6 +519,8 @@ def main():
     if e7: errors['canonical_mismatches'] = e7
     p8c, e8 = pool_cold_start(host_root, cfg)
     if e8: errors['cold_start'] = e8
+    p8r, e9 = pool_dead_revival(host_root, cfg)
+    if e9: errors['dead_revival'] = e9
     p4 = pool_gaps_seasonal(host_root)
     p5 = pool_autocomplete_trends()
 
@@ -486,6 +530,7 @@ def main():
     print(f"[enhance-queue] pool6 gsc-ctr-drops:     {len(p6)}")
     print(f"[enhance-queue] pool7 canonical-fix:     {len(p7)}")
     print(f"[enhance-queue] pool8 cold-start:        {len(p8c)}")
+    print(f"[enhance-queue] pool9 dead-revival:      {len(p8r)}")
     print(f"[enhance-queue] pool4 gaps:              {len(p4['gaps'])}")
     print(f"[enhance-queue] pool4 seasonal:          {len(p4['seasonal'])}")
     print(f"[enhance-queue] pool5 autocomplete:      {len(p5['suggestions'])}")
@@ -496,7 +541,7 @@ def main():
 
     # Merge target pools (1-3, 6, 7, 8-cold-start), dedupe by slug, apply cooldown
     by_slug = {}
-    for c in p1 + p2 + p3 + p6 + p7 + p8c:
+    for c in p1 + p2 + p3 + p6 + p7 + p8c + p8r:
         if c['slug'] in cooldown_set:
             continue
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
@@ -510,7 +555,8 @@ def main():
     b_quota = max(1, args.cap // 4)
     bing_quota = max(1, args.cap // 7)
     cold_quota = max(1, args.cap // 7)   # cold-start hard cap (<=1 at cap 7)
-    counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0}
+    revival_quota = max(1, args.cap // 7)  # dead-revival hard cap (<=1 at cap 7)
+    counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0, 'revival': 0}
     for c in ranked:
         if len(final) >= args.cap:
             break
@@ -518,6 +564,11 @@ def main():
             if counts['cold'] >= cold_quota:      # only ever uses leftover capacity,
                 continue                          # never displaces a proven target
             final.append(c); counts['cold'] += 1
+            continue
+        if c['source'] == 'dead-revival':        # even lower priority + hard quota
+            if counts['revival'] >= revival_quota:
+                continue
+            final.append(c); counts['revival'] += 1
             continue
         is_bing = 'bing' in c['source']
         is_a = c['mode'] == 'A'

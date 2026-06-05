@@ -490,6 +490,46 @@ def pool_dead_revival(host_root, cfg):
     return cands, None
 
 
+# -----------------------------------------------------------------------------
+# Pool 10 (striking-distance): GSC reality — money pages already ranking JUST below
+# page 1 (position 11-20) with real impressions but ~0 clicks. The closest, highest-
+# value wins: a small on-page push tips them onto page 1 where the clicks are. Scored
+# HIGH so they LEAD the queue — this is the "re-anchor priority on GSC" lever: enhance
+# the pages Google already shows, not pages picked from guessed volume.
+#
+# Sourced from the GSC-backed money snapshot (build-money-tracker.py, runs Phase 1 of
+# the nightly — fresh before this queue builds in Phase 4). Tools-only: returns []
+# anywhere the snapshot doesn't exist, so other consumer repos are unaffected.
+# -----------------------------------------------------------------------------
+def pool_striking_distance(host_root, cfg):
+    snap = safe_read_json(host_root / 'data' / 'money-snapshots' / 'latest.json')
+    if not snap:
+        return [], None
+    cands = []
+    for pg in snap.get('pages', []):
+        if pg.get('bucket') != 'STUCK':
+            continue
+        pos = pg.get('pos') or 0
+        impr = pg.get('impr') or 0
+        if not (11 <= pos <= 20) or impr <= 0:     # just below page 1, with proven demand
+            continue
+        slug = url_to_slug(pg.get('url', ''), cfg['site_url'])   # snapshot 'slug' is only the last
+        if not slug or not slug_exists(slug, host_root):          # segment; the full path is in 'url'
+            continue
+        # closest-to-page-1 + most impressions lead; RPM bias is applied later via rev_weight
+        score = min(150.0, 30.0 + impr / 3.0 + max(0, 20 - pos) * 3)
+        cands.append({
+            'slug': slug,
+            'query': f"(striking distance — rank {pos:.1f}, push to page 1)",
+            'signal_score': round(score, 2),
+            'mode': 'A',
+            'source': 'striking-distance',
+            'citation': f"GSC rank {pos:.1f}, {impr} impr, 0 clicks — page-2 money page, "
+                        f"${pg.get('rpm','?')} RPM [money-snapshots/latest.json]",
+        })
+    return cands, None
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--cap', type=int, default=7)
@@ -521,6 +561,8 @@ def main():
     if e8: errors['cold_start'] = e8
     p8r, e9 = pool_dead_revival(host_root, cfg)
     if e9: errors['dead_revival'] = e9
+    p10, e10 = pool_striking_distance(host_root, cfg)
+    if e10: errors['striking_distance'] = e10
     p4 = pool_gaps_seasonal(host_root)
     p5 = pool_autocomplete_trends()
 
@@ -531,6 +573,7 @@ def main():
     print(f"[enhance-queue] pool7 canonical-fix:     {len(p7)}")
     print(f"[enhance-queue] pool8 cold-start:        {len(p8c)}")
     print(f"[enhance-queue] pool9 dead-revival:      {len(p8r)}")
+    print(f"[enhance-queue] pool10 striking-dist:    {len(p10)}")
     print(f"[enhance-queue] pool4 gaps:              {len(p4['gaps'])}")
     print(f"[enhance-queue] pool4 seasonal:          {len(p4['seasonal'])}")
     print(f"[enhance-queue] pool5 autocomplete:      {len(p5['suggestions'])}")
@@ -541,7 +584,7 @@ def main():
 
     # Merge target pools (1-3, 6, 7, 8-cold-start), dedupe by slug, apply cooldown
     by_slug = {}
-    for c in p1 + p2 + p3 + p6 + p7 + p8c + p8r:
+    for c in p10 + p1 + p2 + p3 + p6 + p7 + p8c + p8r:
         if c['slug'] in cooldown_set:
             continue
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
@@ -575,10 +618,16 @@ def main():
     bing_quota = max(1, args.cap // 7)
     cold_quota = max(1, args.cap // 4)   # cold-start share raised (user: don't skip low) — 5 at cap 20
     revival_quota = max(1, args.cap // 4)  # dead-revival share raised (user: don't skip dead) — 5 at cap 20
-    counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0, 'revival': 0}
+    striking_quota = max(2, args.cap // 2)  # GSC near-page-1 money pages LEAD — up to half the run
+    counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0, 'revival': 0, 'striking': 0}
     for c in ranked:
         if len(final) >= args.cap:
             break
+        if c['source'] == 'striking-distance':   # highest priority: pages already on page 2,
+            if counts['striking'] >= striking_quota:   # one push from page 1 — but capped so
+                continue                          # other pools still get worked each run
+            final.append(c); counts['striking'] += 1
+            continue
         if c['source'] == 'cold-start':          # lowest priority + hard quota:
             if counts['cold'] >= cold_quota:      # only ever uses leftover capacity,
                 continue                          # never displaces a proven target
@@ -617,6 +666,7 @@ def main():
             '/tmp/nightly-{suggestions,trends}.txt (Phase 0 cron outputs)',
         ],
         'pool_counts': {
+            'striking_distance': len(p10),
             'rising': len(p1),
             'opportunities': len(p2),
             'bing': len(p3),

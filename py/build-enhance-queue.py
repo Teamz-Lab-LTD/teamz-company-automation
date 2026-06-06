@@ -530,6 +530,56 @@ def pool_striking_distance(host_root, cfg):
     return cands, None
 
 
+def _faq_is_empty(html):
+    """Same check the url-hygiene guard uses: a `var/const/let FAQS = [...]` block with zero
+    q:/question: pairs. Returns False when there is no FAQ block at all (different template —
+    not our target)."""
+    fm = re.search(r'(?:var|const|let)\s+FAQS?\s*=\s*(\[.*?\])\s*;', html, re.S)
+    if not fm:
+        return False
+    return len(re.findall(r'\b(?:q|question)\s*:', fm.group(1), re.I)) == 0
+
+
+def pool_thin_faq_demand(host_root, cfg):
+    """Pages that HAVE Google demand (impressions) but ship an EMPTY FAQ = the highest-leverage
+    content add on the site. The nightly enhancer writes real FAQ Q&A (prompt step 3), so feeding
+    these THICKENS the page instead of pruning it — content where demand already exists. Demand
+    comes from the money snapshot; emptiness from the same check the url-hygiene guard uses.
+    Deliberately ignores zero-demand empty pages: content cannot rank a page nobody searches for."""
+    snap = safe_read_json(host_root / 'data' / 'money-snapshots' / 'latest.json')
+    if not snap:
+        return [], None
+    MIN_IMPR = 10                       # proven-demand floor — below this is noise
+    cands = []
+    for pg in snap.get('pages', []):
+        impr = pg.get('impr') or 0
+        if impr < MIN_IMPR:
+            continue
+        slug = url_to_slug(pg.get('url', ''), cfg['site_url'])
+        if not slug or not slug_exists(slug, host_root):
+            continue
+        try:
+            html = (host_root / slug.strip('/') / 'index.html').read_text(errors='ignore')
+        except Exception:
+            continue
+        if not _faq_is_empty(html):
+            continue
+        pos = pg.get('pos') or 0
+        # demand-weighted: empty -> full FAQ is a big content jump, so it scores aggressively,
+        # but capped at 150 like striking-distance so no single pool dominates the sort.
+        score = min(150.0, 40.0 + impr / 8.0)
+        cands.append({
+            'slug': slug,
+            'query': f"(thin-FAQ + demand — {impr} impr, empty FAQ -> write real Q&A)",
+            'signal_score': round(score, 2),
+            'mode': 'A',
+            'source': 'thin-faq',
+            'citation': f"GSC {impr} impr, rank {pos:.1f}, FAQ array EMPTY — thicken with real "
+                        f"Q&A (highest-leverage content add) [money-snapshots/latest.json + page scan]",
+        })
+    return cands, None
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--cap', type=int, default=7)
@@ -563,6 +613,8 @@ def main():
     if e9: errors['dead_revival'] = e9
     p10, e10 = pool_striking_distance(host_root, cfg)
     if e10: errors['striking_distance'] = e10
+    p11, e11 = pool_thin_faq_demand(host_root, cfg)
+    if e11: errors['thin_faq'] = e11
     p4 = pool_gaps_seasonal(host_root)
     p5 = pool_autocomplete_trends()
 
@@ -574,6 +626,7 @@ def main():
     print(f"[enhance-queue] pool8 cold-start:        {len(p8c)}")
     print(f"[enhance-queue] pool9 dead-revival:      {len(p8r)}")
     print(f"[enhance-queue] pool10 striking-dist:    {len(p10)}")
+    print(f"[enhance-queue] pool11 thin-faq+demand:  {len(p11)}")
     print(f"[enhance-queue] pool4 gaps:              {len(p4['gaps'])}")
     print(f"[enhance-queue] pool4 seasonal:          {len(p4['seasonal'])}")
     print(f"[enhance-queue] pool5 autocomplete:      {len(p5['suggestions'])}")
@@ -584,7 +637,7 @@ def main():
 
     # Merge target pools (1-3, 6, 7, 8-cold-start), dedupe by slug, apply cooldown
     by_slug = {}
-    for c in p10 + p1 + p2 + p3 + p6 + p7 + p8c + p8r:
+    for c in p10 + p11 + p1 + p2 + p3 + p6 + p7 + p8c + p8r:
         if c['slug'] in cooldown_set:
             continue
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
@@ -619,7 +672,9 @@ def main():
     cold_quota = max(1, args.cap // 4)   # cold-start share raised (user: don't skip low) — 5 at cap 20
     revival_quota = max(1, args.cap // 4)  # dead-revival share raised (user: don't skip dead) — 5 at cap 20
     striking_quota = max(2, args.cap // 2)  # GSC near-page-1 money pages LEAD — up to half the run
-    counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0, 'revival': 0, 'striking': 0}
+    faq_quota = max(2, args.cap // 4)       # thin-FAQ + demand: content-thicken share — 5 at cap 20
+    counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0, 'revival': 0,
+              'striking': 0, 'thin_faq': 0}
     for c in ranked:
         if len(final) >= args.cap:
             break
@@ -627,6 +682,11 @@ def main():
             if counts['striking'] >= striking_quota:   # one push from page 1 — but capped so
                 continue                          # other pools still get worked each run
             final.append(c); counts['striking'] += 1
+            continue
+        if c['source'] == 'thin-faq':            # demand pages with empty FAQ — write content,
+            if counts['thin_faq'] >= faq_quota:   # don't prune; quota'd so it shares the run
+                continue
+            final.append(c); counts['thin_faq'] += 1
             continue
         if c['source'] == 'cold-start':          # lowest priority + hard quota:
             if counts['cold'] >= cold_quota:      # only ever uses leftover capacity,
@@ -667,6 +727,7 @@ def main():
         ],
         'pool_counts': {
             'striking_distance': len(p10),
+            'thin_faq': len(p11),
             'rising': len(p1),
             'opportunities': len(p2),
             'bing': len(p3),

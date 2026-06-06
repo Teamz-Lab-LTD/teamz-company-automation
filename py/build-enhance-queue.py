@@ -537,7 +537,9 @@ def _faq_is_empty(html):
     fm = re.search(r'(?:var|const|let)\s+FAQS?\s*=\s*(\[.*?\])\s*;', html, re.S)
     if not fm:
         return False
-    return len(re.findall(r'\b(?:q|question)\s*:', fm.group(1), re.I)) == 0
+    # match BOTH quoted JSON keys ("q":) and unquoted JS shorthand (q:) — the old \bq:
+    # pattern missed the quoted form and mislabeled pages with rich FAQ as empty.
+    return len(re.findall(r'''["']?\b(?:q|question)\b["']?\s*:''', fm.group(1), re.I)) == 0
 
 
 def pool_thin_faq_demand(host_root, cfg):

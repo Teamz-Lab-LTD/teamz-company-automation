@@ -581,6 +581,18 @@ if [ "$MOBILE_EXIT" -ne 0 ]; then
     osascript -e 'display notification "Mobile UX HARD fail on an enhanced tool — check nightly log" with title "Teamz Mobile Gate"' 2>/dev/null
 fi
 
+# URL-hygiene + indexability guard — the cron commits --no-verify (bypassing the pre-commit
+# hook), so re-run the same checks on the agent's changed set here. Catches a born-wrong
+# canonical / og:url (the /career/career/ class that Google drops), interior // in emitted
+# URLs, param/fragment in canonical. WARN-only (can't block a --no-verify commit) but fires a
+# health alert + notification so a real indexability defect surfaces instead of shipping silent.
+echo "  URL-hygiene + indexability guard (post-edit)..."
+HYG_OUT=$(python3 scripts/build-url-hygiene-guard.py --nightly 2>&1); echo "$HYG_OUT" | tail -8
+if echo "$HYG_OUT" | grep -qE "BLOCK=[1-9]"; then
+    record_health_alert "URL-hygiene guard found an indexability defect on an enhanced tool (canonical / og:url / //) — see data/url-hygiene-latest.json"
+    osascript -e 'display notification "Indexability defect on an enhanced tool — check url-hygiene-latest.json" with title "Teamz URL Guard"' 2>/dev/null
+fi
+
 # Run SEO auto-fixes
 echo "  Running SEO auto-fixes..."
 ./scripts/build-seo-audit.sh --fix 2>/dev/null | tail -3
@@ -589,6 +601,11 @@ echo "  Running SEO auto-fixes..."
 python3 scripts/build-static-schema.py 2>/dev/null | tail -2
 ./scripts/build-search-index.sh 2>/dev/null | tail -3
 python3 scripts/build-fix-orphans.py fix 2>/dev/null | tail -2
+
+# Rebuild sitemap so every nightly commit carries a sitemap matching the on-disk indexable set
+# (build-sitemap.sh already excludes noindex + redirect stubs). Closes the proven gap where a
+# new/changed page shipped without a sitemap update — reuse of the existing correct script.
+[ -f scripts/build-sitemap.sh ] && bash scripts/build-sitemap.sh 2>/dev/null | tail -2
 
 # Stage generated/site changes, but leave volatile logs and lock files out of the commit
 git add -A -- . \

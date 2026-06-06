@@ -675,9 +675,24 @@ def main():
     faq_quota = max(2, args.cap // 4)       # thin-FAQ + demand: content-thicken share — 5 at cap 20
     counts = {'A_google': 0, 'B_google': 0, 'bing': 0, 'other': 0, 'cold': 0, 'revival': 0,
               'striking': 0, 'thin_faq': 0}
+
+    # Guaranteed FLOOR for dead-revival: revived pages carry low signal scores (they are, by
+    # definition, dead), so a purely greedy score-sorted fill never reaches them once striking +
+    # thin-faq fill the cap — they got 0 slots. The user's rule is "don't skip dead", so reserve a
+    # floor for revival FIRST (highest-scored revival candidates), then greedy-fill the remainder.
+    revival_floor = max(2, args.cap // 6)    # ~3 at cap 20 — never skip dead entirely
+    for c in ranked:
+        if counts['revival'] >= revival_floor:
+            break
+        if c['source'] == 'dead-revival':
+            final.append(c); counts['revival'] += 1
+    picked = {c['slug'] for c in final}
+
     for c in ranked:
         if len(final) >= args.cap:
             break
+        if c['slug'] in picked:                  # already taken by the revival floor pass
+            continue
         if c['source'] == 'striking-distance':   # highest priority: pages already on page 2,
             if counts['striking'] >= striking_quota:   # one push from page 1 — but capped so
                 continue                          # other pools still get worked each run

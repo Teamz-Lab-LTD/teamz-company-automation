@@ -64,7 +64,7 @@ KIT_PY = PROJECT_ROOT / "packages" / "team_mvp_kit" / "teamz-company-automation"
 ASO = KIT_PY / "aso"
 
 STEPS = [
-    "preflight", "keyword-volume", "competitors", "ai-edit", "name-collision", "compose",
+    "preflight", "keyword-volume", "seo-signals", "competitors", "ai-edit", "name-collision", "compose", "claims-lint",
     "pad-resize", "feature-graphic", "localize", "play-push", "apple-version",
     "apple-metadata", "apple-screenshots", "apple-submit",
 ]
@@ -371,6 +371,36 @@ def apple_submit():
     rc, _ = _run(["fastlane", "ios", "submit_review"], cwd=fastlane_dir)
     return rc
 
+def claims_lint(env):
+    """Block forbidden marketing claims (offline / ad-free / ...) in the listing +
+    screenshots before submit. rc 2 = forbidden claim found -> fix before submit.
+    The guard that would have caught 'Play offline' on an internet-required app."""
+    shot_dir = PROJECT_ROOT / "fastlane" / "screenshots"
+    cmd = ["python3", str(ASO.parent / "aso-claims-lint.py"),
+           "--data-dir", str(PROJECT_ROOT / "automation_data")]
+    if shot_dir.is_dir():
+        cmd += ["--screenshots", str(shot_dir)]
+    rc, out = _run(cmd, cwd=PROJECT_ROOT)
+    print(out)
+    return rc
+
+
+def seo_signals(env):
+    """Run SEO leading-indicators (keyword-intel, rank-tracker, GSC anomalies, brand
+    mentions) — leading signals for App Store search. Best-effort: a failing signal
+    logs but NEVER blocks the release (rc always 0)."""
+    for s in ("build-keyword-intel.py", "build-rank-tracker.py",
+              "build-gsc-anomalies.py", "build-brand-mentions-log.py"):
+        path = ASO.parent / s
+        if not path.exists():
+            print(f"  [seo-signals] skip {s} (not found)")
+            continue
+        print(f"  [seo-signals] {s} ...")
+        rc, out = _run(["python3", str(path)], cwd=PROJECT_ROOT)
+        print("    ok" if rc == 0 else f"    non-fatal rc={rc}: {out.strip()[:120]}")
+    return 0
+
+
 def name_collision(env):
     """Gate the proposed app name vs App Store + Play (aso-name-collision.py).
     rc 2 = COLLISION -> differentiate before submit. Closes the 'exact app name already
@@ -423,6 +453,8 @@ def main():
             rc = preflight()
         elif step == "keyword-volume":
             rc = keyword_volume(env)
+        elif step == "seo-signals":
+            rc = seo_signals(env)
         elif step == "competitors":
             rc = competitors(env)
         elif step == "ai-edit":
@@ -431,6 +463,8 @@ def main():
             rc = name_collision(env)
         elif step == "compose":
             rc = compose()
+        elif step == "claims-lint":
+            rc = claims_lint(env)
         elif step == "pad-resize":
             rc = pad_resize()
         elif step == "feature-graphic":

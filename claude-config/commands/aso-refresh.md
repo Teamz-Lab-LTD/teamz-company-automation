@@ -33,14 +33,22 @@ This skill ONLY adds:
 
 ```bash
 APP_SLUG="$1"
-case "$APP_SLUG" in
-  devicegpt|debugger) PROJECT_DIR="$HOME/Projects/Teamz Lab Projects/teamz-projects/debugger";;
-  toss|toolz|toss_app) PROJECT_DIR="$HOME/Projects/Teamz Lab Projects/teamz-projects/toss_app";;
-  top3picks|top_3_picks) PROJECT_DIR="$HOME/Projects/Teamz Lab Projects/teamz-projects/top_3_picks";;
-  no-trace-chat|ntc) PROJECT_DIR="$HOME/Projects/Teamz Lab Projects/teamz-projects/no-trace-code-chat";;
-  zoyiai) PROJECT_DIR="$HOME/Projects/Teamz Lab Projects/teamz-projects/zoyiai";;
-  *) echo "Unknown slug — update skill switch"; exit 1;;
-esac
+# Auto-discover the project dir: scan every project's .teamz-automation.env for its
+# TEAMZ_APP_SLUG. A new app needs NO edit here — just a .teamz-automation.env declaring
+# TEAMZ_APP_SLUG=<slug>. (Replaces the old hardcoded switch that silently broke on new apps.)
+PROJECT_DIR=""
+while IFS= read -r envf; do
+  if grep -qE "^TEAMZ_APP_SLUG=$APP_SLUG\b" "$envf" 2>/dev/null; then
+    PROJECT_DIR="$(dirname "$envf")"; break
+  fi
+done < <(find "$HOME/Projects/Teamz Lab Projects/teamz-projects" -maxdepth 5 -name ".teamz-automation.env" 2>/dev/null)
+if [ -z "$PROJECT_DIR" ]; then
+  echo "Unknown slug '$APP_SLUG' — no .teamz-automation.env with TEAMZ_APP_SLUG=$APP_SLUG found."
+  echo "Register the app (one-time): create <project>/.teamz-automation.env with TEAMZ_APP_SLUG=$APP_SLUG"
+  echo "See teamz-company-automation/HOW-TO-ASO-NEW-APP.md"
+  exit 1
+fi
+echo "Resolved '$APP_SLUG' -> $PROJECT_DIR (auto-discovered)"
 
 LAST_IOS=$(cat "$PROJECT_DIR/automation_data/.last_refresh.ios_rewrite" 2>/dev/null || echo 0)
 LAST_ANDROID=$(cat "$PROJECT_DIR/automation_data/.last_refresh.android_rewrite" 2>/dev/null || echo 0)

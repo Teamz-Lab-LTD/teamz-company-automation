@@ -71,8 +71,8 @@ def main():
     country = "us"
     if "--country" in sys.argv:
         country = sys.argv[sys.argv.index("--country") + 1]
-    base = norm(full).split(":")[0].strip()           # the name before the subtitle
-    base = re.sub(r"\b(3d|hd|free|game|puzzle)\b", "", base).strip() or base  # core brand tokens
+    full_core = norm(full).split(":")[0].strip()      # full pre-subtitle name (for EXACT-match detection)
+    base = re.sub(r"\b(3d|hd|free|game|puzzle)\b", "", full_core).strip() or full_core  # brand core (for overlap)
 
     ios = itunes_search(full.split(":")[0].strip(), country)
     ios_hits = sorted([{**a, "ov": overlap(base, a["name"])} for a in ios if overlap(base, a["name"]) >= 0.5],
@@ -80,8 +80,10 @@ def main():
     play = play_search(full.split(":")[0].strip())
     play_hits = [{"name": t, "ov": overlap(base, t)} for t in play if overlap(base, t) >= 0.5]
 
-    exact_ios = [h for h in ios_hits if norm(h["name"]).startswith(base)]
-    exact_play = [h for h in play_hits if norm(h["name"]).startswith(base)]
+    # COLLISION (hard, exit 2) = an existing app with the SAME core name. A merely shared
+    # prefix ("Arrow Jam 3D" vs "Arrow Jam Escape") is SIMILAR (soft, exit 1), not a blocker.
+    exact_ios = [h for h in ios_hits if full_core in (norm(h["name"]), norm(h["name"]).split(":")[0].strip())]
+    exact_play = [h for h in play_hits if full_core in (norm(h["name"]), norm(h["name"]).split(":")[0].strip())]
     if exact_ios or exact_play:
         verdict, code = "COLLISION", 2
     elif ios_hits or play_hits:

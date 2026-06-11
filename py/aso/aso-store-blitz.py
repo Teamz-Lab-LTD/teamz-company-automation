@@ -64,7 +64,7 @@ KIT_PY = PROJECT_ROOT / "packages" / "team_mvp_kit" / "teamz-company-automation"
 ASO = KIT_PY / "aso"
 
 STEPS = [
-    "preflight", "keyword-volume", "competitors", "ai-edit", "compose",
+    "preflight", "keyword-volume", "competitors", "ai-edit", "name-collision", "compose",
     "pad-resize", "feature-graphic", "localize", "play-push", "apple-version",
     "apple-metadata", "apple-screenshots", "apple-submit",
 ]
@@ -371,6 +371,30 @@ def apple_submit():
     rc, _ = _run(["fastlane", "ios", "submit_review"], cwd=fastlane_dir)
     return rc
 
+def name_collision(env):
+    """Gate the proposed app name vs App Store + Play (aso-name-collision.py).
+    rc 2 = COLLISION -> differentiate before submit. Closes the 'exact app name already
+    taken' gap the keyword/competitor steps miss."""
+    import glob, json as _json
+    name = env.get("APP_NAME") or env.get("TEAMZ_APP_NAME") or ""
+    if not name:
+        for fp in sorted(glob.glob(str(PROJECT_ROOT / "automation_data" / "aso-*latest.json"))):
+            try:
+                d = _json.load(open(fp))
+                name = d.get("title") or d.get("app_name") or d.get("name") or ""
+            except Exception:
+                name = ""
+            if name:
+                break
+    if not name:
+        print("  [name-collision] no app name (env APP_NAME / automation_data) — skipping")
+        return 0
+    print(f"  [name-collision] checking {name!r} ...")
+    rc, out = _run(["python3", str(ASO.parent / "aso-name-collision.py"), str(name)], cwd=PROJECT_ROOT)
+    print(out)
+    return rc
+
+
 def main():
     p = argparse.ArgumentParser(description="ASO ship blitz — full Play + Apple push in one command.")
     p.add_argument("--skip", action="append", default=[], choices=STEPS)
@@ -403,6 +427,8 @@ def main():
             rc = competitors(env)
         elif step == "ai-edit":
             rc = ai_edit(env)
+        elif step == "name-collision":
+            rc = name_collision(env)
         elif step == "compose":
             rc = compose()
         elif step == "pad-resize":

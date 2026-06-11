@@ -114,6 +114,7 @@ ALL_STEPS = [
 
     # Phase 3: Content generation (AI agent generates, orchestrator validates)
     ("listing",         "Generate store listing content (title, short desc, full desc)"),
+    ("name_collision",  "App-name collision check vs App Store + Play via aso-name-collision.py"),
     ("translations",    "Generate 39 locale translations"),
     ("localize_metadata","Localize Fastlane iOS metadata (keywords/subtitle/name) via aso-localize.py"),
     ("release_notes_gen","Auto-generate release-notes-v{ver}.json from git log via aso-release-notes-gen.py"),
@@ -153,7 +154,7 @@ AUTOMATED_STEPS = {
     "reviews", "seo_engine", "pipeline", "seo_merge", "priority_export", "per_kw_analysis",
     "permissions", "build", "upload", "push_listings", "store_settings",
     "copy_helper", "icon_audit", "icon", "feature_graphic", "postflight",
-    "listing", "translations", "localize_metadata",
+    "listing", "name_collision", "translations", "localize_metadata",
     "release_notes_gen", "release_notes", "data_safety_json",
     "velocity", "experiments_status",
 }
@@ -697,6 +698,46 @@ def run_step_trends_manual(progress: dict):
                "Open trends.google.com and compare top 5 keywords")
 
 
+def run_step_name_collision(progress: dict):
+    """Validate the proposed app name vs App Store + Play (aso-name-collision.py).
+    Gate: exit 2 = COLLISION -> differentiate before submit. Closes the 'is my exact
+    app name already taken' gap the keyword/competitor steps miss."""
+    import glob
+    print("\n[name_collision] App-name collision check (App Store + Play)...")
+    name = ""
+    for k in ("app_name", "app_title", "name", "title"):
+        try:
+            v = _CFG.get(k)
+        except Exception:
+            v = None
+        if v:
+            name = v
+            break
+    if not name:
+        for p in sorted(glob.glob(str(_DATA_DIR / "aso-*latest.json"))):
+            try:
+                d = json.load(open(p))
+                name = d.get("title") or d.get("app_name") or d.get("name") or ""
+            except Exception:
+                name = ""
+            if name:
+                break
+    if not name:
+        _mark_step(progress, "name_collision", "manual_needed",
+                   'No app name found — run: python3 py/aso-name-collision.py "<Your App Name>"')
+        print("  no app name in config/listing — run aso-name-collision.py manually")
+        return
+    code, output = _run_script("aso-name-collision.py", [str(name)], timeout=45)
+    print(output)
+    if code == 2:
+        _mark_step(progress, "name_collision", "failed",
+                   "COLLISION — '%s' clashes with existing apps. Differentiate before submit." % name)
+    elif code == 1:
+        _mark_step(progress, "name_collision", "done", "Similar names exist for '%s' — reviewed." % name)
+    else:
+        _mark_step(progress, "name_collision", "done", "'%s' is clear (no collision)." % name)
+
+
 def run_step_listing(progress: dict):
     """Check if listing JSON exists."""
     print("\n[7/22] Store listing content...")
@@ -1126,6 +1167,7 @@ def run_full(progress: dict):
     # ── Phase 3: Content Generation ──
     print("\n══ PHASE 3: CONTENT GENERATION ══")
     run_step_listing(progress)
+    run_step_name_collision(progress)
     run_step_translations(progress)
     run_step_localize_metadata(progress)
     run_step_release_notes_gen(progress)
@@ -1277,6 +1319,7 @@ def main():
             "per_kw_analysis": run_step_per_kw_analysis,
             "trends_manual": run_step_trends_manual,
             "listing": run_step_listing,
+            "name_collision": run_step_name_collision,
             "translations": run_step_translations,
             "localize_metadata": run_step_localize_metadata,
             "release_notes_gen": run_step_release_notes_gen,

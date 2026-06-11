@@ -226,9 +226,31 @@ def find_targets():
         # revived — on-page edits can't outrank nerdwallet/.gov. A failed fetch returns None
         # (winnability unknown) -> DEFER: keep the page, score it neutral, never wave it through
         # as if winnable. (Only the top 8 are SERP-checked; pages below stay on the volume sort.)
-        import time as _t
+        import time as _t, signal as _sig
+        # HARD per-call timeout: sd.winnability() scrapes the live SERP and has no internal
+        # timeout — when Google throttles it, the call blocks forever and freezes the whole
+        # nightly (observed: 10h hang 2026-06-11). Cap each check; timeout -> unknown -> neutral.
+        class _WinTimeout(Exception):
+            pass
+        def _on_alarm(signum, frame):
+            raise _WinTimeout()
+        _have_alarm = hasattr(_sig, "SIGALRM")
+        if _have_alarm:
+            _sig.signal(_sig.SIGALRM, _on_alarm)
         for r in revive[:8]:
-            w = sd.winnability(r["new_target"], DATA)
+            try:
+                if _have_alarm:
+                    _sig.alarm(45)
+                w = sd.winnability(r["new_target"], DATA)
+            except _WinTimeout:
+                w = None
+                print(f"  (winnability timeout >45s on {r['new_target']!r} -> neutral)")
+            except Exception as _we:
+                w = None
+                print(f"  (winnability error on {r['new_target']!r}: {type(_we).__name__} -> neutral)")
+            finally:
+                if _have_alarm:
+                    _sig.alarm(0)
             r["serp_winnability"] = w
             if w is not None and w <= 3:
                 r["_serp_wall"] = True

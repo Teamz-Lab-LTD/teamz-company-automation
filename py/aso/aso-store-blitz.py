@@ -386,11 +386,14 @@ def claims_lint(env):
 
 
 def seo_signals(env):
-    """Run SEO leading-indicators (keyword-intel, rank-tracker, GSC anomalies, brand
-    mentions) — leading signals for App Store search. Best-effort: a failing signal
-    logs but NEVER blocks the release (rc always 0)."""
-    for s in ("build-keyword-intel.py", "build-rank-tracker.py",
-              "build-gsc-anomalies.py", "build-brand-mentions-log.py"):
+    """Run SEO leading-indicators + ASO data-collection sidecars: Google Keyword Planner
+    batches, keyword intel, competitor gaps, Reddit voice-of-user, rank tracker, GSC
+    anomalies, brand mentions, and rank baseline. Best-effort: a failing signal logs but
+    NEVER blocks the release (rc always 0). (Web-SEO scripts — backlinks/crawl/serp — are a
+    SEPARATE pipeline, not wired here on purpose.)"""
+    for s in ("build-keyword-batches.py", "build-keyword-intel.py", "build-competitor-gaps.py",
+              "build-reddit-scanner.py", "build-rank-tracker.py", "build-gsc-anomalies.py",
+              "build-brand-mentions-log.py", "aso/aso-track.py"):
         path = ASO.parent / s
         if not path.exists():
             print(f"  [seo-signals] skip {s} (not found)")

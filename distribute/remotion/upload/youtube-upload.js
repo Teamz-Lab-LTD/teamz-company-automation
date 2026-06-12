@@ -734,7 +734,7 @@ async function addToPlaylist(playlistId, videoId) {
   console.log(publishNow ? "Publishing: NOW (public, immediate)" : `Scheduled: ${scheduledTime.toISOString()}`);
 
   try {
-    const result = await uploadVideo({ filePath, title, description, tags, categoryId: 28, language: lang, scheduledTime });
+    const result = await uploadVideo({ filePath, title, description, tags, categoryId: Number(getArg("--category")) || 28, language: lang, scheduledTime });
     useQuota(QUOTA_PER_UPLOAD);
     console.log(`\nUploaded! ${result.url}`);
     console.log(`Publishes at: ${result.publishAt}`);

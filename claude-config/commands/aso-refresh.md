@@ -162,6 +162,31 @@ done | sort | uniq -d > "$PROJECT_DIR/automation_data/cannibalize_$(date +%Y%m%d
 ```
 Any keyword duplicated across 2+ teamzlab apps = cannibalization risk. Decide canonical owner (highest revenue keeps; others must pivot).
 
+### Step 4e — Keyword-data gate (HARD — blocks any "final/locked" listing)
+
+`build-keyword-volume.py` prints `Keyword Planner: PENDING (using free estimates)`
+when it has NO exact Google volumes. Free signals (autocomplete/Trends/Bing) only
+ESTIMATE. **An LLM that ships a listing on estimate-only data is the
+2026-06-12 voltline mistake.** This gate makes it impossible:
+
+```bash
+python3 teamz-company-automation/py/aso/aso-keyword-data-gate.py --app-dir "$PROJECT_DIR/apps/$APP_SLUG"
+# (or --app-dir "$PROJECT_DIR" if automation_data/ lives at the project root)
+```
+
+- **Exit 0 (PASS):** exact Planner data present (or an explicit `.planner-waived`).
+  Proceed.
+- **Exit 1 (FAIL):** estimate-only. You MUST stop and do ONE of:
+  1. **Produce the batch + ask the owner to pull.** If `automation_data/manual-pull/`
+     has no `batch-*.csv`, generate one (header `Keyword`, ≤700 rows, ≤10 words each,
+     from the app's seed set), then tell the owner to upload it to Google Ads →
+     Keyword Planner → "Get search volume", set US / last 12 months, download
+     "Plan historical metrics", and drop the CSV in `manual-pull/2-DROP-RESULTS-HERE/`.
+     Re-run the gate, then fold exact volumes in with `keyword_volume_manual.py`.
+  2. **Waive (owner's call only):** `aso-keyword-data-gate.py --app-dir <dir> --waive "<reason>"`.
+- While the gate FAILs you MAY present a PROVISIONAL listing, but you MUST label it
+  provisional and you may NOT call it final/locked or auto-submit.
+
 ### Step 5 — Winnability table (MANDATORY per stop-rules RULE-001)
 
 Before ANY title/keyword/pillar recommendation, output:
@@ -201,6 +226,9 @@ cd "$PROJECT_DIR" && git add automation_data/ && git commit -m "aso($APP_SLUG): 
 - Preflight gate fails in aso-store-blitz.py
 - User requests keyword/title pick WITHOUT winnability table being printed first
 - Cadence floor not reached AND no `--force-rewrite-*` AND no documented break condition
+- **Calling a listing "final/locked" or auto-submitting while `aso-keyword-data-gate.py`
+  exits 1 (Step 4e).** Estimate-only data = PROVISIONAL listing only. Either get the
+  exact Keyword Planner pull or record an owner waiver first.
 
 ## Multi-app priority (2-hour slots)
 

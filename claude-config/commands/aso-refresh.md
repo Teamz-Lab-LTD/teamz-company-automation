@@ -187,6 +187,26 @@ python3 teamz-company-automation/py/aso/aso-keyword-data-gate.py --app-dir "$PRO
 - While the gate FAILs you MAY present a PROVISIONAL listing, but you MUST label it
   provisional and you may NOT call it final/locked or auto-submit.
 
+### Step 4f — Keyword COVERAGE gate (HARD — the data must be USED, not just pulled)
+
+Step 4e forces the exact-volume pull; this forces its **placement**. On voltline
+(2026-06-13) the Planner data was folded but 5,000/mo keywords ("skill",
+"patience", "concentration game") were placed NOWHERE — verified by eye instead
+of by code. Never again:
+
+```bash
+python3 teamz-company-automation/py/aso/aso-keyword-coverage.py --app-dir "$PROJECT_DIR/apps/$APP_SLUG"
+```
+
+- Cross-checks every keyword ≥500/mo (from `keyword_exact_volume_*.json`) against
+  every listing surface. Apple counts name+subtitle+keywords COMBINED (Apple
+  concatenates); Play counts title+short+full verbatim.
+- **Exit 1:** a real-volume keyword is placed nowhere → weave it into the Play
+  full-description or iOS keywords, OR add it to
+  `automation_data/keyword-coverage-skip.txt` with a `# reason` (wrong-genre
+  signals like "maze runner game" SHOULD be skipped — deliberately, on the record).
+- A listing is not "final/locked" until BOTH 4e and 4f exit 0.
+
 ### Step 5 — Winnability table (MANDATORY per stop-rules RULE-001)
 
 Before ANY title/keyword/pillar recommendation, output:

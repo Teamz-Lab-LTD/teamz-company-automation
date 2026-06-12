@@ -25,6 +25,8 @@
 
 ## 2. Five-minute setup (once per project)
 
+**Working with ONLY this repo (no host project)?** That works too: clone it directly, `cp .teamz-automation.env.example .teamz-automation.env`, fill it in, and run scripts as `python3 py/<name>.py` / `bash sh/<name>.sh` from the repo root. The `scripts/` form below applies when the repo is a submodule inside a host project.
+
 ```bash
 # 1. Add the submodule to your project (skip if already there)
 git submodule add https://github.com/Teamz-Lab-LTD/teamz-company-automation.git teamz-company-automation
@@ -114,6 +116,8 @@ Content ────────▶ │  distribute/distribute.py   (11+ platfor
 ---
 
 ## 5. FULL INDEX — every file in this repo
+
+> **Working inside ONE folder only?** Every code directory has its own local `README.md` with the same index scoped to that folder: [`py/`](py/README.md) · [`py/aso/`](py/aso/README.md) · [`py/web_automation/`](py/web_automation/README.md) · [`py/product-hunt/`](py/product-hunt/README.md) · [`sh/`](sh/README.md) · [`claude-config/`](claude-config/README.md) · [`skills/`](skills/README.md) · [`distribute/`](distribute/README.md) · [`app-stats/`](app-stats/README.md) · [`appstore-fastlane/`](appstore-fastlane/README.md) · [`aso-research/`](aso-research/README.md) · [`data/`](data/README.md)
 
 
 ### 5.1 `py/` — Python toolbox (SEO, GSC, QA, stores, revenue)

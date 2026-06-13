@@ -511,20 +511,22 @@ def pool_striking_distance(host_root, cfg):
             continue
         pos = pg.get('pos') or 0
         impr = pg.get('impr') or 0
-        if not (11 <= pos <= 20) or impr <= 0:     # just below page 1, with proven demand
-            continue
+        if not (11 <= pos <= 30) or impr <= 0:     # page 2 + early page 3 — climbable, proven demand
+            continue                                # (widened from <=20 2026-06-13: rev_weight below
+                                                    #  prioritizes the high-RPM ones among pos 21-30,
+                                                    #  the climbers the money-map push list flagged)
         slug = url_to_slug(pg.get('url', ''), cfg['site_url'])   # snapshot 'slug' is only the last
         if not slug or not slug_exists(slug, host_root):          # segment; the full path is in 'url'
             continue
         # closest-to-page-1 + most impressions lead; RPM bias is applied later via rev_weight
-        score = min(150.0, 30.0 + impr / 3.0 + max(0, 20 - pos) * 3)
+        score = min(150.0, 30.0 + impr / 3.0 + max(0, 30 - pos) * 2)
         cands.append({
             'slug': slug,
-            'query': f"(striking distance — rank {pos:.1f}, push to page 1)",
+            'query': f"(striking distance — rank {pos:.1f}, push toward page 1)",
             'signal_score': round(score, 2),
             'mode': 'A',
             'source': 'striking-distance',
-            'citation': f"GSC rank {pos:.1f}, {impr} impr, 0 clicks — page-2 money page, "
+            'citation': f"GSC rank {pos:.1f}, {impr} impr, 0 clicks — page-2/3 money page, "
                         f"${pg.get('rpm','?')} RPM [money-snapshots/latest.json]",
         })
     return cands, None

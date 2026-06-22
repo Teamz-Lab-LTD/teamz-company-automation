@@ -211,10 +211,28 @@ REPO_DIRTY_AT_START=0
 # never self-lock the cron again — the bug that froze shipping each time a guard added a file.
 DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (data/.*|logs/.*|docs/.*|\.claude-memory/.*|tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|shared/js/search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|\.htaccess)$' || true)"
 if [ -n "$DIRTY_FILES" ]; then
-    REPO_DIRTY_AT_START=1
-    echo "  Warning: repo is dirty at start. Nightly run will not auto-commit or auto-push."
-    echo "  Dirty files (excluding auto-regenerated):"
-    echo "$DIRTY_FILES" | sed 's/^/    /'
+    # Distinguish leftover BUILD OUTPUT (a tool index.html a prior run enhanced but whose
+    # commit was skipped) from genuine human SOURCE WIP (scripts/py/css/config). Leftover tool
+    # pages ALONE must never deadlock the cron forever (the 2026-06 freeze): commit them and
+    # continue. Real source edits still block (protect WIP) — but now we ALERT, so a block is
+    # never silent again.
+    SOURCE_DIRTY="$(printf '%s\n' "$DIRTY_FILES" | grep -vE '/index\.html$' || true)"
+    if [ -z "$SOURCE_DIRTY" ]; then
+        echo "  Self-heal: only leftover tool page(s) uncommitted (no source WIP) — committing to unblock the cron."
+        printf '%s\n' "$DIRTY_FILES" | cut -c4- | while IFS= read -r p; do [ -n "$p" ] && git add -- "$p" 2>/dev/null; done
+        if git commit --no-verify -m "recovery: commit leftover enhanced tool page(s) to unblock nightly build" 2>/dev/null; then
+            echo "    Recovery commit created — cron unblocked."
+            record_health_alert "Nightly self-healed a leftover-tool-page deadlock (auto-committed $(printf '%s' "$DIRTY_FILES" | grep -c .) page(s)). Review the recovery commit."
+        else
+            echo "    Nothing to recover-commit (already clean)."
+        fi
+    else
+        REPO_DIRTY_AT_START=1
+        echo "  Warning: repo dirty at start on SOURCE files — will NOT auto-commit/push (protecting WIP):"
+        printf '%s\n' "$SOURCE_DIRTY" | sed 's/^/    /'
+        record_health_alert "Nightly BLOCKED at start: dirty source WIP ($(printf '%s' "$SOURCE_DIRTY" | grep -c . ) file(s)). Commit or stash to unblock — $(printf '%s' "$SOURCE_DIRTY" | head -3 | cut -c4- | tr '\n' ' ')"
+        osascript -e 'display notification "Nightly build BLOCKED on dirty source files — see nightly log" with title "Teamz Build BLOCKED" sound name "Basso"' 2>/dev/null
+    fi
 fi
 
 # --- SEO toolchain health-check (non-blocking; catches silent data failures like

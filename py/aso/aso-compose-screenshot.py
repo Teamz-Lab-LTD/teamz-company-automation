@@ -308,12 +308,15 @@ def _font_can_render(font_path: str, text: str):
         print(f"WARN: cannot inspect font {font_path}: {e}", file=sys.stderr)
         return []
 
-    # Allow ASCII whitespace + punctuation always.
+    # Whitelist ONLY ASCII control chars + whitespace. ASCII LETTERS and DIGITS
+    # must be in cmap — otherwise a Latin "QR" inside an Arabic title renders
+    # as tofu boxes (GeezaPro/Damascus/etc. lack Latin glyphs in their
+    # primary face). Caught 2026-06-25 by user on No Trace ar-SA shot 2.
     missing = []
     for ch in text:
         cp = ord(ch)
-        if cp < 0x80 and (ch.isspace() or not ch.isalnum() and cp not in cmap):
-            # Pure ASCII punct/space — even a font without these will render via fallback.
+        if cp < 0x20 or ch.isspace():
+            # control chars + whitespace — always safe
             continue
         if cp not in cmap:
             missing.append(ch)

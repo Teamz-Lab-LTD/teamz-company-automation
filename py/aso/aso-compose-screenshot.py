@@ -101,15 +101,71 @@ FRAME_SCREEN_BOTTOM = 2933
 FONT_HERO_PATH = os.path.expanduser("~/Library/Fonts/Poppins-Black.ttf")
 FONT_SUB_PATH = os.path.expanduser("~/Library/Fonts/Poppins-ExtraBold.ttf")
 FONT_FALLBACK = "/System/Library/Fonts/HelveticaNeue.ttc"
-# Latin Poppins has zero Bengali glyphs — text shows as tofu boxes. When the
-# hero/subtitle contains any character in the Bengali Unicode block
-# (U+0980 to U+09FF), swap to a Bengali-capable font automatically. macOS
-# ships Kohinoor Bangla; user fonts may have Kalpurush. First hit wins.
+
+# ============================================================================
+# Multi-script font + RTL pipeline.
+#
+# PIL/Pillow has no OpenType shaping (no HarfBuzz). For any complex script
+# (Arabic, CJK, Thai, Devanagari, Hebrew, Bengali), Poppins shows tofu boxes
+# OR broken glyphs (Apple's SFArabic uses on-the-fly shaping which PIL can't
+# do — looks like "weird lines"). Each script needs:
+#   1. A font that includes the right glyphs (not OpenType shaping — direct
+#      glyph mapping for the Unicode codepoints or presentation forms).
+#   2. For RTL scripts (Arabic, Hebrew), pre-shape + bidi-process the string
+#      BEFORE handing to PIL, so glyphs are in correct visual order.
+#
+# Per-script candidate fonts (first existing wins):
+# ============================================================================
+
+# Bengali — Poppins has zero glyphs. macOS Kohinoor Bangla works.
 FONT_BN_CANDIDATES = [
     "/System/Library/Fonts/KohinoorBangla.ttc",
     os.path.expanduser("~/Library/Fonts/Kalpurush.ttf"),
     os.path.expanduser("~/Library/Fonts/kalpurush.ttf"),
     os.path.expanduser("~/Library/Fonts/Siyamrupali.ttf"),
+]
+# Arabic — GeezaPro ships presentation forms (U+FE70-U+FEFF) which PIL needs
+# after arabic-reshaper output. SFArabic uses OpenType, PIL can't render it.
+FONT_AR_CANDIDATES = [
+    "/System/Library/Fonts/GeezaPro.ttc",
+    "/System/Library/Fonts/Supplemental/Damascus.ttc",
+    os.path.expanduser("~/Library/Fonts/Cairo-Bold.ttf"),
+    os.path.expanduser("~/Library/Fonts/NotoSansArabic-Bold.ttf"),
+]
+# Chinese Simplified + Traditional + Japanese + Korean share the CJK font.
+FONT_CJK_CANDIDATES = [
+    "/System/Library/Fonts/PingFang.ttc",
+    "/System/Library/Fonts/Hiragino Sans GB.ttc",
+    "/System/Library/Fonts/AppleSDGothicNeo.ttc",  # Korean
+    os.path.expanduser("~/Library/Fonts/NotoSansCJK-Bold.ttc"),
+]
+# Thai — system Thonburi has correct vowel-mark positioning.
+FONT_TH_CANDIDATES = [
+    "/System/Library/Fonts/Supplemental/Thonburi.ttc",
+    "/System/Library/Fonts/Ayuthaya.ttf",
+    os.path.expanduser("~/Library/Fonts/NotoSansThai-Bold.ttf"),
+]
+# Devanagari (Hindi) — Poppins has Devanagari for some chars, but macOS
+# Kohinoor Devanagari is more complete.
+FONT_HI_CANDIDATES = [
+    "/System/Library/Fonts/Kohinoor.ttc",
+    "/System/Library/Fonts/DevanagariMT.ttc",
+    os.path.expanduser("~/Library/Fonts/NotoSansDevanagari-Bold.ttf"),
+]
+# Hebrew — ArialHB or system Hebrew font.
+FONT_HE_CANDIDATES = [
+    "/System/Library/Fonts/ArialHB.ttc",
+    "/System/Library/Fonts/Supplemental/Corsiva Hebrew.ttc",
+    os.path.expanduser("~/Library/Fonts/NotoSansHebrew-Bold.ttf"),
+]
+# Cyrillic — Poppins-Black download from Google Fonts SOMETIMES has Cyrillic
+# subset but not always (verified 2026-06-25: user's local Poppins-Black has
+# zero Cyrillic glyphs). Prefer system fonts that ship with Cyrillic.
+FONT_CYRL_CANDIDATES = [
+    "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+    "/System/Library/Fonts/HelveticaNeue.ttc",
+    "/System/Library/Fonts/Supplemental/Verdana Bold.ttf",
+    os.path.expanduser("~/Library/Fonts/Poppins-Black.ttf"),  # only works if Cyrillic subset installed
 ]
 
 
@@ -117,11 +173,208 @@ def _has_bengali(text: str) -> bool:
     return any("ঀ" <= ch <= "৿" for ch in text)
 
 
-def _pick_bn_font():
-    for p in FONT_BN_CANDIDATES:
+def _has_arabic(text: str) -> bool:
+    """Arabic block U+0600-U+06FF plus presentation forms U+FB50-FDFF, FE70-FEFF."""
+    for ch in text:
+        cp = ord(ch)
+        if 0x0600 <= cp <= 0x06FF: return True
+        if 0xFB50 <= cp <= 0xFDFF: return True
+        if 0xFE70 <= cp <= 0xFEFF: return True
+    return False
+
+
+def _has_cjk(text: str) -> bool:
+    """CJK Unified Ideographs U+4E00-U+9FFF + extensions, Hiragana, Katakana, Hangul."""
+    for ch in text:
+        cp = ord(ch)
+        if 0x4E00 <= cp <= 0x9FFF: return True   # CJK Unified
+        if 0x3040 <= cp <= 0x309F: return True   # Hiragana
+        if 0x30A0 <= cp <= 0x30FF: return True   # Katakana
+        if 0xAC00 <= cp <= 0xD7AF: return True   # Hangul Syllables
+        if 0x3400 <= cp <= 0x4DBF: return True   # CJK Extension A
+    return False
+
+
+def _has_thai(text: str) -> bool:
+    return any(0x0E00 <= ord(ch) <= 0x0E7F for ch in text)
+
+
+def _has_devanagari(text: str) -> bool:
+    return any(0x0900 <= ord(ch) <= 0x097F for ch in text)
+
+
+def _has_hebrew(text: str) -> bool:
+    return any(0x0590 <= ord(ch) <= 0x05FF for ch in text)
+
+
+def _has_cyrillic(text: str) -> bool:
+    return any(0x0400 <= ord(ch) <= 0x04FF for ch in text)
+
+
+def _pick_first_existing(paths):
+    for p in paths:
         if os.path.exists(p):
             return p
     return None
+
+
+def _pick_font_for_text(text: str, fallback: str = None):
+    """Auto-pick a font that can render this text.
+    Returns (font_path, needs_rtl_reshape: bool).
+    fallback = Latin font path used when text has no special script."""
+    if _has_arabic(text):
+        f = _pick_first_existing(FONT_AR_CANDIDATES)
+        return (f, True) if f else (fallback, True)
+    if _has_hebrew(text):
+        f = _pick_first_existing(FONT_HE_CANDIDATES)
+        return (f, True) if f else (fallback, True)
+    if _has_cjk(text):
+        f = _pick_first_existing(FONT_CJK_CANDIDATES)
+        return (f, False) if f else (fallback, False)
+    if _has_thai(text):
+        f = _pick_first_existing(FONT_TH_CANDIDATES)
+        return (f, False) if f else (fallback, False)
+    if _has_devanagari(text):
+        f = _pick_first_existing(FONT_HI_CANDIDATES)
+        return (f, False) if f else (fallback, False)
+    if _has_bengali(text):
+        f = _pick_first_existing(FONT_BN_CANDIDATES)
+        return (f, False) if f else (fallback, False)
+    if _has_cyrillic(text):
+        f = _pick_first_existing(FONT_CYRL_CANDIDATES)
+        return (f or fallback, False)
+    return (fallback, False)
+
+
+def _reshape_rtl(text: str) -> str:
+    """RTL pre-shape Arabic/Hebrew so PIL renders the connected glyphs in
+    visually-correct right-to-left order. Without this, Arabic letters appear
+    as isolated forms (broken — looks like 'weird lines'). Requires
+    arabic-reshaper + python-bidi (pip install --break-system-packages
+    arabic-reshaper python-bidi). If unavailable, returns text unchanged with
+    a warning to stderr."""
+    try:
+        import arabic_reshaper
+        from bidi.algorithm import get_display
+    except ImportError:
+        print("WARN: arabic-reshaper/python-bidi not installed — RTL text will render incorrectly. "
+              "Install: pip3 install --break-system-packages arabic-reshaper python-bidi",
+              file=sys.stderr)
+        return text
+    return get_display(arabic_reshaper.reshape(text))
+
+
+def _prepare_text(text: str, override_font: str = None, fallback_font: str = None):
+    """Pipeline: detect script → pick font → RTL-reshape if needed.
+    Returns (text_to_render, font_path)."""
+    if override_font:
+        # User explicit override — assume they picked the right font.
+        # Still RTL-reshape if the text needs it.
+        needs_rtl = _has_arabic(text) or _has_hebrew(text)
+        return (_reshape_rtl(text) if needs_rtl else text, override_font)
+    font_path, needs_rtl = _pick_font_for_text(text, fallback_font)
+    final = _reshape_rtl(text) if needs_rtl else text
+    return (final, font_path or fallback_font)
+
+
+def _font_can_render(font_path: str, text: str):
+    """BLOCKER: check the font has glyphs for every codepoint in text.
+    Returns list of unrenderable chars (empty = OK).
+
+    Uses fontTools cmap table — the authoritative source of which codepoints
+    a TTF/TTC actually supports. Catches the SFArabic problem (font expects
+    OpenType shaping; PIL renders presentation forms with no matching glyph
+    → tofu boxes / 'weird lines')."""
+    try:
+        from fontTools.ttLib import TTFont, TTCollection
+    except ImportError:
+        print("WARN: fontTools not installed — blocker disabled. Install: "
+              "pip3 install --break-system-packages fonttools", file=sys.stderr)
+        return []
+    try:
+        if font_path.lower().endswith(".ttc"):
+            ttc = TTCollection(font_path)
+            cmaps = []
+            for f in ttc.fonts:
+                cmaps.append(f.getBestCmap() or {})
+            # union across faces in the collection
+            combined = {}
+            for c in cmaps:
+                combined.update(c)
+            cmap = combined
+        else:
+            cmap = TTFont(font_path).getBestCmap() or {}
+    except Exception as e:
+        print(f"WARN: cannot inspect font {font_path}: {e}", file=sys.stderr)
+        return []
+
+    # Allow ASCII whitespace + punctuation always.
+    missing = []
+    for ch in text:
+        cp = ord(ch)
+        if cp < 0x80 and (ch.isspace() or not ch.isalnum() and cp not in cmap):
+            # Pure ASCII punct/space — even a font without these will render via fallback.
+            continue
+        if cp not in cmap:
+            missing.append(ch)
+    return missing
+
+
+# Fonts that have codepoints in cmap BUT do not render correctly in PIL
+# because they rely on OpenType shaping (HarfBuzz) which PIL/Pillow has not.
+# Allow override via --font-hero only when --skip-font-check is also set.
+KNOWN_PIL_INCOMPATIBLE_FONTS = {
+    # Apple's modern Arabic uses on-the-fly OpenType shaping. PIL renders the
+    # presentation forms as null/placeholder glyphs → "weird lines".
+    "SFArabic.ttf": "SFArabic uses OpenType shaping; PIL cannot render it. Use GeezaPro.ttc.",
+    "SFArabicRounded.ttf": "SFArabicRounded uses OpenType shaping. Use GeezaPro.ttc.",
+    # NotoNastaliq is Nastaliq Urdu script — only renders correctly with HarfBuzz.
+    "NotoNastaliq.ttc": "NotoNastaliq needs Nastaliq shaping; PIL cannot. Use Damascus/Cairo for plain Arabic.",
+}
+
+
+def _enforce_font_blocker(text: str, font_path: str, surface: str, strict: bool = True):
+    """Hard fail when the font cannot render the text. Catches:
+    1. Font path missing entirely.
+    2. Font lacks glyphs for some codepoints (cmap miss).
+    3. Font is on the known-PIL-incompatible list (OpenType-shaping fonts).
+    Prints exact missing codepoints + suggests the right font + RTL deps.
+
+    Disabled with --skip-font-check (e.g., dev iteration on novel scripts)."""
+    if not strict:
+        return
+    if not font_path or not os.path.exists(font_path):
+        print(f"BLOCKER: font path for {surface} does not exist: {font_path}", file=sys.stderr)
+        sys.exit(2)
+
+    base = os.path.basename(font_path)
+    if base in KNOWN_PIL_INCOMPATIBLE_FONTS:
+        print(f"BLOCKER: {base} is on the known-PIL-incompatible list.", file=sys.stderr)
+        print(f"  Reason: {KNOWN_PIL_INCOMPATIBLE_FONTS[base]}", file=sys.stderr)
+        print(f"  Surface: {surface}", file=sys.stderr)
+        print(f"  Text: {text!r}", file=sys.stderr)
+        print("  HINT: drop the --font-hero/--font-sub override and let "
+              "the composer auto-pick from the script-specific candidate list.",
+              file=sys.stderr)
+        sys.exit(3)
+
+    missing = _font_can_render(font_path, text)
+    if missing:
+        sample = "".join(missing[:10])
+        print(f"BLOCKER: font {base} cannot render "
+              f"{len(missing)} codepoints in {surface!r} text "
+              f"(sample: {sample!r}, U+{ord(missing[0]):04X}...). "
+              f"This would produce 'weird lines' / tofu boxes in the screenshot.",
+              file=sys.stderr)
+        print(f"  text: {text!r}", file=sys.stderr)
+        # Surface RTL dep hint if Arabic/Hebrew present
+        if _has_arabic(text) or _has_hebrew(text):
+            print("  HINT: install RTL deps: pip3 install --break-system-packages "
+                  "arabic-reshaper python-bidi", file=sys.stderr)
+        print("  HINT: override font with --font-hero/--font-sub OR add a "
+              "candidate to the script's font registry in "
+              "py/aso/aso-compose-screenshot.py", file=sys.stderr)
+        sys.exit(3)
 
 HERO_FONT_SIZE = 300
 SUB_FONT_SIZE = 110
@@ -156,25 +409,31 @@ def compose(
     font_hero_path: str = None,
     font_sub_path: str = None,
     phone_ratio: float = None,
+    strict_font_check: bool = True,
 ):
     spec = DEVICES[device]
     W, H = spec["width"], spec["height"]
     BG = hex_to_rgb(bg_color)
     TEXT_CLR = hex_to_rgb(text_color)
 
-    # Auto-pick Bengali font when text contains Bengali script — Poppins has
-    # no Bengali glyphs and would render tofu boxes. Explicit JSON overrides
-    # take precedence.
-    auto_hero = font_hero_path or FONT_HERO_PATH
-    auto_sub = font_sub_path or FONT_SUB_PATH
-    if _has_bengali(hero_text) and not font_hero_path:
-        bn = _pick_bn_font()
-        if bn:
-            auto_hero = bn
-    if any(_has_bengali(l) for l in subtitle_lines) and not font_sub_path:
-        bn = _pick_bn_font()
-        if bn:
-            auto_sub = bn
+    # Multi-script pipeline: auto-pick font + RTL-reshape per text.
+    # Explicit --font-hero / --font-sub overrides still win; the pipeline
+    # only applies RTL reshape for them. Handles Arabic, Hebrew, CJK
+    # (Simp/Trad/JP/KR), Thai, Devanagari, Bengali, Cyrillic.
+    hero_render, auto_hero = _prepare_text(
+        hero_text, override_font=font_hero_path, fallback_font=FONT_HERO_PATH
+    )
+    sub_prepared = [
+        _prepare_text(line, override_font=font_sub_path, fallback_font=FONT_SUB_PATH)
+        for line in subtitle_lines
+    ]
+
+    # BLOCKER: hard fail if the chosen font can't render the (reshaped) text.
+    # Catches the SFArabic / presentation-form mismatch and any unsupported
+    # script combo. Disable with --skip-font-check on the CLI.
+    _enforce_font_blocker(hero_render, auto_hero, "hero", strict=strict_font_check)
+    for line_render, line_font in sub_prepared:
+        _enforce_font_blocker(line_render, line_font, "subtitle", strict=strict_font_check)
 
     canvas = Image.new("RGBA", (W, H), BG + (255,))
     draw = ImageDraw.Draw(canvas)
@@ -185,29 +444,29 @@ def compose(
     font_h = _load_font(auto_hero, hero_size)
     while hero_size > 100:
         font_h = _load_font(auto_hero, hero_size)
-        bb = draw.textbbox((0, 0), hero_text, font=font_h)
+        bb = draw.textbbox((0, 0), hero_render, font=font_h)
         if (bb[2] - bb[0]) <= max_text_w:
             break
         hero_size -= 10
-    bb = draw.textbbox((0, 0), hero_text, font=font_h)
+    bb = draw.textbbox((0, 0), hero_render, font=font_h)
     tw, th = bb[2] - bb[0], bb[3] - bb[1]
-    draw.text(((W - tw) // 2, HERO_Y), hero_text, fill=TEXT_CLR, font=font_h)
+    draw.text(((W - tw) // 2, HERO_Y), hero_render, fill=TEXT_CLR, font=font_h)
 
     # === SUBTITLE (auto-fit per line) ===
     y = HERO_Y + th + HERO_TO_SUB_GAP
-    for line in subtitle_lines:
+    for line_render, line_font_path in sub_prepared:
         sub_size = SUB_FONT_SIZE
-        font_s = _load_font(auto_sub, sub_size)
+        font_s = _load_font(line_font_path, sub_size)
         while sub_size > 50:
-            font_s = _load_font(auto_sub, sub_size)
-            bb = draw.textbbox((0, 0), line, font=font_s)
+            font_s = _load_font(line_font_path, sub_size)
+            bb = draw.textbbox((0, 0), line_render, font=font_s)
             if (bb[2] - bb[0]) <= max_text_w:
                 break
             sub_size -= 5
-        bb = draw.textbbox((0, 0), line, font=font_s)
+        bb = draw.textbbox((0, 0), line_render, font=font_s)
         tw = bb[2] - bb[0]
         lh = bb[3] - bb[1]
-        draw.text(((W - tw) // 2, y), line, fill=TEXT_CLR, font=font_s)
+        draw.text(((W - tw) // 2, y), line_render, fill=TEXT_CLR, font=font_s)
         y += lh + SUB_LINE_GAP
 
     # === DEVICE FRAME ===
@@ -346,6 +605,10 @@ def main():
     p.add_argument("--font-sub", default=None, help="Override subtitle TTF path")
     p.add_argument("--phone-ratio", type=float, default=None,
                    help="Phone-shape width / canvas width. Auto-picked per device if omitted.")
+    p.add_argument("--skip-font-check", action="store_true",
+                   help="Skip font-glyph blocker. Use ONLY for dev iteration on novel scripts; "
+                        "default behavior FAILS the composer if the chosen font cannot render "
+                        "the text (prevents 'weird lines' / tofu boxes in shipped screenshots).")
     args = p.parse_args()
 
     compose(
@@ -360,6 +623,7 @@ def main():
         font_hero_path=args.font_hero,
         font_sub_path=args.font_sub,
         phone_ratio=args.phone_ratio,
+        strict_font_check=not args.skip_font_check,
     )
 
 

@@ -651,6 +651,10 @@ def main():
     # to pages that EARN, not just rank. Reuses revenue_priority (no new RPM math). Multiplies
     # the SORT KEY only — signal_score itself is untouched, so the source-quota logic below is
     # unaffected. Degrades to weight 1.0 if the module/data is unavailable.
+    import re as _re_pos
+    def _pos_from_citation(cit):
+        m = _re_pos.search(r'(?:pos|rank)\s+([0-9]+(?:\.[0-9]+)?)', cit or '', _re_pos.I)
+        return float(m.group(1)) if m else None
     try:
         import revenue_priority as _rp
         for c in by_slug.values():
@@ -659,7 +663,18 @@ def main():
                                       visitors_mo=1000, serp_winnability=6)
             c['rpm_mid'] = ed['rpm_mid']
             c['niche'] = ed['niche']
-            c['rev_weight'] = round(max(0.5, min(3.0, ed['rpm_mid'] / 10.0)), 2)  # $10 RPM = 1.0x
+            rw = max(0.5, min(3.0, ed['rpm_mid'] / 10.0))  # $10 RPM = 1.0x
+            # Position-proximity boost: a page in the 11-15 "one nudge from page 1" zone
+            # converts to clicks THIS month; an equal-RPM page at pos 25+ needs a quarter.
+            # Lead the striking sweet-spot over deeper pages. Pos parsed from the candidate's
+            # citation ("pos X.X" / "rank X.X"); no pos found = no change (graceful).
+            pos = _pos_from_citation(c.get('citation', ''))
+            if pos is not None:
+                if 11 <= pos <= 15:   rw *= 1.4    # striking sweet spot — lead the queue
+                elif 8 <= pos < 11:   rw *= 1.15   # already page 1 — small nudge toward top-5
+                elif pos > 22:        rw *= 0.8    # too deep to convert soon — de-prioritize
+            c['pos'] = pos
+            c['rev_weight'] = round(rw, 2)
     except Exception as e:
         print(f"[enhance-queue] revenue weighting skipped ({type(e).__name__}) — raw signal sort")
         for c in by_slug.values():

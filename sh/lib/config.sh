@@ -55,6 +55,8 @@ teamz_load_config() {
   export TEAMZ_GA4_TOKEN_FILE="${TEAMZ_GA4_TOKEN_FILE:-$TEAMZ_CONFIG_DIR/analytics-token.json}"
   export TEAMZ_ADSENSE_TOKEN_FILE="${TEAMZ_ADSENSE_TOKEN_FILE:-$TEAMZ_CONFIG_DIR/adsense-token.json}"
   export TEAMZ_PAGESPEED_KEY_FILE="${TEAMZ_PAGESPEED_KEY_FILE:-$TEAMZ_CONFIG_DIR/pagespeed-api-key.txt}"
+  # IndexNow key must be hex (8-128 chars); per-host value lives in the host's .teamz-automation.env
+  export TEAMZ_INDEXNOW_KEY="${TEAMZ_INDEXNOW_KEY:-teamzlab-indexnow-key}"
   export TEAMZ_CLARITY_TOKEN_FILE="${TEAMZ_CLARITY_TOKEN_FILE:-$TEAMZ_CONFIG_DIR/clarity-token.txt}"
 
   export TEAMZ_DATA_DIR="${TEAMZ_DATA_DIR:-$TEAMZ_AUTOMATION_ROOT/data}"

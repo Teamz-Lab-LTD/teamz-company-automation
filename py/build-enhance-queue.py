@@ -164,6 +164,14 @@ def pool_opportunities(host_root, cfg):
         clicks = item.get('clicks', item.get('Clicks', 0))
         impr = item.get('impressions', item.get('Impressions', 0))
         pos = item.get('position', item.get('Position', 0)) or 0
+        # AI-Overview cannibalization guard: page-1 rank + near-zero CTR + big
+        # impressions = Google answers the query inline (AIO / SERP widget); those
+        # impressions are NOT clickable and no title rewrite recovers them. A genuine
+        # bad-title page at pos<=8 shows ~1-2% CTR, not <0.5%. Skip so Mode B effort
+        # goes to recoverable pages (burned a run on business-day-calculator 2026-06).
+        ctr = (clicks / impr) if impr else 0
+        if pos <= 8 and impr >= 500 and ctr < 0.005:
+            continue
         # Mode B = CTR fix (low click rate), Mode A = striking distance
         mode = 'B' if clicks <= 1 and impr > 10 else 'A'
         score = impr / 5 + max(0, 25 - pos) * 2 - clicks * 0.5

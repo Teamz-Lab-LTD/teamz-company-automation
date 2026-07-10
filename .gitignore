@@ -48,3 +48,8 @@ data/master_keywords.csv
 data/ios_keywords.csv
 data/top_by_category/
 data/gsc-top-pages-*.json
+
+# Crashlytics monitor run artifacts (regenerated each run; registry is tracked)
+data/crashlytics-monitor-report.md
+data/crashlytics-monitor-state.json
+logs/

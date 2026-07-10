@@ -1,0 +1,79 @@
+{
+  "_comment": "Registry of every Teamz Lab app with Crashlytics. active_users is an optional denominator used to compute impact ratio; when absent the monitor falls back to absolute thresholds and says so in the report. Update active_users from Play bulk-reports (Active Device Installs) or GA4 MAU.",
+  "_regenerate": "python3 py/build-crashlytics-monitor.py --discover",
+  "apps": [
+    {
+      "slug": "top3picks",
+      "project_id": "top3picks-app",
+      "android": "1:78491713820:android:e27eef5ceb0b770aa23ad9",
+      "ios": "1:78491713820:ios:be52972eb4552d4fa23ad9",
+      "active_users": { "android": 12, "ios": 700 }
+    },
+    {
+      "slug": "no-trace-chat",
+      "project_id": "no-trace-chat",
+      "android": "1:137129162866:android:639eb7cc7699ffa39feaeb",
+      "ios": "1:137129162866:ios:8a348ceb2267b1629feaeb"
+    },
+    {
+      "slug": "toss",
+      "project_id": "coins-toss-and-flipp-flutter",
+      "android": "1:361753367905:android:b2942d3367adfb7b14a120",
+      "ios": "1:361753367905:ios:da96fe5aaf5c7cce14a120"
+    },
+    {
+      "slug": "chopstick",
+      "project_id": "copstick-landing-game",
+      "android": "1:1004286776719:android:ff5e5c9811a56dbd51e7fa",
+      "ios": "1:1004286776719:ios:54e16e3d14f2e0bd51e7fa"
+    },
+    {
+      "slug": "notetube-ai",
+      "project_id": "notetube-ai-20d58",
+      "android": "1:912505585355:android:d0e768764b68f8137a654e",
+      "ios": "1:912505585355:ios:0fdcdd1c877ddfe97a654e"
+    },
+    {
+      "slug": "always-ready-care",
+      "project_id": "always-ready-care",
+      "android": "1:54979000806:android:c97fa930f8eebbeb6abe27",
+      "ios": "1:54979000806:ios:efe22e77c42ae7c56abe27"
+    },
+    {
+      "slug": "ai-resume-checker",
+      "project_id": "ai-resume-coach-by-teamzlab",
+      "android": "1:847900771100:android:5558a53ef62561e37bf0d9",
+      "ios": "1:847900771100:ios:66a96aed469b1f427bf0d9"
+    },
+    {
+      "slug": "room-quiz",
+      "project_id": "roomcode-quiz",
+      "android": "1:776768677010:android:374d7813d8c33b0c48324b",
+      "ios": "1:776768677010:ios:1258dde7c352cacb48324b"
+    },
+    {
+      "slug": "zoyiai",
+      "project_id": "zoyi-ai",
+      "android": "1:579732220547:android:a9f07f1dd200c5483dc9b6",
+      "ios": "1:579732220547:ios:06e602397212e9f13dc9b6"
+    },
+    {
+      "slug": "teamz-lab-ecommerce",
+      "project_id": "teamz-lab-ecommerce",
+      "android": "1:442957107535:android:cb0c6db6d9f46a7272b53a",
+      "ios": "1:442957107535:ios:46107c609e9a956372b53a"
+    },
+    {
+      "slug": "kry",
+      "project_id": "kry-international-app",
+      "android": "1:688747766944:android:62b35935281217e60fd5c5",
+      "ios": "1:688747766944:ios:63cd051853a225100fd5c5"
+    },
+    {
+      "slug": "decorion",
+      "project_id": "decorion-app",
+      "android": "1:221283573037:android:9c2ccf07f72a33285e87a4",
+      "ios": "1:221283573037:ios:00b98930e8aaf9f05e87a4"
+    }
+  ]
+}

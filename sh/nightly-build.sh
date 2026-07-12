@@ -17,7 +17,13 @@ teamz_load_config "$_SCRIPT"
 PROJECT_DIR="$TEAMZ_HOST_SITE_ROOT"
 LOG_DIR="$PROJECT_DIR/logs"
 REPORT_FILE="$TEAMZ_DATA_DIR/seo-latest-report.txt"
-PLIST_NAME="com.teamzlab.nightly-build"
+# Launchd label — PER SITE. This script is symlinked into several host repos; a hardcoded
+# label meant only ONE site on the machine could ever have a nightly, and running --install
+# from a second repo silently OVERWROTE the first site's job (killing its enhance+deploy with
+# no error). Each host repo now sets TEAMZ_NIGHTLY_LABEL in its .teamz-automation.env (loaded
+# by teamz_load_config above). Default keeps the existing label so teamzlab-tools' already
+# installed job is untouched. (2026-07-12)
+PLIST_NAME="${TEAMZ_NIGHTLY_LABEL:-com.teamzlab.nightly-build}"
 PLIST_PATH="$HOME/Library/LaunchAgents/$PLIST_NAME.plist"
 
 # Handle flags

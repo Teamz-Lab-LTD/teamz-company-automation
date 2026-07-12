@@ -8,8 +8,28 @@ teamz_load_config() {
   script_path="$(readlink -f "$1" 2>/dev/null || realpath "$1" 2>/dev/null || echo "$1")"
   script_dir="$(cd "$(dirname "$script_path")" && pwd)"
 
-  # sh/ -> automation root -> host project root
+  # sh/ -> automation root
   export TEAMZ_AUTOMATION_ROOT="${TEAMZ_AUTOMATION_ROOT:-$(cd "$script_dir/.." && pwd)}"
+
+  # HOST SITE ROOT — the repo that CALLED us. Must NOT be derived from the *resolved*
+  # script path: every script in a host repo's scripts/ dir is a SYMLINK into this
+  # automation repo, so readlink -f collapses them all to <automation>/sh|py, and
+  # <automation>/.. is the shared parent dir — never the caller. The old line below did
+  # exactly that, so EVERY host repo silently fell back to the default site
+  # (tool.teamzlab.com): other sites' nightlies pulled GSC for, and requested indexing
+  # of, the WRONG property, and build-sitemap/search-index wrote their output one level
+  # above the repo. Found live 2026-07-12 on apps.teamzlab.com.
+  # Resolution order: explicit env > walk up from CWD for .teamz-automation.env > legacy.
+  if [[ -z "${TEAMZ_HOST_SITE_ROOT:-}" ]]; then
+    local _d="$PWD"
+    while [[ "$_d" != "/" && -n "$_d" ]]; do
+      if [[ -f "$_d/.teamz-automation.env" ]]; then
+        export TEAMZ_HOST_SITE_ROOT="$_d"
+        break
+      fi
+      _d="$(dirname "$_d")"
+    done
+  fi
   export TEAMZ_HOST_SITE_ROOT="${TEAMZ_HOST_SITE_ROOT:-$(cd "$TEAMZ_AUTOMATION_ROOT/.." && pwd)}"
 
   # Optional base config file (machine-level, shared across projects).

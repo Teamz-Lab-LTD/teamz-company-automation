@@ -279,10 +279,28 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
       claude --print --verbose --dangerously-skip-permissions \
              --model "$CONTENT_MODEL" -p "$(cat "$CONTENT_PROMPT")" 2>&1 | sed 's/^/  /' &
       AGENT_PID=$!
+
+      # `set -m` gives the watchdog subshell its OWN process group, so cancelling it below can
+      # take the `sleep` down with it.
+      #
+      # Without that, `kill $WD_PID` kills only the subshell — and the `sleep` it forked survives,
+      # reparented to PID 1, holding every fd it inherited from us for the remainder of the
+      # timeout. On 2026-07-12 that left `bash nightly-site.sh | tee log` hanging for 25 minutes
+      # AFTER the work was finished and deployed, because `tee` never saw EOF on a pipe an
+      # orphaned `sleep 1800` was still holding open. Harmless under launchd (which redirects to
+      # a file, not a pipe) — which is exactly why it could have sat there unnoticed for months.
+      #
+      # Cancel the GROUP, and cancel it before it can act: the subshell must die mid-sleep, never
+      # reaching its `kill -TERM "$AGENT_PID"`. If it were killed the other way round it could
+      # fire that TERM at a PID the OS had already recycled to somebody else's process.
+      set -m
       ( sleep "$AGENT_MAX_SECONDS"; kill -TERM "$AGENT_PID" 2>/dev/null; sleep 60; kill -KILL "$AGENT_PID" 2>/dev/null ) &
       WD_PID=$!
+      set +m
+
       wait "$AGENT_PID"; AGENT_EXIT=$?
-      kill "$WD_PID" 2>/dev/null; wait "$WD_PID" 2>/dev/null
+      kill -- "-$WD_PID" 2>/dev/null || kill "$WD_PID" 2>/dev/null   # group first, subshell as fallback
+      wait "$WD_PID" 2>/dev/null
       case "$AGENT_EXIT" in
         0)       CONTENT_STATUS="ok"
                  echo "  ✓ content agent finished" ;;

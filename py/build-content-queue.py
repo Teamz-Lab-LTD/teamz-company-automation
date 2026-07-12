@@ -294,6 +294,68 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
     return sorted(out, key=lambda x: -x["score"])
 
 
+def pool_coldstart(host, site_url, seen_paths, cooldown, deny_paths, max_out=3):
+    """Pages that EXIST and are in the sitemap but have ZERO impressions.
+
+    THE CHICKEN-AND-EGG THIS SOLVES: every other pool is driven by Search Console, so it can
+    only ever see pages Google already shows. A page with no impressions is invisible to the
+    engine — forever. It never gets improved, so it never gets impressions, so it never gets
+    improved.
+
+    goalkit made the cost of that concrete. Its 32 CLUB jerseys (Real Madrid, Barcelona,
+    Liverpool, Man Utd…) have zero impressions, so the queue could not see one of them — while
+    the pages it COULD see were all World Cup products that die on 2026-07-19. Left alone, the
+    engine would have spent every night polishing a dying catalogue and never touched the only
+    part that survives.
+
+    Cold-start is ONE-SHOT per page (ledger: data/coldstart-done.txt). A page gets one push —
+    internal links, a real title, an honest description — and then it either earns impressions
+    and graduates into the normal pools, or it does not. Pushing it forever would just be a
+    slower way of ignoring the signal.
+    """
+    sm = host / "sitemap.xml"
+    if not sm.exists():
+        return []
+    import re as _re
+    urls = _re.findall(r"<loc>([^<]+)</loc>", sm.read_text())
+
+    ledger = host / "data" / "coldstart-done.txt"
+    done = set(ledger.read_text().split()) if ledger.exists() else set()
+
+    # WITHOUT this, cold-start just walks the sitemap in file order — and the first run picked
+    # two BLOG pages (one of them a World Cup guide that dies on 2026-07-19) while the 32 club
+    # jerseys, the entire point of the pool, sat further down the file. Sitemap order is not a
+    # priority signal. TEAMZ_CONTENT_COLDSTART_PRIORITY says what actually matters.
+    priority = deny_list("TEAMZ_CONTENT_COLDSTART_PRIORITY")
+
+    out = []
+    for u in urls:
+        path = url_to_path(u, site_url)
+        if path in seen_paths or path in done:
+            continue                       # already earns impressions, or already had its shot
+        if denied(path, deny_paths) or any(c in path for c in cooldown):
+            continue
+        if path.startswith("/bn/"):
+            continue                       # Bangla-script search demand is ~zero; do not spend here
+        if not (host / path.strip("/") / "index.html").exists():
+            continue                       # in the sitemap but not on disk — a different problem
+        rank = next((i for i, p in enumerate(priority) if p in path.lower()), len(priority))
+        out.append({
+            "_rank": rank,
+            "mode": "ENHANCE", "path": path, "query": "", "source": "cold-start",
+            "impressions": 0, "clicks": 0, "position": 0.0, "ctr": 0.0,
+            "score": 0.0, "one_shot": True,
+            "why": ("this page exists and is in the sitemap but has ZERO impressions in 90 days "
+                    "— Google has not decided it is about anything. Give it a real title, an "
+                    "honest description and internal links from pages that DO rank. One shot: "
+                    "it will not be queued again."),
+        })
+    out.sort(key=lambda x: x["_rank"])
+    for o in out:
+        o.pop("_rank", None)
+    return out[:max_out]
+
+
 def autocomplete(seed, country="us"):
     """Google Autocomplete — free, no auth. Returns suggestions in rank order.
 
@@ -427,6 +489,13 @@ def main():
     for r in gsc_query(prop, token, ["page"], days=90, row_limit=1000):
         existing.add(url_to_path(r["keys"][0], site_url))
 
+    # Cold-start reserves a slot or two for pages Google has never shown. Without it, a page
+    # with no impressions can never enter the engine at all — see pool_coldstart.
+    cold = []
+    if os.getenv("TEAMZ_CONTENT_COLDSTART", "0") == "1":
+        cold = pool_coldstart(host, site_url, existing, cool, deny_paths,
+                              max_out=int(os.getenv("TEAMZ_CONTENT_COLDSTART_CAP", "2")))
+
     ledger = load_ledger(host)
     recent_new = new_posts_this_week(ledger)
     new_budget = max(0, args.new_cap - len(recent_new))
@@ -447,15 +516,15 @@ def main():
               f"enhance-only tonight.")
         print("  (rate limit is deliberate: scaled-content abuse is the #1 risk to this engine)")
 
-    targets = enhance[:args.enhance_cap] + new
+    targets = enhance[:args.enhance_cap] + cold + new
 
     queue = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "site": site_url, "property": prop,
         "caps": {"enhance": args.enhance_cap, "new": args.new_cap,
                  "new_budget_tonight": new_budget, "cooldown_days": args.cooldown},
-        "pool_counts": {"enhance_found": len(enhance), "new_found_after_budget": len(new),
-                        "cooldown_excluded": len(cool)},
+        "pool_counts": {"enhance_found": len(enhance), "cold_start": len(cold),
+                        "new_found_after_budget": len(new), "cooldown_excluded": len(cool)},
         "targets": targets,
     }
 
@@ -463,6 +532,11 @@ def main():
     for t in enhance[:args.enhance_cap]:
         print(f"    #{t['position']:<5} {t['impressions']:>5} impr  {t['path'][:44]}")
         print(f"           └─ '{t['query'][:56]}'")
+    if cold:
+        print(f"\n  COLD-START (zero impressions, one shot each): {len(cold)}")
+        for t in cold:
+            print(f"    never seen by Google:  {t['path'][:56]}")
+
     print(f"\n  NEW-post candidates queued: {len(new)}")
     for t in new:
         if t["source"] == "demand-gap":

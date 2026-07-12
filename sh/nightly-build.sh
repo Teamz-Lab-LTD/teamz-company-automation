@@ -153,6 +153,32 @@ sys.exit(0)
 PY
 }
 
+# The same check, but willing to WAIT for the network.
+#
+# The Mac sleeps. launchd fires this job the moment it wakes — before the WiFi has associated —
+# so a single DNS lookup for github.com can fail for a few seconds through no fault of ours. The
+# push is gated on that one lookup, and there was no second attempt.
+#
+# On 2026-07-12 that stranded TWENTY commits. Nineteen pages this engine had enhanced were
+# committed locally and never pushed, so they never reached the VPS and never went live. The log
+# said only "Skipping: git push (github.com unavailable)", the run reported success, and the
+# digest called it green. Nothing was LOST — the next run pushes everything ahead of origin — but
+# a full night's work on the site that carries 89% of all our traffic sat dead for a day, and it
+# would do so again on every network blink at 21:00.
+#
+# ~60s of patience, spent only when the check is actually failing. Costs nothing on a normal night.
+host_up_within() {
+    local host="$1" tries="${2:-5}" gap="${3:-15}"
+    local i=1
+    while :; do
+        can_resolve_host "$host" && return 0
+        [ "$i" -ge "$tries" ] && return 1
+        echo "  $host unresolvable (attempt $i/$tries) — waiting ${gap}s for the network to wake"
+        sleep "$gap"
+        i=$((i + 1))
+    done
+}
+
 skip_phase() {
     echo "  - Skipping: $1"
     SKIPPED_PHASES+=("$1")
@@ -271,8 +297,10 @@ else
     record_health_alert "SEO health-check found a RED — a data source may be silently broken (see log top)"
 fi
 
-# Pull latest changes first
-if [ "$REPO_DIRTY_AT_START" -eq 0 ] && can_resolve_host github.com; then
+# Pull latest changes first. This runs seconds after launchd wakes the machine, so it is the
+# step MOST likely to meet a network that is not up yet — and it is also the cheapest place to
+# wait for one, because everything after it depends on the network anyway.
+if [ "$REPO_DIRTY_AT_START" -eq 0 ] && host_up_within github.com; then
     git pull --ff-only origin main 2>/dev/null || echo "  Warning: git pull skipped (fast-forward unavailable)"
 else
     skip_phase "git pull (repo dirty at start or github.com unavailable)"
@@ -667,8 +695,11 @@ else
     echo "  No commit-worthy changes after exclusions."
 fi
 
-# Push with --no-verify
-if can_resolve_host github.com; then
+# Push with --no-verify.
+#
+# host_up_within, NOT can_resolve_host: this single lookup is the gate on the ONLY step that
+# makes the night's work public. When it failed on 2026-07-12 it took 20 commits with it.
+if host_up_within github.com; then
     PUSH_OUTPUT=$(git push origin main --no-verify 2>&1)
     PUSH_EXIT=$?
     echo "$PUSH_OUTPUT"

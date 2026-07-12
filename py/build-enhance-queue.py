@@ -519,10 +519,15 @@ def pool_striking_distance(host_root, cfg):
             continue
         pos = pg.get('pos') or 0
         impr = pg.get('impr') or 0
-        if not (11 <= pos <= 30) or impr <= 0:     # page 2 + early page 3 — climbable, proven demand
-            continue                                # (widened from <=20 2026-06-13: rev_weight below
-                                                    #  prioritizes the high-RPM ones among pos 21-30,
-                                                    #  the climbers the money-map push list flagged)
+        if not (8 <= pos <= 30) or impr <= 0:      # page-1-bottom (8-10) + page 2/3 — climbable demand
+            continue                                # widened <=20->30 2026-06-13; floor 11->8 2026-07-12:
+                                                    #  the old pos>=11 cutoff ABANDONED pages right before
+                                                    #  the finish line — a page climbing 15->12->11 got
+                                                    #  enhanced, then DROPPED at pos 10, stranded at
+                                                    #  page-1-bottom one nudge from the high-CTR top (pos
+                                                    #  3-5). Floor stops at 8 (not lower): a STUCK page at
+                                                    #  pos 1-7 with ~0 clicks is usually AIO-cannibalised,
+                                                    #  not a fixable rank — enhancing it wastes the cycle.
         slug = url_to_slug(pg.get('url', ''), cfg['site_url'])   # snapshot 'slug' is only the last
         if not slug or not slug_exists(slug, host_root):          # segment; the full path is in 'url'
             continue

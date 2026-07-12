@@ -32,17 +32,34 @@ if [ "$1" = "--install" ]; then
     mkdir -p "$LOG_DIR"
     mkdir -p "$HOME/Library/LaunchAgents"
 
-    cat > "$PLIST_PATH" << 'PLIST_EOF'
+    # SAFETY GUARD (2026-07-12): this plist used to be a fully HARDCODED heredoc — label,
+    # script path and log paths all pointed at teamzlab-tools. Running --install from ANY
+    # other repo therefore re-installed the TOOLS nightly under the TOOLS label, silently
+    # destroying whichever site's job was there. The heredoc below is now variable-driven,
+    # but a repo that forgets to set TEAMZ_NIGHTLY_LABEL still falls back to the shared
+    # default label — so refuse to overwrite a job that belongs to a DIFFERENT repo.
+    if [ -f "$PLIST_PATH" ] && ! grep -qF "$PROJECT_DIR/scripts/nightly-build.sh" "$PLIST_PATH"; then
+        _owner="$(grep -oE '/[^<]*/scripts/nightly-[a-z-]*\.sh' "$PLIST_PATH" | head -1)"
+        echo "REFUSING TO INSTALL — label '$PLIST_NAME' is already owned by another project:"
+        echo "    existing: ${_owner:-<unknown>}"
+        echo "    this one: $PROJECT_DIR/scripts/nightly-build.sh"
+        echo "  Installing would silently kill that project's nightly."
+        echo "  Fix: set a unique TEAMZ_NIGHTLY_LABEL in $PROJECT_DIR/.teamz-automation.env"
+        echo "       e.g. TEAMZ_NIGHTLY_LABEL=com.teamzlab.nightly-$(basename "$PROJECT_DIR")"
+        exit 1
+    fi
+
+    cat > "$PLIST_PATH" << PLIST_EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.teamzlab.nightly-build</string>
+    <string>${PLIST_NAME}</string>
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/scripts/nightly-build.sh</string>
+        <string>${PROJECT_DIR}/scripts/nightly-build.sh</string>
     </array>
     <key>StartCalendarInterval</key>
     <array>
@@ -60,15 +77,17 @@ if [ "$1" = "--install" ]; then
         </dict>
     </array>
     <key>StandardOutPath</key>
-    <string>/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/logs/nightly-build.log</string>
+    <string>${LOG_DIR}/nightly-build.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamzlab-tools/logs/nightly-build-error.log</string>
+    <string>${LOG_DIR}/nightly-build-error.log</string>
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
         <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
         <key>HOME</key>
-        <string>/Users/mdgolamkibriaemon</string>
+        <string>${HOME}</string>
+        <key>TEAMZ_HOST_SITE_ROOT</key>
+        <string>${PROJECT_DIR}</string>
     </dict>
 </dict>
 </plist>

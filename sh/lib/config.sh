@@ -57,9 +57,18 @@ teamz_load_config() {
 
   export TEAMZ_SITE_URL="${TEAMZ_SITE_URL:-https://tool.teamzlab.com/}"
   export TEAMZ_SITE_PROPERTY="${TEAMZ_SITE_PROPERTY:-$TEAMZ_SITE_URL}"
+
+  # A GSC property is one of TWO kinds and they normalise DIFFERENTLY:
+  #   URL-prefix   https://tool.teamzlab.com/     -> MUST end in "/"
+  #   domain       sc-domain:goalkit.teamzlab.com -> MUST NOT end in "/"
+  # The old code appended "/" to both, producing "sc-domain:goalkit.teamzlab.com/",
+  # which the Search Console API rejects with HTTP 400. Every script then reported
+  # the site as having no sitemap and zero clicks — goalkit really has 920 clicks at
+  # a 16.7% CTR, its best-converting property. Found live 2026-07-12.
   case "$TEAMZ_SITE_PROPERTY" in
-    */) : ;;
-    *) TEAMZ_SITE_PROPERTY="${TEAMZ_SITE_PROPERTY}/" ;;
+    sc-domain:*) TEAMZ_SITE_PROPERTY="${TEAMZ_SITE_PROPERTY%/}" ;;
+    */)          : ;;
+    *)           TEAMZ_SITE_PROPERTY="${TEAMZ_SITE_PROPERTY}/" ;;
   esac
   case "$TEAMZ_SITE_URL" in
     */) : ;;

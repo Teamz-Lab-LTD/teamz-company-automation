@@ -124,9 +124,17 @@ def query_search(dimensions, row_limit=50, start=start_date, end=end_date, filte
     try:
         r = requests.post(f'{API_BASE}/searchAnalytics/query', headers=headers, json=payload, timeout=30)
     except RequestException as exc:
-        print(f"ERROR: searchAnalytics query failed: {exc}")
+        print(f"  ⚠️  COULD NOT CHECK: searchAnalytics request failed: {exc}")
         return []
     if r.status_code != 200:
+        # NEVER swallow this into an empty list. "0 clicks" and "the API rejected us"
+        # are opposite facts, and returning [] for both makes a broken property look
+        # like a quiet one. That is exactly how goalkit — 920 clicks, the best CTR of
+        # any teamzlab property — was reported as 0 clicks / no sitemap for months
+        # (config.sh was sending "sc-domain:goalkit.teamzlab.com/" -> HTTP 400).
+        print(f"  ⚠️  COULD NOT CHECK: searchAnalytics returned HTTP {r.status_code}"
+              f" for property '{SITE_URL}' — the numbers below are NOT zero, they are UNKNOWN.")
+        print(f"      {r.text[:160]}")
         return []
     return r.json().get('rows', [])
 
@@ -141,22 +149,43 @@ if MODE in ('--status', '--all'):
     print("-" * 50)
 
     # 1) Sitemap submission info
+    sitemaps = {}
+    sitemap_unreachable = False
     try:
         r = requests.get(f'{API_BASE}/sitemaps', headers=headers, timeout=20)
-        sitemaps = r.json() if r.status_code == 200 else {}
+        if r.status_code == 200:
+            sitemaps = r.json()
+        else:
+            # Same rule as searchAnalytics: an API rejection is NOT "no sitemap".
+            sitemap_unreachable = True
+            print(f"  ⚠️  COULD NOT CHECK sitemaps: HTTP {r.status_code} for property '{SITE_URL}'")
+            print(f"      This is NOT the same as 'no sitemap submitted'. Check the property string:")
+            print(f"      URL-prefix properties end in '/', domain properties (sc-domain:...) must NOT.")
     except RequestException as exc:
-        print(f"  ERROR: Sitemap status request failed: {exc}")
-        sitemaps = {}
+        sitemap_unreachable = True
+        print(f"  ⚠️  COULD NOT CHECK sitemaps: request failed: {exc}")
     sitemap_submitted = 0
     if 'sitemap' in sitemaps:
         for s in sitemaps['sitemap']:
             contents = s.get('contents', [{}])[0]
             sitemap_submitted = contents.get('submitted', 0)
+            last_dl = s.get('lastDownloaded', '?')
             print(f"  Sitemap: {s.get('path','?')}")
             print(f"  Submitted URLs: {sitemap_submitted}")
-            print(f"  Last downloaded: {s.get('lastDownloaded','?')}")
-    else:
-        print("  No sitemaps found")
+            print(f"  Last downloaded: {last_dl}")
+            # A sitemap Google has stopped re-fetching is a silent death: new pages
+            # never get discovered. Surface it rather than printing a stale date.
+            try:
+                from datetime import datetime, timezone
+                age = (datetime.now(timezone.utc)
+                       - datetime.fromisoformat(last_dl.replace('Z', '+00:00'))).days
+                if age > 14:
+                    print(f"  ⚠️  STALE: Google has not re-downloaded this sitemap in {age} days."
+                          f" New pages are not being discovered. Resubmit it.")
+            except Exception:
+                pass
+    elif not sitemap_unreachable:
+        print("  No sitemaps found  (checked OK — Google genuinely has none for this property)")
 
     # 2) Count pages with search presence (impressions > 0 = definitely indexed)
     print()

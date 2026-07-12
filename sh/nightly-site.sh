@@ -167,6 +167,68 @@ if [ "$DO_SITEMAP" = "1" ] && [ -x scripts/build-sitemap.sh ]; then
   ./scripts/build-sitemap.sh 2>&1 | tail -3
 fi
 
+# 4.5 CONTENT AGENT — the part that makes a site grow itself.
+#
+#   queue (build-content-queue.py) → claude reads scripts/nightly-content-prompt.md →
+#   polishes near-winning pages / writes ONE demand-backed post → per-target commits.
+#
+# Opt-in per property: TEAMZ_NIGHTLY_CONTENT=1 AND a host-local prompt must exist. A prompt
+# is host-local on purpose — an Astro content collection, a static HTML shop and a lessons
+# site have nothing in common structurally, and one generic prompt would write slop for all
+# three.
+#
+# MODEL SPLIT: polishing a title is mechanical → sonnet. Writing a post that has to win an
+# Upwork client is not → opus. Running opus on every page every night across four properties
+# would burn the user's subscription quota during the day, when he needs Claude himself.
+if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
+  echo ""
+  echo "=== content agent ==="
+  CONTENT_PROMPT="$ROOT/scripts/nightly-content-prompt.md"
+  if [ ! -f "$CONTENT_PROMPT" ]; then
+    echo "  SKIP: TEAMZ_NIGHTLY_CONTENT=1 but no scripts/nightly-content-prompt.md"
+  elif ! command -v claude >/dev/null 2>&1; then
+    echo "  SKIP: claude CLI not installed"
+  elif ! ping -c1 -W2 api.anthropic.com >/dev/null 2>&1 && ! nc -z -G2 api.anthropic.com 443 2>/dev/null; then
+    echo "  SKIP: api.anthropic.com unreachable"
+  else
+    python3 scripts/build-content-queue.py 2>&1 | sed 's/^/  /'
+    QUEUE="$ROOT/data/content-queue.json"
+    N_TARGETS=$(python3 -c "import json,sys;print(len(json.load(open('$QUEUE'))['targets']))" 2>/dev/null || echo 0)
+    if [ "$N_TARGETS" = "0" ]; then
+      echo "  Nothing actionable tonight — skipping the agent. (A valid outcome, not an error:"
+      echo "  a queue with no target means no page is close enough and no demand is unserved.)"
+    else
+      # opus only when a NEW post is on the docket tonight; sonnet for pure polish.
+      HAS_NEW=$(python3 -c "import json;print(any(t['mode']=='NEW' for t in json.load(open('$QUEUE'))['targets']))" 2>/dev/null || echo False)
+      if [ "$HAS_NEW" = "True" ]; then
+        CONTENT_MODEL="${TEAMZ_CONTENT_MODEL_NEW:-opus}"
+      else
+        CONTENT_MODEL="${TEAMZ_CONTENT_MODEL_ENHANCE:-sonnet}"
+      fi
+      echo "  targets: $N_TARGETS   new-post tonight: $HAS_NEW   model: $CONTENT_MODEL"
+
+      # Hang-watchdog. macOS has no `timeout`, and a frozen agent that zombies for hours
+      # blocks every later launchd fire — this exact failure locked the tools site for 29h
+      # (2026-05-31 → 06-01). TERM at the limit, KILL 60s later, watchdog cancelled on a
+      # normal finish.
+      AGENT_MAX_SECONDS="${TEAMZ_CONTENT_MAX_SECONDS:-1800}"
+      claude --print --verbose --dangerously-skip-permissions \
+             --model "$CONTENT_MODEL" -p "$(cat "$CONTENT_PROMPT")" 2>&1 | sed 's/^/  /' &
+      AGENT_PID=$!
+      ( sleep "$AGENT_MAX_SECONDS"; kill -TERM "$AGENT_PID" 2>/dev/null; sleep 60; kill -KILL "$AGENT_PID" 2>/dev/null ) &
+      WD_PID=$!
+      wait "$AGENT_PID"; AGENT_EXIT=$?
+      kill "$WD_PID" 2>/dev/null; wait "$WD_PID" 2>/dev/null
+      case "$AGENT_EXIT" in
+        0)       echo "  ✓ content agent finished" ;;
+        143|137) echo "  ✗ content agent TIMED OUT (>${AGENT_MAX_SECONDS}s) — killed to prevent a zombie. Next run retries fresh."
+                 osascript -e "display notification \"Content agent TIMED OUT on $LABEL\" with title \"Teamz Content\" sound name \"Basso\"" 2>/dev/null ;;
+        *)       echo "  ✗ content agent failed (exit $AGENT_EXIT) — build+deploy continue with whatever it committed." ;;
+      esac
+    fi
+  fi
+fi
+
 # 5. build (static sites have no build step — that is normal, not an error)
 if [ -n "$BUILD_CMD" ]; then
   echo ""

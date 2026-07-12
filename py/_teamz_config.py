@@ -27,10 +27,33 @@ def _load_env_file(path: Path, *, override: bool = False) -> None:
             os.environ[k] = v
 
 
+def _find_host_root(script_file: str) -> Path:
+    """Which repo is CALLING us?
+
+    NOT derivable from the script path. Every host repo exposes these scripts as
+    SYMLINKS in its scripts/ dir, so Path(script_file).resolve() collapses them all to
+    <automation>/py — whose parent is the shared projects dir, never the caller. The old
+    code did exactly that, so EVERY repo silently fell back to the default site
+    (tool.teamzlab.com): apps/learn/goalkit pulled GSC for, and requested indexing of,
+    the WRONG property. Same bug that was fixed in sh/lib/config.sh on 2026-07-12 — this
+    is its Python twin, found 2026-07-12 while building the content queue.
+
+    Order: explicit env > walk up from CWD for .teamz-automation.env > legacy fallback.
+    """
+    explicit = os.getenv("TEAMZ_HOST_SITE_ROOT")
+    if explicit:
+        return Path(os.path.expandvars(os.path.expanduser(explicit))).resolve()
+    d = Path.cwd().resolve()
+    for cand in (d, *d.parents):
+        if (cand / ".teamz-automation.env").is_file():
+            return cand
+    return Path(script_file).resolve().parent.parent.parent
+
+
 def load_runtime(script_file: str) -> dict:
     py_dir = Path(script_file).resolve().parent
     automation_root = py_dir.parent
-    host_site_root = automation_root.parent
+    host_site_root = _find_host_root(script_file)
 
     # Base machine-level config (shared across projects), then per-project override.
     base_env = os.getenv("TEAMZ_BASE_ENV", str(Path.home() / ".config" / "teamzlab" / "automation.base.env"))
@@ -48,7 +71,19 @@ def load_runtime(script_file: str) -> dict:
         os.path.expandvars(os.path.expanduser(os.getenv("TEAMZ_HOST_SITE_ROOT", str(host_site_root))))
     ).resolve()
     site_url = os.getenv("TEAMZ_SITE_URL", "https://tool.teamzlab.com/").rstrip("/") + "/"
-    site_property = os.getenv("TEAMZ_SITE_PROPERTY", site_url).rstrip("/") + "/"
+
+    # A GSC property is one of TWO kinds and they normalise DIFFERENTLY:
+    #   URL-prefix   https://tool.teamzlab.com/     -> MUST end in "/"
+    #   domain       sc-domain:goalkit.teamzlab.com -> MUST NOT end in "/"
+    # Blindly appending "/" produced "sc-domain:goalkit.teamzlab.com/", which the Search
+    # Console API rejects with HTTP 400 — so goalkit's anomaly/keyword pulls silently
+    # returned nothing while the site really had 938 clicks at a 16.7% CTR. Same fix as
+    # sh/lib/config.sh; this is the Python twin.
+    site_property = os.getenv("TEAMZ_SITE_PROPERTY", site_url)
+    if site_property.startswith("sc-domain:"):
+        site_property = site_property.rstrip("/")
+    else:
+        site_property = site_property.rstrip("/") + "/"
     config_dir = Path(
         os.path.expandvars(
             os.path.expanduser(os.getenv("TEAMZ_CONFIG_DIR", str(Path.home() / ".config" / "teamzlab")))

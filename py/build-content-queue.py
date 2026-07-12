@@ -320,7 +320,7 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
         if not cur or r["impressions"] > cur[1]:
             ranking_page[q] = (url_to_path(page, site_url), r["impressions"])
 
-    out = []
+    out, retarget = [], []
     for r in qrows:
         q = r["keys"][0]
         pos, impr, clicks = r["position"], r["impressions"], r["clicks"]
@@ -332,13 +332,45 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
             continue          # off-domain topic (see the deny-list note in pool_enhance)
 
         # KILL 1 — a page we already have is about this query.
-        best_existing = max((overlap(q, p) for p in existing_paths), default=0.0)
-        if best_existing >= SIMILARITY_KILL:
-            continue
+        best_sim, best_page = max(((overlap(q, p), p) for p in existing_paths), default=(0.0, ""))
         # KILL 2 — the page Google already picked for it is about this query
         # (covers slugs that never appear in existing_paths, e.g. deep blog URLs).
         rp = ranking_page.get(q, ("", 0))[0]
-        if rp and overlap(q, rp) >= SIMILARITY_KILL:
+        owner = ""
+        if best_sim >= SIMILARITY_KILL:
+            owner = best_page
+        elif rp and overlap(q, rp) >= SIMILARITY_KILL:
+            owner = rp
+
+        if owner:
+            # RETARGET, not "drop".
+            #
+            # Both kills are RIGHT to refuse a new post — writing one would cannibalise the page
+            # that already owns the topic. But the code then just `continue`d, and the demand
+            # evaporated. The docstring above literally says "It needs ENHANCING, not a duplicate"
+            # about 'cqc compliance software' (125 impr, #70) — and then never made the enhance
+            # target. pool_enhance could not rescue it either: its filter stops at position 25.
+            #
+            # So a query with real demand, sitting at #25-100, on a page we ALREADY OWN, fell
+            # into a dead zone that nothing in the engine could see. On apps that was 10 queries
+            # and 1,151 impressions being binned every single night, against 66 total clicks.
+            #
+            # Retargeting beats writing a new post for this demand, and not marginally:
+            #   - the URL is already indexed, so it can move in days, not the 2-8 weeks a new
+            #     page needs before Google will even rank it;
+            #   - it spends none of the 1-2/week NEW budget, so it adds no scaled-content risk;
+            #   - it cannot cannibalise — it strengthens the page Google already chose.
+            retarget.append({
+                "mode": "ENHANCE", "source": "retarget",
+                "path": owner, "query": q,
+                "impressions": int(impr), "clicks": int(clicks), "position": round(pos, 1),
+                "ctr": 0.0,
+                "score": round(impr * (1.0 if pos < 50 else 0.6), 1),
+                "why": (f"'{q}' has {int(impr)} impressions in 90 days and we sit at #{pos:.0f} "
+                        f"with 0 clicks. We are NOT writing a new page for it — {owner} already "
+                        f"owns this topic, and a second page would cannibalise it. Make THAT page "
+                        f"actually answer '{q}': it is already indexed, so it can move in days."),
+            })
             continue
 
         out.append({
@@ -351,7 +383,8 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
                     f"#{pos:.0f} with 0 clicks, and the page it picks ({rp or 'n/a'}) is not "
                     f"about it — real demand, no page serving it"),
         })
-    return sorted(out, key=lambda x: -x["score"])
+    return (sorted(out, key=lambda x: -x["score"]),
+            sorted(retarget, key=lambda x: -x["score"]))
 
 
 def pool_coldstart(host, site_url, seen_paths, cooldown, deny_paths, max_out=3):
@@ -591,23 +624,61 @@ def main():
     recent_new = new_posts_this_week(ledger)
     new_budget = max(0, args.new_cap - len(recent_new))
 
-    new = []
+    # pool_new returns BOTH: the queries with no page behind them (NEW), and the queries it
+    # refused to write a post for because a page we already own is about them (RETARGET).
+    new, retarget = pool_new(prop, token, site_url, args.min_impressions, existing, deny_topics)
+
     if new_budget:
-        # 1st choice: a MEASURED gap (real impressions, no page serving it). Strongest signal.
-        new = pool_new(prop, token, site_url, args.min_impressions, existing, deny_topics)
         # 2nd choice: net-new ground adjacent to what this site already converts. Only when
         # there is no measured gap — a proxy signal must never outrank a measured one.
         if not new:
             country = os.getenv("TEAMZ_CONTENT_COUNTRY", "us")
             new = pool_expand(prop, token, site_url, existing, deny_topics, country)
         new = new[:new_budget]
-
-    if new_budget == 0:
+    else:
+        new = []
         print(f"\n  NEW-post budget spent ({len(recent_new)}/{args.new_cap} this week) — "
               f"enhance-only tonight.")
         print("  (rate limit is deliberate: scaled-content abuse is the #1 risk to this engine)")
 
-    targets = enhance[:args.enhance_cap] + cold + new
+    # RETARGET is deliberately NOT rate-limited like NEW. The weekly cap exists to bound
+    # scaled-content risk, and that risk comes from PUBLISHING PAGES. A retarget publishes
+    # nothing — it is an ENHANCE that happens to carry the keyword the page is missing.
+    #
+    # It does still respect the cooldown (a page rewritten last night must not be rewritten
+    # again tonight — that is the churn bug that rewrote goalkit's product names twice in six
+    # hours), and it must never double-book a page the striking-distance pool already picked.
+    enhance_capped = enhance[:args.enhance_cap]
+    booked = {t["path"] for t in enhance_capped} | {t["path"] for t in cold}
+    retarget = [
+        t for t in retarget
+        if t["path"] not in booked
+        and not any(c in t["path"] for c in cool)
+        and not denied(t["path"], deny_paths)
+    ]
+
+    # ONE PAGE PER DEMAND. Retargeting two pages at the same query would not double the effort —
+    # it would sharpen a knife fight between our own pages.
+    #
+    # apps proved this on the very first run. The pool surfaced BOTH of these:
+    #     550 impr  #58.9  /vibe-coding-agency/   <- "vibe coding agency"
+    #     142 impr  #36.3  /vibe-coding-service/  <- "vibe coding agence"  (a MISSPELLING of it)
+    # That is not two opportunities. That is one demand, already split across two of the five
+    # vibe-* pages this site owns — which is precisely WHY an exact-match page sits at #59 for
+    # its own exact-match term. Optimising both would have deepened the split we are trying to
+    # climb out of.
+    #
+    # So: same demand -> keep only the strongest page. (Consolidating the five pages into one is
+    # the real fix, but that means deleting and redirecting live URLs — a human decision, not a
+    # thing an unattended agent should do at 23:00.)
+    deduped = []
+    for t in retarget:
+        if any(overlap(t["query"], k["query"]) >= SIMILARITY_KILL for k in deduped):
+            continue        # already retargeting a page for this same demand
+        deduped.append(t)
+    retarget = deduped[:int(os.getenv("TEAMZ_CONTENT_RETARGET_CAP", "2"))]
+
+    targets = enhance_capped + cold + retarget + new
 
     queue = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
@@ -615,6 +686,7 @@ def main():
         "caps": {"enhance": args.enhance_cap, "new": args.new_cap,
                  "new_budget_tonight": new_budget, "cooldown_days": args.cooldown},
         "pool_counts": {"enhance_found": len(enhance), "cold_start": len(cold),
+                        "retarget": len(retarget),
                         "new_found_after_budget": len(new), "cooldown_excluded": len(cool)},
         "targets": targets,
     }
@@ -627,6 +699,11 @@ def main():
         print(f"\n  COLD-START (zero impressions, one shot each): {len(cold)}")
         for t in cold:
             print(f"    never seen by Google:  {t['path'][:56]}")
+    if retarget:
+        print(f"\n  RETARGET (demand we own a page for but never answer): {len(retarget)}")
+        for t in retarget:
+            print(f"    #{t['position']:<5} {t['impressions']:>5} impr  {t['path'][:44]}")
+            print(f"           └─ must answer: '{t['query'][:52]}'")
 
     print(f"\n  NEW-post candidates queued: {len(new)}")
     for t in new:

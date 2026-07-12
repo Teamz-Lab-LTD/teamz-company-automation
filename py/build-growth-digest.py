@@ -29,6 +29,7 @@ Usage:
 """
 import argparse
 import json
+import re
 import subprocess
 import sys
 import urllib.error
@@ -82,6 +83,29 @@ def arrow(now, prev):
     return f"{'+' if d > 0 else ''}{d:.0f}%"
 
 
+def log_from_plist(plist):
+    """Where does launchd ACTUALLY write this job's log? Ask launchd — never guess.
+
+    This function exists because the digest used to guess: it globbed for "<label>.log". Every
+    job the shared runner installs follows that convention, so it looked correct. But tools'
+    job predates the shared runner: its label is com.teamzlab.nightly-build while it writes to
+    logs/nightly-build.log. The glob matched nothing, so the digest reported the engine behind
+    89% OF ALL TRAFFIC as "awaiting 1st run (725h since install)" — for a job that had run every
+    single night for months, and had written that very log two hours earlier.
+
+    A monitor that says "never ran" about a healthy job is exactly as broken as one that says
+    "all clear" about a dead one. Both make the human stop reading it.
+
+    StandardOutPath in the plist is the single source of truth. Deriving it removes the second
+    hardcoded list that has to be kept in sync by hand — the same bug class that made goalkit's
+    new collection hub invisible to Google.
+    """
+    if not plist.exists():
+        return None
+    m = re.search(r"<key>StandardOutPath</key>\s*<string>([^<]+)</string>", plist.read_text())
+    return Path(m.group(1)) if m else None
+
+
 def nightly_health(repo, label):
     """Is the nightly actually still running? A silent cron is the failure nobody notices.
 
@@ -94,8 +118,12 @@ def nightly_health(repo, label):
     """
     plist = Path.home() / "Library" / "LaunchAgents" / f"{label}.plist"
     installed = plist.exists()
-    logs = PROJECTS / repo / "logs"
-    cands = list(logs.glob(f"{label}.log")) if logs.is_dir() else []
+
+    declared = log_from_plist(plist)
+    cands = [declared] if declared and declared.exists() else []
+    if not cands:                       # no StandardOutPath declared — fall back to the convention
+        logs = PROJECTS / repo / "logs"
+        cands = list(logs.glob(f"{label}.log")) if logs.is_dir() else []
 
     if not cands:
         if not installed:

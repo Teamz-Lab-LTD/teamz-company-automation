@@ -183,6 +183,32 @@ def overlap(a, b):
     return len(ta & tb) / len(ta)
 
 
+def looks_like_junk(q):
+    """Not every query with impressions is DEMAND. Some are noise, and chasing noise is worse
+    than doing nothing — it burns a night and teaches Google nothing.
+
+    learn.teamzlab.com's first queue was almost entirely this: '"73741817" algridtwo',
+    '"semanticstester" flutter', 'nctb.claude'. Those are people pasting a code identifier, an
+    error string or an exact-match search into Google. There is no page you can write that
+    serves them, and no title change that earns their click.
+    """
+    ql = q.lower().strip()
+    if '"' in q:
+        return True                                  # exact-match/pasted search
+    toks = ql.split()
+    for t in toks:
+        if t.isdigit() and len(t) >= 5:
+            return True                              # an ID, a build number, an error code
+        if "." in t and not t.endswith((".com", ".org", ".net", ".io", ".dev")):
+            return True                              # dotted identifier: nctb.claude, foo.bar()
+        if any(c in t for c in "(){}[]<>;=_"):
+            return True                              # code
+    # a lone token that is mostly consonants and long is usually an identifier, not a word
+    if len(toks) == 1 and len(ql) > 12:
+        return True
+    return False
+
+
 def deny_list(env_key):
     raw = os.getenv(env_key, "")
     return [s.strip().lower() for s in raw.split(",") if s.strip()]
@@ -202,6 +228,8 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
         page, query = r["keys"]
         pos, impr, clicks = r["position"], r["impressions"], r["clicks"]
         if not (5 <= pos <= 25) or impr < cfg_min_impr:
+            continue
+        if looks_like_junk(query):
             continue
         path = url_to_path(page, site_url)
         if any(c in path for c in cooldown):
@@ -268,6 +296,8 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
         pos, impr, clicks = r["position"], r["impressions"], r["clicks"]
         if impr < min_impr or pos < 25 or clicks > 0:
             continue          # weak demand, we already rank OK, or it already earns clicks
+        if looks_like_junk(q):
+            continue          # pasted code / IDs / exact-match searches are not demand
         if denied(q, deny_topics):
             continue          # off-domain topic (see the deny-list note in pool_enhance)
 
@@ -374,6 +404,27 @@ def autocomplete(seed, country="us"):
         return []
 
 
+def brand_tokens(site_url):
+    """Tokens of our own brand, derived from the domain.
+
+    Needed because the page-slug brand check is blind on the HOMEPAGE: overlap('teamz lab', '/')
+    is zero, since '/' has no tokens. So 'teamz lab' sailed through as a "topic" seed and
+    autocomplete expanded it into **'is team lab legit'** — a reputation query. Writing our own
+    "are we legit?" blog post is both useless and faintly ridiculous. Brand queries are never
+    expansion seeds.
+    """
+    host = site_url.split("//")[-1].split("/")[0]
+    parts = [p for p in host.replace("-", ".").split(".")
+             if p not in ("com", "net", "org", "io", "dev", "www", "co", "uk")]
+    out = set()
+    for p in parts:
+        out.add(p)
+        for chunk in ("teamz", "lab", "goalkit", "tool", "apps", "learn"):
+            if chunk in p and len(chunk) > 2:
+                out.add(chunk)
+    return out
+
+
 def pool_expand(prop, token, site_url, existing_paths, deny_topics, country, max_out=6):
     """NET-NEW topics, expanded from what this site ALREADY PROVES it can win.
 
@@ -397,6 +448,7 @@ def pool_expand(prop, token, site_url, existing_paths, deny_topics, country, max
         if r["clicks"] >= 1:
             converting[url_to_path(r["keys"][0], site_url)] = r["ctr"]
 
+    brand = brand_tokens(site_url)
     rows = gsc_query(prop, token, ["page", "query"], days=90, row_limit=2000)
     seeds = []
     for r in rows:
@@ -404,6 +456,8 @@ def pool_expand(prop, token, site_url, existing_paths, deny_topics, country, max
         path = url_to_path(page, site_url)
         if path not in converting or r["impressions"] < 15:
             continue
+        if tokens(query) & brand:
+            continue          # our own brand — expands to reputation queries, never to topics
         if denied(query, deny_topics) or denied(path, deny_topics):
             continue
         # A seed must be a TOPIC, not the page's own NAME. Seeding on brand queries is
@@ -413,7 +467,7 @@ def pool_expand(prop, token, site_url, existing_paths, deny_topics, country, max
         # Test: if the query is mostly just the page's own slug, it is a brand query.
         if overlap(query, path) >= SIMILARITY_KILL:
             continue
-        if len(tokens(query)) < 2:
+        if len(tokens(query)) < 2 or looks_like_junk(query):
             continue
         seeds.append((converting[path], query, path))
     seeds.sort(reverse=True)
@@ -453,6 +507,14 @@ def pool_expand(prop, token, site_url, existing_paths, deny_topics, country, max
 
 # --------------------------------------------------------------------------- main
 def main():
+    # load_runtime() FIRST — it is what reads <repo>/.teamz-automation.env into os.environ.
+    # argparse used to be built before this call, so every default read os.getenv() while the
+    # env file was still unread: TEAMZ_CONTENT_ENHANCE_CAP, NEW_CAP, COOLDOWN and MIN_IMPR were
+    # ALL silently ignored whenever the script was run by hand. It only appeared to work because
+    # nightly-site.sh sources the env with `set -a` before calling python. Running it standalone
+    # used the built-in defaults and quietly queued the wrong things.
+    cfg = load_runtime(__file__)
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--enhance-cap", type=int,
                     default=int(os.getenv("TEAMZ_CONTENT_ENHANCE_CAP", "5")))
@@ -464,7 +526,6 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    cfg = load_runtime(__file__)
     host = Path(cfg["host_site_root"])
     site_url = cfg["site_url"]
     prop = cfg["site_property"]

@@ -18,7 +18,18 @@ def _load_env_file(path: Path, *, override: bool = False) -> None:
             continue
         k, v = line.split("=", 1)
         k = k.strip()
-        v = v.strip().strip('"').strip("'")
+        v = v.strip()
+        # Strip an INLINE comment. Bash `source` does this; this loader did not, so
+        #     TEAMZ_CONTENT_MIN_IMPR=100    # keeps the queue out of the noise
+        # became the literal string "100    # keeps the queue out of the noise" and every
+        # int() of it blew up (or, worse, a string compare silently did the wrong thing).
+        # Only strip when the '#' is unquoted and preceded by whitespace, so a value that
+        # legitimately contains '#' (a colour, a URL fragment) survives.
+        if not (v.startswith('"') or v.startswith("'")):
+            hash_at = v.find(" #")
+            if hash_at != -1:
+                v = v[:hash_at].rstrip()
+        v = v.strip('"').strip("'")
         # Match shell `source`: expand $HOME and other env refs in .env values.
         v = os.path.expandvars(os.path.expanduser(v))
         if not k:

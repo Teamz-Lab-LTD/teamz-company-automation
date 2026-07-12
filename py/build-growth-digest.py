@@ -107,23 +107,62 @@ def log_from_plist(plist):
 
 
 def nightly_health(repo, label):
-    """Is the nightly actually still running? A silent cron is the failure nobody notices.
+    """Did the nightly actually WORK? Not: did a file get touched.
 
-    Three states, and they must stay distinguishable — a monitor that cries wolf gets ignored
-    as fast as one that stays silent:
+    The states must stay distinguishable — a monitor that cries wolf gets ignored as fast as one
+    that stays silent:
       NOT INSTALLED       -> there is no launchd job at all. Real problem.
       awaiting first run  -> job exists, just has not fired yet (e.g. installed this afternoon,
                              fires at 22:30). NOT a failure. Saying "NEVER RAN" here is a lie.
       STALE               -> job exists, has run before, and has gone quiet. Real problem.
+      ran, but ...        -> it fired and something inside it failed. THE STATE THIS FUNCTION
+                             USED TO BE BLIND TO.
+
+    That blindness cost a whole night. On 2026-07-13 apps and learn each skipped their content
+    agent (the network was still waking after the Mac did) AND then failed to deploy — and this
+    function called both of them "ok", because "ok" only ever meant "the log file has a recent
+    mtime". A log file gets its mtime updated by a script that fails just as reliably as by one
+    that succeeds. "Ran" and "worked" are different questions and this only ever asked the first.
+
+    So the runner now writes data/nightly-status.json from an EXIT trap, and we READ it. The
+    mtime path below remains only as a fallback for a run that predates the status file.
     """
     plist = Path.home() / "Library" / "LaunchAgents" / f"{label}.plist"
     installed = plist.exists()
+
+    # What the run itself says it did — the only source that knows.
+    status_file = PROJECTS / repo / "data" / "nightly-status.json"
+    status = None
+    if status_file.exists():
+        try:
+            status = json.loads(status_file.read_text())
+        except Exception:
+            status = None
 
     declared = log_from_plist(plist)
     cands = [declared] if declared and declared.exists() else []
     if not cands:                       # no StandardOutPath declared — fall back to the convention
         logs = PROJECTS / repo / "logs"
         cands = list(logs.glob(f"{label}.log")) if logs.is_dir() else []
+
+    if status:
+        age_h = (datetime.now().timestamp() - status_file.stat().st_mtime) / 3600
+        if not installed:
+            return "❌ JOB GONE (ran before, no plist)"
+        if age_h > 48:
+            return f"⚠️ STALE — {age_h/24:.0f}d since last run"
+        # Report the FIRST thing that went wrong, loudest first. Deploy failing is worse than the
+        # agent skipping: a skipped agent loses one night, an undeployed build loses the work.
+        if status.get("deploy", "").startswith("failed"):
+            return f"⚠️ ran, but DEPLOY FAILED ({age_h:.0f}h ago) — serving the old build"
+        if status.get("build", "").startswith("failed"):
+            return f"⚠️ ran, but BUILD FAILED ({age_h:.0f}h ago) — nothing deployed"
+        content = status.get("content", "")
+        if content.startswith("failed"):
+            return f"⚠️ ran, agent FAILED: {content.split(':', 1)[-1]} ({age_h:.0f}h ago)"
+        if content.startswith("skipped"):
+            return f"⚠️ ran, agent SKIPPED: {content.split(':', 1)[-1]} ({age_h:.0f}h ago)"
+        return f"ok ({age_h:.0f}h ago)"
 
     if not cands:
         if not installed:

@@ -9,6 +9,11 @@
       "status": "done",
       "detail": "0 finds + 3 matrices + keyword extraction",
       "timestamp": "2026-04-15T00:11:09.538658+00:00"
+    },
+    "name_collision": {
+      "status": "manual_needed",
+      "detail": "No app name found \u2014 run: python3 py/aso-name-collision.py \"<Your App Name>\"",
+      "timestamp": "2026-06-11T13:40:18.320330+00:00"
     }
   },
   "started_at": null

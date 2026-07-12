@@ -281,7 +281,7 @@ async function uploadVideo({ filePath, title, description, tags, categoryId, lan
       defaultLanguage: language && language !== "en" ? language : undefined,
     },
     status: {
-      privacyStatus: scheduledTime ? "private" : "public",
+      privacyStatus: getArg("--privacy") || (scheduledTime ? "private" : "public"),
       publishAt: scheduledTime ? scheduledTime.toISOString() : undefined,
       selfDeclaredMadeForKids: false,
     },

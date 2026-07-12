@@ -65,6 +65,66 @@ DEPLOY_CMD="${TEAMZ_NIGHTLY_DEPLOY_CMD:-}"
 DO_SITEMAP="${TEAMZ_NIGHTLY_SITEMAP:-1}"
 EXTRA_ARTIFACTS="${TEAMZ_NIGHTLY_ARTIFACTS:-}"
 
+# What actually happened tonight. Written to data/nightly-status.json at the end and read by
+# build-growth-digest.py. The digest used to infer health from the log file's MODIFICATION TIME,
+# which only ever proved the script RAN — never that it WORKED. On 2026-07-13 apps and learn both
+# skipped their content agent AND failed to deploy, and the digest called both of them "ok".
+# A monitor that cannot tell "worked" from "ran" is not a monitor.
+CONTENT_STATUS="not-enabled"
+BUILD_STATUS="skipped"
+DEPLOY_STATUS="skipped"
+
+# Retry a flaky NETWORK step.
+#
+# The Mac sleeps. launchd fires the job the instant it wakes — before the WiFi has associated —
+# so the first attempt at anything networked can fail for a few seconds through no fault of ours.
+# That cost two properties their entire night on 2026-07-12: the api.anthropic.com preflight
+# failed on apps (22:39) and on learn (23:39), while goalkit, which happened to run at 23:32,
+# sailed through. The deploy died the same way ("Can't assign requested address"). Nothing was
+# broken and nothing was misconfigured. There was simply no second attempt.
+#
+# Patience, not a different timeout: the check itself is fine (ping + nc both pass 6/6 on a
+# settled network). What it lacked was the willingness to wait for the network to come up.
+retry() {
+  local tries="$1" gap="$2"; shift 2
+  local i=1
+  while :; do
+    "$@" && return 0
+    [ "$i" -ge "$tries" ] && return 1
+    echo "    attempt $i/$tries failed — retrying in ${gap}s (network may still be waking)"
+    sleep "$gap"
+    i=$((i + 1))
+  done
+}
+
+api_up() {
+  ping -c1 -W2 api.anthropic.com >/dev/null 2>&1 || nc -z -G5 api.anthropic.com 443 2>/dev/null
+}
+
+# Armed as an EXIT trap so the status lands on EVERY path out of this script — including the
+# `exit 1` on a failed build, and including a crash. A status file that only appears when the
+# run succeeded would be the same lie in a new place: absence would mean both "never ran" and
+# "died early", and the digest could not tell them apart.
+write_status() {
+  local rc=$?
+  mkdir -p "$ROOT/data" 2>/dev/null || return 0
+  python3 - "$ROOT/data/nightly-status.json" "$rc" "$SITE" "$LABEL" \
+           "$CONTENT_STATUS" "$BUILD_STATUS" "$DEPLOY_STATUS" <<'PYEOF' 2>/dev/null || true
+import json, sys, datetime
+path, rc, site, label, content, build, deploy = sys.argv[1:8]
+json.dump({
+    "site": site,
+    "label": label,
+    "finished_at": datetime.datetime.now().isoformat(timespec="seconds"),
+    "exit_code": int(rc),
+    "content": content,
+    "build": build,
+    "deploy": deploy,
+}, open(path, "w"), indent=2)
+PYEOF
+}
+trap write_status EXIT
+
 if [ -z "$LABEL" ]; then
   echo "FATAL: TEAMZ_NIGHTLY_LABEL is not set in $ROOT/.teamz-automation.env"
   echo "       Every property needs its OWN launchd label or it clobbers another one."
@@ -185,16 +245,20 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
   echo "=== content agent ==="
   CONTENT_PROMPT="$ROOT/scripts/nightly-content-prompt.md"
   if [ ! -f "$CONTENT_PROMPT" ]; then
+    CONTENT_STATUS="skipped:no-prompt"
     echo "  SKIP: TEAMZ_NIGHTLY_CONTENT=1 but no scripts/nightly-content-prompt.md"
   elif ! command -v claude >/dev/null 2>&1; then
+    CONTENT_STATUS="skipped:no-claude-cli"
     echo "  SKIP: claude CLI not installed"
-  elif ! ping -c1 -W2 api.anthropic.com >/dev/null 2>&1 && ! nc -z -G2 api.anthropic.com 443 2>/dev/null; then
-    echo "  SKIP: api.anthropic.com unreachable"
+  elif ! retry 5 15 api_up; then
+    CONTENT_STATUS="skipped:api-unreachable"
+    echo "  SKIP: api.anthropic.com unreachable after 5 attempts over ~60s"
   else
     python3 scripts/build-content-queue.py 2>&1 | sed 's/^/  /'
     QUEUE="$ROOT/data/content-queue.json"
     N_TARGETS=$(python3 -c "import json,sys;print(len(json.load(open('$QUEUE'))['targets']))" 2>/dev/null || echo 0)
     if [ "$N_TARGETS" = "0" ]; then
+      CONTENT_STATUS="ok:empty-queue"
       echo "  Nothing actionable tonight — skipping the agent. (A valid outcome, not an error:"
       echo "  a queue with no target means no page is close enough and no demand is unserved.)"
     else
@@ -220,10 +284,13 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
       wait "$AGENT_PID"; AGENT_EXIT=$?
       kill "$WD_PID" 2>/dev/null; wait "$WD_PID" 2>/dev/null
       case "$AGENT_EXIT" in
-        0)       echo "  ✓ content agent finished" ;;
-        143|137) echo "  ✗ content agent TIMED OUT (>${AGENT_MAX_SECONDS}s) — killed to prevent a zombie. Next run retries fresh."
+        0)       CONTENT_STATUS="ok"
+                 echo "  ✓ content agent finished" ;;
+        143|137) CONTENT_STATUS="failed:timeout"
+                 echo "  ✗ content agent TIMED OUT (>${AGENT_MAX_SECONDS}s) — killed to prevent a zombie. Next run retries fresh."
                  osascript -e "display notification \"Content agent TIMED OUT on $LABEL\" with title \"Teamz Content\" sound name \"Basso\"" 2>/dev/null ;;
-        *)       echo "  ✗ content agent failed (exit $AGENT_EXIT) — build+deploy continue with whatever it committed." ;;
+        *)       CONTENT_STATUS="failed:exit-$AGENT_EXIT"
+                 echo "  ✗ content agent failed (exit $AGENT_EXIT) — build+deploy continue with whatever it committed." ;;
       esac
     fi
   fi
@@ -233,9 +300,12 @@ fi
 if [ -n "$BUILD_CMD" ]; then
   echo ""
   echo "=== build: $BUILD_CMD ==="
-  if ! eval "$BUILD_CMD" 2>&1 | tail -8; then
+  if eval "$BUILD_CMD" 2>&1 | tail -8; then
+    BUILD_STATUS="ok"
+  else
+    BUILD_STATUS="failed"
     echo "BUILD FAILED — not deploying."
-    exit 1
+    exit 1   # the EXIT trap still writes nightly-status.json, so the digest sees this
   fi
 fi
 
@@ -275,11 +345,24 @@ if [ -n "$(git status --porcelain --ignore-submodules)" ]; then
 fi
 
 # 7. deploy — or say plainly that we cannot
+#
+# Retried, because the failure mode here is a waking network, not a broken one. On 2026-07-12
+# both apps and learn died on "Can't assign requested address" — the machine had woken seconds
+# earlier and the interface was not up yet. A single attempt turned a two-second hiccup into a
+# whole night of work sitting undeployed.
 echo ""
+deploy_attempt() { eval "$DEPLOY_CMD" 2>&1 | tail -5; }
 if [ -n "$DEPLOY_CMD" ]; then
   echo "=== deploy: $DEPLOY_CMD ==="
-  eval "$DEPLOY_CMD" 2>&1 | tail -5 || echo "  DEPLOY FAILED — site still serving previous build."
+  if retry 3 20 deploy_attempt; then
+    DEPLOY_STATUS="ok"
+  else
+    DEPLOY_STATUS="failed"
+    echo "  ✗ DEPLOY FAILED after 3 attempts — site still serving the previous build."
+    osascript -e "display notification \"Deploy FAILED on $LABEL\" with title \"Teamz Nightly\" sound name \"Basso\"" 2>/dev/null
+  fi
 else
+  DEPLOY_STATUS="n/a:signal-only"
   echo "=== deploy: SKIPPED (signal-only property) ==="
   echo "  No TEAMZ_NIGHTLY_DEPLOY_CMD set for $SITE."
   echo "  Content for this site is NOT in this repo — act on the GSC report above by hand."

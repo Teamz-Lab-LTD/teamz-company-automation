@@ -1,0 +1,205 @@
+{
+  "generated_at": "2026-06-20T15:43:36.701413+00:00",
+  "summary": {
+    "pass": 13,
+    "fail": 8,
+    "warn": 5,
+    "total": 26
+  },
+  "sections": [
+    {
+      "name": "SCRIPTS AVAILABLE",
+      "checks": [
+        {
+          "check": "Script exists: aso/aso-keywords.py",
+          "status": "PASS",
+          "detail": "Keyword discovery (autocomplete, expand, trending)"
+        },
+        {
+          "check": "Script exists: aso/aso-competitors.py",
+          "status": "PASS",
+          "detail": "Competitor analysis (find, matrix, keywords, gaps)"
+        },
+        {
+          "check": "Script exists: aso/aso-metadata.py",
+          "status": "PASS",
+          "detail": "Metadata audit and scoring"
+        },
+        {
+          "check": "Script exists: aso/aso-keyword-pipeline.py",
+          "status": "PASS",
+          "detail": "Scored CSV generation pipeline"
+        },
+        {
+          "check": "Script exists: aso/aso-reviews.py",
+          "status": "PASS",
+          "detail": "Review sentiment analysis"
+        },
+        {
+          "check": "Script exists: aso/aso-track.py",
+          "status": "PASS",
+          "detail": "Rank tracking"
+        },
+        {
+          "check": "Script exists: aso/aso-guide.py",
+          "status": "PASS",
+          "detail": "ASO education and prompt generator"
+        },
+        {
+          "check": "Script exists: build-keyword-volume.py",
+          "status": "PASS",
+          "detail": "Volume estimation (Bing + Trends + autocomplete)"
+        },
+        {
+          "check": "Script exists: build-keyword-intel.py",
+          "status": "PASS",
+          "detail": "Keyword intelligence (GSC + intent)"
+        },
+        {
+          "check": "Script exists: build-competitor-gaps.py",
+          "status": "PASS",
+          "detail": "SEO competitor gap analysis"
+        },
+        {
+          "check": "Script exists: build-play-console.py",
+          "status": "PASS",
+          "detail": "Play Console listing pull/push"
+        },
+        {
+          "check": "Script exists: seo-keyword-engine.py",
+          "status": "PASS",
+          "detail": "Full SEO + ASO keyword audit engine"
+        }
+      ]
+    },
+    {
+      "name": "ENVIRONMENT",
+      "checks": [
+        {
+          "check": "Env var: TEAMZ_ASO_KEYWORDS",
+          "status": "WARN",
+          "detail": "NOT SET — needed for: Seed keywords for pipeline"
+        },
+        {
+          "check": "Env var: TEAMZ_APP_IDS",
+          "status": "WARN",
+          "detail": "NOT SET — needed for: Apple numeric app ID"
+        },
+        {
+          "check": "Env var: TEAMZ_PLAY_PACKAGE_NAME",
+          "status": "WARN",
+          "detail": "NOT SET — needed for: Android package name"
+        },
+        {
+          "check": "Env var: TEAMZ_DATA_DIR",
+          "status": "WARN",
+          "detail": "NOT SET — needed for: Output directory for CSVs"
+        }
+      ]
+    },
+    {
+      "name": "DATA FILES",
+      "checks": [
+        {
+          "check": "Data file: master_keywords.csv",
+          "status": "FAIL",
+          "detail": "MISSING — run: python3 py/aso-keyword-pipeline.py"
+        },
+        {
+          "check": "Data file: ios_keywords.csv",
+          "status": "FAIL",
+          "detail": "MISSING — run: python3 py/aso-keyword-pipeline.py"
+        },
+        {
+          "check": "Data file: keyword-competitive-analysis.json",
+          "status": "FAIL",
+          "detail": "MISSING — run: python3 py/custom per-keyword analysis"
+        },
+        {
+          "check": "Data file: aso-pipeline-latest.json",
+          "status": "FAIL",
+          "detail": "MISSING — run: python3 py/aso-keyword-pipeline.py"
+        }
+      ]
+    },
+    {
+      "name": "VOLUME DATA (critical)",
+      "checks": [
+        {
+          "check": "Pipeline used build-keyword-volume.py",
+          "status": "FAIL",
+          "detail": "Pipeline hasn't been run yet. Run: python3 py/aso/aso-keyword-pipeline.py"
+        }
+      ]
+    },
+    {
+      "name": "CSV AUTHENTICITY",
+      "checks": [
+        {
+          "check": "CSV authenticity",
+          "status": "SKIP",
+          "detail": "CSV missing"
+        }
+      ]
+    },
+    {
+      "name": "LISTING FILES",
+      "checks": [
+        {
+          "check": "English listing JSON (play-listing-*-en-US.json)",
+          "status": "PASS",
+          "detail": "play-listing-com-teamzlab-no_trace_code_chat-en-US.json (3,876 bytes)"
+        }
+      ]
+    },
+    {
+      "name": "DATA RATIONALE",
+      "checks": [
+        {
+          "check": "Listing cites data sources",
+          "status": "FAIL",
+          "detail": "⚠️ No data sources cited. Listing may be based on assumptions, not data."
+        },
+        {
+          "check": "Title rationale has real numbers",
+          "status": "FAIL",
+          "detail": "⚠️ No title rationale. Was the title chosen based on data or guessed?"
+        }
+      ]
+    },
+    {
+      "name": "CHARACTER LIMITS",
+      "checks": []
+    },
+    {
+      "name": "RELEASE NOTES",
+      "checks": [
+        {
+          "check": "Release notes JSON exists",
+          "status": "FAIL",
+          "detail": "No release-notes-*.json in automation_data/. AI agent must generate it with version + all locale keys, each ≤500 chars."
+        }
+      ]
+    },
+    {
+      "name": "KEYWORD COVERAGE",
+      "checks": [
+        {
+          "check": "Keyword coverage",
+          "status": "SKIP",
+          "detail": "Listing or CSV missing"
+        }
+      ]
+    },
+    {
+      "name": "MISLEADING CLAIMS (Apple 2.3.1)",
+      "checks": [
+        {
+          "check": "App constraints declared",
+          "status": "WARN",
+          "detail": "deep-research-keywords.json missing — cannot verify metadata claims. Add `_app_constraints.forbidden_claims` (e.g. ['no ads', 'ad-free']) based on the app's actual ad/IAP/auth code before publishing."
+        }
+      ]
+    }
+  ]
+}

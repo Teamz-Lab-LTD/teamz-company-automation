@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-07-12T21:15:41.580235",
+  "site": "https://tool.teamzlab.com/",
+  "window_days": 28,
+  "row_limit": 2000,
+  "threshold": 0.78,
+  "counts": {
+    "gsc_pages": 2000,
+    "live_inventory": 7118,
+    "existing_redirects": 102,
+    "broken_404s": 0,
+    "auto_matched": 0,
+    "unmatched": 0,
+    "garbage_skipped": 0
+  },
+  "matched": [],
+  "unmatched": []
+}

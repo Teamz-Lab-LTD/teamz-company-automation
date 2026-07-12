@@ -110,7 +110,23 @@ def url_to_path(url, site_url):
 
 
 def cooldown_paths(host_root, days):
-    """Pages touched by git in the last N days — skip them, they need time to be re-crawled."""
+    """Pages touched by git in the last N days — skip them, they need time to be re-crawled.
+
+    THE ENTRY MUST BE A SUBSTRING OF THE URL, because that is how the caller tests it:
+
+        any(c in path for c in cooldown)      # path == "/products/uruguay-.../"
+
+    The old code only ever stored the FILE ("products/uruguay-.../index.html"). A file path is
+    LONGER than the URL it produces, so it can never be a substring of it, so this test could
+    only ever return False. The cooldown has therefore never held for any site whose pages are
+    <dir>/index.html — which is every static site we own. It merely LOOKED like it worked on
+    apps, where Astro's blog/foo.md leaves the usable stem "foo".
+
+    goalkit paid for it on 2026-07-12: the agent edited uruguay-mens, uruguay-youth, netherlands
+    and czech at 17:35, and then edited all four AGAIN at 23:32 — rewriting the product names on
+    a live shop twice in six hours. Repeated title flips are exactly what makes Google distrust
+    a page, so the bug was not just churn; it was working against the thing it exists to do.
+    """
     try:
         out = subprocess.run(
             ["git", "log", f"--since={days} days ago", "--name-only", "--pretty=format:"],
@@ -118,14 +134,28 @@ def cooldown_paths(host_root, days):
         ).stdout
     except Exception:
         return set()
+
+    # Language mirrors of one page share a source row (goalkit's manifest) and are always edited
+    # together, so touching /bn/products/foo/ must also cool /products/foo/ — otherwise the pair
+    # just take turns being re-targeted. Explicit list, not a blind "strip the first directory":
+    # tools really does have a /de/ section whose pages are NOT mirrors of the root ones.
+    lang_prefixes = {s.strip() for s in os.getenv("TEAMZ_CONTENT_LANG_PREFIXES", "bn").split(",") if s.strip()}
+
     touched = set()
     for line in out.splitlines():
         line = line.strip()
         if not line:
             continue
-        # map a source file back to the URL path it produces, best-effort per platform
-        touched.add(line)
-        stem = Path(line).stem
+        touched.add(line)                       # the raw file, for source-file matches
+        p = Path(line)
+
+        if p.name == "index.html" and p.parent != Path("."):
+            parts = p.parent.parts
+            touched.add("/" + "/".join(parts) + "/")            # /bn/products/foo/
+            if parts and parts[0] in lang_prefixes and len(parts) > 1:
+                touched.add("/" + "/".join(parts[1:]) + "/")    # ...also cools /products/foo/
+
+        stem = p.stem
         if stem and stem != "index":
             touched.add(stem)
     return touched

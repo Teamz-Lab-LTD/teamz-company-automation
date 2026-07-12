@@ -239,6 +239,32 @@ if [ -n "$BUILD_CMD" ]; then
   fi
 fi
 
+# 5.5 ORPHAN GATE — did the agent create a page the sitemap never learned about?
+#
+# On goalkit's first night the agent built a Real Madrid collection hub: correct page, 9
+# products, sound title, deployed cleanly. It was INVISIBLE. The sitemap generator had a
+# hardcoded list of collections and nothing added the new one, so Google would never have
+# learned the page existed. All that work, zero effect, and not one error anywhere.
+#
+# A page that ships but is not in the sitemap is worse than no page: it costs a night and
+# returns nothing, silently, forever. This is the cheapest possible check for it.
+if [ -f "$ROOT/sitemap.xml" ]; then
+  NEW_PAGES=$(git log --diff-filter=A --name-only --pretty=format: -1 2>/dev/null \
+              | grep -E '/index\.html$' | head -20)
+  ORPHANS=""
+  for p in $NEW_PAGES; do
+    slug=$(dirname "$p")
+    grep -q "$slug" "$ROOT/sitemap.xml" 2>/dev/null || ORPHANS="$ORPHANS $slug"
+  done
+  if [ -n "$ORPHANS" ]; then
+    echo ""
+    echo "  ⚠️  ORPHAN PAGE(S) — created but NOT in sitemap.xml. Google will never find them:"
+    for o in $ORPHANS; do echo "      $o"; done
+    echo "      The sitemap generator probably has a hardcoded list. Derive it from disk."
+    osascript -e "display notification \"Orphan page not in sitemap on $LABEL\" with title \"Teamz Content\" sound name \"Basso\"" 2>/dev/null
+  fi
+fi
+
 # 6. commit regenerated artifacts (best-effort; a repo with nothing to commit is fine)
 if [ -n "$(git status --porcelain --ignore-submodules)" ]; then
   git add -A -- sitemap.xml robots.txt llms.txt llms-full.txt \

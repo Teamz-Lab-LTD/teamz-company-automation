@@ -170,6 +170,41 @@ def nightly_health(repo, label):
         age_h = (datetime.now().timestamp() - plist.stat().st_mtime) / 3600
         return f"awaiting 1st run ({age_h:.0f}h since install)"
 
+    # FALLBACK — a run that predates the status file (or one that died before its EXIT trap).
+    #
+    # This path must NEVER be able to return "ok". "ok" is a CLAIM, and without the status file
+    # there is no basis for it. That was the whole bug: the old code reached this point, saw a
+    # recent mtime, and said "ok" about apps and learn on a night when both of them skipped their
+    # content agent AND failed to deploy. Not knowing and being fine must never render the same.
+    #
+    # Best effort instead: read the failure markers the runner prints. If they are there, report
+    # them. If they are not, say plainly that we cannot confirm anything.
+    newest = max(cands, key=lambda p: p.stat().st_mtime)
+    age_h = (datetime.now().timestamp() - newest.stat().st_mtime) / 3600
+    if not installed:
+        return "❌ JOB GONE (log exists, no plist)"
+    if age_h > 48:
+        return f"⚠️ STALE — {age_h/24:.0f}d since last run"
+
+    try:
+        text = newest.read_text(errors="replace")
+    except Exception:
+        text = ""
+    # Only the LAST run. The log accumulates, so a DEPLOY FAILED from three nights ago must not
+    # be reported as tonight's.
+    blocks = text.split("=" * 60)
+    tail = blocks[-1] if len(blocks) > 1 else text[-8000:]
+
+    if "DEPLOY FAILED" in tail:
+        return f"⚠️ ran, but DEPLOY FAILED ({age_h:.0f}h ago) — serving the old build"
+    if "BUILD FAILED" in tail:
+        return f"⚠️ ran, but BUILD FAILED ({age_h:.0f}h ago) — nothing deployed"
+    if "SKIP: api.anthropic.com" in tail:
+        return f"⚠️ ran, agent SKIPPED: api-unreachable ({age_h:.0f}h ago)"
+    if "SKIP: uncommitted source" in tail:
+        return f"⚠️ SKIPPED: dirty tree — protecting your WIP ({age_h:.0f}h ago)"
+    return f"? ran {age_h:.0f}h ago — no status file, cannot confirm it worked"
+
     newest = max(cands, key=lambda p: p.stat().st_mtime)
     age_h = (datetime.now().timestamp() - newest.stat().st_mtime) / 3600
     if not installed:

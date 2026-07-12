@@ -353,11 +353,24 @@ if [ -f "$ROOT/sitemap.xml" ]; then
   fi
 fi
 
-# 6. commit regenerated artifacts (best-effort; a repo with nothing to commit is fine)
+# 6. commit whatever the build regenerated.
+#
+# This was a HARDCODED list of eight filenames, and it held only for as long as no site's build
+# produced anything else. Then goalkit's chain began regenerating 179x2 product pages and 24
+# collection hubs every night. That output was never committed, so it stayed dirty — and the NEXT
+# night's dirty-guard would have refused to run the site at all. Silently. Every night. Forever.
+#
+# That is the "leftover build output deadlocks the cron" freeze that already cost tools a week in
+# 2026-06, and it is the same shape as the hardcoded collection list that made goalkit's Real
+# Madrid hub invisible to Google: a list a human has to remember to update. Stop writing them.
+#
+# `git add -A` is safe HERE, and only here, and for one specific reason: the dirty-guard at step 1
+# already refused to run at all if the tree held any human source WIP. So by this point everything
+# uncommitted is either an artifact the guard chose to ignore, or output this build just produced.
+# Both are ours to commit. (.gitignore still applies, so the images stay out.)
 if [ -n "$(git status --porcelain --ignore-submodules)" ]; then
-  git add -A -- sitemap.xml robots.txt llms.txt llms-full.txt \
-                public/sitemap.xml public/robots.txt public/llms.txt public/llms-full.txt 2>/dev/null
-  git commit -m "chore(nightly): refresh generated SEO artifacts" --no-verify 2>/dev/null \
+  git add -A
+  git commit -m "chore(nightly): refresh generated site output" --no-verify 2>/dev/null \
     && git push origin HEAD --no-verify 2>&1 | tail -1 \
     || echo "  (nothing to commit)"
 fi

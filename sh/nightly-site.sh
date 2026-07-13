@@ -250,9 +250,28 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
   elif ! command -v claude >/dev/null 2>&1; then
     CONTENT_STATUS="skipped:no-claude-cli"
     echo "  SKIP: claude CLI not installed"
-  elif ! retry 5 15 api_up; then
+  # BE PATIENT. Genuinely patient.
+  #
+  # The first version of this waited 60 seconds, because I had assumed the failure was "the Mac
+  # woke and the WiFi is not up yet". That assumption was wrong: the power log shows a
+  # `caffeinate -s` job holding PreventSystemSleep — the machine was never asleep.
+  #
+  # What actually happened on 2026-07-12 was an upstream outage. api.anthropic.com AND github.com
+  # both went unreachable in the same window, and two unrelated services do not fail together —
+  # so it was DNS or the ISP link. It lasted from at LEAST 22:31 (apps failed) to 23:01 (learn
+  # failed) and had recovered by 23:21 (goalkit sailed through). Thirty to fifty minutes.
+  #
+  # A 60-second retry would have saved none of them. This job starts at 22:30 and owns the whole
+  # night; nothing else wants the machine. Waiting out a 20-minute blip is free, and losing a
+  # night of work is not. On a healthy network the first attempt passes and this costs nothing.
+  #
+  # For anything longer than this window, the answer is not more waiting — it is the morning
+  # catch-up sweep (sh/nightly-catchup.sh), which re-runs any site whose status file says it
+  # skipped. Patience handles the blip; the sweep handles the outage.
+  elif ! retry "${TEAMZ_NET_RETRIES:-20}" "${TEAMZ_NET_GAP:-60}" api_up; then
     CONTENT_STATUS="skipped:api-unreachable"
-    echo "  SKIP: api.anthropic.com unreachable after 5 attempts over ~60s"
+    echo "  SKIP: api.anthropic.com unreachable after ~${TEAMZ_NET_RETRIES:-20} min."
+    echo "        The morning catch-up sweep will retry this site."
   else
     python3 scripts/build-content-queue.py 2>&1 | sed 's/^/  /'
     QUEUE="$ROOT/data/content-queue.json"

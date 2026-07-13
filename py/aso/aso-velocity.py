@@ -232,6 +232,15 @@ def _der_to_raw_ecdsa(der: bytes) -> bytes | None:
         return None
 
 
+# Apple's "Product Type Identifier" column. Only these are first-time downloads.
+# Everything else in the report is an update or a re-download, and counting them
+# as installs is how this script once overstated Top3Picks by 374x.
+#   1, 1F, 1T, F1  -> first-time download (iPhone / universal / iPad / free)
+#   3, 3F, 7, 7F   -> UPDATE (an existing user re-downloading a new build)
+#   IA1            -> in-app purchase
+_ASC_DOWNLOAD_TYPES = {"1", "1F", "1T", "F1"}
+
+
 def _asc_velocity(days: int) -> dict | None:
     issuer = os.environ.get("TEAMZ_ASC_ISSUER_ID", "100d6ef8-7452-4aff-85a4-990158b60b3d")
     key_id = os.environ.get("TEAMZ_ASC_KEY_ID", "559DD92MBH")
@@ -242,6 +251,16 @@ def _asc_velocity(days: int) -> dict | None:
     if not Path(p8).exists():
         print(f"[WARN] ASC P8 key not found: {p8} — iOS velocity skipped",
               file=sys.stderr)
+        return None
+
+    # The Sales & Trends report is per-VENDOR, not per-app: one TSV contains
+    # every Teamz Lab app. Without this filter the script sums the whole
+    # portfolio and attributes it to whichever app you happened to run it from.
+    app_ids = {a.strip() for a in os.environ.get("TEAMZ_APP_IDS", "").split(",") if a.strip()}
+    if not app_ids:
+        print("[WARN] TEAMZ_APP_IDS is not set — cannot tell this app's rows apart from the "
+              "rest of the vendor's portfolio. Refusing to report a number that would be "
+              "the sum of every Teamz Lab app.", file=sys.stderr)
         return None
 
     token = _asc_jwt(issuer, key_id, p8)
@@ -280,6 +299,12 @@ def _asc_velocity(days: int) -> dict | None:
             continue
         units = 0
         for row in csv.DictReader(io.StringIO(tsv), delimiter="\t"):
+            # Rows for OTHER apps in the same vendor account.
+            if (row.get("Apple Identifier") or "").strip() not in app_ids:
+                continue
+            # Updates / re-downloads are not new users.
+            if (row.get("Product Type Identifier") or "").strip() not in _ASC_DOWNLOAD_TYPES:
+                continue
             try:
                 units += int(row.get("Units", 0) or 0)
             except ValueError:

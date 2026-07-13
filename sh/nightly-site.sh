@@ -268,7 +268,13 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
   # For anything longer than this window, the answer is not more waiting — it is the morning
   # catch-up sweep (sh/nightly-catchup.sh), which re-runs any site whose status file says it
   # skipped. Patience handles the blip; the sweep handles the outage.
-  elif ! retry "${TEAMZ_NET_RETRIES:-20}" "${TEAMZ_NET_GAP:-60}" api_up; then
+  # DIAGNOSTIC: 2026-07-13's log showed a SKIP with none of the "attempt N/tries" lines this
+  # loop prints, and a message shorter than the one two lines below — inconsistent with this
+  # code ever having run, though it was committed hours earlier and reproduces correctly in
+  # isolation. Unexplained. This line exists so the next occurrence is diagnosable instead of
+  # a repeat mystery: if tries/gap ever print wrong, or don't print at all, that's the fault.
+  elif { echo "  [diag] retry tries=${TEAMZ_NET_RETRIES:-20} gap=${TEAMZ_NET_GAP:-60}s"; \
+         ! retry "${TEAMZ_NET_RETRIES:-20}" "${TEAMZ_NET_GAP:-60}" api_up; }; then
     CONTENT_STATUS="skipped:api-unreachable"
     echo "  SKIP: api.anthropic.com unreachable after ~${TEAMZ_NET_RETRIES:-20} min."
     echo "        The morning catch-up sweep will retry this site."

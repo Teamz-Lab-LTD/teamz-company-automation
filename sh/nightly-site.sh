@@ -220,6 +220,15 @@ echo "=== GSC signals ($TEAMZ_SITE_PROPERTY) ==="
 [ -f scripts/build-gsc-anomalies.py ] && python3 scripts/build-gsc-anomalies.py 2>&1 | tail -6 \
   || echo "  (build-gsc-anomalies.py missing — skipped)"
 
+# 3b. Keyword-candidate HARVEST only — accumulate GSC-demand queries we have no volume for.
+# HARVEST is cheap and safe nightly; it only appends to data/keyword-candidates.json. It never
+# PREPARES a batch — that would nag the owner every night. Batch preparation is deliberately
+# left to a human/Claude call (build-keyword-candidates.py --prepare), gated by count + cadence.
+if [ -f scripts/build-keyword-candidates.py ]; then
+  python3 scripts/build-keyword-candidates.py 2>&1 | sed 's/^/  /' | tail -3 \
+    || echo "  (keyword-candidate harvest failed — non-fatal)"
+fi
+
 # 4. sitemap (skip where the host platform owns it — Framer/Wix generate their own)
 if [ "$DO_SITEMAP" = "1" ] && [ -x scripts/build-sitemap.sh ]; then
   echo ""

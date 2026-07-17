@@ -549,6 +549,16 @@ def pool_cannibalization(host, site_url, click_by_path, cooldown, deny_paths, ma
             head = f.read_text(errors="ignore")[:4000]
         except OSError:
             continue
+        # NOINDEX PAGES CANNOT CANNIBALISE — Google never indexes them, so they compete for
+        # nothing. Skipping this check produced a live false positive on the very first run:
+        # apps ships /fedex-shipping-for-woocommerce/ (noindex) and
+        # /launch/fedex-shipping-for-woocommerce/ (index) with a byte-identical <title>. That
+        # looks like a textbook clash and is not one — the noindex page is invisible to Google
+        # by design. Left in, the agent would have spent its highest-priority slot rewriting a
+        # page nobody can find, and might have damaged the launch page that actually ranks.
+        if _re.search(r'<meta[^>]+name=["\']robots["\'][^>]+content=["\'][^"\']*noindex',
+                      head, _re.I):
+            continue
         m = _re.search(r"<title[^>]*>(.*?)</title>", head, _re.S | _re.I)
         if not m:
             continue

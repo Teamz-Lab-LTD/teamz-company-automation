@@ -432,6 +432,39 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
             sorted(retarget, key=lambda x: -x["score"]))
 
 
+def family_key(path):
+    """Pages that are the SAME thing in a different season. The clash-prevention primitive.
+
+    Strip the year from the PATH and see what is left:
+
+        arsenal-2025-26-home-jersey  ->  arsenal--home-jersey   \\ one family:
+        arsenal-2026-27-home-jersey  ->  arsenal--home-jersey   / same shirt, two seasons
+        arsenal-2025-26-away-jersey  ->  arsenal--away-jersey   <- a DIFFERENT product
+
+    Note this is exact-match on a normalised path, NOT token overlap. Token overlap on these
+    same slugs gets it backwards (home-vs-away scores 0.71, the real season duplicate 0.50),
+    which is why pool_cannibalization compares titles instead. But for finding season twins
+    BEFORE a title exists, the year-stripped path is exactly right.
+    """
+    import re as _re
+    p = YEAR_RE.sub("", path.lower())
+    return _re.sub(r"[^a-z]+", "-", p).strip("-")
+
+
+def title_of(host, path):
+    """The <title> a page currently ships, or '' — read from the built HTML on disk."""
+    import re as _re
+    f = host / path.strip("/") / "index.html"
+    if not f.exists():
+        return ""
+    try:
+        m = _re.search(r"<title[^>]*>(.*?)</title>", f.read_text(errors="ignore")[:4000],
+                       _re.S | _re.I)
+    except OSError:
+        return ""
+    return _re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
+
+
 def pool_coldstart(host, site_url, seen_paths, cooldown, deny_paths, max_out=3):
     """Pages that EXIST and are in the sitemap but have ZERO impressions.
 
@@ -466,6 +499,22 @@ def pool_coldstart(host, site_url, seen_paths, cooldown, deny_paths, max_out=3):
     # priority signal. TEAMZ_CONTENT_COLDSTART_PRIORITY says what actually matters.
     priority = deny_list("TEAMZ_CONTENT_COLDSTART_PRIORITY")
 
+    # SEASON TWINS, indexed before we queue anything. Cold-start was a CLASH FACTORY and the
+    # proof is in goalkit's git log for 2026-07-17: handed /products/arsenal-2026-27-home-jersey/
+    # as a cold-start target, the agent wrote "Arsenal 2026/27 Home Jersey Price in Bangladesh"
+    # — a perfect intent-duplicate of the 2025/26 page's existing title. One run, one brand-new
+    # clash, and a commit message reporting success.
+    #
+    # That is not the agent being careless. The catalogue stocks a 2025/26 AND a 2026/27 Home
+    # shirt for the same club at the same price, so ANY formulaic "<Club> <Season> Home Jersey
+    # Price in Bangladesh" title collides with its twin by construction. Detecting the mess
+    # afterwards while another pool manufactures it nightly is mopping the floor with the tap
+    # running. So: every cold-start target now arrives KNOWING its twin and what that twin ships.
+    all_paths = [url_to_path(u, site_url) for u in urls]
+    family = {}
+    for p in all_paths:
+        family.setdefault(family_key(p), []).append(p)
+
     out = []
     for u in urls:
         path = url_to_path(u, site_url)
@@ -477,16 +526,28 @@ def pool_coldstart(host, site_url, seen_paths, cooldown, deny_paths, max_out=3):
             continue                       # Bangla-script search demand is ~zero; do not spend here
         if not (host / path.strip("/") / "index.html").exists():
             continue                       # in the sitemap but not on disk — a different problem
+        twins = [{"path": s, "title": title_of(host, s)}
+                 for s in family.get(family_key(path), []) if s != path]
         rank = next((i for i, p in enumerate(priority) if p in path.lower()), len(priority))
         out.append({
             "_rank": rank,
             "mode": "ENHANCE", "path": path, "query": "", "source": "cold-start",
+            # Non-empty = this page has a season twin. Its title MUST NOT duplicate the twin's
+            # intent, however tempting the formula is.
+            "season_twins": twins,
             "impressions": 0, "clicks": 0, "position": 0.0, "ctr": 0.0,
             "score": 0.0, "one_shot": True,
             "why": ("this page exists and is in the sitemap but has ZERO impressions in 90 days "
                     "— Google has not decided it is about anything. Give it a real title, an "
                     "honest description and internal links from pages that DO rank. One shot: "
-                    "it will not be queued again."),
+                    "it will not be queued again."
+                    + ("" if not twins else
+                       " ⚠️ SEASON TWIN: " + "; ".join(
+                           f"{t['path']} already ships \"{t['title']}\"" for t in twins)
+                       + ". Your title MUST NOT be an intent-duplicate of that. Adding the season "
+                         "year is NOT a difference — nobody searching a price types a season. If "
+                         "the twin already owns the head term, give THIS page a genuinely "
+                         "different intent, or leave its title generic and say so in the report.")),
         })
     out.sort(key=lambda x: x["_rank"])
     for o in out:

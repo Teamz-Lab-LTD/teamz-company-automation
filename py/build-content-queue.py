@@ -250,7 +250,34 @@ def denied(text, patterns):
 
 
 # --------------------------------------------------------------------------- pools
-def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny_topics):
+def edit_mode_for(clicks, floor):
+    """ADDITIVE vs FULL — which edits is the agent allowed to make on this page?
+
+    A title rewrite is not a free bet. SearchPilot's bucketed split tests (95% confidence)
+    measured a SINGLE title variant costing 16% of organic traffic — 'Flights to London' ->
+    'Flights to London (LHR)'. Same corpus: removing listicle numbers -16%, '(video)' labels
+    negative in both variants. Titles move traffic in BOTH directions, and Google rewrites
+    ~62% of them anyway (Zyppy, n=80,959), so the SERP outcome of an auto-written title is
+    even less predictable than the tag we ship.
+
+    That risk would be acceptable if we could SEE the damage. We cannot. apps (41 clicks/28d),
+    learn (29) and goalkit (544) are orders of magnitude below the traffic needed to detect a
+    16% drop — the engine could degrade them permanently and no signal in this system would
+    ever report it. A guard that cannot fire is not a guard.
+
+    So the rule is per-PAGE, not per-property, because it scales itself:
+
+      clicks > floor  -> ADDITIVE. Something already works here. Add an H2, an FAQ, schema.
+                         Never touch the title/meta that is earning those clicks.
+      clicks <= floor -> FULL. Nothing to lose; a rewrite is free upside.
+
+    A page earning clicks has proven its title works better than our guess. Respect it.
+    """
+    return "additive" if clicks > floor else "full"
+
+
+def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny_topics,
+                 force_additive=False, click_floor=0):
     """Existing pages that are CLOSE. position 5-25 = one good push from page 1."""
     rows = gsc_query(prop, token, ["page", "query"], days=90, row_limit=2000)
     best = {}   # path -> best opportunity on that page
@@ -276,13 +303,21 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
         score = impr * proximity * (1.0 - min(r["ctr"], 0.10) * 5)
         cur = best.get(path)
         if not cur or score > cur["score"]:
+            emode = "additive" if force_additive else edit_mode_for(clicks, click_floor)
             best[path] = {
                 "mode": "ENHANCE", "path": path, "query": query,
+                "edit_mode": emode,
                 "impressions": int(impr), "clicks": int(clicks),
                 "position": round(pos, 1), "ctr": round(r["ctr"] * 100, 2),
                 "score": round(score, 1), "source": "striking-distance",
                 "why": (f"ranks #{pos:.0f} for '{query}' with {int(impr)} impressions but only "
                         f"{int(clicks)} clicks ({r['ctr']*100:.1f}% CTR) — page 1 is one push away"),
+                "edit_mode_why": (
+                    f"ADDITIVE — this page already earns {int(clicks)} clicks; its title is "
+                    f"proven and must not be rewritten. Add depth only."
+                    if emode == "additive" else
+                    f"FULL — {int(clicks)} clicks, nothing to lose. Title/meta rewrite allowed."
+                ),
             }
     return sorted(best.values(), key=lambda x: -x["score"])
 
@@ -363,6 +398,16 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
             retarget.append({
                 "mode": "ENHANCE", "source": "retarget",
                 "path": owner, "query": q,
+                # ALWAYS additive — never conditional on click count like pool_enhance.
+                # The retarget query has 0 clicks BY DEFINITION of this pool, but the owner
+                # page may well be earning clicks from OTHER queries we are not looking at
+                # here. Rewriting its title to chase this query would gamble a working page
+                # on a query it does not yet win. Add a new answer; never rip out its
+                # existing identity.
+                "edit_mode": "additive",
+                "edit_mode_why": ("ADDITIVE — this page owns its topic and may earn clicks from "
+                                  "other queries. Add an answer for this one; do not rewrite what "
+                                  "already works."),
                 "impressions": int(impr), "clicks": int(clicks), "position": round(pos, 1),
                 "ctr": 0.0,
                 "score": round(impr * (1.0 if pos < 50 else 0.6), 1),
@@ -606,8 +651,19 @@ def main():
         print(f"  deny paths : {deny_paths or '—'}")
         print(f"  deny topics: {deny_topics or '—'}")
 
+    # ADDITIVE-ONLY override. The per-page click rule below already protects any page that is
+    # earning clicks, which is the rule that matters. This flag exists for a property that
+    # wants belt-and-braces — e.g. a live shop where a bad title costs real money, not rank.
+    force_additive = os.getenv("TEAMZ_CONTENT_ADDITIVE_ONLY", "0") == "1"
+    click_floor = int(os.getenv("TEAMZ_CONTENT_TITLE_CLICK_FLOOR", "0"))
+    if force_additive:
+        print("  edit mode  : ADDITIVE-ONLY (forced) — no title/meta rewrites on this property")
+    else:
+        print(f"  edit mode  : per-page — additive above {click_floor} clicks, full rewrite at or below")
+
     enhance = pool_enhance(prop, token, site_url, cool, args.min_impressions,
-                           deny_paths, deny_topics)
+                           deny_paths, deny_topics,
+                           force_additive=force_additive, click_floor=click_floor)
     existing = {e["path"] for e in enhance}
     # every page the property has ANY impression for — so NEW never duplicates a real page
     for r in gsc_query(prop, token, ["page"], days=90, row_limit=1000):
@@ -687,13 +743,16 @@ def main():
                  "new_budget_tonight": new_budget, "cooldown_days": args.cooldown},
         "pool_counts": {"enhance_found": len(enhance), "cold_start": len(cold),
                         "retarget": len(retarget),
-                        "new_found_after_budget": len(new), "cooldown_excluded": len(cool)},
+                        "new_found_after_budget": len(new), "cooldown_excluded": len(cool),
+                        "additive_protected": sum(1 for t in targets
+                                                  if t.get("edit_mode") == "additive")},
         "targets": targets,
     }
 
     print(f"\n  ENHANCE candidates: {len(enhance)}  (queueing {len(enhance[:args.enhance_cap])})")
     for t in enhance[:args.enhance_cap]:
-        print(f"    #{t['position']:<5} {t['impressions']:>5} impr  {t['path'][:44]}")
+        guard = "🔒 additive" if t.get("edit_mode") == "additive" else "✏️  full"
+        print(f"    #{t['position']:<5} {t['impressions']:>5} impr  {guard:<12} {t['path'][:44]}")
         print(f"           └─ '{t['query'][:56]}'")
     if cold:
         print(f"\n  COLD-START (zero impressions, one shot each): {len(cold)}")

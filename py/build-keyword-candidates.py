@@ -65,6 +65,47 @@ def _today():
     return date.today().isoformat()
 
 
+# The Keyword Planner UI defaults to the United States. For a Bangladesh-only shop that default
+# makes "uruguay jersey price in bangladesh" read as ~zero volume — the pull is worthless unless
+# the human selects the right Location first. So every batch is stamped with the location to set.
+# Reuses TEAMZ_CONTENT_COUNTRY (already set for autocomplete geo) so there is one geo to maintain.
+GEO_MAP = {"bd": "Bangladesh", "us": "United States", "gb": "United Kingdom", "in": "India",
+           "jp": "Japan", "de": "Germany", "ca": "Canada", "au": "Australia"}
+
+
+def geo_for(cfg):
+    """Human location name to select in Keyword Planner, and whether the site is multi-country.
+
+    multi is EXPLICIT (TEAMZ_KW_MULTI=1), never inferred from a missing country — apps has no
+    country set but is single-geo global, while tools has none set and IS multi (/bd/ /jp/ /de/).
+    Guessing from absence would warn the wrong one.
+    """
+    multi = os.getenv("TEAMZ_KW_MULTI", "0") == "1"
+    explicit = os.getenv("TEAMZ_KW_GEO")
+    if explicit:
+        return explicit, multi
+    cc = (os.getenv("TEAMZ_CONTENT_COUNTRY") or "").strip().lower()
+    if cc in GEO_MAP:
+        return GEO_MAP[cc], multi
+    return "United States", multi
+
+
+def write_location_marker(mp, geo, multi):
+    """A can't-miss note beside the upload CSVs telling the human which Location to select."""
+    caveat = "" if geo == "United States" else "   (NOT the default United States)"
+    txt = (f"SET KEYWORD PLANNER LOCATION = {geo}\n"
+           f"{'='*40}\n\n"
+           f"Before uploading any batch-*.csv in this folder:\n"
+           f"  Keyword Planner -> Get search volume and forecasts -> upload the CSV ->\n"
+           f"  then set LOCATIONS = {geo}{caveat}.\n\n")
+    if multi:
+        txt += ("⚠️  THIS SITE IS MULTI-COUNTRY (it has /bd/ /jp/ /de/ /us/ pages). A single\n"
+                "    location under-counts the others. Either pull once per country and drop\n"
+                "    each result separately, or accept that non-US terms will read low.\n\n")
+    txt += "Wrong location = wrong volume = wasted pull.\n"
+    (mp / "1-UPLOAD-THESE" / "_SET-LOCATION.txt").write_text(txt)
+
+
 def store_path(host):
     return host / "data" / "keyword-candidates.json"
 
@@ -160,7 +201,7 @@ def ensure_folders(mp):
         )
 
 
-def prepare(host, store, force=False):
+def prepare(host, store, cfg, force=False):
     pend, since, ready = gate_state(host, store)
     if not (ready or force):
         why = []
@@ -178,6 +219,8 @@ def prepare(host, store, force=False):
 
     mp = host / "data" / "manual-pull"
     ensure_folders(mp)
+    geo, multi = geo_for(cfg)
+    write_location_marker(mp, geo, multi)
     n = store.get("batches_prepared", 0) + 1
     out = mp / "1-UPLOAD-THESE" / f"batch-cand-{n:02d}.csv"
     with out.open("w", newline="") as f:
@@ -188,7 +231,9 @@ def prepare(host, store, force=False):
 
     store["last_prepared"] = _today()
     store["batches_prepared"] = n
+    store["geo"] = geo
     print(f"  PREPARED {out.relative_to(host)}  ({len(batch)} keywords)")
+    print(f"  ⚠️  PULL WITH LOCATION = {geo}" + ("  (MULTI-COUNTRY site — see _SET-LOCATION.txt)" if multi else ""))
     print(f"  {len(pend) - len(batch)} candidates remain for the next batch.")
     print("  Owner: upload it in Keyword Planner, drop the result in 2-DROP-RESULTS-HERE/,")
     print("         then tell Claude \"done\".")
@@ -217,7 +262,7 @@ def main():
     print(f"  harvested +{added} new   (store {len(store['candidates'])}, unpulled {len(pend)})")
 
     if "--prepare" in argv:
-        prepare(host, store, force="--force" in argv)
+        prepare(host, store, cfg, force="--force" in argv)
         save_store(host, store)
     else:
         since_txt = "never" if since >= 10**6 else f"{since}d"

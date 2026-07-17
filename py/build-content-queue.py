@@ -562,8 +562,23 @@ YEAR_RE = __import__("re").compile(r"\b(?:20\d{2}\s*[/-]\s*\d{2}|20\d{2}|\d{2}\s
 def intent_key(title):
     """What actually competes in a SERP: the title minus the season/year."""
     import re as _re
-    t = YEAR_RE.sub(" ", (title or "").lower())
-    t = _re.sub(r"\|.*$|—.*$|·.*$", " ", t)      # drop the brand suffix; every page shares it
+    # THE STRIPPING ORDER MATTERS, and getting it wrong destroyed a correct fix. The first
+    # version cut everything after the FIRST dash. Sites build titles as
+    # "{seo_title} — {price} · {brand}", so that was meant to drop the shared brand — but it
+    # also deleted any differentiator the agent put in seo_title after a dash. On 2026-07-17 the
+    # agent correctly fixed a Bayern clash with:
+    #     "Bayern Munich 2025/26 Home Jersey — Last Season — ৳599 · Goalkit"
+    #     "Bayern Munich 2026/27 Home Jersey — ৳599 · Goalkit"
+    # and this cut BOTH back to "bayern munich home jersey", reported the clash as still live,
+    # and would have sent the agent to re-fix a page it had ALREADY fixed — forever, because the
+    # fix could never register. The detector was grading work it had already thrown away.
+    #
+    # So strip precisely what the BUILD adds, and nothing else. Everything the agent wrote
+    # survives, dashes included.
+    t = (title or "").lower()
+    t = _re.sub(r"\s*[·|]\s*[^·|]*$", " ", t)                  # "· Goalkit" / "| Teamz Lab"
+    t = _re.sub(r"\s*[—-]\s*[৳$£€₹]\s*[\d,.]+\s*$", " ", t)    # "— ৳599"
+    t = YEAR_RE.sub(" ", t)
     return " ".join(sorted(set(_re.findall(r"[a-z']{2,}", t))))
 
 

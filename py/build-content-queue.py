@@ -249,6 +249,72 @@ def denied(text, patterns):
     return any(p in t for p in patterns)
 
 
+# ----------------------------------------------------------------- AI channel
+AI_SOURCES = ("chatgpt", "openai", "perplexity", "claude", "copilot", "gemini",
+              "you.com", "phind", "poe.com", "deepseek", "grok", "mistral")
+
+
+def ga4_ai_sessions(cfg, days=28):
+    """Sessions this property earned from AI assistants, per landing page.
+
+    WHY A GSC-ONLY ENGINE NEEDED THIS. edit_mode decided additive-vs-full from Google clicks
+    alone, and on 2026-07-17 that was measured wrong on goalkit's second-best page:
+
+        /products/adidas-argentina-2026-home-jersey-mens/   81 AI sessions   0 Google clicks
+
+    Google clicks = 0, so the rule said "full — nothing to lose, rewrite the title freely". In
+    fact ChatGPT sends that page more traffic than Google sends the entire site's top ten. Four
+    pages and 171 AI sessions sat unprotected behind a guard that could only see one channel —
+    on a property where AI is 42.5% of all sessions and beats Google outright.
+
+    Returns {} on failure. The CALLER must treat {} as "unknown", never as "no AI traffic":
+    a guard that cannot read its signal must fail closed, not quietly wave everything through.
+    """
+    import ssl as _ssl
+    tok_path = Path(cfg["ga4_token_file"])
+    pid = cfg.get("ga4_property_id")
+    if not tok_path.exists() or not pid:
+        return {}
+    ctx = _ssl.create_default_context()
+    try:
+        t = json.loads(tok_path.read_text())
+        data = urllib.parse.urlencode({
+            "client_id": t["client_id"], "client_secret": t["client_secret"],
+            "refresh_token": t["refresh_token"], "grant_type": "refresh_token",
+        }).encode()
+        req = urllib.request.Request("https://oauth2.googleapis.com/token", data=data)
+        token = json.load(urllib.request.urlopen(req, context=ctx, timeout=30))["access_token"]
+
+        body = json.dumps({
+            "dateRanges": [{"startDate": f"{days}daysAgo", "endDate": "today"}],
+            "dimensions": [{"name": "landingPagePlusQueryString"}, {"name": "sessionSource"}],
+            "metrics": [{"name": "sessions"}],
+            "limit": 500,
+        }).encode()
+        req = urllib.request.Request(
+            f"https://analyticsdata.googleapis.com/v1beta/properties/{pid}:runReport",
+            data=body, method="POST",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+        rows = json.load(urllib.request.urlopen(req, context=ctx, timeout=90)).get("rows", [])
+    except Exception as e:
+        print(f"  ⚠️  AI-channel signal UNAVAILABLE ({type(e).__name__}). Failing CLOSED:")
+        print("      established pages will be treated as additive-only tonight.")
+        return {}
+
+    out = {}
+    for r in rows:
+        lp = r["dimensionValues"][0]["value"]
+        src = r["dimensionValues"][1]["value"].lower()
+        if not any(a in src for a in AI_SOURCES):
+            continue
+        if not lp.startswith("/"):
+            continue
+        path = lp.split("?")[0]
+        path = path if path.endswith("/") else path + "/"
+        out[path] = out.get(path, 0) + int(r["metricValues"][0]["value"])
+    return out
+
+
 # --------------------------------------------------------------------------- pools
 def edit_mode_for(clicks, floor):
     """ADDITIVE vs FULL — which edits is the agent allowed to make on this page?
@@ -277,7 +343,7 @@ def edit_mode_for(clicks, floor):
 
 
 def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny_topics,
-                 force_additive=False, click_floor=0):
+                 force_additive=False, click_floor=0, ai_by_path=None, ai_known=True):
     """Existing pages that are CLOSE. position 5-25 = one good push from page 1."""
     rows = gsc_query(prop, token, ["page", "query"], days=90, row_limit=2000)
     best = {}   # path -> best opportunity on that page
@@ -303,7 +369,17 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
         score = impr * proximity * (1.0 - min(r["ctr"], 0.10) * 5)
         cur = best.get(path)
         if not cur or score > cur["score"]:
-            emode = "additive" if force_additive else edit_mode_for(clicks, click_floor)
+            # ATTENTION, not Google clicks. A page can earn nothing from Google and still be
+            # one of the property's best performers via ChatGPT — goalkit's Argentina jersey
+            # had 81 AI sessions and 0 Google clicks, and the clicks-only rule called it
+            # "nothing to lose". If the AI signal could not be read we do NOT assume zero:
+            # unknown means fail closed (additive), never "wave it through".
+            ai_hits = (ai_by_path or {}).get(path, 0)
+            attention = clicks + ai_hits
+            if force_additive or not ai_known:
+                emode = "additive"
+            else:
+                emode = edit_mode_for(attention, click_floor)
             best[path] = {
                 "mode": "ENHANCE", "path": path, "query": query,
                 "edit_mode": emode,
@@ -312,11 +388,17 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
                 "score": round(score, 1), "source": "striking-distance",
                 "why": (f"ranks #{pos:.0f} for '{query}' with {int(impr)} impressions but only "
                         f"{int(clicks)} clicks ({r['ctr']*100:.1f}% CTR) — page 1 is one push away"),
+                "ai_sessions": int(ai_hits),
                 "edit_mode_why": (
-                    f"ADDITIVE — this page already earns {int(clicks)} clicks; its title is "
-                    f"proven and must not be rewritten. Add depth only."
+                    (f"ADDITIVE — this page already earns {int(clicks)} Google clicks and "
+                     f"{int(ai_hits)} AI-assistant sessions. Its title is proven; do not rewrite "
+                     f"it. Add depth only."
+                     if ai_known else
+                     "ADDITIVE — the AI-channel signal could not be read tonight, so we cannot "
+                     "tell what this page earns outside Google. Failing closed: add depth only.")
                     if emode == "additive" else
-                    f"FULL — {int(clicks)} clicks, nothing to lose. Title/meta rewrite allowed."
+                    f"FULL — {int(clicks)} Google clicks and {int(ai_hits)} AI sessions. Nothing "
+                    f"to lose; title/meta rewrite allowed."
                 ),
             }
     return sorted(best.values(), key=lambda x: -x["score"])
@@ -582,7 +664,8 @@ def intent_key(title):
     return " ".join(sorted(set(_re.findall(r"[a-z']{2,}", t))))
 
 
-def pool_cannibalization(host, site_url, click_by_path, cooldown, deny_paths, max_out=1):
+def pool_cannibalization(host, site_url, click_by_path, cooldown, deny_paths, max_out=1,
+                         ai_by_path=None, ai_known=True):
     """Two of OUR pages chasing ONE query. Detect it nightly and fix it — never by hand.
 
     The 0.5-token-overlap gate stops a NEW post from duplicating an existing page. Nothing
@@ -652,12 +735,18 @@ def pool_cannibalization(host, site_url, click_by_path, cooldown, deny_paths, ma
     for members in groups.values():
         if len(members) < 2:
             continue
-        clicks = {p: click_by_path.get(p, 0) for p, _ in members}
-        if any(c > 0 for c in clicks.values()):
-            # someone is winning here — not obviously broken. Report, do not touch.
+        # ATTENTION = Google clicks + AI sessions. A clash where one page earns AI citations
+        # is not obviously broken — auto-rewriting it could kill a ChatGPT-cited page to "fix"
+        # a conflict Google never sees. If the AI signal is unknown, fail closed: flag, never fix.
+        aib = ai_by_path or {}
+        attention = {p: click_by_path.get(p, 0) + aib.get(p, 0) for p, _ in members}
+        protect_at = int(os.getenv("TEAMZ_CONTENT_PROTECT_ATTENTION", "1"))
+        if (not ai_known) or any(a >= protect_at for a in attention.values()):
             flagged.append({"paths": [p for p, _ in members],
                             "titles": [t for _, t in members],
-                            "clicks": clicks})
+                            "attention": attention,
+                            "reason": ("AI signal unavailable — failing closed"
+                                       if not ai_known else "a page here earns clicks/AI sessions")})
             continue
         # NO COOLDOWN CHECK HERE — deliberately, and this cost a real bug to learn.
         #
@@ -856,9 +945,21 @@ def main():
     else:
         print(f"  edit mode  : per-page — additive above {click_floor} clicks, full rewrite at or below")
 
+    # AI-channel signal, fetched once and shared by every pool. ai_known=False when the fetch
+    # failed — the pools then fail CLOSED (treat established pages as additive, flag clashes
+    # rather than auto-fix), because a guard that cannot read its signal must not wave work
+    # through. This is the "pull the funnel, never the total" rule made structural.
+    ai_by_path = ga4_ai_sessions(cfg)
+    ai_known = bool(ai_by_path)
+    if ai_known:
+        print(f"  AI channel : {sum(ai_by_path.values())} sessions across {len(ai_by_path)} pages (28d)")
+    else:
+        print("  AI channel : UNAVAILABLE — pools fail closed (additive/flag-only) tonight")
+
     enhance = pool_enhance(prop, token, site_url, cool, args.min_impressions,
                            deny_paths, deny_topics,
-                           force_additive=force_additive, click_floor=click_floor)
+                           force_additive=force_additive, click_floor=click_floor,
+                           ai_by_path=ai_by_path, ai_known=ai_known)
     existing = {e["path"] for e in enhance}
     # every page the property has ANY impression for — so NEW never duplicates a real page
     click_by_path = {}
@@ -879,7 +980,8 @@ def main():
     # point of this engine is that nobody is there to catch it.
     canni, canni_flagged = pool_cannibalization(
         host, site_url, click_by_path, cool, deny_paths,
-        max_out=int(os.getenv("TEAMZ_CONTENT_CANNIBAL_CAP", "1")))
+        max_out=int(os.getenv("TEAMZ_CONTENT_CANNIBAL_CAP", "1")),
+        ai_by_path=ai_by_path, ai_known=ai_known)
 
     ledger = load_ledger(host)
     recent_new = new_posts_this_week(ledger)
@@ -968,9 +1070,10 @@ def main():
             for c in t["competing"]:
                 print(f"           {c['path'][:44]:<46} {c['title'][:50]}")
         for f in canni_flagged:
-            print(f"    FLAG (earning clicks — human call, not touching): {f['clicks']}")
-            for p in f["paths"]:
-                print(f"           {p[:60]}")
+            print(f"    FLAG ({f.get('reason','earning attention')} — human call, not touching):")
+            for pth in f["paths"]:
+                a = f.get("attention", {}).get(pth, 0)
+                print(f"           {a:>4} attention  {pth[:56]}")
 
     print(f"\n  ENHANCE candidates: {len(enhance)}  (queueing {len(enhance[:args.enhance_cap])})")
     for t in enhance[:args.enhance_cap]:

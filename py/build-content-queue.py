@@ -494,6 +494,115 @@ def pool_coldstart(host, site_url, seen_paths, cooldown, deny_paths, max_out=3):
     return out[:max_out]
 
 
+# ---------------------------------------------------------------- cannibalisation
+YEAR_RE = __import__("re").compile(r"\b(?:20\d{2}\s*[/-]\s*\d{2}|20\d{2}|\d{2}\s*/\s*\d{2})\b")
+
+
+def intent_key(title):
+    """What actually competes in a SERP: the title minus the season/year."""
+    import re as _re
+    t = YEAR_RE.sub(" ", (title or "").lower())
+    t = _re.sub(r"\|.*$|—.*$|·.*$", " ", t)      # drop the brand suffix; every page shares it
+    return " ".join(sorted(set(_re.findall(r"[a-z']{2,}", t))))
+
+
+def pool_cannibalization(host, site_url, click_by_path, cooldown, deny_paths, max_out=1):
+    """Two of OUR pages chasing ONE query. Detect it nightly and fix it — never by hand.
+
+    The 0.5-token-overlap gate stops a NEW post from duplicating an existing page. Nothing
+    stopped ENHANCE and cold-start from doing it one night at a time — and they did. goalkit's
+    git log says it in its own words:
+
+        2026-07-15  manchester-city-2025-26-home  -> 'manchester city jersey price in bangladesh'
+        2026-07-16  manchester-city-2026-27-home  -> 'manchester city jersey price in bangladesh'
+
+    Two Home pages whose titles differ only by season. Nobody searching that query names a
+    season, so Google picks one and the other is dead weight — the same mechanism that put a
+    vibe-* page at #59 for its own exact-match term on apps.
+
+    WHY THIS IS A POOL AND NOT A BUILD GATE. A gate would fail the build and hand the fix back
+    to a human every time it fired. The owner drives Uber; a guard that needs him is a guard
+    that does not run. So the engine finds its own mess and queues it as work.
+
+    WHY IT READS BUILT <title> AND NOT SLUGS. Token overlap on paths gets this exactly backwards
+    — measured on the real goalkit slugs:
+
+        2025-26-home vs 2026-27-home  -> 0.50   <- the REAL duplicate (same product, diff season)
+        2025-26-home vs 2025-26-away  -> 0.71   <- LEGITIMATE (different product)
+
+    A path-similarity gate blocks the good pair and allows the bad one. The title is what
+    competes, so the title is what we compare. Home/away and men's/youth survive, because they
+    genuinely separate intent; only the year is discarded.
+
+    SAFETY. Only clashes where EVERY page earns 0 clicks are auto-fixable — nothing to lose, so
+    a rewrite is free. If any page in the clash is earning clicks, both are working for someone
+    and this is not obviously broken: flag it in the report, change nothing.
+    """
+    root = host / os.getenv("TEAMZ_CONTENT_HTML_ROOT", "")
+    if not root.exists():
+        return [], []
+    import re as _re
+
+    groups = {}
+    for f in root.rglob("index.html"):
+        try:
+            head = f.read_text(errors="ignore")[:4000]
+        except OSError:
+            continue
+        m = _re.search(r"<title[^>]*>(.*?)</title>", head, _re.S | _re.I)
+        if not m:
+            continue
+        title = _re.sub(r"\s+", " ", m.group(1)).strip()
+        path = "/" + str(f.parent.relative_to(root)).strip(".").strip("/")
+        path = "/" if path == "/" else path.rstrip("/") + "/"
+        if denied(path, deny_paths):
+            continue
+        k = intent_key(title)
+        if len(k) < 8:
+            continue                       # too generic to be a real clash signal
+        groups.setdefault(k, []).append((path, title))
+
+    fixable, flagged = [], []
+    for members in groups.values():
+        if len(members) < 2:
+            continue
+        clicks = {p: click_by_path.get(p, 0) for p, _ in members}
+        if any(c > 0 for c in clicks.values()):
+            # someone is winning here — not obviously broken. Report, do not touch.
+            flagged.append({"paths": [p for p, _ in members],
+                            "titles": [t for _, t in members],
+                            "clicks": clicks})
+            continue
+        # NO COOLDOWN CHECK HERE — deliberately, and this cost a real bug to learn.
+        #
+        # The first run of this pool did honour the cooldown, and therefore missed the exact
+        # clash that motivated it: goalkit's two Man City Home pages were edited the night
+        # before, so they were inside the 7-day window and skipped. The cooldown was protecting
+        # the defect the engine had itself just created, and would have kept protecting it for
+        # a week while both pages split one query.
+        #
+        # Cooldown exists to stop us re-polishing the same page forever. This is not polish; it
+        # is a correctness fix. And it is self-limiting: once the titles genuinely differ there
+        # is no clash, so no target. If a fix does not work, retrying tomorrow is what we want.
+        fixable.append({
+            "mode": "ENHANCE", "source": "cannibalization",
+            "path": members[0][0],
+            "rival_paths": [p for p, _ in members[1:]],
+            "query": "", "edit_mode": "full",
+            "edit_mode_why": ("FULL — every page in this clash earns 0 clicks. Nothing to lose; "
+                              "differentiating the titles is the whole fix."),
+            "impressions": 0, "clicks": 0, "position": 0.0, "ctr": 0.0,
+            "score": 0.0,
+            "competing": [{"path": p, "title": t} for p, t in members],
+            "why": ("these pages carry near-identical titles once the season/year is stripped, so "
+                    "they chase ONE query and split it between them. Google will pick one; the rest "
+                    "are dead weight. Decide which page best matches what a buyer searching this "
+                    "actually wants, let THAT one keep the head term, and differentiate the others "
+                    "so each owns a distinct intent. All are at 0 clicks — nothing can be lost."),
+        })
+    return fixable[:max_out], flagged
+
+
 def autocomplete(seed, country="us"):
     """Google Autocomplete — free, no auth. Returns suggestions in rank order.
 
@@ -666,8 +775,11 @@ def main():
                            force_additive=force_additive, click_floor=click_floor)
     existing = {e["path"] for e in enhance}
     # every page the property has ANY impression for — so NEW never duplicates a real page
+    click_by_path = {}
     for r in gsc_query(prop, token, ["page"], days=90, row_limit=1000):
-        existing.add(url_to_path(r["keys"][0], site_url))
+        p = url_to_path(r["keys"][0], site_url)
+        existing.add(p)
+        click_by_path[p] = click_by_path.get(p, 0) + int(r["clicks"])
 
     # Cold-start reserves a slot or two for pages Google has never shown. Without it, a page
     # with no impressions can never enter the engine at all — see pool_coldstart.
@@ -675,6 +787,13 @@ def main():
     if os.getenv("TEAMZ_CONTENT_COLDSTART", "0") == "1":
         cold = pool_coldstart(host, site_url, existing, cool, deny_paths,
                               max_out=int(os.getenv("TEAMZ_CONTENT_COLDSTART_CAP", "2")))
+
+    # CANNIBALISATION — our own pages fighting each other. Queued as WORK, never as a build
+    # failure: a gate that fires would hand the fix back to a human every night, and the whole
+    # point of this engine is that nobody is there to catch it.
+    canni, canni_flagged = pool_cannibalization(
+        host, site_url, click_by_path, cool, deny_paths,
+        max_out=int(os.getenv("TEAMZ_CONTENT_CANNIBAL_CAP", "1")))
 
     ledger = load_ledger(host)
     recent_new = new_posts_this_week(ledger)
@@ -734,7 +853,9 @@ def main():
         deduped.append(t)
     retarget = deduped[:int(os.getenv("TEAMZ_CONTENT_RETARGET_CAP", "2"))]
 
-    targets = enhance_capped + cold + retarget + new
+    # Cannibalisation goes FIRST. Polishing a page while a rival page splits its demand is
+    # rearranging furniture in a burning room — fix the split, then optimise the survivor.
+    targets = canni + enhance_capped + cold + retarget + new
 
     queue = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
@@ -743,11 +864,27 @@ def main():
                  "new_budget_tonight": new_budget, "cooldown_days": args.cooldown},
         "pool_counts": {"enhance_found": len(enhance), "cold_start": len(cold),
                         "retarget": len(retarget),
+                        "cannibalization": len(canni),
+                        "cannibalization_flagged": len(canni_flagged),
                         "new_found_after_budget": len(new), "cooldown_excluded": len(cool),
                         "additive_protected": sum(1 for t in targets
                                                   if t.get("edit_mode") == "additive")},
+        # Clashes we deliberately did NOT auto-fix because a page in them earns clicks. Not
+        # silence — the report must name them so a human can judge.
+        "cannibalization_flagged": canni_flagged,
         "targets": targets,
     }
+
+    if canni or canni_flagged:
+        print(f"\n  CANNIBALISATION: {len(canni)} fixable, {len(canni_flagged)} flagged-only")
+        for t in canni:
+            print(f"    FIX  {len(t['competing'])} pages chase one query (all 0 clicks):")
+            for c in t["competing"]:
+                print(f"           {c['path'][:44]:<46} {c['title'][:50]}")
+        for f in canni_flagged:
+            print(f"    FLAG (earning clicks — human call, not touching): {f['clicks']}")
+            for p in f["paths"]:
+                print(f"           {p[:60]}")
 
     print(f"\n  ENHANCE candidates: {len(enhance)}  (queueing {len(enhance[:args.enhance_cap])})")
     for t in enhance[:args.enhance_cap]:

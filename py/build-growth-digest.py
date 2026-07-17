@@ -28,6 +28,7 @@ Usage:
   python3 py/build-growth-digest.py --days 28
 """
 import argparse
+import os
 import json
 import re
 import subprocess
@@ -225,6 +226,33 @@ def content_activity(repo, days):
     return [l for l in out.splitlines() if l.split(" ", 1)[-1].startswith(("content(", "chore(nightly)"))]
 
 
+
+# Keyword-volume freshness. Planner volume is roughly valid ~1 year; ordering stock or gating
+# SEO/GEO on year-old numbers is a real risk the owner named explicitly. WARN before it expires,
+# and treat "never pulled" as a finding, not silence. Cross-property so one digest triggers all.
+KW_STALE_DAYS = int(os.getenv("TEAMZ_KW_STALE_DAYS", "300"))   # warn ~2 months before the year
+
+def kw_volume_freshness(repo):
+    """(state, age_days_or_None, n_results). state in fresh/aging/STALE/never/no-store."""
+    base = PROJECTS / repo / "data"
+    store = base / "keyword-candidates.json"
+    drop = base / "manual-pull" / "2-DROP-RESULTS-HERE"
+    if not store.exists():
+        return ("no-store", None, 0)
+    results = list(drop.glob("*.csv")) if drop.exists() else []
+    if not results:
+        return ("never", None, 0)
+    newest = max(r.stat().st_mtime for r in results)
+    age = int((datetime.now() - datetime.fromtimestamp(newest)).days)
+    if age >= 365:
+        return ("EXPIRED", age, len(results))
+    if age >= KW_STALE_DAYS:
+        return ("STALE", age, len(results))
+    if age >= KW_STALE_DAYS - 60:
+        return ("aging", age, len(results))
+    return ("fresh", age, len(results))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int, default=28)
@@ -274,6 +302,35 @@ def main():
     L.append("")
     L.append("_A quiet property is not necessarily a broken one: the queue skips a night when "
              "no page is close enough and no demand is unserved. Inventing work would be worse._")
+
+    # --- Keyword-volume freshness — the "trigger me before it expires" section ---
+    L.append("")
+    L.append("## Keyword volume — pull freshness (Planner data ~1yr valid)")
+    L.append("| property | volume data | age | action |")
+    L.append("|---|---|---|---|")
+    triggers = []
+    ICON = {"fresh": "✅", "aging": "🟡", "STALE": "🔴", "EXPIRED": "⛔", "never": "⬜", "no-store": "—"}
+    for repo, prop, _ in SITES:
+        state, age, n = kw_volume_freshness(repo)
+        agetxt = "—" if age is None else f"{age}d"
+        if state in ("STALE", "EXPIRED"):
+            act = f"**RE-PULL NOW** — ordering/SEO on {age}d-old volume is unsafe"
+            triggers.append((prop, state, age))
+        elif state == "aging":
+            act = f"re-pull soon (expires ~{365-age}d)"
+        elif state == "never":
+            act = "no volume yet — first pull pending"
+        elif state == "no-store":
+            act = "keyword engine not wired here"
+        else:
+            act = "ok"
+        L.append(f"| {prop} | {ICON[state]} {state} ({n} file(s)) | {agetxt} | {act} |")
+    if triggers:
+        L.append("")
+        L.append("### 🔔 TRIGGER — keyword volume expiring across your business")
+        for prop, state, age in triggers:
+            L.append(f"- **{prop}** — {state}, {age} days old. Re-pull before you order stock or "
+                     f"trust its SEO/GEO gating. This is the cross-project alert you asked for.")
 
     text = "\n".join(L)
     out = PROJECTS / "teamz-company-automation" / "docs" / "growth-digest.md"

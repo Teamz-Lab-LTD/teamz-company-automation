@@ -93,6 +93,16 @@ def load_manual_volume(data_dir):
             # higher KNOWN volume wins; a known value supersedes UNKNOWN(None); None never overwrites
             if nv is not None and (ov is None or nv > ov):
                 merged[k] = v
+    # Loader-level silent-killer guard: CSVs present but nothing parsed = a column rename
+    # ("Avg. monthly searches"), delimiter, or encoding change that turned the AUTHORITATIVE
+    # demand source into {} without a peep — the exact shape that hid 11k keywords for months.
+    # Warn LOUD so a direct caller (dead-revival, money-tracker) can't mistake it for "no data".
+    if paths and not merged:
+        import sys as _sys
+        _sys.stderr.write(
+            f"WARNING: {len(paths)} Planner CSV(s) under {base} but 0 keywords parsed. "
+            f"Manual volume is now SILENTLY DISABLED — check the export column names/encoding "
+            f"('Keyword' + 'Avg. monthly searches', tab-delimited).\n")
     return merged
 
 

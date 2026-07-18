@@ -19,8 +19,19 @@ import urllib.request as u
 from datetime import datetime, timedelta
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-AUTO = os.path.dirname(HERE)            # the submodule
-HOST = os.path.dirname(AUTO)            # the consumer repo (has tools.json + data/)
+AUTO = os.path.dirname(HERE)            # the automation submodule
+# HOST = the consumer repo (has tools.json + data/). abspath() does NOT follow the invocation
+# back to a stable place: run as teamz-company-automation/py/... this used to resolve HOST to
+# teamz-projects/ (empty) — money-tracker then silently found 0 money pages. TEAMZ_HOST_SITE_ROOT
+# is exported by config.sh in every nightly; trust it, FAIL LOUD if it lands on the wrong tree.
+HOST = os.environ.get("TEAMZ_HOST_SITE_ROOT") or os.path.dirname(AUTO)
+if os.path.basename(os.path.normpath(HOST)) == "teamz-company-automation" \
+        or not os.path.exists(os.path.join(HOST, "tools.json")):
+    sys.stderr.write(
+        f"FATAL: build-money-tracker resolved HOST to {HOST}, which is not a Teamz Lab content "
+        f"site (no tools.json). Set TEAMZ_HOST_SITE_ROOT to the host repo. Refusing to run "
+        f"against the wrong tree and report a false 'no money pages'.\n")
+    sys.exit(2)
 DATA = os.path.join(HOST, "data")
 SNAP_DIR = os.path.join(DATA, "money-snapshots")
 TOK = os.path.expanduser("~/.config/teamzlab/search-console-token.json")

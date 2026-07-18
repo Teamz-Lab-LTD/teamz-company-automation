@@ -22,7 +22,22 @@ import unicodedata
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parent.parent
+def _host_root():
+    """Resolve the CONTENT site root, never the automation submodule. See build-seo-fix-all.py
+    for the full rationale. Trust TEAMZ_HOST_SITE_ROOT (config.sh exports it); FAIL LOUD if the
+    result is not a real site rather than scan 0 pages and report nothing to fix."""
+    env = os.environ.get("TEAMZ_HOST_SITE_ROOT")
+    root = Path(env) if env else Path(__file__).resolve().parent.parent
+    if root.name == "teamz-company-automation" or not (root / "tools.json").exists():
+        sys.stderr.write(
+            f"FATAL: {Path(__file__).name} resolved site root to {root}, which is not a "
+            f"Teamz Lab content site (no tools.json). Set TEAMZ_HOST_SITE_ROOT. Refusing to "
+            f"scan the wrong tree.\n")
+        sys.exit(2)
+    return root
+
+
+ROOT = _host_root()
 EXCLUDED_DIRS = {
     ".git",
     "node_modules",

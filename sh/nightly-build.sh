@@ -256,6 +256,21 @@ write_health_report() {
 HEALTH_ALERTS=()
 SKIPPED_PHASES=()
 REPO_DIRTY_AT_START=0
+
+# 0. PREFLIGHT (--pre) — the ONE loud gate, ahead of any git op or producer. A wrong root, a
+# renamed Planner column (the original 11k-keyword bug), a 0-page scan, or a dead SC/GA4 token
+# ABORTS the night loudly instead of "succeeding" while building off nothing. config.sh already
+# exported TEAMZ_HOST_SITE_ROOT; MIN_HTML floor (tools has ~6967 pages) guards the "scanned 0
+# pages, printed clean" class. Verified 2026-07-18: --pre passes clean against this repo (rc=0).
+if [ -f "$_SCRIPT_DIR/../py/nightly-preflight.py" ] && command -v python3 >/dev/null 2>&1; then
+    if ! TEAMZ_PREFLIGHT_MIN_HTML="${TEAMZ_PREFLIGHT_MIN_HTML:-1000}" \
+         python3 "$_SCRIPT_DIR/../py/nightly-preflight.py" --pre; then
+        echo "  ✗ PREFLIGHT --pre failed — refusing to run the tools nightly on a bad root/inputs."
+        echo "    (preflight wrote data/preflight-status.json and fired a Mac alert; fix, then rerun.)"
+        exit 2
+    fi
+fi
+
 # Block the cron ONLY on dirty SOURCE files (a half-edited tool HTML, script, or config).
 # Ignore whole generated-output DIRS (data/, logs/, docs/, .claude-memory/) + the root files
 # the pre-commit hook regenerates. Dir-based, NOT per-filename, so a NEW data artifact can
@@ -731,6 +746,14 @@ fi
 # Count what was built
 NEW_TOOLS=$(git log --oneline --since="2 hours ago" --grep="Add " | wc -l | tr -d ' ')
 TOTAL_COMMITS=$(git log --oneline --since="2 hours ago" | wc -l | tr -d ' ')
+fi
+
+# 99. PREFLIGHT (--post) — after every phase: assert the OUTPUT artifacts are sane. Non-fatal
+# (the run already happened) but LOUD: preflight exits 1, fires a Mac alert, and refreshes
+# data/preflight-status.json so the morning digest / /growth sees a fresh, honest verdict.
+if [ -f "$_SCRIPT_DIR/../py/nightly-preflight.py" ] && command -v python3 >/dev/null 2>&1; then
+    python3 "$_SCRIPT_DIR/../py/nightly-preflight.py" --post \
+        || record_health_alert "PREFLIGHT --post FAILED (see data/preflight-status.json)"
 fi
 
 write_health_report

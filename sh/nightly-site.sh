@@ -73,6 +73,7 @@ EXTRA_ARTIFACTS="${TEAMZ_NIGHTLY_ARTIFACTS:-}"
 CONTENT_STATUS="not-enabled"
 BUILD_STATUS="skipped"
 DEPLOY_STATUS="skipped"
+PUSH_STATUS="n/a"
 
 # Retry a flaky NETWORK step.
 #
@@ -109,9 +110,9 @@ write_status() {
   local rc=$?
   mkdir -p "$ROOT/data" 2>/dev/null || return 0
   python3 - "$ROOT/data/nightly-status.json" "$rc" "$SITE" "$LABEL" \
-           "$CONTENT_STATUS" "$BUILD_STATUS" "$DEPLOY_STATUS" <<'PYEOF' 2>/dev/null || true
+           "$CONTENT_STATUS" "$BUILD_STATUS" "$DEPLOY_STATUS" "$PUSH_STATUS" <<'PYEOF' 2>/dev/null || true
 import json, sys, datetime
-path, rc, site, label, content, build, deploy = sys.argv[1:8]
+path, rc, site, label, content, build, deploy, push = sys.argv[1:9]
 json.dump({
     "site": site,
     "label": label,
@@ -120,6 +121,7 @@ json.dump({
     "content": content,
     "build": build,
     "deploy": deploy,
+    "push": push,
 }, open(path, "w"), indent=2)
 PYEOF
 }
@@ -195,6 +197,20 @@ echo "  mode   : $([ -n "$DEPLOY_CMD" ] && echo 'FULL (build + deploy)' || echo 
 echo "  time   : $(date '+%Y-%m-%d %H:%M:%S %Z')"
 echo "============================================================"
 
+# 0. PREFLIGHT (--pre). Assert the root resolved to a REAL site repo and that known inputs are
+#    non-empty, BEFORE any phase runs. This is the loud guard for the silent-killer class: a
+#    path bug or a silently-dropped input (the 11k-keyword bug) aborts here with a distinct
+#    status + Mac alert instead of producing a green-looking no-op night. It writes
+#    data/preflight-status.json, which the digest also reads.
+if [ -f "$ROOT/scripts/nightly-preflight.py" ]; then
+  if ! python3 "$ROOT/scripts/nightly-preflight.py" --pre; then
+    CONTENT_STATUS="failed:preflight"; BUILD_STATUS="skipped:preflight"; DEPLOY_STATUS="skipped:preflight"
+    osascript -e "display notification \"$LABEL: preflight --pre FAILED — night aborted (see data/preflight-status.json)\" with title \"NIGHTLY PREFLIGHT\"" 2>/dev/null || true
+    echo "ABORT: preflight --pre failed — refusing to run phases on a broken root/inputs."
+    exit 2   # EXIT trap writes nightly-status.json with failed:preflight so the digest sees it
+  fi
+fi
+
 # 1. DIRTY-GUARD. Never run over uncommitted human work: a nightly that commits +
 #    deploys half-finished edits is worse than a nightly that skips a night. Only
 #    GENERATED artifacts are allowed to be dirty.
@@ -205,6 +221,13 @@ if [ -n "$DIRTY" ]; then
   echo "SKIP: uncommitted source changes (protecting human WIP):"
   echo "$DIRTY" | sed 's/^/    /'
   echo "Commit or stash, then the next run proceeds."
+  # LOUD skip, not silent. The old bare `exit 0` here WAS a silent killer: one stray source file
+  # froze the whole night and the digest still rendered green (finding #1). Owner decision
+  # 2026-07-18: BLOCK + alert. Record a DISTINCT status the digest treats as not-ok, fire a Mac
+  # alert, and still exit 0 (a deliberate protective skip is not a crash — the status string, not
+  # the exit code, carries the reason).
+  CONTENT_STATUS="skipped:dirty-tree"; BUILD_STATUS="skipped:dirty-tree"; DEPLOY_STATUS="skipped:dirty-tree"
+  osascript -e "display notification \"$LABEL skipped: uncommitted source changes — commit to resume the nightly\" with title \"NIGHTLY DIRTY-TREE\"" 2>/dev/null || true
   exit 0
 fi
 echo "✓ dirty-guard passed"
@@ -404,9 +427,22 @@ fi
 # Both are ours to commit. (.gitignore still applies, so the images stay out.)
 if [ -n "$(git status --porcelain --ignore-submodules)" ]; then
   git add -A
-  git commit -m "chore(nightly): refresh generated site output" --no-verify 2>/dev/null \
-    && git push origin HEAD --no-verify 2>&1 | tail -1 \
-    || echo "  (nothing to commit)"
+  if git commit -m "chore(nightly): refresh generated site output" --no-verify 2>/dev/null; then
+    # DO NOT pipe the push straight into `tail` — without pipefail the pipe returns tail's exit
+    # (0), so a FAILED push (auth expired, rejected, network) looks identical to success and the
+    # remote/VPS silently never gets tonight's content. Capture push's own exit, then report.
+    PUSH_OUT="$(git push origin HEAD --no-verify 2>&1)"; PUSH_RC=$?
+    echo "$PUSH_OUT" | tail -3
+    if [ "$PUSH_RC" -eq 0 ]; then
+      PUSH_STATUS="ok"
+    else
+      PUSH_STATUS="failed"
+      echo "  ✗ GIT PUSH FAILED (rc=$PUSH_RC) — commit is LOCAL ONLY; remote/VPS will NOT update."
+      osascript -e "display notification \"git push FAILED on $LABEL — content committed locally only\" with title \"Teamz Nightly\" sound name \"Basso\"" 2>/dev/null
+    fi
+  else
+    echo "  (nothing to commit)"
+  fi
 fi
 
 # 7. deploy — or say plainly that we cannot
@@ -438,6 +474,18 @@ echo ""
 echo "=== request indexing ==="
 [ -f scripts/build-request-indexing.py ] && python3 scripts/build-request-indexing.py 2>&1 | tail -4 \
   || echo "  (build-request-indexing.py missing — skipped)"
+
+# 9. PREFLIGHT (--post). After all phases: assert the OUTPUT artifacts are sane (queue parses,
+#    status not frozen). Fail => ALERT (exit 1 non-fatal to tonight, but the digest flags it).
+#    Refreshes data/preflight-status.json so a MISSING/stale one is itself catchable.
+if [ -f "$ROOT/scripts/nightly-preflight.py" ]; then
+  echo ""
+  echo "=== preflight --post ==="
+  python3 "$ROOT/scripts/nightly-preflight.py" --post || {
+    echo "  ⚠️ preflight --post flagged an output problem (see data/preflight-status.json)"
+    osascript -e "display notification \"$LABEL: post-run check flagged a problem\" with title \"NIGHTLY POST-CHECK\"" 2>/dev/null || true
+  }
+fi
 
 echo ""
 echo "DONE — $(date '+%H:%M:%S')"

@@ -163,6 +163,28 @@ def nightly_health(repo, label):
             return f"⚠️ ran, agent FAILED: {content.split(':', 1)[-1]} ({age_h:.0f}h ago)"
         if content.startswith("skipped"):
             return f"⚠️ ran, agent SKIPPED: {content.split(':', 1)[-1]} ({age_h:.0f}h ago)"
+        # exit_code is the one UNAMBIGUOUS signal the runner ALWAYS writes. The per-phase strings
+        # above only cover content/build/deploy; any OTHER phase that aborts (GSC pull, sitemap,
+        # keyword harvest, preflight) shows up ONLY here. Never claim "ok" while the process
+        # exited non-zero — that discarded bit was why crashed nights rendered green.
+        try:
+            rc = int(status.get("exit_code", 0))
+        except (TypeError, ValueError):
+            rc = 0
+        if rc != 0:
+            return f"⚠️ ran but EXITED NON-ZERO (code {rc}) — a phase failed ({age_h:.0f}h ago)"
+        # The preflight guard's verdict, if it ran. A failed preflight means the night may have
+        # proceeded on a broken root or dropped inputs; a STALE/missing preflight-status once the
+        # guard is wired in means the guard itself did not run — both must not read as "ok".
+        pf = status_file.parent / "preflight-status.json"
+        if pf.exists():
+            try:
+                pfd = json.loads(pf.read_text())
+            except Exception:
+                return f"⚠️ preflight-status.json unreadable ({age_h:.0f}h ago)"
+            if not pfd.get("ok", True):
+                names = ", ".join(f.get("name", "?") for f in pfd.get("failures", [])) or "?"
+                return f"⚠️ PREFLIGHT FAILED: {names} ({age_h:.0f}h ago)"
         return f"ok ({age_h:.0f}h ago)"
 
     if not cands:
@@ -261,7 +283,14 @@ def main():
     end = date.today() - timedelta(days=3)          # GSC lags
     start = end - timedelta(days=args.days)
     pstart, pend = start - timedelta(days=args.days), start - timedelta(days=1)
-    tok = token()
+    # A token-refresh blip must NOT crash the whole digest into an empty file (that is exactly how
+    # 2026-07-18 produced NO GSC table). Capture the failure; every property then reports UNREACHABLE
+    # loudly and the health/activity sections below still render.
+    tok, tok_err = None, None
+    try:
+        tok = token()
+    except Exception as e:  # noqa: BLE001 — refresh can fail on network/DNS, not just HTTP
+        tok_err = f"{type(e).__name__}: {e}"
 
     L = []
     L.append(f"# Growth Digest — {date.today().isoformat()}")
@@ -274,20 +303,30 @@ def main():
     unreachable = []
     for repo, prop, label in SITES:
         health = nightly_health(repo, label)
+        if tok is None:
+            # GSC auth is down for the whole run — LOUD, per property, never a zero row.
+            unreachable.append((prop, f"GSC auth down ({tok_err})"))
+            L.append(f"| {prop} | ⚠️ **UNREACHABLE** | — | GSC auth down | — | — | {health} |")
+            continue
         try:
             c, i, ctr, pos = totals(prop, tok, start, end)
             pc, _, _, _ = totals(prop, tok, pstart, pend)
             L.append(f"| {prop} | **{c:,}** | {arrow(c, pc)} | {i:,} | {ctr:.2f}% | {pos:.1f} | {health} |")
         except urllib.error.HTTPError as e:
             # NEVER a zero row. A property we cannot read is a FINDING.
-            unreachable.append((prop, e.code))
+            unreachable.append((prop, f"HTTP {e.code}"))
             L.append(f"| {prop} | ⚠️ **UNREACHABLE** | — | HTTP {e.code} | — | — | {health} |")
+        except Exception as e:  # noqa: BLE001
+            # A network/timeout/parse error on ONE property must not crash the whole digest into an
+            # empty file. Report it loudly and keep going — the other properties still render.
+            unreachable.append((prop, type(e).__name__))
+            L.append(f"| {prop} | ⚠️ **UNREACHABLE** | — | {type(e).__name__} | — | — | {health} |")
 
     if unreachable:
         L.append("")
         L.append("## ⚠️ COULD NOT CHECK — these are UNKNOWN, not zero")
-        for prop, code in unreachable:
-            L.append(f"- `{prop}` → HTTP {code}. URL-prefix properties end in `/`; "
+        for prop, why in unreachable:
+            L.append(f"- `{prop}` → {why}. URL-prefix properties end in `/`; "
                      f"domain properties (`sc-domain:`) must NOT. This exact mistake made "
                      f"goalkit read as 0 clicks for months while it really had 938.")
 

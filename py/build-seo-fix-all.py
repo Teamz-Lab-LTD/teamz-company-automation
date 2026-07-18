@@ -24,7 +24,28 @@ from pathlib import Path
 from collections import defaultdict
 
 # --- Config ---
-ROOT = Path(__file__).resolve().parent.parent
+def _host_root():
+    """Resolve the CONTENT site root, never the automation submodule.
+
+    This script lives in teamz-company-automation/py/ but MUST scan the host site
+    (teamzlab-tools). `Path(__file__).resolve().parent.parent` follows the invocation
+    back to the automation dir and scans 0 pages while printing "clean" — the exact
+    silent-killer that hid this fixer for months. TEAMZ_HOST_SITE_ROOT is exported by
+    config.sh in every nightly; trust it, and FAIL LOUD if the result is not a real
+    site rather than scan the wrong tree and report a false 'clean'.
+    """
+    env = os.environ.get("TEAMZ_HOST_SITE_ROOT")
+    root = Path(env) if env else Path(__file__).resolve().parent.parent
+    if root.name == "teamz-company-automation" or not (root / "tools.json").exists():
+        sys.stderr.write(
+            f"FATAL: {Path(__file__).name} resolved site root to {root}, which is not a "
+            f"Teamz Lab content site (no tools.json). Set TEAMZ_HOST_SITE_ROOT to the host "
+            f"repo. Refusing to scan the wrong tree and report a false 'clean'.\n")
+        sys.exit(2)
+    return root
+
+
+ROOT = _host_root()
 EXCLUDED_DIRS = {'.git', 'node_modules', 'branding', 'shared', 'scripts', 'docs', 'icons', 'og-images', '.claude-memory'}
 
 # Action verbs that meta descriptions should start with

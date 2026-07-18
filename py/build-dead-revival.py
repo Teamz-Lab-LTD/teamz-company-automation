@@ -29,7 +29,14 @@ from datetime import datetime, timedelta
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 AUTO = os.path.dirname(HERE)
-HOST = os.path.dirname(AUTO)
+# HOST via __file__ math is WRONG under the nightly: scripts/nightly-build.sh and the nested
+# teamz-company-automation are BOTH symlinks, and `readlink -f` resolves the chain so __file__
+# lands in teamz-projects/teamz-company-automation/py — making HOST=teamz-projects, DATA=an empty
+# dir with no manual-pull. Then load_manual_volume() returned {} and the whole authoritative
+# Google-volume branch silently no-op'd while dead-revival-targets.json froze at its last good run.
+# Every other builder resolves the host from config; do the same. The nightly exports
+# TEAMZ_HOST_SITE_ROOT (=teamzlab-tools); fall back to __file__ math only when run standalone.
+HOST = os.environ.get("TEAMZ_HOST_SITE_ROOT") or os.path.dirname(AUTO)
 DATA = os.path.join(HOST, "data")
 AUDIT = os.path.join(DATA, "zero-visitor-audit")
 

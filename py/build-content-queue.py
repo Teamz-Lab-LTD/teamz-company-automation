@@ -55,8 +55,57 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _teamz_config import load_runtime  # noqa: E402
+from keyword_volume_manual import load_manual_volume, _norm  # noqa: E402
 
 GSC_API = "https://www.googleapis.com/webmasters/v3/sites"
+
+# Manual Keyword Planner volume (optional, per property). When a property has pulled a batch,
+# this tells the engine the TRUE monthly search volume behind a query. It is used to refuse a
+# VANITY head term — but ONLY for a brand-NEW post: writing a new page to compete for a 50,000/mo
+# head term (apps' "web design") is a doomed 2-8 week bet a small site never wins. It is
+# DELIBERATELY NOT used to skip a RETARGET — a retarget publishes nothing, spends no budget, and
+# strengthens a page we already own, so even a head term earns an additive pass (it is only
+# deprioritised so winnable retargets take the limited slots first). This split matters: an
+# earlier version skipped BOTH, which binned real demand on pages we own (goalkit "argentina
+# jersey" 12k/mo at #26 on our own product page would have evaporated). With NO volume file every
+# lookup returns None and target SELECTION is unchanged.
+VANITY_VOL = int(os.getenv("TEAMZ_KW_VANITY_VOL", "10000"))
+
+
+def kw_winnability(q, kw_vol):
+    """Look up MANUAL Keyword Planner volume for a query, if we have it.
+
+    Returns None when there is no volume file or no entry for this query — the engine then
+    behaves exactly as before (fail-open: absence of data never changes a decision). Otherwise
+    {vol, comp, vanity}: vol may be None = UNKNOWN (a blank Planner cell — never coerced to 0,
+    per keyword_volume_manual's unknown!=zero rule). vanity=True means a head term too big for a
+    brand-new page to win (vol >= VANITY_VOL); it is advisory and only acted on in the NEW branch.
+    """
+    if not kw_vol:
+        return None
+    d = kw_vol.get(_norm(q))
+    if not d:
+        return None
+    vol = d.get("vol")          # may be None = UNKNOWN; do NOT coerce to 0
+    return {"vol": vol, "comp": d.get("comp"),
+            "vanity": vol is not None and vol >= VANITY_VOL}
+
+
+def _kw_note(win):
+    """The '[Keyword Planner: ...]' clause for a target's why-string — only when we have a real,
+    non-None volume (an unknown volume must not print as '~0/mo')."""
+    if not win or win.get("vol") is None:
+        return ""
+    return f" [Keyword Planner: ~{int(win['vol'])}/mo, {win.get('comp') or 'unknown'} competition]"
+
+
+def _attach_kw(target, win):
+    """Attach kw_volume/kw_comp ONLY when we actually have volume, so a property with no Planner
+    file yields byte-identical targets (no null keys). Returns the dict for chaining."""
+    if win and win.get("vol") is not None:
+        target["kw_volume"] = win["vol"]
+        target["kw_comp"] = win.get("comp")
+    return target
 
 
 # --------------------------------------------------------------------------- auth
@@ -162,13 +211,21 @@ def cooldown_paths(host_root, days):
 
 
 def load_ledger(host_root):
+    """Returns (ledger, corrupt). A MISSING file is a legitimate fresh start (empty ledger,
+    corrupt=False). A file that EXISTS but won't parse is a silent-killer: the old bare
+    `except: pass` treated it as empty, which re-opened the FULL NEW-post budget every night
+    (max posts forever — the #1 scaled-content-abuse risk). Signal corruption so the caller
+    fails CLOSED (new_budget=0) rather than open."""
     p = host_root / "data" / "content-log.json"
-    if p.exists():
-        try:
-            return json.loads(p.read_text())
-        except Exception:
-            pass
-    return {"new_posts": []}
+    if not p.exists():
+        return {"new_posts": []}, False
+    try:
+        return json.loads(p.read_text()), False
+    except (json.JSONDecodeError, ValueError, OSError) as e:
+        sys.stderr.write(
+            f"WARNING: {p} exists but is unreadable ({e}). Failing CLOSED — NO new posts "
+            f"tonight — so a corrupt ledger cannot silently unlock the rate limiter.\n")
+        return {"new_posts": []}, True
 
 
 def new_posts_this_week(ledger):
@@ -407,7 +464,7 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
 SIMILARITY_KILL = 0.5   # >= this token overlap with an existing page = NOT a gap
 
 
-def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
+def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics, kw_vol=None):
     """Proven demand with NO page behind it.
 
     A true gap is NOT simply "a query we rank badly for" — every query we get impressions
@@ -437,7 +494,7 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
         if not cur or r["impressions"] > cur[1]:
             ranking_page[q] = (url_to_path(page, site_url), r["impressions"])
 
-    out, retarget = [], []
+    out, retarget, vanity_skipped = [], [], []
     for r in qrows:
         q = r["keys"][0]
         pos, impr, clicks = r["position"], r["impressions"], r["clicks"]
@@ -447,6 +504,13 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
             continue          # pasted code / IDs / exact-match searches are not demand
         if denied(q, deny_topics):
             continue          # off-domain topic (see the deny-list note in pool_enhance)
+
+        # WINNABILITY — look up the real Planner volume (None when we have no data → no effect).
+        # NOT acted on here: the decision differs by branch below. A vanity head term is REFUSED
+        # only as a brand-NEW post (a doomed new page), and merely DEPRIORITISED as a retarget (a
+        # cheap, safe, additive pass on a page we already own). Skipping here would bin owned-page
+        # demand — the exact dead-zone the retarget path exists to fix.
+        win = kw_winnability(q, kw_vol)
 
         # KILL 1 — a page we already have is about this query.
         best_sim, best_page = max(((overlap(q, p), p) for p in existing_paths), default=(0.0, ""))
@@ -477,7 +541,11 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
             #     page needs before Google will even rank it;
             #   - it spends none of the 1-2/week NEW budget, so it adds no scaled-content risk;
             #   - it cannot cannibalise — it strengthens the page Google already chose.
-            retarget.append({
+            # A vanity head term is NOT skipped as a retarget (it publishes nothing and
+            # strengthens a page we own) — it is only pushed down by a score penalty so genuinely
+            # winnable retargets take the limited slots first.
+            vanity = bool(win and win["vanity"])
+            t = {
                 "mode": "ENHANCE", "source": "retarget",
                 "path": owner, "query": q,
                 # ALWAYS additive — never conditional on click count like pool_enhance.
@@ -492,15 +560,26 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
                                   "already works."),
                 "impressions": int(impr), "clicks": int(clicks), "position": round(pos, 1),
                 "ctr": 0.0,
-                "score": round(impr * (1.0 if pos < 50 else 0.6), 1),
+                "score": round(impr * (1.0 if pos < 50 else 0.6) * (0.3 if vanity else 1.0), 1),
                 "why": (f"'{q}' has {int(impr)} impressions in 90 days and we sit at #{pos:.0f} "
                         f"with 0 clicks. We are NOT writing a new page for it — {owner} already "
                         f"owns this topic, and a second page would cannibalise it. Make THAT page "
-                        f"actually answer '{q}': it is already indexed, so it can move in days."),
-            })
+                        f"actually answer '{q}': it is already indexed, so it can move in days."
+                        + _kw_note(win)
+                        + (" (head term — deprioritised: worth an additive pass but do not expect "
+                           "to win it)" if vanity else "")),
+            }
+            retarget.append(_attach_kw(t, win))
             continue
 
-        out.append({
+        # NEW post. This is the ONLY place a vanity head term is refused: a brand-new page needs
+        # 2-8 weeks just to index, then competes from scratch against entrenched incumbents — for
+        # a 50k/mo head term on a small site that is a guaranteed loss and a wasted NEW-post slot.
+        if win and win["vanity"]:
+            vanity_skipped.append((q, win["vol"], round(pos, 1)))
+            continue
+
+        t = {
             "mode": "NEW", "topic": q, "slug": slugify(q),
             "impressions": int(impr), "clicks": int(clicks), "position": round(pos, 1),
             "score": round(impr * (1.0 if pos < 50 else 0.6), 1),
@@ -508,10 +587,12 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics):
             "serving_page_today": rp or "(none)",
             "why": (f"Google shows us for '{q}' {int(impr)} times in 90 days but we sit at "
                     f"#{pos:.0f} with 0 clicks, and the page it picks ({rp or 'n/a'}) is not "
-                    f"about it — real demand, no page serving it"),
-        })
+                    f"about it — real demand, no page serving it" + _kw_note(win)),
+        }
+        out.append(_attach_kw(t, win))
     return (sorted(out, key=lambda x: -x["score"]),
-            sorted(retarget, key=lambda x: -x["score"]))
+            sorted(retarget, key=lambda x: -x["score"]),
+            vanity_skipped)
 
 
 def family_key(path):
@@ -945,6 +1026,19 @@ def main():
     else:
         print(f"  edit mode  : per-page — additive above {click_floor} clicks, full rewrite at or below")
 
+    # Manual Keyword Planner volume, if this property has pulled a batch. Turns on winnability:
+    # the engine can now refuse vanity head terms instead of chasing impressions it can't convert.
+    # Absent -> {} -> every winnability check returns None -> engine behaves exactly as before.
+    try:
+        kw_vol = load_manual_volume(host / "data")
+    except Exception:
+        kw_vol = {}
+    if kw_vol:
+        print(f"  kw volume  : {len(kw_vol)} terms (winnability ON — head terms >= {VANITY_VOL}/mo "
+              f"refused as NEW posts, deprioritised as retargets)")
+    else:
+        print("  kw volume  : none pulled yet (winnability off — pull a Keyword Planner batch to enable)")
+
     # AI-channel signal, fetched once and shared by every pool. ai_known=False when the fetch
     # failed — the pools then fail CLOSED (treat established pages as additive, flag clashes
     # rather than auto-fix), because a guard that cannot read its signal must not wave work
@@ -983,13 +1077,17 @@ def main():
         max_out=int(os.getenv("TEAMZ_CONTENT_CANNIBAL_CAP", "1")),
         ai_by_path=ai_by_path, ai_known=ai_known)
 
-    ledger = load_ledger(host)
+    ledger, ledger_corrupt = load_ledger(host)
     recent_new = new_posts_this_week(ledger)
-    new_budget = max(0, args.new_cap - len(recent_new))
+    # Corrupt ledger => fail CLOSED. Treating an unreadable log as "0 posts this week" would
+    # reopen the full weekly budget every night — exactly the scaled-content flood the cap exists
+    # to prevent. No trustworthy count => no new posts.
+    new_budget = 0 if ledger_corrupt else max(0, args.new_cap - len(recent_new))
 
     # pool_new returns BOTH: the queries with no page behind them (NEW), and the queries it
     # refused to write a post for because a page we already own is about them (RETARGET).
-    new, retarget = pool_new(prop, token, site_url, args.min_impressions, existing, deny_topics)
+    new, retarget, vanity_skipped = pool_new(prop, token, site_url, args.min_impressions,
+                                             existing, deny_topics, kw_vol=kw_vol)
 
     if new_budget:
         # 2nd choice: net-new ground adjacent to what this site already converts. Only when
@@ -1000,8 +1098,12 @@ def main():
         new = new[:new_budget]
     else:
         new = []
-        print(f"\n  NEW-post budget spent ({len(recent_new)}/{args.new_cap} this week) — "
-              f"enhance-only tonight.")
+        if ledger_corrupt:
+            print("\n  NEW-post budget FORCED to 0 — content-log.json is unreadable, failing "
+                  "CLOSED. Enhance-only tonight. Fix the ledger to re-enable new posts.")
+        else:
+            print(f"\n  NEW-post budget spent ({len(recent_new)}/{args.new_cap} this week) — "
+                  f"enhance-only tonight.")
         print("  (rate limit is deliberate: scaled-content abuse is the #1 risk to this engine)")
 
     # RETARGET is deliberately NOT rate-limited like NEW. The weekly cap exists to bound
@@ -1084,6 +1186,12 @@ def main():
         print(f"\n  COLD-START (zero impressions, one shot each): {len(cold)}")
         for t in cold:
             print(f"    never seen by Google:  {t['path'][:56]}")
+    if vanity_skipped:
+        print(f"\n  NEW-post head-terms refused ({len(vanity_skipped)} — too big to win with a new page; "
+              f"an owned page would still be retargeted):")
+        for q, v, p in sorted(vanity_skipped, key=lambda x: -(x[1] or 0))[:6]:
+            print(f"    ~{int(v):>6}/mo  #{p:<5} '{q[:48]}'  (a new page can't crack this)")
+
     if retarget:
         print(f"\n  RETARGET (demand we own a page for but never answer): {len(retarget)}")
         for t in retarget:

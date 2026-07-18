@@ -50,10 +50,18 @@ def _parse_planner_csv(path):
     if raw is None:
         return {}
     rows = list(csv.reader(raw.splitlines(), delimiter="\t"))
-    hdr = next((r for r in rows[:5] if "Keyword" in r and "Avg. monthly searches" in r), None)
+    # "Get search volume" exports label the column exactly "Keyword"; "Discover new keywords"
+    # exports label it "Keyword (by relevance)". Matching only the exact name made a discovery
+    # export parse to {} — a silently wasted manual pull. Accept any Keyword* column.
+    def _is_kw(c):
+        return c.strip().lower().startswith("keyword")
+
+    hdr = next((r for r in rows[:5]
+                if "Avg. monthly searches" in r and any(_is_kw(c) for c in r)), None)
     if not hdr:
         return {}
-    ki, vi = hdr.index("Keyword"), hdr.index("Avg. monthly searches")
+    ki = next(i for i, c in enumerate(hdr) if _is_kw(c))
+    vi = hdr.index("Avg. monthly searches")
     ci = hdr.index("Competition") if "Competition" in hdr else -1
     out = {}
     for r in rows[rows.index(hdr) + 1:]:

@@ -74,6 +74,7 @@ CONTENT_STATUS="not-enabled"
 BUILD_STATUS="skipped"
 DEPLOY_STATUS="skipped"
 PUSH_STATUS="n/a"
+COURSE_STATUS="not-enabled"
 
 # Retry a flaky NETWORK step.
 #
@@ -110,9 +111,9 @@ write_status() {
   local rc=$?
   mkdir -p "$ROOT/data" 2>/dev/null || return 0
   python3 - "$ROOT/data/nightly-status.json" "$rc" "$SITE" "$LABEL" \
-           "$CONTENT_STATUS" "$BUILD_STATUS" "$DEPLOY_STATUS" "$PUSH_STATUS" <<'PYEOF' 2>/dev/null || true
+           "$CONTENT_STATUS" "$BUILD_STATUS" "$DEPLOY_STATUS" "$PUSH_STATUS" "$COURSE_STATUS" <<'PYEOF' 2>/dev/null || true
 import json, sys, datetime
-path, rc, site, label, content, build, deploy, push = sys.argv[1:9]
+path, rc, site, label, content, build, deploy, push, courses = sys.argv[1:10]
 json.dump({
     "site": site,
     "label": label,
@@ -122,6 +123,7 @@ json.dump({
     "build": build,
     "deploy": deploy,
     "push": push,
+    "courses": courses,
 }, open(path, "w"), indent=2)
 PYEOF
 }
@@ -388,6 +390,85 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
         *)       CONTENT_STATUS="failed:exit-$AGENT_EXIT"
                  echo "  ✗ content agent failed (exit $AGENT_EXIT) even after retry — build+deploy continue with whatever it committed."
                  osascript -e "display notification \"Content agent FAILED (exit $AGENT_EXIT) on $LABEL\" with title \"Teamz Content\" sound name \"Basso\"" 2>/dev/null ;;
+      esac
+    fi
+  fi
+fi
+
+# 4.7 COURSE AGENT — creates/expands whole COURSES from measured demand (build-course-radar.py).
+#
+# SEPARATE from the content agent on purpose: the content prompt's "never invent course content"
+# rail must hold 6 nights a week; a 10-lesson course is an opus job with its own budget; and a
+# course-agent failure must not cost the night's enhancements. INERT unless TEAMZ_NIGHTLY_COURSES=1,
+# so tools/apps/goalkit (which never set it) are completely unaffected — proven by bash -n + a
+# tools-nightly dry run.
+if [ "${TEAMZ_NIGHTLY_COURSES:-0}" = "1" ]; then
+  echo ""
+  echo "=== course agent ==="
+  COURSE_PROMPT="$ROOT/scripts/nightly-course-prompt.md"
+  if [ ! -f "$COURSE_PROMPT" ]; then
+    COURSE_STATUS="skipped:no-prompt"
+    echo "  SKIP: TEAMZ_NIGHTLY_COURSES=1 but no scripts/nightly-course-prompt.md"
+  elif ! command -v claude >/dev/null 2>&1; then
+    COURSE_STATUS="skipped:no-claude-cli"
+    echo "  SKIP: claude CLI not on PATH"
+  elif [ ! -f "$ROOT/scripts/build-course-radar.py" ]; then
+    COURSE_STATUS="skipped:no-radar"
+    echo "  SKIP: scripts/build-course-radar.py missing"
+  else
+    # The radar decides the ONE action for tonight (create-pilot | expand | null) — the agent never
+    # authorizes itself. --gate writes data/course-task.json.
+    python3 scripts/build-course-radar.py --gate 2>&1 | sed 's/^/  /'
+    TASK="$ROOT/data/course-task.json"
+    ACTION=$(python3 -c "import json,os;print((json.load(open('$TASK')).get('action') or '') if os.path.exists('$TASK') else '')" 2>/dev/null || echo "")
+    if [ -z "$ACTION" ]; then
+      COURSE_STATUS="ok:no-task"
+      echo "  No course action tonight (no eligible cluster / cadence not due) — a valid outcome."
+    elif ! retry 3 20 api_up; then
+      COURSE_STATUS="skipped:api-unreachable"
+      echo "  SKIP: api.anthropic.com unreachable after retries"
+    else
+      echo "  action: $ACTION   model: ${TEAMZ_COURSE_MODEL:-opus}"
+      COURSE_MAX_SECONDS="${TEAMZ_COURSE_MAX_SECONDS:-3600}"
+      COURSE_OUT="$(mktemp -t nightly-course 2>/dev/null || echo "$ROOT/logs/.course-out.$$")"
+
+      # Same correct-capture pattern as the content agent: background claude DIRECTLY to a temp file
+      # (NOT through a pipe), so COURSE_EXIT is claude's OWN exit and the watchdog kills claude.
+      _run_course_agent() {
+        claude --print --verbose --dangerously-skip-permissions \
+               --model "${TEAMZ_COURSE_MODEL:-opus}" -p "$(cat "$COURSE_PROMPT")" > "$COURSE_OUT" 2>&1 &
+        COURSE_PID=$!
+        set -m
+        ( sleep "$COURSE_MAX_SECONDS"; kill -TERM "$COURSE_PID" 2>/dev/null; sleep 60; kill -KILL "$COURSE_PID" 2>/dev/null ) &
+        CWD_PID=$!
+        set +m
+        wait "$COURSE_PID"; COURSE_EXIT=$?
+        kill -- "-$CWD_PID" 2>/dev/null || kill "$CWD_PID" 2>/dev/null
+        wait "$CWD_PID" 2>/dev/null
+        sed 's/^/  /' "$COURSE_OUT"
+      }
+
+      CHEAD_BEFORE="$(git rev-parse HEAD 2>/dev/null)"
+      _run_course_agent
+      if [ "$COURSE_EXIT" != "0" ] && [ "$COURSE_EXIT" != "143" ] && [ "$COURSE_EXIT" != "137" ]; then
+        if [ "$(git rev-parse HEAD 2>/dev/null)" = "$CHEAD_BEFORE" ]; then
+          echo "  ⟳ course agent failed (exit $COURSE_EXIT), nothing committed — retrying once."
+          sleep 15
+          _run_course_agent
+        else
+          echo "  course agent failed (exit $COURSE_EXIT) but had already committed — NOT retrying."
+        fi
+      fi
+      rm -f "$COURSE_OUT"
+      case "$COURSE_EXIT" in
+        0)       COURSE_STATUS="ok:$ACTION"
+                 echo "  ✓ course agent finished ($ACTION)" ;;
+        143|137) COURSE_STATUS="failed:timeout"
+                 echo "  ✗ course agent TIMED OUT (>${COURSE_MAX_SECONDS}s) — killed. Next run retries fresh."
+                 osascript -e "display notification \"Course agent TIMED OUT on $LABEL\" with title \"Teamz Courses\" sound name \"Basso\"" 2>/dev/null ;;
+        *)       COURSE_STATUS="failed:exit-$COURSE_EXIT"
+                 echo "  ✗ course agent failed (exit $COURSE_EXIT) even after retry."
+                 osascript -e "display notification \"Course agent FAILED (exit $COURSE_EXIT) on $LABEL\" with title \"Teamz Courses\" sound name \"Basso\"" 2>/dev/null ;;
       esac
     fi
   fi

@@ -53,3 +53,7 @@ data/gsc-top-pages-*.json
 data/crashlytics-monitor-report.md
 data/crashlytics-monitor-state.json
 logs/
+
+# Preflight guard writes this into the SITE repo's data/ at runtime; any copy here is a stray
+# from running the guard with the root pointed at this repo (e.g. a --selftest). Never track it.
+data/preflight-status.json

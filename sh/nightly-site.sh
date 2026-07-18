@@ -333,31 +333,52 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
       # (2026-05-31 → 06-01). TERM at the limit, KILL 60s later, watchdog cancelled on a
       # normal finish.
       AGENT_MAX_SECONDS="${TEAMZ_CONTENT_MAX_SECONDS:-1800}"
-      claude --print --verbose --dangerously-skip-permissions \
-             --model "$CONTENT_MODEL" -p "$(cat "$CONTENT_PROMPT")" 2>&1 | sed 's/^/  /' &
-      AGENT_PID=$!
+      AGENT_OUT="$(mktemp -t nightly-agent 2>/dev/null || echo "$ROOT/logs/.agent-out.$$")"
 
-      # `set -m` gives the watchdog subshell its OWN process group, so cancelling it below can
-      # take the `sleep` down with it.
-      #
-      # Without that, `kill $WD_PID` kills only the subshell — and the `sleep` it forked survives,
-      # reparented to PID 1, holding every fd it inherited from us for the remainder of the
-      # timeout. On 2026-07-12 that left `bash nightly-site.sh | tee log` hanging for 25 minutes
-      # AFTER the work was finished and deployed, because `tee` never saw EOF on a pipe an
-      # orphaned `sleep 1800` was still holding open. Harmless under launchd (which redirects to
-      # a file, not a pipe) — which is exactly why it could have sat there unnoticed for months.
-      #
-      # Cancel the GROUP, and cancel it before it can act: the subshell must die mid-sleep, never
-      # reaching its `kill -TERM "$AGENT_PID"`. If it were killed the other way round it could
-      # fire that TERM at a PID the OS had already recycled to somebody else's process.
-      set -m
-      ( sleep "$AGENT_MAX_SECONDS"; kill -TERM "$AGENT_PID" 2>/dev/null; sleep 60; kill -KILL "$AGENT_PID" 2>/dev/null ) &
-      WD_PID=$!
-      set +m
+      # Run claude ONCE, hang-watchdogged. Background claude DIRECTLY into a temp file — NOT
+      # through `| sed` — because the old `claude … | sed & AGENT_PID=$!` got two things wrong:
+      #   1. `$!` of a background PIPELINE is its LAST command (sed), so `wait "$AGENT_PID"`
+      #      returned SED's exit, not claude's. It only ever looked right because `set -o pipefail`
+      #      is on globally — flip pipefail off and EVERY failed agent would read as "ok" (proven:
+      #      `false | sed & wait $!` => 0). Backgrounding claude alone makes AGENT_PID = claude.
+      #   2. the watchdog's `kill -TERM "$AGENT_PID"` was therefore aimed at SED — a genuinely hung
+      #      claude was never killed, the exact zombie the watchdog exists to prevent.
+      # Output is printed (indented) after the run; under launchd (file redirect) live-vs-buffered
+      # is invisible, and correct exit capture is worth it.
+      _run_content_agent() {
+        claude --print --verbose --dangerously-skip-permissions \
+               --model "$CONTENT_MODEL" -p "$(cat "$CONTENT_PROMPT")" > "$AGENT_OUT" 2>&1 &
+        AGENT_PID=$!
+        # `set -m` gives the watchdog subshell its OWN process group so cancelling it takes its
+        # `sleep` down too; otherwise an orphaned `sleep 1800` holds inherited fds open and can
+        # hang a piped parent for the whole timeout (the 2026-07-12 25-min `tee` hang).
+        set -m
+        ( sleep "$AGENT_MAX_SECONDS"; kill -TERM "$AGENT_PID" 2>/dev/null; sleep 60; kill -KILL "$AGENT_PID" 2>/dev/null ) &
+        WD_PID=$!
+        set +m
+        wait "$AGENT_PID"; AGENT_EXIT=$?
+        kill -- "-$WD_PID" 2>/dev/null || kill "$WD_PID" 2>/dev/null   # group first, subshell as fallback
+        wait "$WD_PID" 2>/dev/null
+        sed 's/^/  /' "$AGENT_OUT"
+      }
 
-      wait "$AGENT_PID"; AGENT_EXIT=$?
-      kill -- "-$WD_PID" 2>/dev/null || kill "$WD_PID" 2>/dev/null   # group first, subshell as fallback
-      wait "$WD_PID" 2>/dev/null
+      HEAD_BEFORE="$(git rev-parse HEAD 2>/dev/null)"
+      _run_content_agent
+      # Retry ONCE on a transient failure — "API Error: Stream idle timeout" was the 2026-07-17
+      # cause on BOTH apps and goalkit — but ONLY if the first attempt committed NOTHING, so a
+      # partial run can never double-write a target. A stream timeout errors mid-response having
+      # committed nothing, so it retries cleanly; a run that already committed is left as-is.
+      if [ "$AGENT_EXIT" != "0" ] && [ "$AGENT_EXIT" != "143" ] && [ "$AGENT_EXIT" != "137" ]; then
+        if [ "$(git rev-parse HEAD 2>/dev/null)" = "$HEAD_BEFORE" ]; then
+          echo "  ⟳ content agent failed (exit $AGENT_EXIT), nothing committed — retrying once after a transient error."
+          sleep 15
+          _run_content_agent
+        else
+          echo "  content agent failed (exit $AGENT_EXIT) but had already committed work — NOT retrying (would risk duplicate pages)."
+        fi
+      fi
+      rm -f "$AGENT_OUT"
+
       case "$AGENT_EXIT" in
         0)       CONTENT_STATUS="ok"
                  echo "  ✓ content agent finished" ;;
@@ -365,7 +386,8 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
                  echo "  ✗ content agent TIMED OUT (>${AGENT_MAX_SECONDS}s) — killed to prevent a zombie. Next run retries fresh."
                  osascript -e "display notification \"Content agent TIMED OUT on $LABEL\" with title \"Teamz Content\" sound name \"Basso\"" 2>/dev/null ;;
         *)       CONTENT_STATUS="failed:exit-$AGENT_EXIT"
-                 echo "  ✗ content agent failed (exit $AGENT_EXIT) — build+deploy continue with whatever it committed." ;;
+                 echo "  ✗ content agent failed (exit $AGENT_EXIT) even after retry — build+deploy continue with whatever it committed."
+                 osascript -e "display notification \"Content agent FAILED (exit $AGENT_EXIT) on $LABEL\" with title \"Teamz Content\" sound name \"Basso\"" 2>/dev/null ;;
       esac
     fi
   fi

@@ -257,6 +257,41 @@ HEALTH_ALERTS=()
 SKIPPED_PHASES=()
 REPO_DIRTY_AT_START=0
 
+# Write data/nightly-status.json on EVERY exit (the shared nightly-site.sh already does this).
+# Without it the cross-property digest could not tell "tools ran and completed" from "no status
+# file" and rendered "cannot confirm it worked" for the money-maker every day. Tools' engine has
+# no content/build/deploy vars, so map: exit_code = the honest always-written signal; deploy from
+# the push result; health-alert count surfaced. Installed BEFORE the preflight gate so even a
+# --pre abort (exit 2) records a status instead of leaving a stale file behind.
+write_nightly_status() {
+  local rc=$?
+  [ "${_TEAMZ_STATUS_WRITTEN:-0}" = "1" ] && return 0
+  _TEAMZ_STATUS_WRITTEN=1
+  local deploy="unknown"
+  if [ "${PUSH_EXIT:-1}" -eq 0 ] || [ "${RETRY_EXIT:-1}" -eq 0 ]; then
+    deploy="ok"
+  elif [ -n "${PUSH_EXIT:-}" ] || [ -n "${RETRY_EXIT:-}" ]; then
+    deploy="failed"
+  fi
+  mkdir -p "$PROJECT_DIR/data" 2>/dev/null || return 0
+  python3 - "$PROJECT_DIR/data/nightly-status.json" "$rc" "https://tool.teamzlab.com/" \
+           "$PLIST_NAME" "$deploy" "${#HEALTH_ALERTS[@]}" <<'PYEOF' 2>/dev/null || true
+import json, sys, datetime
+path, rc, site, label, deploy, alerts = sys.argv[1:7]
+json.dump({
+    "site": site,
+    "label": label,
+    "finished_at": datetime.datetime.now().isoformat(timespec="seconds"),
+    "exit_code": int(rc),
+    "content": "n/a:tools-engine",
+    "build": "ok" if int(alerts) == 0 else f"ok:{alerts}-health-alerts",
+    "deploy": deploy,
+    "health_alerts": int(alerts),
+}, open(path, "w"), indent=2)
+PYEOF
+}
+trap write_nightly_status EXIT
+
 # 0. PREFLIGHT (--pre) — the ONE loud gate, ahead of any git op or producer. A wrong root, a
 # renamed Planner column (the original 11k-keyword bug), a 0-page scan, or a dead SC/GA4 token
 # ABORTS the night loudly instead of "succeeding" while building off nothing. config.sh already

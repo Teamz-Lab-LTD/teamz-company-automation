@@ -1,15 +1,20 @@
-NIGHTLY BUILD REPORT — 2026-07-12 22:19
+NIGHTLY BUILD REPORT — 2026-07-18 21:41
 Status: ALERT
-Repo dirty at start: no
+Repo dirty at start: yes
 New tools built: 0
-Total commits: 20
+Total commits: 0
 ---
 SCRIPT HEALTH:
-  Alerts (3):
+  Alerts (6):
+  - Nightly BLOCKED at start: dirty source WIP (1 file(s)). Commit or stash to unblock — data/manual-pull/1-UPLOAD-THESE/batch-cand-01.csv 
   - SEO health-check found a RED — a data source may be silently broken (see log top)
-  - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Uptime check:     SSL ERROR: _ssl.c:1112: The handshake operation timed out
+  - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Uptime check:     SSL ERROR: _ssl.c:1112: The handshake operation timed out
   - Internal link health failed (exit 1)
-  Skipped phases (1):
-  - git push (github.com unavailable)
+  - Search Console pull failed (exit 127)
+  - Clarity pull failed (exit 127)
+  Skipped phases (3):
+  - git pull (repo dirty at start or github.com unavailable)
+  - Claude build (repo dirty at start)
+  - auto-fix commit and push (protecting existing local work)
 ---
 If script health is not OK, review logs/nightly-build.log before the next automated run.

@@ -55,7 +55,22 @@ ONE_HEAD_MAX     = float(os.getenv("TEAMZ_RADAR_ONE_HEAD_MAX", "0.7"))  # >70% v
 RADAR_MIN_NEW    = int(os.getenv("TEAMZ_RADAR_MIN_NEW", "100"))
 RADAR_MIN_DAYS   = int(os.getenv("TEAMZ_RADAR_MIN_DAYS", "21"))
 PILOT_CADENCE    = int(os.getenv("TEAMZ_PILOT_CADENCE_DAYS", "14"))
+# PILOT_IMPR_FLOOR is DEPRECATED and deliberately unused. It gated promotion on IMPRESSIONS, and
+# a 2026-07-19 audit of this site's 747 lessons showed why that is the wrong metric: 585 pages
+# (78.3%) earn impressions and NEVER a single click, and the worst offender takes 1,563 impressions
+# at position 13.5 for zero clicks. An impression floor would have promoted exactly the failure
+# mode. Promotion now gates on CLICKS. Kept only so an existing env var cannot silently change
+# behaviour by being read somewhere unexpected.
 PILOT_IMPR_FLOOR = int(os.getenv("TEAMZ_PILOT_IMPR_FLOOR", "100"))
+PILOT_CLICK_FLOOR = int(os.getenv("TEAMZ_PILOT_CLICK_FLOOR", "3"))    # clicks/28d to graduate to expanding
+PILOT_DORMANT_DAYS = int(os.getenv("TEAMZ_PILOT_DORMANT_DAYS", "56"))  # 0 clicks after this = dormant
+# Query LENGTH is the only AI-Overview signal that survived adversarial verification (Ahrefs, 146M
+# SERPs, Sept 2025): P(AI Overview) climbs monotonically 9.5% at 1 word -> 19.5% at 4 -> 46.4% at 7+.
+# Volume was never measured by anyone as an AIO driver, so "go long-tail to dodge AIO" is unsourced
+# and this site already disproves it in practice: its 9-word "8255 control word 80h all ports output
+# mode 0" ranks position 4 and takes ZERO clicks because Google prints the two-character answer.
+# A cluster whose members are mostly long queries is demand Google answers itself — refuse it.
+AIO_LEN_MAX      = int(os.getenv("TEAMZ_RADAR_AIO_LEN_MAX", "6"))     # median member words >= this = refuse
 MAX_ACTIVE       = int(os.getenv("TEAMZ_RADAR_MAX_ACTIVE_PILOTS", "2"))
 EXPAND_SPACING   = int(os.getenv("TEAMZ_PILOT_EXPAND_SPACING", "7"))
 BATCH_MAX        = int(os.getenv("TEAMZ_KW_BATCH_MAX", "700"))
@@ -240,11 +255,17 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
     scored_vol = sum(m["vol"] for m in known if m["kw"] not in vanity)
     top_share = (max((m["vol"] for m in known), default=0) / known_vol) if known_vol else 0.0
 
+    # median words per member keyword — the AIO-density proxy (see AIO_LEN_MAX)
+    _lens = sorted(len(m["kw"].split()) for m in members) or [0]
+    med_len = _lens[len(_lens) // 2]
+
     status = "candidate"
     if not members:
         status = "empty"
     elif known_vol and top_share > ONE_HEAD_MAX:
         status = "refused-one-head"
+    elif med_len >= AIO_LEN_MAX:
+        status = "refused-aio-risk"
     else:
         cid_text = f"{c['id']} {c.get('proposed_title','')}"
         for s in existing_slugs:
@@ -260,7 +281,7 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
     visitors = int(scored_vol + gap_impr / 3.0)       # rough monthly-visitor proxy
 
     usd, niche, rpm = 0.0, "unknown", 0.0
-    if _HAVE_RPM and status not in ("empty", "refused-one-head", "refused-duplicate"):
+    if _HAVE_RPM and status not in ("empty", "refused-one-head", "refused-duplicate", "refused-aio-risk"):
         try:
             r = expected_dollars(slug=c["id"], hub=geo, title=title_text,
                                  visitors_mo=visitors, serp_winnability=win)
@@ -271,8 +292,16 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
     sibling_bonus = 1.2 if c.get("proven_sibling") else 1.0
     score = round(usd * sibling_bonus, 2)
     needs_volume = (known_vol == 0)
+    # `and not needs_volume` used to be here. It made the gap_impr branch DEAD CODE: known_vol comes
+    # only from manually-exported Planner CSVs, so no pilot could ever be created unless a human sat
+    # in Keyword Planner first. That is the one step the owner cannot automate, and it blocked the
+    # whole "grows while I sleep" premise. GSC gap impressions are Google's own measured demand for
+    # THIS property — a stronger signal than a Planner estimate, not a weaker one. Planner volume is
+    # now an accelerator (it sharpens winnability + RPM), never a precondition.
+    # `needs_volume` stays in the output so a human reading course-radar.json can still see which
+    # clusters are running on GSC evidence alone.
     eligible = (status == "candidate" and len(members) >= MIN_CLUSTER_KW
-                and (known_vol >= MIN_CLUSTER_VOL or gap_impr >= MIN_GAP_IMPR) and not needs_volume)
+                and (known_vol >= MIN_CLUSTER_VOL or gap_impr >= MIN_GAP_IMPR))
 
     return {
         "id": c["id"], "geo": geo, "language": c.get("language", "en"),
@@ -281,6 +310,7 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
         "status": status, "eligible_for_pilot": eligible, "needs_volume": needs_volume,
         "expected_dollars_mo": score, "niche": niche, "rpm_mid": rpm,
         "known_vol": known_vol, "gap_impressions": gap_impr, "win_proxy": win,
+        "median_query_words": med_len,
         "member_count": len(members), "vanity_excluded": vanity,
         "proven_sibling": c.get("proven_sibling"), "duplicate_of": c.get("duplicate_of"),
         "members": sorted(members, key=lambda m: (m["vol"] or 0, m["impr"]), reverse=True)[:40],
@@ -388,6 +418,61 @@ def prepare_batches(host, radar, dry, force=False):
     print("  prepared: " + ("; ".join(wrote) if wrote else "nothing"))
 
 
+# ------------------------------------------------------------------ lifecycle (measured, not assumed)
+def promote(host, cfg, dry):
+    """Move pilots through pilot -> expanding -> dormant from MEASURED CLICKS.
+
+    This did not exist. `PILOT_IMPR_FLOOR` was defined and never referenced, and nothing anywhere
+    ever set status='expanding', so gate()'s expand branch was unreachable: a pilot could be created
+    and then never grow, forever. "Expansion earned by real impressions" was documented as shipped
+    and was dead code.
+
+    It gates on CLICKS, not impressions, because impressions are this site's proven failure mode:
+    of 747 lessons audited over 90 days, 585 earn impressions and zero clicks, and one takes 1,563
+    impressions at position 13.5 for nothing. Promoting on impressions would reward exactly that.
+    Dormant is reversible — a course that starts earning clicks is re-promoted, never deleted.
+    """
+    ledger, corrupt = load_ledger(host)
+    pilots = ledger.get("pilots", [])
+    if corrupt or not pilots:
+        return ledger, []
+    try:
+        token = _bcq.gsc_token(cfg)
+        rows = _bcq.gsc_query(cfg["site_property"], token, ["page"], days=28, row_limit=25000)
+    except Exception as e:
+        # Never guess a promotion from missing data — a silent GSC failure must not read as
+        # "zero clicks" and mark every live course dormant.
+        sys.stderr.write(f"  (promotion skipped — GSC page pull failed: {e})\n")
+        return ledger, []
+
+    clicks = {}
+    for r in rows:
+        page = r["keys"][0]
+        for p in pilots:
+            if f"/lessons/{p.get('slug')}/" in page:
+                clicks[p["slug"]] = clicks.get(p["slug"], 0) + int(r.get("clicks", 0))
+
+    changes, today = [], _today()
+    for p in pilots:
+        c, age, old = clicks.get(p.get("slug"), 0), _days_since(p.get("created")), p.get("status")
+        if old in ("pilot", "dormant") and c >= PILOT_CLICK_FLOOR:
+            p["status"] = "expanding"
+            changes.append(f"{p['slug']}: {old} -> expanding ({c} clicks/28d >= {PILOT_CLICK_FLOOR})")
+        elif old in ("pilot", "expanding") and c == 0 and age >= PILOT_DORMANT_DAYS:
+            p["status"] = "dormant"
+            changes.append(f"{p['slug']}: {old} -> dormant (0 clicks/28d at {age}d old)")
+        p["clicks_28d"] = c
+        if p.get("status") != old:
+            p.setdefault("history", []).append({"date": today, "event": p["status"], "clicks_28d": c})
+
+    if changes and not dry:
+        (host / "data" / "course-ledger.json").write_text(
+            json.dumps(ledger, indent=2, ensure_ascii=False))
+    for ch in changes:
+        print(f"  promote -> {ch}")
+    return ledger, changes
+
+
 # ------------------------------------------------------------------ gate (one action for tonight)
 def gate(host, radar, dry):
     ledger, corrupt = load_ledger(host)
@@ -490,6 +575,10 @@ def main():
     if "--prepare-batches" in argv:
         prepare_batches(host, radar, dry, force="--force" in argv)
     if "--gate" in argv:
+        # Lifecycle BEFORE the gate, every night: a course promoted to 'expanding' tonight must be
+        # visible to the very gate call that decides tonight's action, or growth lags a full day
+        # behind the evidence for it.
+        promote(host, cfg, dry)
         gate(host, radar, dry)
     return 0
 

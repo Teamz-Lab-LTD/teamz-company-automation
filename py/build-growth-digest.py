@@ -163,6 +163,15 @@ def nightly_health(repo, label):
             return f"⚠️ ran, agent FAILED: {content.split(':', 1)[-1]} ({age_h:.0f}h ago)"
         if content.startswith("skipped"):
             return f"⚠️ ran, agent SKIPPED: {content.split(':', 1)[-1]} ({age_h:.0f}h ago)"
+        # The COURSE agent (nightly-site.sh phase 4.7) writes its own status field. nightly-site.sh
+        # started writing `courses` on 2026-07-19 and nothing read it — the one property that runs
+        # it could have failed, or silently no-opped, every night while this digest still printed
+        # "ok". A monitor that cannot see a phase is not monitoring that phase.
+        courses = status.get("courses", "")
+        if courses.startswith("failed"):
+            return f"⚠️ ran, COURSE agent FAILED: {courses.split(':', 1)[-1]} ({age_h:.0f}h ago)"
+        if courses.startswith("skipped"):
+            return f"⚠️ ran, COURSE agent SKIPPED: {courses.split(':', 1)[-1]} ({age_h:.0f}h ago)"
         # exit_code is the one UNAMBIGUOUS signal the runner ALWAYS writes. The per-phase strings
         # above only cover content/build/deploy; any OTHER phase that aborts (GSC pull, sitemap,
         # keyword harvest, preflight) shows up ONLY here. Never claim "ok" while the process

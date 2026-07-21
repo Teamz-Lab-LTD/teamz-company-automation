@@ -496,12 +496,21 @@ def prepare_batches(host, radar, dry, force=False):
                 w.writerow(["Keyword"])
                 for kw in uniq:
                     w.writerow([kw])
+            # "Discover new keywords", NOT "Get search volume and forecasts". The two are different
+            # tools: Get-search-volume returns metrics for EXACTLY the terms uploaded and nothing
+            # else, so it can only confirm what we already listed. Discover treats each term as a
+            # seed and returns the long tail behind it — which is the entire point of a batch, since
+            # the winnable keywords are the ones we could not have thought to write down.
             (up / f"_SET-LOCATION-radar-{geo}.txt").write_text(
+                f'USE "DISCOVER NEW KEYWORDS" — NOT "Get search volume"\n'
                 f"SET KEYWORD PLANNER LOCATION = {loc}\n{'='*40}\n\n"
-                f"Upload {fname} in Keyword Planner (Get search volume and forecasts),\n"
-                f"set LOCATIONS = {loc}, then SAVE the results CSV into:\n"
+                f"Keyword Planner > Discover new keywords > tab 'Start with keywords'.\n"
+                f"Paste from {fname} — about 10 seeds per run; the box silently truncates a\n"
+                f"longer list, so the extra seeds return nothing and the pull still looks fine.\n"
+                f"Set LOCATIONS = {loc}, language English, then SAVE the results CSV into:\n"
                 f"  data/manual-pull/{dst}\n\n"
-                f"Wrong location = wrong volume = wasted pull.\n")
+                f"Wrong location = wrong volume = wasted pull.\n"
+                f"Wrong tool = no new keywords = wasted pull.\n")
         wrote.append(f"{fname} ({len(uniq)} kw, {loc})")
     if not dry:
         state["last_prepared"] = _today()

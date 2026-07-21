@@ -439,7 +439,22 @@ if [ "${TEAMZ_NIGHTLY_COURSES:-0}" = "1" ]; then
       COURSE_STATUS="skipped:api-unreachable"
       echo "  SKIP: api.anthropic.com unreachable after retries"
     else
-      echo "  action: $ACTION   model: ${TEAMZ_COURSE_MODEL:-opus}"
+      # Model per ACTION, not per night. The two actions are not the same job and do not run at
+      # the same rate. create-pilot invents a course on a new YMYL topic — it picks the angle,
+      # sources real figures (NAIC/NAPHIA/AVMA), and has to refuse brand traps; it fires at most
+      # once per TEAMZ_PILOT_CADENCE_DAYS (14) with <=2 active pilots, so ~12-26 times a year.
+      # expand appends lessons into a course whose voice, schema and structure the pilot already
+      # fixed — pattern-work — and fires every TEAMZ_PILOT_EXPAND_SPACING (7) days PER expanding
+      # course, so it becomes the large majority of runs as soon as anything graduates. Spending
+      # the strong model on the rare, hard job and the cheap one on the frequent, easy job is the
+      # opposite of one flat TEAMZ_COURSE_MODEL, which pays top rate for the pattern-work and
+      # tempts a blanket downgrade that lands on the foundational content instead. Mirrors the
+      # content agent's existing TEAMZ_CONTENT_MODEL_NEW / _ENHANCE split.
+      case "$ACTION" in
+        expand) COURSE_MODEL="${TEAMZ_COURSE_MODEL_EXPAND:-sonnet}" ;;
+        *)      COURSE_MODEL="${TEAMZ_COURSE_MODEL_NEW:-${TEAMZ_COURSE_MODEL:-opus}}" ;;
+      esac
+      echo "  action: $ACTION   model: $COURSE_MODEL"
       COURSE_MAX_SECONDS="${TEAMZ_COURSE_MAX_SECONDS:-3600}"
       COURSE_OUT="$(mktemp -t nightly-course 2>/dev/null || echo "$ROOT/logs/.course-out.$$")"
 
@@ -447,7 +462,7 @@ if [ "${TEAMZ_NIGHTLY_COURSES:-0}" = "1" ]; then
       # (NOT through a pipe), so COURSE_EXIT is claude's OWN exit and the watchdog kills claude.
       _run_course_agent() {
         claude --print --verbose --dangerously-skip-permissions \
-               --model "${TEAMZ_COURSE_MODEL:-opus}" -p "$(cat "$COURSE_PROMPT")" > "$COURSE_OUT" 2>&1 &
+               --model "$COURSE_MODEL" -p "$(cat "$COURSE_PROMPT")" > "$COURSE_OUT" 2>&1 &
         COURSE_PID=$!
         set -m
         ( sleep "$COURSE_MAX_SECONDS"; kill -TERM "$COURSE_PID" 2>/dev/null; sleep 60; kill -KILL "$COURSE_PID" 2>/dev/null ) &

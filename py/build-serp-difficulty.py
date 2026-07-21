@@ -53,6 +53,11 @@ SEARCH_URL = "https://api.firecrawl.dev/v1/search"
 CREDIT_URL = "https://api.firecrawl.dev/v1/team/credit-usage"
 TOP_N = int(os.getenv("TEAMZ_SERP_TOP_N", "10"))
 RESERVE_CREDITS = int(os.getenv("TEAMZ_FIRECRAWL_RESERVE", "50"))   # never spend the account to zero
+# A SERP score is a PERISHABLE measurement, not a fact. Competitors publish, Google reshuffles, a
+# term that was open in July can be locked by winter. The first version cached forever, which meant
+# the engine would keep ranking clusters on a stale reading and never notice it had gone wrong —
+# the failure mode is silent and gets worse with time. Anything older than this is re-measured.
+STALE_DAYS = int(os.getenv("TEAMZ_SERP_STALE_DAYS", "90"))
 
 UGC_HOSTS = ("reddit.com", "quora.com", "stackexchange.com", "stackoverflow.com",
              "medium.com", "youtube.com", "facebook.com", "linkedin.com")
@@ -231,6 +236,16 @@ def main():
     limit = int(argv[argv.index("--limit") + 1]) if "--limit" in argv else 10 ** 6
     force = "--force" in argv
 
+    def _age_days(iso):
+        if not iso:
+            return 10 ** 6                       # never stamped = treat as maximally stale
+        try:
+            y, m, d = (int(x) for x in str(iso).split("-")[:3])
+            import datetime
+            return (datetime.date.today() - datetime.date(y, m, d)).days
+        except Exception:
+            return 10 ** 6
+
     key = _key()
     if src:
         kws = load_keywords(src)
@@ -255,7 +270,16 @@ def main():
                 k = (m.get("kw") or "").strip().lower()
                 if k and k not in kws:
                     kws.append(k)
-    todo = [k for k in kws if force or k not in cache][:limit]
+    # Never-scored keywords first (they can unlock a course tonight), then the stalest refreshes.
+    # Refreshes ride the same nightly budget, so staleness is worked off continuously instead of
+    # needing a human to remember that the numbers have aged.
+    fresh = [k for k in kws if k not in cache]
+    stale = sorted((k for k in kws if k in cache
+                    and _age_days(cache[k].get("scored_at")) >= STALE_DAYS),
+                   key=lambda k: -_age_days(cache[k].get("scored_at")))
+    todo = (kws if force else fresh + stale)[:limit]
+    if stale and not force:
+        print(f"  {len(stale)} score(s) older than {STALE_DAYS}d queued for re-measurement")
     left = credits_left(key)
     budget = max(0, left - RESERVE_CREDITS)
     if len(todo) > budget:
@@ -265,24 +289,33 @@ def main():
     print(f"{len(kws)} keywords, {len(cache)} cached, fetching {len(todo)} (credits left {left})")
 
     serps = {k: v.get("_results") for k, v in cache.items() if v.get("_results")}
-    failed = []
+    today = time.strftime("%Y-%m-%d")
+    stamped, failed = {}, []
     for i, kw in enumerate(todo, 1):
         res = fetch_serp(key, kw)
         if res is None:
-            failed.append(kw)
+            failed.append(kw)             # keep the old score rather than dropping the keyword
             continue
         serps[kw] = res
+        stamped[kw] = today
         if i % 10 == 0:
             print(f"  … {i}/{len(todo)}")
 
     auth = authority_index(serps)
     corpus = len(serps)
-    scored = {}
+    scored, moved = {}, []
     for kw, res in serps.items():
         s = score(kw, res, auth, corpus)
-        if s:
-            s["_results"] = res           # cached so a re-run recomputes authority without refetching
-            scored[kw] = s
+        if not s:
+            continue
+        s["_results"] = res               # cached so a re-run recomputes authority without refetching
+        # Keep the ORIGINAL measurement date for anything not refetched this run, so a keyword can
+        # never look freshly-verified just because some other keyword was scored today.
+        s["scored_at"] = stamped.get(kw) or cache.get(kw, {}).get("scored_at") or today
+        prev = cache.get(kw, {}).get("winnability")
+        if kw in stamped and prev is not None and abs(prev - s["winnability"]) >= 1.5:
+            moved.append((kw, prev, s["winnability"]))
+        scored[kw] = s
 
     out_p.parent.mkdir(parents=True, exist_ok=True)
     out_p.write_text(json.dumps({
@@ -295,6 +328,13 @@ def main():
 
     ranked = sorted(scored.values(), key=lambda r: r["winnability"], reverse=True)
     print(f"\nscored {len(scored)} keywords; {len(failed)} failed")
+    if moved:
+        # A SERP that shifted materially is the whole point of re-measuring — say so out loud,
+        # otherwise the decay this TTL exists to catch happens silently in a JSON file.
+        print("\nWINNABILITY MOVED since last measurement:")
+        for kw, old, new in sorted(moved, key=lambda m: m[2] - m[1])[:10]:
+            arrow = "↓ harder" if new < old else "↑ easier"
+            print(f"  {arrow}  {kw[:40]:<42} {old} -> {new}")
     print("\nMOST WINNABLE:")
     for r in ranked[:12]:
         print(f"  win {r['winnability']:>4}  {r['keyword'][:40]:<42} {r['why']}")

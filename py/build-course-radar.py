@@ -117,6 +117,48 @@ def load_serp_difficulty(host):
         return {}, {}
 
 
+def entity_tokens(serp_doms):
+    """Company/organisation names, derived from the domains actually seen in measured SERPs.
+
+    A cluster can pass the brand check while individual MEMBERS are brand queries: pet-insurance
+    scored a diverse SERP and win 8/10, yet its outline contained 'pet insurance trupanion' and
+    'pet insurance aspca'. Those become lessons about named firms we cannot outrank on their own
+    names, and which read as unpaid advertising.
+
+    The corpus already names every company that matters here — they are the domains ranking in the
+    SERPs we measured. Strip the TLD and the leading www/sub, and 'trupanion.com' yields the token
+    that disqualifies 'pet insurance trupanion'. Nothing hand-listed, so it covers brands nobody
+    thought to enumerate and stays correct as the corpus grows.
+    """
+    toks = set()
+    for doms in serp_doms.values():
+        for d in doms or []:
+            core = d.rsplit(".", 1)[0].split(".")[-1]     # navyfederal.org -> navyfederal
+            if len(core) >= 4 and core not in _GENERIC_DOMS:
+                toks.add(core)
+    return toks
+
+
+# Domains that rank everywhere and are NOT brands whose name would appear in a topical query.
+_GENERIC_DOMS = {"wikipedia", "reddit", "youtube", "quora", "facebook", "linkedin", "medium",
+                 "forbes", "investopedia", "nerdwallet", "bankrate", "healthline", "webmd",
+                 "consumerfinance", "usnews", "cnet", "wikihow", "britannica", "stackexchange"}
+
+
+def clean_outline(members, ents, limit=10):
+    """Top members by demand, minus brand-name and pure-navigational queries."""
+    nav = {"login", "log", "signin", "sign", "near", "phone", "hours", "address", "app"}
+    out = []
+    for m in sorted(members, key=lambda m: (m["vol"] or 0, m["impr"]), reverse=True):
+        toks = set(m["kw"].split())
+        if toks & ents or toks & nav:
+            continue
+        out.append(m["kw"])
+        if len(out) >= limit:
+            break
+    return out
+
+
 def brand_dominated(members, serp_doms, share=float(os.getenv('TEAMZ_RADAR_BRAND_SHARE', '0.35'))):
     """True when ONE domain holds >= `share` of every measured slot in the cluster.
 
@@ -337,6 +379,9 @@ def trend_multiplier(members):
     return 1.0 + max(-0.5, min(1.0, yoy)) * 0.4, round(yoy, 3)
 
 
+_ENTS = set()          # populated by build_radar from measured SERP domains
+
+
 def score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win=None, serp_doms=None):
     members = list(c["members"].values())
     geo = c.get("geo", "us")
@@ -457,7 +502,7 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win=None, ser
         "proven_sibling": c.get("proven_sibling"), "duplicate_of": c.get("duplicate_of"),
         "brand_owner": c.get("brand_owner"),
         "members": sorted(members, key=lambda m: (m["vol"] or 0, m["impr"]), reverse=True)[:40],
-        "pilot_outline": [m["kw"] for m in sorted(members, key=lambda m: (m["vol"] or 0, m["impr"]), reverse=True)][:10],
+        "pilot_outline": clean_outline(members, _ENTS),
     }
 
 
@@ -474,6 +519,8 @@ def build_radar(host, cfg):
         gaps = {}
     existing_slugs, existing_titles = existing_courses(host)
     serp_win, serp_doms = load_serp_difficulty(host)
+    global _ENTS
+    _ENTS = entity_tokens(serp_doms)
     clusters = cluster(seeds, us_vol, bd_vol, gaps)
     scored = [score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win, serp_doms)
               for c in clusters.values()]

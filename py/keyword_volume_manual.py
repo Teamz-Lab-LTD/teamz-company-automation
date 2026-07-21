@@ -34,6 +34,44 @@ def _norm(s):
     return re.sub(r"\s+", " ", (s or "").strip().lower())
 
 
+def _parse_volume(cell):
+    """Planner's 'Avg. monthly searches' cell -> (value, bucketed).
+
+    An account with no ad spend does NOT get exact numbers — Google returns log-scale BUCKETS
+    like '10K - 100K' (and the dash may be an en-dash). float() on that raises, and the old code
+    turned every such row into vol=None, i.e. a whole pull silently reporting "no demand data"
+    while looking like it worked. Buckets are perfectly usable for RANKING, which is all the radar
+    does with volume, so parse them instead of discarding them.
+
+    The bucket's central estimate is the GEOMETRIC mean, not the arithmetic one: the buckets are
+    log-scale, so the midpoint of 10K-100K is 31.6K, not 55K. Arithmetic would systematically
+    inflate every bucketed keyword by ~1.7x and outrank exactly-measured ones.
+
+    Returns (None, False) for blank/unparseable — never a guessed zero.
+    """
+    s = (cell or "").strip().replace(",", "")
+    if not s:
+        return None, False
+
+    def one(tok):
+        tok = tok.strip().upper().replace("+", "")
+        m = re.match(r"^([\d.]+)\s*([KM]?)$", tok)
+        if not m:
+            return None
+        v = float(m.group(1))
+        return v * {"": 1, "K": 1_000, "M": 1_000_000}[m.group(2)]
+
+    # en-dash, em-dash, hyphen, or the word "to"
+    parts = [p for p in re.split(r"\s*[–—-]\s*|\s+to\s+", s) if p]
+    if len(parts) == 2:
+        lo, hi = one(parts[0]), one(parts[1])
+        if lo is not None and hi is not None and lo > 0 and hi > 0:
+            return round((lo * hi) ** 0.5), True      # geometric mean of a log-scale bucket
+        return None, False
+    v = one(s)
+    return (v, False) if v is not None else (None, False)
+
+
 def _parse_planner_csv(path):
     """One Planner export -> {normalized keyword: {'vol': float, 'comp': str}}.
     Tab-delimited; exports may be UTF-8 or UTF-16 (Excel). Header is the first row with
@@ -69,7 +107,10 @@ def _parse_planner_csv(path):
     # a sharper revenue proxy than any niche-level benchmark table. All optional: absent column or
     # blank cell = None, never a guessed zero.
     yi = hdr.index("YoY change") if "YoY change" in hdr else -1
-    bi = hdr.index("Top of page bid (high range)") if "Top of page bid (high range)" in hdr else -1
+    # Prefer the high-range bid, but accept the low-range column — which is what the UI shows by
+    # default, so an export made without touching Columns has only that one.
+    bi = next((hdr.index(c) for c in ("Top of page bid (high range)", "Top of page bid (low range)")
+               if c in hdr), -1)
 
     def _pct(cell):
         # "+900%" -> 9.0, "-100%" -> -1.0, "0%" -> 0.0, "∞"/blank/garbage -> None
@@ -94,18 +135,15 @@ def _parse_planner_csv(path):
     for r in rows[rows.index(hdr) + 1:]:
         if len(r) <= vi or not r[ki].strip():
             continue
-        cell = r[vi].strip()
-        if not cell:
-            vol = None              # blank = Planner returned no number = UNKNOWN, NOT zero demand
-        else:
-            try:
-                vol = float(cell)
-            except ValueError:
-                vol = None          # unparseable = unknown; never silently assume zero
+        vol, bucketed = _parse_volume(r[vi])
         out[_norm(r[ki])] = {
             "vol": vol,
+            "bucketed": bucketed,   # True = derived from a range, precise to ~an order of magnitude
             "comp": r[ci].strip() if ci >= 0 and len(r) > ci else "",
-            "yoy": _pct(r[yi]) if yi >= 0 and len(r) > yi else None,
+            # A bucketed account reports change as movement BETWEEN buckets, so a one-step shift
+            # reads as ±90% regardless of the real delta. Feeding that to the radar's trend
+            # multiplier would swing scores on an artifact, so drop trend when volume is bucketed.
+            "yoy": (_pct(r[yi]) if (yi >= 0 and len(r) > yi and not bucketed) else None),
             "bid_hi": _usd(r[bi]) if bi >= 0 and len(r) > bi else None,
         }
     return out

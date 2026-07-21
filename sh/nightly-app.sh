@@ -30,7 +30,7 @@
 #   TEAMZ_APP_DATA_DIR        automation_data                  (optional, default shown)
 #   TEAMZ_APP_LOCALES         en-US,bn-BD                      (optional, default en-US)
 #   TEAMZ_NIGHTLY_HOUR/MINUTE 3 / 10                           (optional)
-#   TEAMZ_APP_YT_SEED         "hazira khata"                   (optional, skips if unset)
+#   TEAMZ_APP_SEED_KEYWORD         "hazira khata"                   (optional, skips if unset)
 #
 # Install:   bash scripts/nightly-app.sh --install
 # Uninstall: bash scripts/nightly-app.sh --uninstall
@@ -198,19 +198,31 @@ else
   skip "listing" "platform=$PLATFORM (Android pullers only)"
 fi
 
-# 4) Competitor set for the app's own keyword — no credential needed.
-if [ -f "$PY_DIR/aso/aso-competitors.py" ] && [ -n "${TEAMZ_APP_YT_SEED:-}" ]; then
-  step "competitors" python3 "$PY_DIR/aso/aso-competitors.py" find "$TEAMZ_APP_YT_SEED"
-else
-  skip "competitors" "TEAMZ_APP_YT_SEED unset"
+# 4) Own-app review text straight from Play. bulk-reports carries review CSVs
+#    too, but on the bucket's schedule; this is the same-day read and it is the
+#    Android-native half of aso-competitors.py, whose other modes are iTunes.
+if [ "$PLATFORM" = "android" ] || [ "$PLATFORM" = "both" ]; then
+  step "play-reviews" python3 "$PY_DIR/aso/aso-competitors.py" --play-reviews "$PACKAGE"
 fi
 
-# 5) YouTube autocomplete — a demand signal that leads App Store search, and the
-#    only one here that costs nothing and needs no key.
-if [ -n "${TEAMZ_APP_YT_SEED:-}" ]; then
-  step "youtube-keywords" python3 "$PY_DIR/build-youtube-keywords.py" --seed "$TEAMZ_APP_YT_SEED"
+# 5) Competitor set for the app's own keyword — no credential needed.
+#    NOTE: --find queries the iTunes Search API, so for an Android-only app this
+#    is market intelligence (who else builds this, how they position it), not a
+#    Play ranking peer set. Kept because the category read is still worth having;
+#    do not mistake it for Play competitor data.
+if [ -n "${TEAMZ_APP_SEED_KEYWORD:-}" ]; then
+  step "competitors" python3 "$PY_DIR/aso/aso-competitors.py" --find "$TEAMZ_APP_SEED_KEYWORD"
 else
-  skip "youtube-keywords" "TEAMZ_APP_YT_SEED unset"
+  skip "competitors" "TEAMZ_APP_SEED_KEYWORD unset"
+fi
+
+# 6) YouTube autocomplete — a demand signal that leads store search. Costs
+#    nothing and needs no key. Seeds are POSITIONAL, not a flag: --seed is read
+#    as --seed-file and the script then tries to open the keyword as a path.
+if [ -n "${TEAMZ_APP_SEED_KEYWORD:-}" ]; then
+  step "youtube-keywords" python3 "$PY_DIR/build-youtube-keywords.py" "$TEAMZ_APP_SEED_KEYWORD"
+else
+  skip "youtube-keywords" "TEAMZ_APP_SEED_KEYWORD unset"
 fi
 
 FAILED=0

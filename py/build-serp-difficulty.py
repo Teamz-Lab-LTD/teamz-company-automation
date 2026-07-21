@@ -262,13 +262,21 @@ def main():
         except Exception as e:
             print(f"  course-radar.json unreadable ({str(e)[:60]}) — skipping SERP scoring.")
             return 0
-        kws = []
+        # Sample the TOP members of each cluster in rank order, not every member of cluster #1.
+        # A real radar run produces thousands of clusters with up to 40 members each; taking them
+        # flat spends an entire night's credits inside the single highest-ranked cluster, so the
+        # rest stay unmeasured and parked at needs-serp indefinitely. Breadth first: enough reads
+        # per cluster to clear MIN_MEASURED, across as many clusters as the budget allows.
+        per = int(os.getenv("TEAMZ_SERP_PER_CLUSTER", "3"))
+        kws, seen = [], set()
         for c in radar.get("clusters", []):
-            if c.get("status", "").startswith("refused"):
+            st = c.get("status", "")
+            if st.startswith("refused") or st == "empty":
                 continue
-            for m in c.get("members", []):
+            for m in c.get("members", [])[:per]:
                 k = (m.get("kw") or "").strip().lower()
-                if k and k not in kws:
+                if k and k not in seen:
+                    seen.add(k)
                     kws.append(k)
     # Never-scored keywords first (they can unlock a course tonight), then the stalest refreshes.
     # Refreshes ride the same nightly budget, so staleness is worked off continuously instead of

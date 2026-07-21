@@ -24,6 +24,7 @@ Modes:
 """
 import csv
 import glob
+from collections import Counter
 import json
 import os
 import re
@@ -72,6 +73,14 @@ PILOT_DORMANT_DAYS = int(os.getenv("TEAMZ_PILOT_DORMANT_DAYS", "56"))  # 0 click
 # A cluster whose members are mostly long queries is demand Google answers itself — refuse it.
 AIO_LEN_MAX      = int(os.getenv("TEAMZ_RADAR_AIO_LEN_MAX", "6"))     # median member words >= this = refuse
 MAX_ACTIVE       = int(os.getenv("TEAMZ_RADAR_MAX_ACTIVE_PILOTS", "2"))
+# A cluster may not become eligible on INFERRED winnability. The first real Planner pull made this
+# concrete: 185 clusters went eligible at up to $2,295/mo, and the top ones were other companies'
+# brand queries ("navy federal heloc", "wells fargo heloc") plus commercial buy-intent ("term life
+# insurance quotes"). Measured, all four score 1.1-1.3 of 10 — navyfederal.org holds four of the
+# top five slots for its own brand. Nothing needed a brand blocklist; they were only eligible
+# because no one had looked at the SERP. So: measure first, then decide.
+MIN_MEASURED     = int(os.getenv("TEAMZ_RADAR_MIN_MEASURED", "3"))    # members needing a real SERP read
+MIN_WIN          = float(os.getenv("TEAMZ_RADAR_MIN_WIN", "4.0"))     # measured winnability floor
 EXPAND_SPACING   = int(os.getenv("TEAMZ_PILOT_EXPAND_SPACING", "7"))
 BATCH_MAX        = int(os.getenv("TEAMZ_KW_BATCH_MAX", "700"))
 
@@ -91,17 +100,43 @@ def _win_from_comp(comp):
 
 
 def load_serp_difficulty(host):
-    """{keyword: winnability 1-10} measured from real SERP composition. Missing file = {} (the
-    radar degrades to the advertiser-competition fallback rather than refusing to run)."""
+    """({keyword: winnability 1-10}, {keyword: [top domains]}) measured from real SERP composition.
+    Missing file = empty (the radar degrades to the advertiser-competition fallback rather than
+    refusing to run)."""
     p = Path(host) / "data" / "serp-difficulty.json"
     if not p.exists():
-        return {}
+        return {}, {}
     try:
-        return {k: v["winnability"] for k, v in json.loads(p.read_text()).get("keywords", {}).items()
-                if isinstance(v, dict) and v.get("winnability") is not None}
+        kws = json.loads(p.read_text()).get("keywords", {})
+        win = {k: v["winnability"] for k, v in kws.items()
+               if isinstance(v, dict) and v.get("winnability") is not None}
+        doms = {k: v.get("top_domains", []) for k, v in kws.items() if isinstance(v, dict)}
+        return win, doms
     except Exception as e:
         sys.stderr.write(f"WARNING: {p} unreadable ({e}) — falling back to advertiser competition.\n")
-        return {}
+        return {}, {}
+
+
+def brand_dominated(members, serp_doms, share=float(os.getenv('TEAMZ_RADAR_BRAND_SHARE', '0.35'))):
+    """True when ONE domain holds >= `share` of every measured slot in the cluster.
+
+    A three-keyword sample estimates difficulty well but can get lucky: wells-fargo survived the
+    winnability floor at 5/10 on a 58-member cluster whose SERPs are owned by wellsfargo.com. The
+    tell is not the score, it is the concentration — a query set where one company holds most of
+    the results is that company's brand real estate, and no amount of writing takes it.
+
+    Read off SERP data already collected, so it costs nothing and needs no brand blocklist (which
+    would be judgement dressed as data, and would silently miss every brand not on the list).
+
+    The 0.35 default is read off measured separation, not picked: across the first real pull,
+    wells-fargo sits at 40% (wellsfargo.com 12/30 slots) while legitimate topic clusters sit at
+    7-20% (reverse-mortgage 7%, fha-loan 10%, whole-life 13%). Nothing lands between 20 and 40.
+    """
+    slots = [d for m in members for d in serp_doms.get(m["kw"], [])]
+    if len(slots) < 10:
+        return None                       # too little measured evidence to make the call
+    top, n = Counter(slots).most_common(1)[0]
+    return top if n / len(slots) >= share else None
 
 
 def _today():
@@ -302,7 +337,7 @@ def trend_multiplier(members):
     return 1.0 + max(-0.5, min(1.0, yoy)) * 0.4, round(yoy, 3)
 
 
-def score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win=None):
+def score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win=None, serp_doms=None):
     members = list(c["members"].values())
     geo = c.get("geo", "us")
     known = [m for m in members if m["vol"] is not None]
@@ -340,22 +375,25 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win=None):
     # only for keywords never SERP-scored. Measured beats inferred — the two disagree materially
     # (see _win_from_comp's note), and this is the number that decides whether a course can rank.
     serp_win = serp_win or {}
-    wins, measured = [], 0
-    for m in members:
-        sw = serp_win.get(m["kw"])
-        if sw is not None:
-            wins.append(sw)
-            measured += 1
-        elif m["vol"] is not None:
-            wins.append(_win_from_comp(m["comp"]))
-    wins = wins or [5]
+    real = [serp_win[m["kw"]] for m in members if m["kw"] in serp_win]
+    if real:
+        # Measured values are used ALONE. Mixing them with the advertiser-competition fallback
+        # averages truth with guesswork and the guesses win by sheer count: navy-federal had three
+        # measured members at ~1.0 (navyfederal.org holding ten of ten slots) diluted by 58 inferred
+        # 5-8s into a mean of 5, which passed the winnability floor. A sample of real SERP reads
+        # represents the cluster; the fallback is only for clusters with no reads at all.
+        wins, measured = real, len(real)
+    else:
+        wins = [_win_from_comp(m["comp"]) for m in members if m["vol"] is not None] or [5]
+        measured = 0
     win = round(sum(wins) / len(wins))
     win_source = (f"serp:{measured}/{len(members)}" if measured else "advertiser-comp")
     title_text = " ".join(m["kw"] for m in members[:8]) or c.get("proposed_title", c["id"])
     visitors = int(scored_vol + gap_impr / 3.0)       # rough monthly-visitor proxy
 
     usd, niche, rpm = 0.0, "unknown", 0.0
-    if _HAVE_RPM and status not in ("empty", "refused-one-head", "refused-duplicate", "refused-aio-risk"):
+    if _HAVE_RPM and status not in ("empty", "refused-one-head", "refused-duplicate", "refused-aio-risk",
+                                     "refused-brand-owned", "refused-unwinnable"):
         try:
             # hub=geo is what country_for() needs, but that same argument makes niche_for()
             # skip its hub lookup and keyword-match the title instead — which returned the
@@ -387,8 +425,24 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win=None):
     # now an accelerator (it sharpens winnability + RPM), never a precondition.
     # `needs_volume` stays in the output so a human reading course-radar.json can still see which
     # clusters are running on GSC evidence alone.
-    eligible = (status == "candidate" and len(members) >= MIN_CLUSTER_KW
-                and (known_vol >= MIN_CLUSTER_VOL or gap_impr >= MIN_GAP_IMPR))
+    # Demand gate: is anyone searching this?
+    has_demand = (len(members) >= MIN_CLUSTER_KW
+                  and (known_vol >= MIN_CLUSTER_VOL or gap_impr >= MIN_GAP_IMPR))
+    # Winnability gate: could WE rank for it — measured, never inferred. A cluster with too few
+    # real SERP reads is not refused, it is parked as needs-serp; the nightly measures it and it
+    # is reconsidered on the next run. Refusing outright would discard demand for lack of data,
+    # and passing it would create courses for queries a brand owns outright.
+    if status == "candidate" and has_demand:
+        if measured < min(MIN_MEASURED, len(members)):
+            status = "needs-serp"
+        elif win < MIN_WIN:
+            status = "refused-unwinnable"
+        else:
+            owner = brand_dominated(members, serp_doms or {})
+            if owner:
+                status = "refused-brand-owned"
+                c["brand_owner"] = owner
+    eligible = (status == "candidate" and has_demand)
 
     return {
         "id": c["id"], "geo": geo, "language": c.get("language", "en"),
@@ -401,6 +455,7 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win=None):
         "win_source": win_source, "median_query_words": med_len,
         "member_count": len(members), "vanity_excluded": vanity,
         "proven_sibling": c.get("proven_sibling"), "duplicate_of": c.get("duplicate_of"),
+        "brand_owner": c.get("brand_owner"),
         "members": sorted(members, key=lambda m: (m["vol"] or 0, m["impr"]), reverse=True)[:40],
         "pilot_outline": [m["kw"] for m in sorted(members, key=lambda m: (m["vol"] or 0, m["impr"]), reverse=True)][:10],
     }
@@ -418,9 +473,9 @@ def build_radar(host, cfg):
         sys.stderr.write(f"  (GSC gap pull failed: {e})\n")
         gaps = {}
     existing_slugs, existing_titles = existing_courses(host)
-    serp_win = load_serp_difficulty(host)
+    serp_win, serp_doms = load_serp_difficulty(host)
     clusters = cluster(seeds, us_vol, bd_vol, gaps)
-    scored = [score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win)
+    scored = [score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win, serp_doms)
               for c in clusters.values()]
     scored.sort(key=lambda c: c["expected_dollars_mo"], reverse=True)
     return {

@@ -76,12 +76,32 @@ EXPAND_SPACING   = int(os.getenv("TEAMZ_PILOT_EXPAND_SPACING", "7"))
 BATCH_MAX        = int(os.getenv("TEAMZ_KW_BATCH_MAX", "700"))
 
 # competition string -> a 1-10 SERP winnability proxy (Low comp = easy to win)
+#
+# ⚠️ FALLBACK ONLY. Planner's "Competition" is ADVERTISER competition — how many accounts bid on the
+# term. It is NOT SEO difficulty, and the two disagree hard: a 2026-07-22 Firecrawl run over 96 head
+# terms found "small claims court" (Planner: winnable) has 9 of 10 slots held by courts and .gov.
+# Prefer the MEASURED winnability from build-serp-difficulty.py (data/serp-difficulty.json), which
+# reads who actually ranks. This function is what we use when a keyword has never been SERP-scored.
 def _win_from_comp(comp):
     c = (comp or "").strip().lower()
     if "high" in c:   return 3
     if "med" in c:    return 5
     if "low" in c:    return 8
     return 5                                          # unknown competition = neutral
+
+
+def load_serp_difficulty(host):
+    """{keyword: winnability 1-10} measured from real SERP composition. Missing file = {} (the
+    radar degrades to the advertiser-competition fallback rather than refusing to run)."""
+    p = Path(host) / "data" / "serp-difficulty.json"
+    if not p.exists():
+        return {}
+    try:
+        return {k: v["winnability"] for k, v in json.loads(p.read_text()).get("keywords", {}).items()
+                if isinstance(v, dict) and v.get("winnability") is not None}
+    except Exception as e:
+        sys.stderr.write(f"WARNING: {p} unreadable ({e}) — falling back to advertiser competition.\n")
+        return {}
 
 
 def _today():
@@ -282,7 +302,7 @@ def trend_multiplier(members):
     return 1.0 + max(-0.5, min(1.0, yoy)) * 0.4, round(yoy, 3)
 
 
-def score_cluster(c, existing_slugs, existing_titles, us_vol):
+def score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win=None):
     members = list(c["members"].values())
     geo = c.get("geo", "us")
     known = [m for m in members if m["vol"] is not None]
@@ -316,9 +336,21 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
                 c["duplicate_of"] = s
                 break
 
-    # winnability proxy: median-ish from members' competition
-    wins = [_win_from_comp(m["comp"]) for m in known] or [5]
+    # Winnability: prefer MEASURED SERP composition per keyword; fall back to advertiser competition
+    # only for keywords never SERP-scored. Measured beats inferred — the two disagree materially
+    # (see _win_from_comp's note), and this is the number that decides whether a course can rank.
+    serp_win = serp_win or {}
+    wins, measured = [], 0
+    for m in members:
+        sw = serp_win.get(m["kw"])
+        if sw is not None:
+            wins.append(sw)
+            measured += 1
+        elif m["vol"] is not None:
+            wins.append(_win_from_comp(m["comp"]))
+    wins = wins or [5]
     win = round(sum(wins) / len(wins))
+    win_source = (f"serp:{measured}/{len(members)}" if measured else "advertiser-comp")
     title_text = " ".join(m["kw"] for m in members[:8]) or c.get("proposed_title", c["id"])
     visitors = int(scored_vol + gap_impr / 3.0)       # rough monthly-visitor proxy
 
@@ -366,7 +398,7 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
         "expected_dollars_mo": score, "niche": niche, "rpm_mid": rpm,
         "intent": intent, "trend_yoy": trend_yoy, "avg_top_bid": avg_bid,
         "known_vol": known_vol, "gap_impressions": gap_impr, "win_proxy": win,
-        "median_query_words": med_len,
+        "win_source": win_source, "median_query_words": med_len,
         "member_count": len(members), "vanity_excluded": vanity,
         "proven_sibling": c.get("proven_sibling"), "duplicate_of": c.get("duplicate_of"),
         "members": sorted(members, key=lambda m: (m["vol"] or 0, m["impr"]), reverse=True)[:40],
@@ -386,13 +418,16 @@ def build_radar(host, cfg):
         sys.stderr.write(f"  (GSC gap pull failed: {e})\n")
         gaps = {}
     existing_slugs, existing_titles = existing_courses(host)
+    serp_win = load_serp_difficulty(host)
     clusters = cluster(seeds, us_vol, bd_vol, gaps)
-    scored = [score_cluster(c, existing_slugs, existing_titles, us_vol) for c in clusters.values()]
+    scored = [score_cluster(c, existing_slugs, existing_titles, us_vol, serp_win)
+              for c in clusters.values()]
     scored.sort(key=lambda c: c["expected_dollars_mo"], reverse=True)
     return {
         "generated_at": _today(),
         "site": cfg.get("site_url"),
         "us_keywords": len(us_vol), "bd_keywords": len(bd_vol), "gap_queries": len(gaps),
+        "serp_scored_keywords": len(serp_win),
         "clusters": scored,
     }
 

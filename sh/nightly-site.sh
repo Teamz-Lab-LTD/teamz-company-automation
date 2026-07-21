@@ -416,6 +416,17 @@ if [ "${TEAMZ_NIGHTLY_COURSES:-0}" = "1" ]; then
     COURSE_STATUS="skipped:no-radar"
     echo "  SKIP: scripts/build-course-radar.py missing"
   else
+    # Measure SEO winnability for cluster keywords not yet scored, BEFORE the gate reads them.
+    # Without this, winnability falls back to Planner's ADVERTISER competition, which is a different
+    # quantity and disagrees badly (a term with no bidders can still have a top-10 of banks and .gov).
+    # Optional by design: absent script, absent Firecrawl key, or an API failure just leaves the
+    # fallback in place — it must never block the night's course action. Its own credit guard caps
+    # spend and reserves a floor, so a big cluster set cannot drain the account.
+    if [ -f "$ROOT/scripts/build-serp-difficulty.py" ] && [ -f "$HOME/.config/teamzlab/firecrawl-api-key.txt" ]; then
+      TEAMZ_HOST_DIR="$ROOT" python3 scripts/build-serp-difficulty.py --from-radar \
+        --limit "${TEAMZ_SERP_NIGHTLY_LIMIT:-25}" 2>&1 | sed 's/^/  /' || \
+        echo "  (serp difficulty scoring failed — winnability falls back to advertiser competition)"
+    fi
     # The radar decides the ONE action for tonight (create-pilot | expand | null) — the agent never
     # authorizes itself. --gate writes data/course-task.json.
     python3 scripts/build-course-radar.py --gate 2>&1 | sed 's/^/  /'

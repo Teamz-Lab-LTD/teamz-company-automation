@@ -434,6 +434,26 @@ run_phase_cmd "Search index rebuild" 5 "./scripts/build-search-index.sh"
 if [ "$REPO_DIRTY_AT_START" -eq 0 ]; then
     run_phase_cmd "Static schema rebuild" 3 "python3 scripts/build-static-schema.py"
     run_phase_cmd "Orphan fix" 3 "python3 scripts/build-fix-orphans.py fix"
+    # Repairs renderRelatedTools entries pointing at slugs that have no page on
+    # disk. Sits in this clean-start block because it EDITS tool HTML, exactly
+    # like the two phases around it.
+    #
+    # HOST-GUARDED: this file is symlinked by 5 properties (tools, learn,
+    # landing-pages, hazira, ai_resume_checker) and the script exists only in
+    # teamzlab-tools. Without the -f test the other four would run an
+    # HTML-editing script that is not theirs.
+    #
+    # Why it is wired at all: the script has existed since 2026-05 (commit
+    # 48a2841, "heal internal-link graph — 0->74 health score") and NOTHING ever
+    # called it — grepping its name across every .sh/.py/.json/.yml matched only
+    # its own docstring. It was run by hand once, and every page generated
+    # afterwards re-broke the graph. By 2026-07-22 that was 398 distinct dead
+    # URLs and 1,430 broken link edges. Googlebot renders this JS, follows the
+    # links and logs 404s — GSC "Not found (404)" examples were last-crawled
+    # Jul 10-11 2026 and were all real calculator slugs that never existed in
+    # git. A dormant fixer looks identical to a working one in every report.
+    [ -f scripts/build-fix-broken-related.py ] && \
+        run_phase_cmd "Broken related-tools links" 5 "python3 scripts/build-fix-broken-related.py --apply"
     run_phase_cmd "SEO auto-fix" 5 "./scripts/build-seo-audit.sh --fix"
 else
     echo "  - Skipping tool-editing maintenance (static-schema, orphan-fix, seo-fix):"

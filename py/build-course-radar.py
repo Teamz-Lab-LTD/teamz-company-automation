@@ -187,10 +187,11 @@ def cluster(seeds, us_vol, bd_vol, gaps):
             clusters[cid] = {"id": cid, **meta, "members": {}}
         return clusters[cid]
 
-    def add(cid, kw, vol, comp, impr, source):
+    def add(cid, kw, vol, comp, impr, source, yoy=None, bid=None):
         m = clusters[cid]["members"]
         if kw not in m or (vol is not None and (m[kw]["vol"] is None or vol > m[kw]["vol"])):
-            m[kw] = {"kw": kw, "vol": vol, "comp": comp, "impr": impr, "source": source}
+            m[kw] = {"kw": kw, "vol": vol, "comp": comp, "impr": impr, "source": source,
+                     "yoy": yoy, "bid_hi": bid}
 
     def match_theme(kw):
         # 0.6 not 0.5: a single token shared with a pattern (e.g. the word "android") is 0.5 for a
@@ -216,14 +217,16 @@ def cluster(seeds, us_vol, bd_vol, gaps):
             seen.add(kw)
             t = match_theme(kw)
             if t and t.get("geo", "us") == geo:
-                add(t["id"], kw, d.get("vol"), d.get("comp"), 0, f"planner-{geo}")
+                add(t["id"], kw, d.get("vol"), d.get("comp"), 0, f"planner-{geo}",
+                    d.get("yoy"), d.get("bid_hi"))
             elif t is None and open_on:
                 toks = [w for w in kw.split() if len(w) > 2][:2]
                 if len(toks) >= 2:
                     cid = "open-" + "-".join(toks)
                     ensure(cid, {"geo": geo, "language": "en", "proposed_title": " ".join(toks).title(),
                                  "proven_sibling": None, "seeded": False, "unseeded": True})
-                    add(cid, kw, d.get("vol"), d.get("comp"), 0, f"planner-{geo}")
+                    add(cid, kw, d.get("vol"), d.get("comp"), 0, f"planner-{geo}",
+                        d.get("yoy"), d.get("bid_hi"))
     # GSC gaps (impressions, unknown volume) — attach to a theme if matched, else open cluster
     for kw, impr in gaps.items():
         t = match_theme(kw)
@@ -240,6 +243,45 @@ def cluster(seeds, us_vol, bd_vol, gaps):
 
 
 # ------------------------------------------------------------------ scoring & refusals
+# The course FORMAT should follow what searchers are actually asking for, not a fixed template.
+# Classified from the cluster's own member keywords; written into course-task.json so the course
+# agent adapts structure (see course-style-guide.md "Intent adaptation"). First match wins, checked
+# from most-specific to least; a cluster with no signal defaults to learn-basics (the site's
+# established analogy-first format).
+_INTENT_RULES = [
+    ("troubleshooting", {"error", "fix", "not", "problem", "failed", "issue", "wont", "denied"}),
+    ("comparison",      {"vs", "versus", "best", "top", "difference", "better", "alternative"}),
+    ("how-to",          {"how", "steps", "guide", "setup", "tutorial", "checklist", "apply", "file"}),
+    ("transactional",   {"calculator", "template", "form", "cost", "price", "rates", "quote"}),
+]
+
+
+def classify_intent(members):
+    counts = {k: 0 for k, _ in _INTENT_RULES}
+    for m in members:
+        toks = set(m["kw"].split())
+        for name, words in _INTENT_RULES:
+            if toks & words:
+                counts[name] += 1
+                break
+    best = max(counts, key=lambda k: counts[k])
+    # require a real plurality — at least a third of members — before overriding the default
+    return best if counts[best] * 3 >= max(len(members), 1) else "learn-basics"
+
+
+def trend_multiplier(members):
+    """Volume-weighted Planner YoY change -> bounded score nudge. 0.8 (dying) .. 1.4 (growing).
+    Bounded because Planner YoY is coarse (+900% breakouts, -100% cliffs) — it should tilt a
+    ranking between otherwise-similar clusters, never dominate RPM x volume. None when no member
+    has trend data (older exports): multiplier 1.0, and the radar reports trend as unknown."""
+    pts = [(m.get("yoy"), (m.get("vol") or 1)) for m in members if m.get("yoy") is not None]
+    if not pts:
+        return 1.0, None
+    wsum = sum(w for _, w in pts)
+    yoy = sum(y * w for y, w in pts) / wsum
+    return 1.0 + max(-0.5, min(1.0, yoy)) * 0.4, round(yoy, 3)
+
+
 def score_cluster(c, existing_slugs, existing_titles, us_vol):
     members = list(c["members"].values())
     geo = c.get("geo", "us")
@@ -296,7 +338,14 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
             sys.stderr.write(f"  (rpm scoring failed for {c['id']}: {e})\n")
 
     sibling_bonus = 1.2 if c.get("proven_sibling") else 1.0
-    score = round(usd * sibling_bonus, 2)
+    trend_mult, trend_yoy = trend_multiplier(members)
+    intent = classify_intent(members)
+    # Google's own top-of-page bid for the cluster's keywords — a per-keyword price signal that is
+    # sharper than the niche benchmark table. Reported for humans + the course agent; deliberately
+    # NOT multiplied into the score (no defensible formula maps bid -> AdSense RPM).
+    bids = [m["bid_hi"] for m in members if m.get("bid_hi") is not None]
+    avg_bid = round(sum(bids) / len(bids), 2) if bids else None
+    score = round(usd * sibling_bonus * trend_mult, 2)
     needs_volume = (known_vol == 0)
     # `and not needs_volume` used to be here. It made the gap_impr branch DEAD CODE: known_vol comes
     # only from manually-exported Planner CSVs, so no pilot could ever be created unless a human sat
@@ -315,6 +364,7 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
         "proposed_slug": _bcq.slugify(c.get("proposed_title", c["id"]))[:60],
         "status": status, "eligible_for_pilot": eligible, "needs_volume": needs_volume,
         "expected_dollars_mo": score, "niche": niche, "rpm_mid": rpm,
+        "intent": intent, "trend_yoy": trend_yoy, "avg_top_bid": avg_bid,
         "known_vol": known_vol, "gap_impressions": gap_impr, "win_proxy": win,
         "median_query_words": med_len,
         "member_count": len(members), "vanity_excluded": vanity,
@@ -503,9 +553,14 @@ def gate(host, radar, dry):
         return emit({
             "action": "create-pilot", "slug": top["proposed_slug"], "title": top["proposed_title"],
             "language": top["language"], "geo": top["geo"],
+            # measured, not assumed: the course agent shapes lesson STRUCTURE to what searchers in
+            # this cluster actually ask for (style guide "Intent adaptation" section)
+            "intent": top.get("intent", "learn-basics"),
+            "trend_yoy": top.get("trend_yoy"), "avg_top_bid": top.get("avg_top_bid"),
             "member_keywords": top["members"], "outline": top["pilot_outline"],
             "style_guide": "scripts/course-style-guide.md",
             "why": f"cluster ${top['expected_dollars_mo']}/mo, niche {top['niche']}, win {top['win_proxy']}/10"
+                   + (f", intent {top.get('intent')}" if top.get("intent") else "")
                    + (f", sibling {top['proven_sibling']}" if top['proven_sibling'] else ""),
         })
     # 2) else expand an expanding course

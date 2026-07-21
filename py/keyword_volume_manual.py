@@ -63,6 +63,33 @@ def _parse_planner_csv(path):
     ki = next(i for i, c in enumerate(hdr) if _is_kw(c))
     vi = hdr.index("Avg. monthly searches")
     ci = hdr.index("Competition") if "Competition" in hdr else -1
+    # Trend + bid columns ship in every Planner export and were being thrown away. They are the
+    # durability signals: YoY change says whether demand is growing or dying (a course built on a
+    # -100% keyword is dead on arrival), and top-of-page bid is Google's own per-keyword price —
+    # a sharper revenue proxy than any niche-level benchmark table. All optional: absent column or
+    # blank cell = None, never a guessed zero.
+    yi = hdr.index("YoY change") if "YoY change" in hdr else -1
+    bi = hdr.index("Top of page bid (high range)") if "Top of page bid (high range)" in hdr else -1
+
+    def _pct(cell):
+        # "+900%" -> 9.0, "-100%" -> -1.0, "0%" -> 0.0, "∞"/blank/garbage -> None
+        s = (cell or "").strip().replace("%", "").replace(",", "")
+        if not s:
+            return None
+        try:
+            return float(s) / 100.0
+        except ValueError:
+            return None
+
+    def _usd(cell):
+        s = (cell or "").strip().replace(",", "")
+        if not s:
+            return None
+        try:
+            return float(s)
+        except ValueError:
+            return None
+
     out = {}
     for r in rows[rows.index(hdr) + 1:]:
         if len(r) <= vi or not r[ki].strip():
@@ -75,7 +102,12 @@ def _parse_planner_csv(path):
                 vol = float(cell)
             except ValueError:
                 vol = None          # unparseable = unknown; never silently assume zero
-        out[_norm(r[ki])] = {"vol": vol, "comp": r[ci].strip() if ci >= 0 and len(r) > ci else ""}
+        out[_norm(r[ki])] = {
+            "vol": vol,
+            "comp": r[ci].strip() if ci >= 0 and len(r) > ci else "",
+            "yoy": _pct(r[yi]) if yi >= 0 and len(r) > yi else None,
+            "bid_hi": _usd(r[bi]) if bi >= 0 and len(r) > bi else None,
+        }
     return out
 
 

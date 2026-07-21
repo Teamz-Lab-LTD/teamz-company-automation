@@ -40,7 +40,7 @@ _spec.loader.exec_module(_bcq)                       # defines functions only; m
 from _teamz_config import load_runtime               # noqa: E402
 from keyword_volume_manual import load_manual_volume, _parse_planner_csv, _norm  # noqa: E402
 try:
-    from revenue_priority import expected_dollars    # noqa: E402
+    from revenue_priority import expected_dollars, niche_for    # noqa: E402
     _HAVE_RPM = True
 except Exception:                                    # scorer/deps missing — degrade, never crash
     _HAVE_RPM = False
@@ -283,8 +283,14 @@ def score_cluster(c, existing_slugs, existing_titles, us_vol):
     usd, niche, rpm = 0.0, "unknown", 0.0
     if _HAVE_RPM and status not in ("empty", "refused-one-head", "refused-duplicate", "refused-aio-risk"):
         try:
+            # hub=geo is what country_for() needs, but that same argument makes niche_for()
+            # skip its hub lookup and keyword-match the title instead — which returned the
+            # 'productivity' default ($6.5) for every cluster, so RPM ranked nothing. Resolve the
+            # SUBJECT niche separately from the cluster's own keywords and pass it explicitly.
+            subject_niche = niche_for("", slug=c["id"], title=title_text)
             r = expected_dollars(slug=c["id"], hub=geo, title=title_text,
-                                 visitors_mo=visitors, serp_winnability=win)
+                                 visitors_mo=visitors, serp_winnability=win,
+                                 niche=subject_niche)
             usd, niche, rpm = r["expected_dollars_mo"], r["niche"], r.get("rpm_mid", 0.0)
         except Exception as e:
             sys.stderr.write(f"  (rpm scoring failed for {c['id']}: {e})\n")

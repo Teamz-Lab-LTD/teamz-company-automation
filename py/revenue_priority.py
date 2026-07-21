@@ -114,7 +114,7 @@ def country_for(hub, slug=""):
 
 
 def expected_dollars(slug, hub="", title="", visitors_mo=0, serp_winnability=5,
-                     time_to_rank_months=2):
+                     time_to_rank_months=2, niche=None):
     """Expected $/mo from this page, via the existing revenue-velocity scorer.
     serp_winnability: 1-10 (10=easy win, 1=walled by NerdWallet/Wikipedia). Default 5
     until a real SERP-difficulty signal is supplied (see serp_difficulty.py)."""
@@ -123,7 +123,12 @@ def expected_dollars(slug, hub="", title="", visitors_mo=0, serp_winnability=5,
     reddit_db = rvs.load_reddit_rpm()
     idea = {
         "slug": slug,
-        "niche": niche_for(hub, slug, title),
+        # `niche` lets a caller that already knows the subject state it outright. Added because
+        # hub does double duty: country_for() needs 'us'/'bd' there, which means niche_for() falls
+        # through to keyword-matching the title — and a caller passing a country was silently
+        # getting the 'productivity' default ($6.5) for EVERY item, flattening the whole RPM
+        # weighting to a constant. Default None preserves existing behaviour exactly.
+        "niche": niche or niche_for(hub, slug, title),
         "country": country_for(hub, slug),
         "est_visitors_mo3": visitors_mo,
         "time_to_rank_months": time_to_rank_months,

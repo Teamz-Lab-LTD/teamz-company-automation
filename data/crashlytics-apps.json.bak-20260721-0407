@@ -7,10 +7,7 @@
       "project_id": "top3picks-app",
       "android": "1:78491713820:android:e27eef5ceb0b770aa23ad9",
       "ios": "1:78491713820:ios:be52972eb4552d4fa23ad9",
-      "active_users": {
-        "android": 12,
-        "ios": 700
-      }
+      "active_users": { "android": 12, "ios": 700 }
     },
     {
       "slug": "no-trace-chat",
@@ -77,11 +74,6 @@
       "project_id": "decorion-app",
       "android": "1:221283573037:android:9c2ccf07f72a33285e87a4",
       "ios": "1:221283573037:ios:00b98930e8aaf9f05e87a4"
-    },
-    {
-      "slug": "devicegpt",
-      "project_id": "sys-explorer-131ed",
-      "android": "1:953087721962:android:ba0f24c4dcd3b6ccc4b293"
     }
   ]
 }

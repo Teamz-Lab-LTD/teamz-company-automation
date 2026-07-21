@@ -15,7 +15,7 @@ decider — ASO still needs its own competitor-winnability check).
   mv = load_manual_volume(DATA_DIR)          # {normalized keyword: {'vol': float, 'comp': str}}
   hit = manual_lookup(mv, "paycheck calculator")   # exact, else core-topic fallback
 """
-import os, csv, glob, re
+import os, csv, glob, re, math
 
 # default tool/intent words used to fall back from a full phrase to its core topic
 DEFAULT_TOOL_TYPES = {
@@ -131,11 +131,33 @@ def _parse_planner_csv(path):
         except ValueError:
             return None
 
+    body = [r for r in rows[rows.index(hdr) + 1:] if len(r) > vi and r[ki].strip()]
+
+    # FILE-LEVEL bucket detection. An account with no ad spend does not only get ranges in the UI —
+    # its CSV export collapses every volume onto a handful of log-scale REPRESENTATIVES (5, 50, 500,
+    # 5000, ...), which parse as ordinary integers, so per-value range-detection never fires. A real
+    # pull here returned 9,608 keywords holding just 7 distinct volumes.
+    #
+    # This matters because of what it does to the trend columns: when volume is quantised, a change
+    # is only ever reported as a jump between buckets. The same pull shows YoY of -90% (x1251),
+    # +900% (x208), -100% (x387) and infinity (x78) — 50 -> 500 is one step and reads as +900%.
+    # That is quantisation noise, not demand, and the radar's trend multiplier would happily swing
+    # scores on it. Detected per FILE rather than per value so a genuinely exact 500 in a
+    # well-funded account is not misflagged.
+    def _is_rep(v):
+        if v is None or v <= 0:
+            return False
+        q = v / 5.0
+        return q >= 1 and abs(round(math.log10(q)) - math.log10(q)) < 1e-9
+
+    _vals = [_parse_volume(r[vi])[0] for r in body]
+    _known = [v for v in _vals if v]
+    file_bucketed = bool(_known) and (sum(_is_rep(v) for v in _known) / len(_known)) >= 0.9
+
     out = {}
-    for r in rows[rows.index(hdr) + 1:]:
-        if len(r) <= vi or not r[ki].strip():
-            continue
+    for r in body:
         vol, bucketed = _parse_volume(r[vi])
+        bucketed = bucketed or file_bucketed
         out[_norm(r[ki])] = {
             "vol": vol,
             "bucketed": bucketed,   # True = derived from a range, precise to ~an order of magnitude

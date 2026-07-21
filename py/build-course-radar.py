@@ -660,9 +660,26 @@ def promote(host, cfg, dry):
         if old in ("pilot", "dormant") and c >= PILOT_CLICK_FLOOR:
             p["status"] = "expanding"
             changes.append(f"{p['slug']}: {old} -> expanding ({c} clicks/28d >= {PILOT_CLICK_FLOOR})")
-        elif old in ("pilot", "expanding") and c == 0 and age >= PILOT_DORMANT_DAYS:
+        # A stalled pilot must give its slot back. The retirement test used to be `c == 0`, which
+        # left 1 and 2 clicks/28d in neither branch: not enough to graduate, not zero enough to
+        # retire. Such a pilot stayed `pilot` forever — and gate() counts exactly those toward
+        # MAX_ACTIVE, so two courses stuck on a single click each would have jammed the engine
+        # permanently, emitting "2 pilots already active (cap 2)" and exit 0 every night while
+        # never creating another course again. 1-2 clicks/month is the ORDINARY outcome for a new
+        # page, so this was the likely end state, not an edge case.
+        # After PILOT_DORMANT_DAYS the question is simply "did it clear the bar?" — anything short
+        # of PILOT_CLICK_FLOOR is a no. Reversible: the branch above re-promotes a dormant course
+        # the moment it earns real clicks, so retiring costs nothing but the slot.
+        elif old == "pilot" and age >= PILOT_DORMANT_DAYS and c < PILOT_CLICK_FLOOR:
             p["status"] = "dormant"
-            changes.append(f"{p['slug']}: {old} -> dormant (0 clicks/28d at {age}d old)")
+            changes.append(f"{p['slug']}: pilot -> dormant "
+                           f"({c} clicks/28d < {PILOT_CLICK_FLOOR} at {age}d old)")
+        # An `expanding` course already PROVED it can earn clicks, so it is held to the stricter
+        # original test — only total silence retires it. A dip to 1-2 clicks is a bad month, not a
+        # failed thesis, and it does not occupy a MAX_ACTIVE slot either way.
+        elif old == "expanding" and c == 0 and age >= PILOT_DORMANT_DAYS:
+            p["status"] = "dormant"
+            changes.append(f"{p['slug']}: expanding -> dormant (0 clicks/28d at {age}d old)")
         p["clicks_28d"] = c
         if p.get("status") != old:
             p.setdefault("history", []).append({"date": today, "event": p["status"], "clicks_28d": c})

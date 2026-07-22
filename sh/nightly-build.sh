@@ -467,6 +467,30 @@ run_phase_cmd "Crawl snapshot + diff" 5 "python3 scripts/build-crawl-diff.py"
 run_phase_cmd "GSC anomalies" 10 "python3 scripts/build-gsc-anomalies.py --json-only"
 run_phase_cmd "Money-page growth snapshot" 10 "python3 teamz-company-automation/py/build-money-tracker.py --today $(date +%Y-%m-%d) || true"
 run_phase_cmd "GSC broken pages → auto-redirect" 10 "python3 scripts/build-gsc-broken-pages.py"
+# Grades the enhancement engine against a control group of pages it never touched.
+# Until 2026-07-22 nothing had ever checked whether a rewritten page improved — no
+# script read data/enhancement-log.json, and that ledger tracks 4 hand-edited tools
+# while the engine has enhanced 366 pages. So the engine ran for months with no
+# evidence it worked, in either direction.
+# The control group is the whole point. A raw before/after on the treated pages alone
+# scored +6,205 clicks on first run and read as a triumph — it was the World Cup
+# landing inside the window. Read the ENHANCED and CONTROL lines together or not at all.
+# Read-only (GSC + git log), so it is safe outside the dirty-guard block.
+# HOST-GUARDED: this file is symlinked by 5 properties; the script exists only in tools.
+[ -f scripts/build-enhance-outcome.py ] && \
+    run_phase_cmd "Enhance outcome vs control" 10 "python3 scripts/build-enhance-outcome.py"
+# Scores each page by what its AUDIENCE is worth, not by its rank. The engine ranks
+# work by GSC position + impressions, both geography-blind, on a site where geography
+# is the dominant revenue factor: a German visitor is worth ~71 Bangladeshi ones
+# (DE £30.39 RPM vs BD £0.43, measured 2026-07-22), and Bangladesh is 22% of views
+# and 1.4% of the money. Audited the same day: across every script here and in
+# teamz-company-automation/py, 8 call sites ask GSC for ["page"], 5 for ["query"],
+# and NONE for ["country"] or ["device"]. This is the missing input.
+# Read-only; writes data/geo-value.json. Fails closed if the AdSense join breaks,
+# because a silent fallback to one average RPM reproduces the exact blindness it
+# is meant to remove (it did, on the first run — all 488 pages scored an identical £3.45).
+[ -f scripts/build-geo-value.py ] && \
+    run_phase_cmd "Geo value per page" 10 "python3 scripts/build-geo-value.py --json-only"
 
 echo "  Checking freshness (stale data)..."
 run_phase_cmd "Freshness validation" 10 "./scripts/build-validate-freshness.sh"

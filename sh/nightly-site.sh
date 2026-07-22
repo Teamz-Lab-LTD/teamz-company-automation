@@ -245,6 +245,16 @@ echo "=== GSC signals ($TEAMZ_SITE_PROPERTY) ==="
 [ -f scripts/build-gsc-anomalies.py ] && python3 scripts/build-gsc-anomalies.py 2>&1 | tail -6 \
   || echo "  (build-gsc-anomalies.py missing — skipped)"
 
+# Did last month's content work actually move anything? Graded against a CONTROL cohort of
+# pages the engine never touched — the treatment number alone measures the season, not the
+# work (tools' first raw run scored +6,205 clicks; the movers were World Cup pages).
+# This engine has always measured and acted, and never checked. Read-only: GSC + git log.
+# Portable across properties by design — it maps changed FILES to URLs rather than parsing
+# commit subjects, because only tools puts a URL path in the subject and a subject parser
+# reported the other three as having no data at all.
+[ -f scripts/build-enhance-outcome.py ] && python3 scripts/build-enhance-outcome.py 2>&1 | tail -6 \
+  || echo "  (build-enhance-outcome.py missing — skipped)"
+
 # 3b. Keyword-candidate HARVEST only — accumulate GSC-demand queries we have no volume for.
 # HARVEST is cheap and safe nightly; it only appends to data/keyword-candidates.json. It never
 # PREPARES a batch — that would nag the owner every night. Batch preparation is deliberately

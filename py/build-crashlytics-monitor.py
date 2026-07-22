@@ -431,12 +431,25 @@ def score(issue: dict, active_users: int | None, previous: dict | None) -> tuple
 
 
 # ── Scan ─────────────────────────────────────────────────────────────────────
-def scan(tokens: "TokenProvider", apps: list[dict], window_hours: int, state: dict) -> tuple[list[dict], dict]:
-    """Return (findings, coverage). Coverage is how much of the fleet we could actually read."""
+def scan(tokens: "TokenProvider", apps: list[dict], window_hours: int, state: dict) -> tuple[list[dict], dict, dict]:
+    """Return (findings, coverage, coverage_by_app).
+
+    coverage is fleet totals; coverage_by_app maps slug -> read|no_data|unreachable so a
+    per-project file can distinguish "healthy" from "not looked at".
+    """
     end = utcnow()
     start = end - dt.timedelta(hours=window_hours)
     findings: list[dict] = []
     coverage = {"read": 0, "no_data": 0, "unreachable": 0}
+    # Per-app rollup, so write_project_status() can tell "no crashes" apart from
+    # "we could not look". The fleet counters above are totals and cannot answer that.
+    # Worst status across an app's platforms wins: unreachable > no_data > read.
+    by_app: dict[str, str] = {}
+
+    def note(slug: str, status: str) -> None:
+        rank = {"read": 0, "no_data": 1, "unreachable": 2}
+        if rank[status] >= rank.get(by_app.get(slug, "read"), 0):
+            by_app[slug] = status
 
     for app in apps:
         slug = app["slug"]
@@ -449,10 +462,12 @@ def scan(tokens: "TokenProvider", apps: list[dict], window_hours: int, state: di
                 issues = fetch_with_retry(tokens, app["project_id"], app_id, start, end)
             except NoCrashlyticsData:
                 coverage["no_data"] += 1
+                note(slug, "no_data")
                 log(f"  {key_prefix:<32} no Crashlytics data")
                 continue
             except ApiError as e:
                 coverage["unreachable"] += 1
+                note(slug, "unreachable")
                 log(f"  {key_prefix:<32} UNREACHABLE (HTTP {e.status})")
                 # A blind spot is itself an incident. It must never be filtered
                 # out of the alert set -- that is how the fleet went unwatched.
@@ -468,6 +483,7 @@ def scan(tokens: "TokenProvider", apps: list[dict], window_hours: int, state: di
                 continue
 
             coverage["read"] += 1
+            note(slug, "read")
             active = (app.get("active_users") or {}).get(platform)
             log(f"  {key_prefix:<32} {len(issues)} issue(s)")
 
@@ -484,7 +500,7 @@ def scan(tokens: "TokenProvider", apps: list[dict], window_hours: int, state: di
                 })
 
     findings.sort(key=lambda f: (SEV_ORDER.get(f["severity"], 3), -f["users"], -f["events"]))
-    return findings, coverage
+    return findings, coverage, by_app
 
 
 def worth_alerting(findings: list[dict]) -> list[dict]:
@@ -546,6 +562,136 @@ def render_markdown(findings: list[dict], alerts: list[dict], window_hours: int,
               "`data/crashlytics-apps.json`; otherwise absolute counts are used and the row says so. "
               "A raw event count cannot tell 4-of-12 users apart from 4-of-10,000."]
     return "\n".join(lines)
+
+
+PROJECTS_ROOT = Path.home() / "Projects" / "Teamz Lab Projects" / "teamz-projects"
+# Written into each app's own repo so the next Claude/Codex session opened there is told
+# about the app's open crashes. A report that only exists in teamz-company-automation is a
+# report nobody reads while actually working on the app.
+PROJECT_STATUS_REL = Path(".claude") / "crash-status.md"
+
+
+def _project_dirs_by_firebase_id() -> dict[str, Path]:
+    """Map Firebase project_id -> local repo, by reading each project's own Firebase config.
+
+    Resolving by slug does not work: registry slugs are human-chosen and drift from the
+    folder name (slug "devicegpt" lives in ./debugger). The Firebase project_id is the one
+    identifier that appears in both the registry and the checked-out repo, so it is the
+    only reliable join key.
+    """
+    import re
+    out: dict[str, Path] = {}
+    for gs in PROJECTS_ROOT.glob("*/app/google-services.json"):
+        try:
+            pid = json.loads(gs.read_text(encoding="utf-8", errors="replace"))["project_info"]["project_id"]
+        except (json.JSONDecodeError, KeyError):
+            continue
+        out.setdefault(pid, gs.parents[1])
+    for opts in PROJECTS_ROOT.glob("*/lib/firebase_options.dart"):
+        m = re.search(r"projectId: '([^']+)'", opts.read_text(encoding="utf-8", errors="replace"))
+        if m:
+            out.setdefault(m.group(1), opts.parents[1])
+    return out
+
+
+def project_dir_for(app: dict, index: dict[str, Path]) -> Path | None:
+    """Resolve a registry entry to its local repo, or None if it isn't checked out here."""
+    pid = app.get("project_id")
+    if pid and pid in index:
+        return index[pid]
+    # Last resort for a project with no local Firebase config: a folder named like the slug.
+    slug = app.get("slug")
+    if slug and (PROJECTS_ROOT / slug).is_dir():
+        return PROJECTS_ROOT / slug
+    return None
+
+
+def write_project_status(
+    apps: list[dict], findings: list[dict], window_hours: int, coverage_by_app: dict
+) -> list[str]:
+    """Drop a per-app crash summary into each app's own repo. Returns paths written.
+
+    Truthfulness rules, same as the fleet report:
+      * an app we could NOT read says so — it must never look like an app with no crashes;
+      * the file is always rewritten, so a fixed app's file becomes an explicit all-clear
+        rather than a stale warning that trains the reader to ignore it;
+      * the scan timestamp is embedded so a consumer can judge staleness itself.
+    """
+    written: list[str] = []
+    index = _project_dirs_by_firebase_id()
+    by_app: dict[str, list[dict]] = {}
+    for f in findings:
+        by_app.setdefault(f["app"], []).append(f)
+
+    for app in apps:
+        slug = app["slug"]
+        d = project_dir_for(app, index)
+        if d is None:
+            continue
+        mine = sorted(
+            by_app.get(slug, []),
+            key=lambda f: (f["severity"] != "critical", -int(f.get("users") or 0)),
+        )
+        status = coverage_by_app.get(slug, "read")
+        stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%MZ")
+
+        lines = [
+            f"# Crash status — {slug}",
+            "",
+            f"- Scanned: `{stamp}` (last **{window_hours}h**)",
+            f"- Source: `teamz-company-automation/py/build-crashlytics-monitor.py`",
+            "",
+        ]
+        if status == "unreachable":
+            lines += [
+                "## ⚠️ NOT VERIFIED",
+                "",
+                "Crashlytics could not be read for this app (auth or API error), so this is "
+                "**not** an all-clear. Re-run the monitor before trusting any silence here.",
+                "",
+            ]
+        elif status == "no_data":
+            lines += [
+                "## No Crashlytics data",
+                "",
+                "This app has never reported to Crashlytics. Either the SDK is not wired up "
+                "or no build with it has shipped.",
+                "",
+            ]
+        elif not mine:
+            lines += ["## ✅ No crashes in window", ""]
+        else:
+            crit = [f for f in mine if f["severity"] == "critical"]
+            lines += [
+                f"## {len(mine)} open issue(s){f' — {len(crit)} CRITICAL' if crit else ''}",
+                "",
+                "| Sev | Users | Events | Issue |",
+                "|---|---|---|---|",
+            ]
+            for f in mine[:15]:
+                title = (f.get("title") or "?").replace("|", "\\|")[:70]
+                lines.append(
+                    f"| {f['severity']} | {f.get('users', '?')} | {f.get('events', '?')} | {title} |"
+                )
+            if len(mine) > 15:
+                lines.append(f"| … | | | and {len(mine) - 15} more |")
+            lines += [
+                "",
+                "Full fleet report: `teamz-company-automation/data/crashlytics-monitor-report.md`",
+                "",
+                "Re-check just this app:",
+                "",
+                "```bash",
+                f"python3 py/build-crashlytics-monitor.py --app {slug} --window-hours 168 --dry-run",
+                "```",
+                "",
+            ]
+
+        out = d / PROJECT_STATUS_REL
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text("\n".join(lines), encoding="utf-8")
+        written.append(str(out))
+    return written
 
 
 def render_short(alerts: list[dict], window_hours: int, total: int, coverage: dict) -> str:
@@ -748,7 +894,7 @@ def main() -> int:
 
     log("\nScanning...")
     state = load_state()
-    findings, coverage = scan(tokens, apps, args.window_hours, state)
+    findings, coverage, coverage_by_app = scan(tokens, apps, args.window_hours, state)
     alerts = worth_alerting(findings)
 
     REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -758,6 +904,9 @@ def main() -> int:
     log(f"\nCoverage: {coverage['read']} read | {coverage['no_data']} no-data | "
         f"{coverage['unreachable']} unreachable")
     log(f"Report:   {REPORT_FILE}")
+
+    dropped = write_project_status(apps, findings, args.window_hours, coverage_by_app)
+    log(f"Per-project: wrote {len(dropped)} .claude/crash-status.md file(s)")
 
     short = render_short(alerts, args.window_hours, len(findings), coverage)
     log("\n" + short + "\n")

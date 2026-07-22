@@ -657,10 +657,32 @@ def save_state(findings: list[dict]) -> None:
 
 # ── Discover ─────────────────────────────────────────────────────────────────
 def discover() -> None:
-    """Print a registry skeleton from every local Flutter project's firebase_options.dart."""
+    """Print a registry skeleton from every local project's Firebase config.
+
+    Two sources, because two kinds of project exist here:
+
+      * Flutter  -> lib/firebase_options.dart
+      * native   -> app/google-services.json
+
+    This used to read firebase_options.dart only. Native-Android apps have no such file, so
+    they were structurally invisible: DeviceGPT shipped a bug on 2026-04-23 that sat unseen
+    until 2026-07-22, when it was added to the registry by hand and the very next monitor run
+    surfaced it (1,193 non-fatals, 9 users). Hazira Khata — a paying-customer app — had never
+    been monitored at all for the same reason. A discovery that silently covers only one
+    project type is the same class of lie as a monitor that reports "all clear" while blind.
+    """
     import re
     root = Path.home() / "Projects" / "Teamz Lab Projects" / "teamz-projects"
-    apps = []
+    by_project: dict[str, dict] = {}
+
+    def add(entry: dict) -> None:
+        # Keep the richest entry when a project is found by both scanners: a Flutter hit
+        # carries ios+android, a google-services.json hit carries android only.
+        prev = by_project.get(entry["project_id"])
+        if prev is None or len(entry) > len(prev):
+            by_project[entry["project_id"]] = entry
+
+    # Flutter projects.
     for opts in sorted(root.glob("*/lib/firebase_options.dart")):
         text = opts.read_text(encoding="utf-8", errors="replace")
         pm = re.search(r"projectId: '([^']+)'", text)
@@ -672,7 +694,19 @@ def discover() -> None:
             if m:
                 entry[plat] = m.group(1)
         if len(entry) > 2:
-            apps.append(entry)
+            add(entry)
+
+    # Native Android projects.
+    for gs in sorted(root.glob("*/app/google-services.json")):
+        try:
+            cfg = json.loads(gs.read_text(encoding="utf-8", errors="replace"))
+            project_id = cfg["project_info"]["project_id"]
+            app_id = cfg["client"][0]["client_info"]["mobilesdk_app_id"]
+        except (json.JSONDecodeError, KeyError, IndexError):
+            continue
+        add({"slug": gs.parents[1].name, "project_id": project_id, "android": app_id})
+
+    apps = sorted(by_project.values(), key=lambda a: a["slug"])
     print(json.dumps({"apps": apps}, indent=2))
 
 

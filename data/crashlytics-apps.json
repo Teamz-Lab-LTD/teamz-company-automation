@@ -82,6 +82,11 @@
       "slug": "devicegpt",
       "project_id": "sys-explorer-131ed",
       "android": "1:953087721962:android:ba0f24c4dcd3b6ccc4b293"
+    },
+    {
+      "slug": "hazira-khata",
+      "project_id": "hazirakhata",
+      "android": "1:245761915673:android:6bafd9894898bb11"
     }
   ]
 }

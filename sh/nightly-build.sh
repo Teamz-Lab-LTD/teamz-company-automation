@@ -495,6 +495,11 @@ run_phase_cmd "GSC broken pages → auto-redirect" 10 "python3 scripts/build-gsc
 echo "  Checking freshness (stale data)..."
 run_phase_cmd "Freshness validation" 10 "./scripts/build-validate-freshness.sh"
 
+[ -f scripts/build-fix-hub-unlinked.py ] && {
+    echo "  Healing hub-page link gaps (auto-fix)..."
+    run_phase_cmd "Hub link auto-heal" 5 "python3 scripts/build-fix-hub-unlinked.py --apply"
+}
+
 echo "  Checking internal link health..."
 run_phase_cmd "Internal link health" 5 "scripts/build-internal-links.sh --quick"
 

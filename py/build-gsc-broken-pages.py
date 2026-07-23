@@ -111,13 +111,33 @@ def _norm_slug(path: str) -> str:
     return _NORMALIZE_RE.sub("-", path.lower()).strip("-")
 
 
+def _hub(path: str) -> str:
+    parts = path.strip("/").split("/")
+    return parts[0] if parts else ""
+
+
 def _fuzzy_match(broken: str, inventory: set, threshold: float) -> Optional[str]:
-    """Pick best-matching existing slug for a broken URL path."""
+    """Pick best-matching existing slug for a broken URL path.
+
+    Restricted to the SAME hub (first path segment) on purpose. A real
+    manual GSC "Not found (404)" export (2026-07-23, 999 rows) run through
+    this exact matcher at cutoff=0.78 with no hub guard produced real
+    wrong-country/wrong-topic redirects on live financial/legal calculator
+    slugs: /de/income-tax-calculator/ -> /ie/income-tax-calculator/
+    (Germany -> Ireland), /au/mortgage-calculator/ ->
+    /us/mortgage-calculator-utah/, /insurance/home-insurance-calculator/ ->
+    /insurance/boat-insurance-calculator/. Character-similarity across
+    country/topic hubs is not evidence of content equivalence for this
+    site's shape (hundreds of near-identically-named but substantively
+    different calculators) — cross-hub redirects are refused entirely
+    rather than tuned, since no threshold made them reliably safe.
+    """
     broken_norm = _norm_slug(broken)
     if not broken_norm:
         return None
-    # Build a search corpus of slug → path for quick fuzzy lookup
-    candidates = {p: _norm_slug(p) for p in inventory}
+    broken_hub = _hub(broken)
+    # Build a search corpus of slug → path for quick fuzzy lookup, same hub only
+    candidates = {p: _norm_slug(p) for p in inventory if _hub(p) == broken_hub}
     best = difflib.get_close_matches(
         broken_norm, list(candidates.values()), n=1, cutoff=threshold
     )

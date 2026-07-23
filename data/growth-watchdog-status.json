@@ -1,0 +1,12 @@
+{
+  "ran_at": "2026-07-23T19:47:38",
+  "properties": {
+    "apps": [],
+    "goalkit": [],
+    "learn": [],
+    "tools": [
+      "build=ok:4-health-alerts"
+    ]
+  },
+  "alert_count": 1
+}

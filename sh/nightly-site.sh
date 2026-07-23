@@ -549,6 +549,28 @@ if [ -f "$ROOT/sitemap.xml" ]; then
   fi
 fi
 
+# 5.6 INTERNAL LINK HEALTH — was computed nowhere in this script until 2026-07-23. tools' own
+# nightly (a different script, nightly-build.sh) DID run this check every night and DID compute
+# a health-alert count into nightly-status.json — but nothing ever rendered that count anywhere
+# a human would see it, so a real, growing problem (3499 tools not linked from their own hub
+# page) sat silently for two months. This script never even ran the check at all. Both are the
+# same failure with a different shape: a monitor that knows and says nothing is a monitor that
+# might as well not exist. This phase is intentionally loud (console + a Mac notification) and
+# intentionally non-blocking (never fails the build) — the fix for THIS finding is "tell the
+# owner", not "auto-heal", since unlike tools' hub-link gap, no proven safe auto-fixer exists yet
+# for whatever this site's internal-link report turns up.
+if [ -f "$ROOT/scripts/build-internal-links.sh" ]; then
+  LINK_HEALTH_OUT="$("$ROOT/scripts/build-internal-links.sh" --quick 2>&1)"
+  LINK_HEALTH_RC=$?
+  if [ "$LINK_HEALTH_RC" -ne 0 ]; then
+    echo ""
+    echo "  ⚠️  INTERNAL LINK HEALTH — issues found:"
+    echo "$LINK_HEALTH_OUT" | tail -12 | sed 's/^/      /'
+    BUILD_STATUS="${BUILD_STATUS}:link-health-alert"
+    osascript -e "display notification \"Internal link health issues on $LABEL — see nightly log\" with title \"Teamz Content\"" 2>/dev/null
+  fi
+fi
+
 # 6. commit whatever the build regenerated.
 #
 # This was a HARDCODED list of eight filenames, and it held only for as long as no site's build

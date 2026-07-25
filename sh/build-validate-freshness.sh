@@ -122,9 +122,18 @@ echo "  [ ] SSP/NI/NMW rates (uk/) — April each year"
 echo "============================================="
 
 # ── Show latest SEO auto-report if available ──
+# The sentinel line below tells nightly-build.sh's run_phase_cmd where THIS run's real
+# output ends and a paste of a PREVIOUS night's report begins. Without it, a stale
+# ERROR:/FAILED line sitting inside that pasted report gets re-matched as tonight's health
+# issue by extract_health_issue() — and since seo-latest-report.txt is itself partly built
+# from what THIS script printed on earlier nights, an old error snowballs: re-recorded as a
+# new alert, re-pasted into tomorrow's report, re-matched the night after, forever. Confirmed
+# live: 52 repeated "- Freshness validation:" lines and growing before this fix, none of them
+# a real failure on the night they were logged.
 SEO_REPORT="$TEAMZ_DATA_DIR/seo-latest-report.txt"
 if [ -f "$SEO_REPORT" ]; then
     echo ""
+    echo ">>>TEAMZ-TRAILER<<<"
     echo "============================================="
     echo "  LATEST SEO AUTO-REPORT"
     echo "============================================="

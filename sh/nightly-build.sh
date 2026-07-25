@@ -202,11 +202,18 @@ run_phase_cmd() {
     output=$(eval "$*" 2>&1)
     exit_code=$?
 
-    if [ -n "$output" ]; then
-        printf '%s\n' "$output" | tail -n "$tail_lines"
+    # A command can print a >>>TEAMZ-TRAILER<<< sentinel to mark "everything after this is a
+    # paste of prior output, not tonight's result" (build-validate-freshness.sh uses this to
+    # show the last SEO report without re-triggering on a stale ERROR:/FAILED line buried
+    # inside it). Only look at output BEFORE the sentinel for both the printed summary and the
+    # health-issue scan — otherwise a stale line re-alerts every night, forever.
+    local scan_output="${output%%>>>TEAMZ-TRAILER<<<*}"
+
+    if [ -n "$scan_output" ]; then
+        printf '%s\n' "$scan_output" | tail -n "$tail_lines"
     fi
 
-    issue_line=$(extract_health_issue "$output")
+    issue_line=$(extract_health_issue "$scan_output")
     if [ "$exit_code" -ne 0 ]; then
         record_health_alert "$label failed (exit $exit_code)"
     elif [ -n "$issue_line" ]; then

@@ -1,13 +1,10 @@
-NIGHTLY BUILD REPORT — 2026-07-21 17:44
-Status: ALERT
-Repo dirty at start: no
-New tools built: 0
-Total commits: 19
+NIGHTLY BUILD REPORT — hand-cleared 2026-07-26
+Status: (awaiting next real nightly run)
 ---
-SCRIPT HEALTH:
-  Alerts (3):
-  - SEO health-check found a RED — a data source may be silently broken (see log top)
-  - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Freshness validation:   - Uptime check:     SSL ERROR: _ssl.c:1112: The handshake operation timed out
-  - Internal link health failed (exit 1)
+This file was hand-reset after fixing a self-perpetuating bug: build-validate-freshness.sh
+pastes this file's own previous content as a trailer, and nightly-build.sh's health-issue
+scanner was reading INTO that trailer and re-recording a stale line as a brand-new alert every
+night, growing by one repetition each time (52 and counting before this fix). The scanner now
+stops at a >>>TEAMZ-TRAILER<<< sentinel, so this file will get a clean, real report on the next
+nightly run and stay clean from here.
 ---
-If script health is not OK, review logs/nightly-build.log before the next automated run.

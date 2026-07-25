@@ -315,8 +315,19 @@ def google_autocomplete(keyword, lang="en", country="us"):
     return suggestions[:20]
 
 
-def get_keyword_data(access_token, keyword_filter=None, page_filter=None, top_n=50):
-    """Get keyword data from Search Console."""
+def get_keyword_data(access_token, keyword_filter=None, page_filter=None, top_n=50, row_limit=None):
+    """Get keyword data from Search Console.
+
+    row_limit defaults to min(top_n*3, 1000) for normal/default-mode calls, which is fine when
+    top_n is small (the standard --top 50 case). The --opportunities path calls this with
+    top_n=200 intending a wide net, but the same formula caps it at only 600 raw rows out of
+    ~92k real (query,page) rows on tool.teamzlab.com — GSC's default row order is clicks-
+    descending, so row #600 already sits at 2 clicks, and the ~90k rows below that cutoff carry
+    ~73% of the property's total impressions (measured live). Pass an explicit row_limit to use
+    GSC's real per-call ceiling (25,000) instead of the top_n*3 formula for a wide opportunity
+    scan — this alone recovers the large majority of real long-tail striking-distance demand
+    without needing full multi-call pagination.
+    """
     end_date = datetime.now().strftime("%Y-%m-%d")
     start_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
 
@@ -337,7 +348,7 @@ def get_keyword_data(access_token, keyword_filter=None, page_filter=None, top_n=
     result = search_console_query(
         access_token, start_date, end_date,
         dimensions=["query", "page"],
-        row_limit=min(top_n * 3, 1000),
+        row_limit=row_limit if row_limit is not None else min(top_n * 3, 1000),
         dim_filter=filters if filters else None
     )
 
@@ -426,7 +437,11 @@ def print_keyword_table(keywords, title="KEYWORD IDEAS", data_source="Google Sea
 
 
 def print_opportunities(keywords):
-    """Show best ranking opportunities."""
+    """Show best ranking opportunities. Returns the filtered/sorted opps list — callers that
+    export this mode's output MUST use the return value, not the raw `keywords` this was built
+    from. (Historical bug: main()'s --export path exported the unfiltered `keywords` variable
+    from an entirely different, smaller get_keyword_data() call instead of this list — the
+    "opportunities" JSON never actually contained opportunity-filtered data.)"""
     # Low difficulty + high volume + not on page 1
     opps = [kw for kw in keywords if kw["difficulty"] <= 40 and kw["position"] > 10]
     opps.sort(key=lambda x: (-x["volume"], x["difficulty"]))
@@ -439,7 +454,7 @@ def print_opportunities(keywords):
 
     if not opps:
         print("  No easy opportunities found. Try expanding date range or keyword set.")
-        return
+        return opps
 
     print(f"  {'KEYWORD':<40s} {'VOLUME':>7s} {'POS':>5s} {'DIFF':>6s} {'PAGE':<40s} {'ACTION'}")
     print(f"  {'-'*40} {'-'*7} {'-'*5} {'-'*6} {'-'*40} {'-'*20}")
@@ -463,6 +478,7 @@ def print_opportunities(keywords):
     print()
     print(f"  Total opportunities: {len(opps)}")
     print()
+    return opps
 
 
 def print_keyword_ideas(keyword):
@@ -644,15 +660,19 @@ def main():
         return
 
     # Display
+    export_keywords = keywords   # overridden below for --opportunities, which exports a
+                                  # different (filtered) list than the default keyword table
     if "--opportunities" in args:
-        # Get more data for opportunities
+        # Get more data for opportunities — explicit 25,000 row_limit (GSC's real per-call
+        # ceiling), not the top_n*3 formula, which would silently cap this wide scan at 600 rows
+        # (see get_keyword_data docstring).
         if use_fallback:
             all_kws = load_rank_history_keywords(keyword_filter, page_filter, 200)
         else:
-            all_kws = get_keyword_data(access_token, keyword_filter, page_filter, 200)
+            all_kws = get_keyword_data(access_token, keyword_filter, page_filter, 200, row_limit=25000)
             if not all_kws:
                 all_kws = load_rank_history_keywords(keyword_filter, page_filter, 200)
-        print_opportunities(all_kws)
+        export_keywords = print_opportunities(all_kws)
     elif "--gaps" in args:
         # Show keywords with high impressions but low clicks
         print()
@@ -687,12 +707,12 @@ def main():
         print_summary(keywords)
 
     if export_format == "csv":
-        export_csv(keywords, filename=output_file)
+        export_csv(export_keywords, filename=output_file)
     elif export_format == "json":
         if not output_file:
             print("\n  Usage: ... --export json --output path/to/file.json\n")
         else:
-            export_json(keywords, output_file)
+            export_json(export_keywords, output_file)
 
 
 if __name__ == "__main__":

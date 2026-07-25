@@ -176,13 +176,50 @@ def cooldown_paths(host_root, days):
     a live shop twice in six hours. Repeated title flips are exactly what makes Google distrust
     a page, so the bug was not just churn; it was working against the thing it exists to do.
     """
+    # A bulk/sitewide commit that only bumps a cosmetic field (a <meta name="date"> or JSON-LD
+    # dateModified stamp) must not cool every file it happens to touch for a full week — that IS
+    # a real regression this system hit: learn.teamzlab.com's a03e699 (2026-07-19, "noindex 8
+    # zero-click courses, require citations in new lessons") touched 772 files as a side effect,
+    # and its ONLY change to most of them was that one date stamp — yet cooldown_paths() treated
+    # every one of those 772 pages as freshly rewritten, blocking real enhance candidates (222 of
+    # them, measured) for the full 7 days. --numstat instead of --name-only lets us see how much
+    # a commit actually changed PER FILE; a touch below the line-count floor is presumed cosmetic
+    # and does not cool that file (other, larger touches to the same file in the window still
+    # count normally).
+    #
+    # Floor is 6, not a smaller number, because the cosmetic touch itself isn't uniform: a per-
+    # lesson page has ONE date field (2 changed lines), but a course LANDING page
+    # (c/<course>.html) restamps THREE separate fields — <meta name="date">, <meta
+    # name="last-modified">, and the JSON-LD dateModified — totaling exactly 6 changed lines
+    # (confirmed via `git show a03e699 -- c/microprocessor-a-z.html`). A floor of 4 caught the
+    # lesson pages but not the landing pages, which is what silently kept blocking the very
+    # candidates this fix exists to rescue. This can occasionally let a genuinely tiny real edit
+    # through without cooling — a far smaller risk than blanket-cooling the whole site every time
+    # a maintenance script runs.
+    cosmetic_floor = int(os.getenv("TEAMZ_CONTENT_COOLDOWN_MIN_LINES", "6"))
     try:
         out = subprocess.run(
-            ["git", "log", f"--since={days} days ago", "--name-only", "--pretty=format:"],
+            ["git", "log", f"--since={days} days ago", "--numstat", "--pretty=format:"],
             cwd=str(host_root), capture_output=True, text=True, timeout=60,
         ).stdout
     except Exception:
         return set()
+
+    real_edit_files = set()
+    for line in out.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = line.split("\t")
+        if len(parts) != 3:
+            continue
+        ins, dele, fname = parts
+        try:
+            changed = int(ins) + int(dele)
+        except ValueError:
+            changed = cosmetic_floor + 1   # binary file ("-\t-\tpath") — can't measure, don't guess small
+        if changed > cosmetic_floor:
+            real_edit_files.add(fname)
 
     # Language mirrors of one page share a source row (goalkit's manifest) and are always edited
     # together, so touching /bn/products/foo/ must also cool /products/foo/ — otherwise the pair
@@ -191,10 +228,7 @@ def cooldown_paths(host_root, days):
     lang_prefixes = {s.strip() for s in os.getenv("TEAMZ_CONTENT_LANG_PREFIXES", "bn").split(",") if s.strip()}
 
     touched = set()
-    for line in out.splitlines():
-        line = line.strip()
-        if not line:
-            continue
+    for line in real_edit_files:
         touched.add(line)                       # the raw file, for source-file matches
         p = Path(line)
 
@@ -518,6 +552,53 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
                                     "striking-distance-aggregate", why, ai_by_path, ai_known,
                                     force_additive, click_floor,
                                     extra={"phrase_count": len(prows)})
+
+    # Pass 3 — rescue pages whose demand GSC has almost entirely anonymized away at the query
+    # level. Google suppresses individual query rows for rare/long-tail searches, and on some
+    # properties that means Pass 1+2 above — which both only ever see the crossed [page,query]
+    # dimension — are structurally blind to most real demand no matter how the aggregation is
+    # done, because the crossed rows they operate on never contained that impression volume in
+    # the first place. Measured live: learn.teamzlab.com's crossed dimension sees only ~4% of
+    # true page-level impressions (extreme long-tail — interview questions, exact error strings),
+    # apps ~35%, goalkit ~16%. The [page]-only dimension is aggregated by GSC itself server-side
+    # before the same per-query suppression applies, so it recovers the true totals directly.
+    # Confirmed on learn: 222 real striking-distance pages (position 5-25, real impressions
+    # >=30) exist that Pass 1+2 combined find 3 of.
+    anchor_query = {}
+    for r in rows:
+        page, query = r["keys"]
+        if looks_like_junk(query):
+            continue           # e.g. 'site:teamzlab.com' — a real top-impression row, not real demand
+        path = url_to_path(page, site_url)
+        cur = anchor_query.get(path)
+        if not cur or r["impressions"] > cur["impressions"]:
+            anchor_query[path] = {"query": query, "impressions": r["impressions"]}
+
+    page_rows = gsc_query(prop, token, ["page"], days=90, row_limit=2000)
+    for r in page_rows:
+        path = url_to_path(r["keys"][0], site_url)
+        pos, impr, clicks = r["position"], r["impressions"], r["clicks"]
+        if path in best or not (5 <= pos <= 25) or impr < cfg_min_impr:
+            continue
+        if any(c in path for c in cooldown):
+            continue
+        anchor = anchor_query.get(path)
+        # A path with zero visible crossed-dimension rows has no query text to check against
+        # deny_topics — deny_paths (path-based) still applies and is the primary safety net.
+        query = anchor["query"] if anchor else None
+        if denied(path, deny_paths) or (query and denied(query, deny_topics)):
+            continue
+        proximity = 1.6 if pos <= 12 else (1.2 if pos <= 18 else 1.0)
+        score = impr * proximity * (1.0 - min(r["ctr"], 0.10) * 5)
+        why = (f"ranks #{pos:.0f} with {int(impr)} real impressions / {int(clicks)} clicks "
+               f"({r['ctr']*100:.1f}% CTR) — Google hides the individual search phrases here "
+               f"(common on long-tail-heavy properties) but the page-level total is a real "
+               f"page-1 opportunity" + (f"; closest visible phrase: '{query}'" if query else ""))
+        best[path] = _enhance_entry(path, query or "(no individual phrase disclosed by GSC)",
+                                    pos, impr, clicks, r["ctr"], score,
+                                    "striking-distance-page-level", why, ai_by_path, ai_known,
+                                    force_additive, click_floor)
+
     return sorted(best.values(), key=lambda x: -x["score"])
 
 

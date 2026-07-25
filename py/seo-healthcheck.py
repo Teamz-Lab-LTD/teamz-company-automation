@@ -20,8 +20,18 @@ from datetime import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))          # .../teamz-company-automation/py
 AUTO = os.path.dirname(HERE)                                # .../teamz-company-automation
-# host repo = parent of the submodule (the consumer); data/ + config live there
-HOST = os.path.dirname(AUTO)
+# host repo = the property that invoked us (tools, apps, goalkit, learn...), NOT a directory
+# guess. Every script in a host repo's scripts/ dir is a SYMLINK into this automation repo, so
+# __file__/readlink -f always resolves to the SAME canonical teamz-company-automation/py path
+# regardless of which property triggered it — os.path.dirname(AUTO) does not recover the real
+# host, it always lands on teamz-projects/ (the grandparent CONTAINING every property). Same
+# bug class already found and fixed in sh/lib/config.sh on 2026-07-12 (apps.teamzlab.com); that
+# fix was never carried over to this script, so "[FAIL] output freshness" fired every night on
+# tools for ~45 days (since 2026-06-11) even when the checked files were minutes-old fresh.
+# nightly-build.sh's config.sh always exports TEAMZ_HOST_SITE_ROOT before calling this script —
+# trust it. The __file__-based guess survives only as a last-resort fallback for a manual,
+# standalone run outside the nightly pipeline where that env var was never set.
+HOST = os.environ.get("TEAMZ_HOST_SITE_ROOT") or os.path.dirname(AUTO)
 # Outputs are split: _teamz_config-based scripts write to TEAMZ_DATA_DIR or
 # <submodule>/data; others write to <host>/data. Check BOTH or we false-alarm.
 DATA_DIRS = [os.path.join(HOST, "data"),

@@ -310,7 +310,18 @@ fi
 # Ignore whole generated-output DIRS (data/, logs/, docs/, .claude-memory/) + the root files
 # the pre-commit hook regenerates. Dir-based, NOT per-filename, so a NEW data artifact can
 # never self-lock the cron again — the bug that froze shipping each time a guard added a file.
-DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^([ M][ M]|\?\?) (data/.*|logs/.*|docs/.*|\.claude-memory/.*|tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|shared/js/search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|\.htaccess)$' || true)"
+#
+# The status-code class MUST match any 2-char porcelain code (not just " M"/"M "/"??") — a
+# narrower class here silently un-forgives the exact same paths it was written to forgive.
+# Proven live 2026-07-18 through 07-23: a staged-add ("A ", .../gsc-404-manual-export-*.json)
+# and an unstaged delete (" D", .../batch-cand-01.csv) each blocked the cron for real, both
+# inside directories this rule already intends to forgive, because the old class
+# `[ M][ M]|\?\?` only recognized plain-modify and untracked. Root cause: an interactive
+# Claude Code session running maintenance scripts in this same checkout during the day can
+# leave a file mid `git add` (a real ~90s window — see the pre-commit hook) right as the cron's
+# own dirty-check runs. This regex fix doesn't close that race, it closes the narrower bug of
+# forgiveness depending on which status code the race happened to produce.
+DIRTY_FILES="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE '^.{2} (data/.*|logs/.*|docs/.*|\.claude-memory/.*|tools\.json|webview-incompat\.json|sitemap\.xml|search-index\.js|shared/js/search-index\.js|llms\.txt|llms-full\.txt|index\.html|sw\.js|\.htaccess)$' || true)"
 if [ -n "$DIRTY_FILES" ]; then
     # Distinguish leftover BUILD OUTPUT (a tool index.html a prior run enhanced but whose
     # commit was skipped) from genuine human SOURCE WIP (scripts/py/css/config). Leftover tool

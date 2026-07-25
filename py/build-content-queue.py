@@ -228,6 +228,17 @@ def load_ledger(host_root):
         return {"new_posts": []}, True
 
 
+def save_ledger(host_root, ledger):
+    """Persist the ledger. Same file the NEW-post rate limiter reads (data/content-log.json) —
+    one ledger, not two, so a human fixing a corrupt file only has one thing to fix. Caller
+    MUST skip this when load_ledger() reported the file corrupt: overwriting a corrupt file
+    with a fresh one would silently erase the evidence the NEW-post limiter's fail-closed
+    check depends on, and would also wipe retarget history for no reason."""
+    p = host_root / "data" / "content-log.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(ledger, indent=2))
+
+
 def new_posts_this_week(ledger):
     cutoff = (date.today() - timedelta(days=7)).isoformat()
     return [e for e in ledger.get("new_posts", []) if e.get("date", "") >= cutoff]
@@ -511,6 +522,59 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
 
 
 SIMILARITY_KILL = 0.5   # >= this token overlap with an existing page = NOT a gap
+
+
+# EXHAUSTION for the retarget cap. TEAMZ_CONTENT_RETARGET_CAP hands out only 2 slots a night,
+# by score alone, forever. On apps.teamzlab.com that meant /vibe-coding-agency/ (position ~55)
+# and /rag-development-company/ (position ~73) won BOTH slots on 6 and 5 separate nights (git
+# log, 2026-07-15 through 07-24) with 0 clicks the entire time — a 45-60 position gap that an
+# additive content pass cannot close (needs backlinks/authority, or the sibling-cannibalisation
+# consolidation a past nightly run already flagged by hand). Every night they win is a night
+# some OTHER real candidate gets nothing.
+#
+# "Stalled" = still 0 clicks AND position has not improved by RETARGET_STALL_DELTA versus the
+# snapshot from RETARGET_EXHAUST_AFTER passes ago (baseline-N-back, not night-to-night — GSC
+# position on a 90-day window drifts a couple of points from noise alone, and comparing only
+# to the PREVIOUS night would flag genuine slow progress as stalled).
+RETARGET_EXHAUST_AFTER = int(os.getenv("TEAMZ_CONTENT_RETARGET_EXHAUST_AFTER", "3"))
+RETARGET_EXHAUST_COOLDOWN_DAYS = int(os.getenv("TEAMZ_CONTENT_RETARGET_EXHAUST_COOLDOWN", "60"))
+RETARGET_STALL_DELTA = float(os.getenv("TEAMZ_CONTENT_RETARGET_STALL_DELTA", "10"))
+
+
+def retarget_exhausted_paths(ledger):
+    """Paths currently serving an exhaustion cooldown — excluded from tonight's retarget pool
+    before the cap runs, so a fresh candidate gets the freed slot instead of nothing."""
+    today = date.today().isoformat()
+    return {p for p, rec in ledger.get("retargets", {}).items()
+            if rec.get("exhausted_until") and rec["exhausted_until"] > today}
+
+
+def update_retarget_ledger(ledger, chosen):
+    """Record tonight's live position/clicks for every path that WON one of the capped
+    retarget slots, and demote a path that has now burned RETARGET_EXHAUST_AFTER slots in a
+    row with no real payoff into a long cooldown. Uses only numbers pool_new already pulled
+    from GSC tonight — no extra API calls, and no dependency on the nightly Claude agent
+    remembering to log anything (this is a safety rail, not a nice-to-have)."""
+    book = ledger.setdefault("retargets", {})
+    today = date.today().isoformat()
+    for t in chosen:
+        rec = book.setdefault(t["path"], {"history": [], "exhausted_until": None})
+        # A path re-surfacing after its cooldown expired gets a clean slate — the 60-day gap
+        # is exactly the time a backlink push or a consolidation decision needs to land, and
+        # judging it on stale pre-cooldown history would exhaust it again on sight.
+        if rec["exhausted_until"] and rec["exhausted_until"] <= today:
+            rec["history"], rec["exhausted_until"] = [], None
+        hist = rec["history"]
+        baseline = hist[-RETARGET_EXHAUST_AFTER] if len(hist) >= RETARGET_EXHAUST_AFTER else None
+        hist.append({"date": today, "query": t["query"], "position": t["position"],
+                     "clicks": t["clicks"]})
+        rec["history"] = hist[-(RETARGET_EXHAUST_AFTER + 1):]   # bounded trend log
+        moved = t["clicks"] > 0 or (
+            baseline is not None and baseline["position"] - t["position"] >= RETARGET_STALL_DELTA)
+        if not moved and len(rec["history"]) > RETARGET_EXHAUST_AFTER \
+                and all(e["clicks"] == 0 for e in rec["history"]):
+            rec["exhausted_until"] = (date.today()
+                                       + timedelta(days=RETARGET_EXHAUST_COOLDOWN_DAYS)).isoformat()
 
 
 def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics, kw_vol=None):
@@ -1164,11 +1228,13 @@ def main():
     # hours), and it must never double-book a page the striking-distance pool already picked.
     enhance_capped = enhance[:args.enhance_cap]
     booked = {t["path"] for t in enhance_capped} | {t["path"] for t in cold}
+    exhausted = retarget_exhausted_paths(ledger)
     retarget = [
         t for t in retarget
         if t["path"] not in booked
         and not any(c in t["path"] for c in cool)
         and not denied(t["path"], deny_paths)
+        and t["path"] not in exhausted
     ]
 
     # ONE PAGE PER DEMAND. Retargeting two pages at the same query would not double the effort —
@@ -1191,6 +1257,15 @@ def main():
             continue        # already retargeting a page for this same demand
         deduped.append(t)
     retarget = deduped[:int(os.getenv("TEAMZ_CONTENT_RETARGET_CAP", "2"))]
+
+    # Persist tonight's snapshot for whoever WON a slot, so the exhaustion count is checked
+    # against real GSC outcomes next run. Skipped when the ledger was corrupt on read — do not
+    # overwrite a file a human still needs to fix, and do not fabricate exhaustion history from
+    # a forced-empty ledger. Also skipped in --dry-run: "print, write nothing" must stay true,
+    # every other tool in this pipeline is trusted to have zero side effects under this flag.
+    if not ledger_corrupt and not args.dry_run:
+        update_retarget_ledger(ledger, retarget)
+        save_ledger(host, ledger)
 
     # Cannibalisation goes FIRST. Polishing a page while a rival page splits its demand is
     # rearranging furniture in a burning room — fix the split, then optimise the survivor.

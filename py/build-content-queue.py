@@ -399,15 +399,66 @@ def edit_mode_for(clicks, floor):
     return "additive" if clicks > floor else "full"
 
 
+def _enhance_entry(path, query, pos, impr, clicks, ctr, score, source, why,
+                   ai_by_path, ai_known, force_additive, click_floor, extra=None):
+    # ATTENTION, not Google clicks. A page can earn nothing from Google and still be
+    # one of the property's best performers via ChatGPT — goalkit's Argentina jersey
+    # had 81 AI sessions and 0 Google clicks, and the clicks-only rule called it
+    # "nothing to lose". If the AI signal could not be read we do NOT assume zero:
+    # unknown means fail closed (additive), never "wave it through".
+    ai_hits = (ai_by_path or {}).get(path, 0)
+    attention = clicks + ai_hits
+    if force_additive or not ai_known:
+        emode = "additive"
+    else:
+        emode = edit_mode_for(attention, click_floor)
+    entry = {
+        "mode": "ENHANCE", "path": path, "query": query,
+        "edit_mode": emode,
+        "impressions": int(impr), "clicks": int(clicks),
+        "position": round(pos, 1), "ctr": round(ctr * 100, 2),
+        "score": round(score, 1), "source": source,
+        "why": why,
+        "ai_sessions": int(ai_hits),
+        "edit_mode_why": (
+            (f"ADDITIVE — this page already earns {int(clicks)} Google clicks and "
+             f"{int(ai_hits)} AI-assistant sessions. Its title is proven; do not rewrite "
+             f"it. Add depth only."
+             if ai_known else
+             "ADDITIVE — the AI-channel signal could not be read tonight, so we cannot "
+             "tell what this page earns outside Google. Failing closed: add depth only.")
+            if emode == "additive" else
+            f"FULL — {int(clicks)} Google clicks and {int(ai_hits)} AI sessions. Nothing "
+            f"to lose; title/meta rewrite allowed."
+        ),
+    }
+    if extra:
+        entry.update(extra)
+    return entry
+
+
 def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny_topics,
                  force_additive=False, click_floor=0, ai_by_path=None, ai_known=True):
-    """Existing pages that are CLOSE. position 5-25 = one good push from page 1."""
+    """Existing pages that are CLOSE. position 5-25 = one good push from page 1.
+
+    Demand is not always one head term. A blog post can rank #10 across 8 different
+    long-tail phrasings (35 impr, 22 impr, 14 impr, ...) where NO single phrase clears
+    cfg_min_impr alone, even though the page's real opportunity — summed across
+    phrasings — is hundreds of impressions. apps.teamzlab.com's
+    best-disappearing-messages-apps-2026 post is exactly this: 850 impressions at
+    position 10.7 in aggregate, zero queries individually above 25. Pass 1 below is
+    the original single-query bar, unchanged — properties whose demand concentrates
+    on one head term (tools.teamzlab.com) see no behavior change. Pass 2 rescues
+    pages that only clear the bar in aggregate, using their single best-performing
+    phrase as the actual content target.
+    """
     rows = gsc_query(prop, token, ["page", "query"], days=90, row_limit=2000)
-    best = {}   # path -> best opportunity on that page
+    grouped = {}   # path -> list of qualifying (position/deny/junk/cooldown-filtered) rows
+    best = {}      # path -> best opportunity on that page
     for r in rows:
         page, query = r["keys"]
         pos, impr, clicks = r["position"], r["impressions"], r["clicks"]
-        if not (5 <= pos <= 25) or impr < cfg_min_impr:
+        if not (5 <= pos <= 25):
             continue
         if looks_like_junk(query):
             continue
@@ -421,43 +472,41 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
         # agent would polish that dead end every single night, forever.
         if denied(path, deny_paths) or denied(query, deny_topics):
             continue
+        grouped.setdefault(path, []).append(r)
+        if impr < cfg_min_impr:
+            continue
         # score: impressions we are failing to convert, weighted by how close we are
         proximity = 1.6 if pos <= 12 else (1.2 if pos <= 18 else 1.0)
         score = impr * proximity * (1.0 - min(r["ctr"], 0.10) * 5)
         cur = best.get(path)
         if not cur or score > cur["score"]:
-            # ATTENTION, not Google clicks. A page can earn nothing from Google and still be
-            # one of the property's best performers via ChatGPT — goalkit's Argentina jersey
-            # had 81 AI sessions and 0 Google clicks, and the clicks-only rule called it
-            # "nothing to lose". If the AI signal could not be read we do NOT assume zero:
-            # unknown means fail closed (additive), never "wave it through".
-            ai_hits = (ai_by_path or {}).get(path, 0)
-            attention = clicks + ai_hits
-            if force_additive or not ai_known:
-                emode = "additive"
-            else:
-                emode = edit_mode_for(attention, click_floor)
-            best[path] = {
-                "mode": "ENHANCE", "path": path, "query": query,
-                "edit_mode": emode,
-                "impressions": int(impr), "clicks": int(clicks),
-                "position": round(pos, 1), "ctr": round(r["ctr"] * 100, 2),
-                "score": round(score, 1), "source": "striking-distance",
-                "why": (f"ranks #{pos:.0f} for '{query}' with {int(impr)} impressions but only "
-                        f"{int(clicks)} clicks ({r['ctr']*100:.1f}% CTR) — page 1 is one push away"),
-                "ai_sessions": int(ai_hits),
-                "edit_mode_why": (
-                    (f"ADDITIVE — this page already earns {int(clicks)} Google clicks and "
-                     f"{int(ai_hits)} AI-assistant sessions. Its title is proven; do not rewrite "
-                     f"it. Add depth only."
-                     if ai_known else
-                     "ADDITIVE — the AI-channel signal could not be read tonight, so we cannot "
-                     "tell what this page earns outside Google. Failing closed: add depth only.")
-                    if emode == "additive" else
-                    f"FULL — {int(clicks)} Google clicks and {int(ai_hits)} AI sessions. Nothing "
-                    f"to lose; title/meta rewrite allowed."
-                ),
-            }
+            why = (f"ranks #{pos:.0f} for '{query}' with {int(impr)} impressions but only "
+                   f"{int(clicks)} clicks ({r['ctr']*100:.1f}% CTR) — page 1 is one push away")
+            best[path] = _enhance_entry(path, query, pos, impr, clicks, r["ctr"], score,
+                                        "striking-distance", why, ai_by_path, ai_known,
+                                        force_additive, click_floor)
+
+    # Pass 2 — rescue pages whose demand is real but fragmented across long-tail
+    # phrasings, none of which alone clears cfg_min_impr (see docstring above).
+    for path, prows in grouped.items():
+        if path in best:
+            continue
+        total_impr = sum(r["impressions"] for r in prows)
+        if total_impr < cfg_min_impr:
+            continue
+        total_clicks = sum(r["clicks"] for r in prows)
+        top = max(prows, key=lambda r: r["impressions"])
+        query, pos = top["keys"][1], top["position"]
+        avg_ctr = total_clicks / total_impr
+        proximity = 1.6 if pos <= 12 else (1.2 if pos <= 18 else 1.0)
+        score = total_impr * proximity * (1.0 - min(avg_ctr, 0.10) * 5)
+        why = (f"ranks position ~{pos:.0f} but demand is split across {len(prows)} phrasings "
+               f"(top: '{query}') summing to {int(total_impr)} impressions / {int(total_clicks)} "
+               f"clicks — no single phrase alone, but the page is a real page-1 opportunity")
+        best[path] = _enhance_entry(path, query, pos, total_impr, total_clicks, avg_ctr, score,
+                                    "striking-distance-aggregate", why, ai_by_path, ai_known,
+                                    force_additive, click_floor,
+                                    extra={"phrase_count": len(prows)})
     return sorted(best.values(), key=lambda x: -x["score"])
 
 

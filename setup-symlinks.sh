@@ -136,6 +136,33 @@ if [ -d "$SCRIPT_DIR/claude-config" ]; then
     echo "  (memory dir $proj_memory_dir does not exist yet — skip memory symlinks; run Claude once in this project first)"
   fi
 
+  # 2b) Company-wide knowledge -> <project>/.claude/knowledge/
+  #
+  # Strategy documents that are true for EVERY app (the Shipaton knowledge base, the
+  # RevenueCat growth playbook). One canonical copy lives here; each project gets a link,
+  # so updating the source updates every project at once and no app repo can drift into
+  # holding a stale private fork of the plan.
+  #
+  # NOT in team_mvp_kit: that submodule is shared Dart code owned by a teammate, it is
+  # consumed by other apps, and a strategy document has no business shipping inside a
+  # package. NOT copied per-project either — copies are how two versions of a "locked"
+  # plan come to disagree.
+  if [ -d "$SCRIPT_DIR/claude-config/knowledge" ]; then
+    mkdir -p "$HOST_ROOT/.claude/knowledge"
+    for kb_file in "$SCRIPT_DIR"/claude-config/knowledge/*.md; do
+      [ -f "$kb_file" ] || continue
+      kb_base="$(basename "$kb_file")"
+      link_path="$HOST_ROOT/.claude/knowledge/$kb_base"
+      if [ -L "$link_path" ] && [ "$(readlink "$link_path")" = "$kb_file" ]; then
+        user_skipped=$((user_skipped + 1))
+      else
+        rm -f "$link_path" 2>/dev/null
+        ln -sf "$kb_file" "$link_path"
+        user_created=$((user_created + 1))
+      fi
+    done
+  fi
+
   # 3) Hooks -> ~/.claude/hooks/
   mkdir -p "$HOME/.claude/hooks"
   for hook_file in "$SCRIPT_DIR"/claude-config/hooks/*.sh; do

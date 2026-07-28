@@ -6,8 +6,28 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")")" && pwd)"
-HOST_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SUBMOD_REL="teamz-company-automation"
+
+# The host project is where you RAN this from — not where the script lives.
+#
+# Deriving it from the script path breaks when a project reaches this repo through a
+# SYMLINK instead of a real submodule (ai_resume_checker does: teamz-company-automation ->
+# ../teamz-company-automation). `readlink -f` follows that link to the real directory, so
+# SCRIPT_DIR/.. lands on the shared PARENT of every project — and the whole scripts/ tree
+# plus .claude/ get written one level too high, outside any repo. Happened on 2026-07-28.
+if [ -e "$PWD/$SUBMOD_REL" ]; then
+  HOST_ROOT="$PWD"
+else
+  HOST_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+fi
+
+# Refuse to litter a directory that is not a project. A host project has a manifest;
+# the shared parent directory does not.
+if [ ! -e "$HOST_ROOT/pubspec.yaml" ] && [ ! -e "$HOST_ROOT/package.json" ] && [ ! -e "$HOST_ROOT/.git" ]; then
+  echo "ERROR: '$HOST_ROOT' does not look like a project root (no pubspec.yaml, package.json or .git)."
+  echo "       cd into the project first, then: bash $SUBMOD_REL/setup-symlinks.sh"
+  exit 1
+fi
 
 cd "$HOST_ROOT"
 mkdir -p scripts

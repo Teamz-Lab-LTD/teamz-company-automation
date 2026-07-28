@@ -1,3 +1,29 @@
+<!--
+  CANONICAL COPY. Authored by the team lead; the body below is VERBATIM and unedited.
+
+  A second copy exists at team_mvp_kit/prompts/shipaton-2026-knowledge-base.md. That one is
+  the mirror — it is reached by apps through the kit submodule and carries this same header.
+  If you edit one, edit both, or a "locked" plan quietly forks. See GENERIC-ASSET-INDEX.md.
+
+  Two things learned the hard way executing this on ai_resume_checker (2026-07-12), kept here
+  so the next app does not repeat them:
+
+  1. VERIFY A CLAIM BEFORE YOU SHIP IT. "Your resume never leaves your device" was about to
+     go into a Play listing. The FILE never leaves the phone — but the extracted TEXT is
+     sent to a third-party LLM and stored in Firestore. The claim was false in the way a
+     user would read it, and it is exactly what the anti-dark-pattern judge screens for.
+     Every store claim must be checked against the code path, not the pitch.
+
+  2. "CONFIGURED" IS NOT "WORKING." The resume app's ads were configured, preloaded, and
+     displayed to nobody for its entire life — `autoShowOnLoad: false`, zero
+     `AdPlacementView` in the tree. Grep for the CALL SITE, not the config.
+
+  Worked example of both: ai_resume_checker/automation_data/deep-research-keywords.json
+  (`_privacy_reality`, `_app_constraints.forbidden_claims`).
+-->
+
+---
+
 # RevenueCat Shipaton 2026 — Master Knowledge Base & Strategy
 
 > **What this document is.** A self-contained strategic knowledge base for competing in RevenueCat Shipaton 2026. It reconciles three independent research passes (Gemini, ChatGPT Deep Research, and live page fetches) plus audits of three candidate apps. It is designed to be **portable**: paste it into any fresh AI conversation to rebuild full context.

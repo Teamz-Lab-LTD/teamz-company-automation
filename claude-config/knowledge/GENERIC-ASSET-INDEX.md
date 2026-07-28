@@ -32,9 +32,16 @@ better home (it is not a package, and it is where Claude config already lives), 
 anything out of the kit needs the kit owner's agreement — never do it unilaterally.
 
 **Live duplicate, tracked deliberately:** the Shipaton knowledge base exists in *both*
-`claude-config/knowledge/` and `team_mvp_kit/prompts/shipaton-2026-knowledge-base.md`. The
-bodies are byte-identical; the kit's copy carries an extra provenance header. If you edit
-one, edit both, or the "locked" plan quietly forks.
+`claude-config/knowledge/` (**canonical**) and `team_mvp_kit/prompts/shipaton-2026-knowledge-base.md`
+(**mirror**). The bodies are byte-identical — verified 2026-07-28 with `diff`, the only
+difference is each file's own HTML-comment header. If you edit one, edit both, or the
+"locked" plan quietly forks.
+
+The kit copy came first (2026-07-12) and predates this repo having a knowledge folder. It
+still exists because the kit is a submodule of every app, so it reaches them with no setup
+step. It should shrink to a one-line pointer at the canonical copy — but the kit is shared
+Dart code owned by a teammate and consumed by NoteTube, so **that edit needs their
+agreement and must never be made unilaterally.** Until then: two files, one truth, this row.
 
 ---
 

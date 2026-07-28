@@ -88,6 +88,17 @@ playbook says so itself: hypotheses to test, not laws.
 | **Per-app workflow** | `claude-config/PER-APP-WORKFLOW.md` | Onboarding a NEW app repo into this tooling. |
 | **Skill invocation audit (hook)** | `claude-config/hooks/skill-invocation-audit.sh` | Auditing which skills actually fired. Log: `~/.config/teamzlab/audit/skill-invocations.log`. |
 
+### Design
+
+| Asset | Where | Reach for it when |
+|---|---|---|
+| **Design prompt template** | `claude-config/design/DESIGN-PROMPT-TEMPLATE.md` | Designing ANY new screen. Fill the placeholders, paste into claude.ai, get a running motion prototype that ports to Flutter. Generalized from the prompts that produced Resume Coach's payoff screen and career hub. |
+| **Design ship gate** | `claude-config/design/DESIGN-SHIP-GATE.md` | Before calling a screen done. Section A is automated by the hook; section B (contrast in both themes, touch targets, reduce-motion, every on-screen claim true of the code) needs eyes. |
+| **Design gate linter (hook)** | `claude-config/hooks/design-ship-gate.sh` | Already active once registered as a PostToolUse hook on Write/Edit. Scans Flutter UI files and reports real violations — non-uniform border with radius (throws during paint), raw colour literals, `Colors.white/black` foregrounds, hardcoded durations, layout-animating containers, emoji icons. Skips theme files, tests and generated code. |
+
+The bar these encode: **render the invisible process, in motion — polish alone never wins.**
+Every rule in the gate is there because that exact defect shipped or nearly shipped once.
+
 ### Skills
 
 | Asset | Where | Reach for it when |

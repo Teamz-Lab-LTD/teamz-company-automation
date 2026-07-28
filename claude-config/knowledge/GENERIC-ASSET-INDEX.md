@@ -51,9 +51,30 @@ agreement and must never be made unilaterally.** Until then: two files, one trut
 
 | Asset | Where | Reach for it when |
 |---|---|---|
-| **RevenueCat Growth Playbook** | `claude-config/knowledge/RevenueCat_Growth_Playbook.md` | You need the evidence behind a monetization number. Static appendix — it names no app. |
+| **RevenueCat Growth Playbook** | `claude-config/knowledge/RevenueCat_Growth_Playbook.md` | You need RevenueCat's own evidence on pricing, trials, paywall structure, onboarding, launch or metrics. **Read the warning below before applying any of it.** |
 | **Shipaton 2026 Knowledge Base** | `claude-config/knowledge/Shipaton_2026_Knowledge_Base.md` (mirror: `team_mvp_kit/prompts/shipaton-2026-knowledge-base.md`) | **Any** Shipaton question. It is the authority and it OUTRANKS per-app plan files. §9.2 = locked tracks; §9.3 = weekly calendar; §9.6 = Resume Coach is shelved Plan B. |
 | **Money Machine 2026–2027** | `MONEY_MACHINE_2026_2027.md` | Long-range revenue plan across properties. |
+
+**Warning on the playbook — half generic, half not.** It is filed here as company-wide and it
+mostly earns that, but it was written against **an exam-preparation app** and never
+generalized. The "Executive decision" recommends a *90-day exam plan*; §4's onboarding flow
+starts *"Select exam and exam date"*; §3's sample paywall reads *"Be ready for [Exam] in 90
+days."* Exam/study/student wording runs through every section (§5 ×14, §4 ×13, §6 ×9, §3 ×8).
+
+Split it when you read it:
+
+- **Transferable** — RevenueCat's own data and structural rules: >80% of trial starts happen
+  right after install; test price and plan mix *before* paywall cosmetics; one screen, two
+  options, one highlighted flagship; put the paywall after the first personalized result;
+  onboarding must produce evidence, not tour features; first value vs core value; ~32% of
+  Play cancellations are billing failures vs ~15% on Apple.
+- **NOT transferable** — every concrete number, flow and offer. Renewal medians are the
+  **Education** category (24% annual / 56% monthly / 58% weekly). A 90-day plan suits a
+  finite exam date; most apps have no such deadline. Translate to your own product's
+  first-value moment or you will ship an exam app's monetization by accident.
+
+The Sub Club examples (Coconote, Mojo, Natal, Avast) are single-company experiments. The
+playbook says so itself: hypotheses to test, not laws.
 
 ### Claude configuration
 

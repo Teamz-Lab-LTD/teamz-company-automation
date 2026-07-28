@@ -792,6 +792,58 @@ python3 scripts/build-static-schema.py 2>/dev/null | tail -2
 ./scripts/build-search-index.sh 2>/dev/null | tail -3
 python3 scripts/build-fix-orphans.py fix 2>/dev/null | tail -2
 
+# Live league standings for the table predictors (tools only — guarded, see below).
+#
+# The predictors' "vs actual" panel is the reason a visitor comes back every matchweek instead
+# of using the tool once: it scores their saved prediction against the real table. It reads
+# data/football/<comp>.json, and that file was written exactly ONCE, when the Premier League
+# predictor was created. Nothing ever refreshed it — the fetcher existed but was wired to no
+# nightly, no cron and no launchd — so the panel was pinned on "unlocks when the season kicks
+# off" and would have stayed there through the entire season it was built for.
+#
+# No API key required. The fetcher prefers football-data.org when a key is present at
+# ~/.config/teamzlab/football-data-key.txt and otherwise computes the table from openfootball's
+# public match results, which is the path in use. It logs and continues on a single dead feed,
+# so one competition cannot take the night down.
+#
+# Guarded because this file is shared with the apps and learn properties: neither has
+# scripts/build-football-standings.py nor a data/football/ directory, so this block is a no-op
+# there. Same pattern as the sitemap call below.
+if [ -f scripts/build-football-standings.py ]; then
+    echo "  Refreshing league standings (table predictors)..."
+    python3 scripts/build-football-standings.py 2>&1 | sed 's/^/  /' \
+        || echo "  (standings refresh failed — non-fatal)"
+
+    # Past kickoff but still no rows means the feed went missing, and the ONLY visible symptom
+    # would be a retention panel silently locked for a whole season — the exact failure that
+    # went unnoticed until now. Alert rather than ship quiet.
+    #
+    # Captured to a variable and read with a herestring, NOT piped into `while`: a pipeline runs
+    # its loop in a subshell, so every record_health_alert append to HEALTH_ALERTS would be
+    # discarded and the guard would look green while reporting nothing.
+    STANDINGS_STALE=$(python3 - <<'PY' 2>/dev/null
+import datetime, glob, json, os
+today = datetime.date.today().isoformat()
+for fp in sorted(glob.glob("data/football/*.json")):
+    try:
+        d = json.load(open(fp))
+    except Exception as exc:
+        print("%s is unreadable (%s)" % (os.path.basename(fp), exc))
+        continue
+    kickoff = d.get("kickoff") or ""
+    if kickoff and kickoff < today and not d.get("standings"):
+        print("%s: season started %s but standings are still empty (source=%s)"
+              % (d.get("competition") or os.path.basename(fp), kickoff, d.get("source")))
+PY
+)
+    if [ -n "$STANDINGS_STALE" ]; then
+        while IFS= read -r _line; do
+            [ -n "$_line" ] || continue
+            record_health_alert "Football standings stale: $_line"
+        done <<< "$STANDINGS_STALE"
+    fi
+fi
+
 # Rebuild sitemap so every nightly commit carries a sitemap matching the on-disk indexable set
 # (build-sitemap.sh already excludes noindex + redirect stubs). Closes the proven gap where a
 # new/changed page shipped without a sitemap update — reuse of the existing correct script.

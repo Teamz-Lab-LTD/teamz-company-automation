@@ -3,6 +3,11 @@
   "_regenerate": "python3 py/build-crashlytics-monitor.py --discover",
   "apps": [
     {
+      "slug": "hazira",
+      "project_id": "hazirakhata",
+      "android": "1:245761915673:android:6bafd9894898bb11"
+    },
+    {
       "slug": "top3picks",
       "project_id": "top3picks-app",
       "android": "1:78491713820:android:e27eef5ceb0b770aa23ad9",

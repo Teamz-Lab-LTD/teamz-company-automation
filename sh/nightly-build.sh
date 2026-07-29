@@ -591,10 +591,10 @@ fi
 # Phase 4: Run Claude to build tools (uses quota)
 echo ""
 echo "=== Phase 4: Claude Build Agent ==="
-echo "  Starting Sonnet... (live output below)"
-echo "  ─────────────────────────────────────"
 PROMPT_FILE="$PROJECT_DIR/scripts/nightly-build-prompt.md"
 BUILD_MODEL="${MODEL:-opus}"
+echo "  Starting $BUILD_MODEL agent... (live output below)"
+echo "  ─────────────────────────────────────"
 echo "  Model: $BUILD_MODEL"
 if [ "$REPO_DIRTY_AT_START" -ne 0 ]; then
     skip_phase "Claude build (repo dirty at start)"
@@ -813,35 +813,25 @@ if [ -f scripts/build-football-standings.py ]; then
     echo "  Refreshing league standings (table predictors)..."
     python3 scripts/build-football-standings.py 2>&1 | sed 's/^/  /' \
         || echo "  (standings refresh failed — non-fatal)"
+fi
 
-    # Past kickoff but still no rows means the feed went missing, and the ONLY visible symptom
-    # would be a retention panel silently locked for a whole season — the exact failure that
-    # went unnoticed until now. Alert rather than ship quiet.
-    #
-    # Captured to a variable and read with a herestring, NOT piped into `while`: a pipeline runs
-    # its loop in a subshell, so every record_health_alert append to HEALTH_ALERTS would be
-    # discarded and the guard would look green while reporting nothing.
-    STANDINGS_STALE=$(python3 - <<'PY' 2>/dev/null
-import datetime, glob, json, os
-today = datetime.date.today().isoformat()
-for fp in sorted(glob.glob("data/football/*.json")):
-    try:
-        d = json.load(open(fp))
-    except Exception as exc:
-        print("%s is unreadable (%s)" % (os.path.basename(fp), exc))
-        continue
-    kickoff = d.get("kickoff") or ""
-    if kickoff and kickoff < today and not d.get("standings"):
-        print("%s: season started %s but standings are still empty (source=%s)"
-              % (d.get("competition") or os.path.basename(fp), kickoff, d.get("source")))
-PY
-)
-    if [ -n "$STANDINGS_STALE" ]; then
-        while IFS= read -r _line; do
-            [ -n "$_line" ] || continue
-            record_health_alert "Football standings stale: $_line"
-        done <<< "$STANDINGS_STALE"
-    fi
+# NFL playoff predictor feed — same pattern as the football block above.
+# ESPN -> nflverse -> never-regress ladder lives inside the fetcher.
+if [ -f scripts/build-nfl-standings.py ]; then
+    echo "  Refreshing NFL standings (playoff predictor)..."
+    python3 scripts/build-nfl-standings.py 2>&1 | sed 's/^/  /' \
+        || echo "  (NFL standings refresh failed — non-fatal)"
+fi
+
+# Data-freshness sentinel — runs AFTER the feed refreshers so it judges
+# tonight's data, not yesterday's. Replaces the old inline football
+# staleness heredoc: the same kickoff-passed-but-empty rule now lives in
+# data/freshness-manifest.json alongside the NFL feed age rule, the
+# fixtures-in-the-past rule and the event-calendar build-window rule.
+# run_phase_cmd executes in this shell, so record_health_alert appends
+# survive (the subshell trap the old heredoc comment documented).
+if [ -f scripts/build-data-freshness.py ]; then
+    run_phase_cmd "Data freshness sentinel" 10 python3 scripts/build-data-freshness.py
 fi
 
 # Rebuild sitemap so every nightly commit carries a sitemap matching the on-disk indexable set

@@ -37,10 +37,27 @@ SNAP_DIR = os.path.join(DATA, "money-snapshots")
 TOK = os.path.expanduser("~/.config/teamzlab/search-console-token.json")
 SITE = "https://tool.teamzlab.com"
 MONEY_NICHES = {"finance", "tax", "mortgage", "insurance", "legal", "real-estate", "b2b-leadgen"}
+# A page enters the snapshot if the ORIGINAL rule accepts it (niche in MONEY_NICHES AND Planner
+# volume >= 1000) **OR** Google is already showing it this often in 28d. The OR is deliberate:
+# replacing the original rule outright dropped 35 of the 82 pages the striking-distance pool can
+# currently pick, so the gate is strictly additive — nothing selectable today can be lost.
+#
+# Why the demand arm exists at all: the niche list + Planner volume are both GUESSES, and both
+# were wrong about this site. Measured 2026-08-01, hubs OUTSIDE MONEY_NICHES earned $196.56 of
+# July's $198.76 — 98.9%. football maps to "entertainment", games to "gaming", nfl to
+# "productivity", so the three hubs that actually pay could never enter. Planner volume is no
+# better: "penalty shootout simulator" is rated 50/mo and produces 2,239 clicks/28d, while
+# "paycheck calculator montana" is rated 5,000/mo and earns $0.00. GSC impressions are MEASURED,
+# self-updating, and come from the same call this script already makes — no new API, no new token.
+DEMAND_MIN_IMPR = 10        # matches pool_thin_faq_demand's own floor, so no consumer loses rows
 
 
 def money_pages():
-    """High-RPM tool pages with real demand -> [(slug, url, vol, rpm)]."""
+    """Candidate pages -> [{slug, url, vol, rpm, niche, old_rule}].
+
+    Returns EVERY tool plus the flag saying whether the original niche+volume rule accepts it.
+    The demand half of the gate needs GSC, which is only fetched in run(), so the final
+    admission decision happens there (see DEMAND_MIN_IMPR)."""
     sys.path.insert(0, HERE)
     import keyword_volume_manual as kvm, revenue_priority as rp
     mv = kvm.load_manual_volume(DATA)
@@ -53,14 +70,12 @@ def money_pages():
         last = slug.split("/")[-1].replace("-", " ")
         hub = slug.split("/")[0]
         niche = rp.niche_for(hub, slug, t.get("title", ""))
-        if niche not in MONEY_NICHES:
-            continue
         hit = kvm.manual_lookup(mv, last)
-        vol = hit["vol"] if hit and hit["vol"] is not None else 0   # blank Planner cell = unknown -> not a confirmed money page
-        if vol < 1000:
-            continue
+        vol = hit["vol"] if hit and hit["vol"] is not None else 0   # blank Planner cell = unknown
+        old_rule = niche in MONEY_NICHES and vol >= 1000
         rpm = rp.expected_dollars(slug, hub, t.get("title", ""), 100, 7)["rpm_mid"]
-        out.append({"slug": slug, "url": url, "vol": int(vol), "rpm": rpm, "niche": niche})
+        out.append({"slug": slug, "url": url, "vol": int(vol), "rpm": rpm, "niche": niche,
+                    "old_rule": old_rule})
     # dedupe by url, keep highest vol
     by = {}
     for r in out:
@@ -93,6 +108,7 @@ def run(today_str):
     prev = _gsc(tok, ds(today - timedelta(days=59)), ds(today - timedelta(days=31)))
     rows, agg = [], {"GROWING": 0, "FLAT": 0, "STUCK": 0, "DEAD": 0}
     tot_clicks = tot_prev = 0
+    admitted = {"old_rule": 0, "demand": 0}
     for p in pages:
         full = SITE + p["url"]
         c = cur.get(full); pr = prev.get(full)
@@ -100,6 +116,10 @@ def run(today_str):
         pc = int(pr["clicks"]) if pr else 0
         impr = int(c["impressions"]) if c else 0
         pos = round(c["position"], 1) if c else 0
+        # union gate — original rule OR measured Google demand (see DEMAND_MIN_IMPR)
+        if not (p["old_rule"] or impr >= DEMAND_MIN_IMPR):
+            continue
+        admitted["old_rule" if p["old_rule"] else "demand"] += 1
         tot_clicks += cc; tot_prev += pc
         if impr == 0:
             bucket = "DEAD"
@@ -112,10 +132,28 @@ def run(today_str):
         agg[bucket] += 1
         rows.append({**p, "clicks": cc, "prev_clicks": pc, "impr": impr, "pos": pos, "bucket": bucket})
     snap = {"date": today_str, "total_clicks_28d": tot_clicks, "prev_clicks_28d": tot_prev,
-            "buckets": agg, "pages": rows}
+            "buckets": agg, "admitted": admitted, "pages": rows}
     os.makedirs(SNAP_DIR, exist_ok=True)
+
+    # NEVER SHRINK SILENTLY. The snapshot is the ONLY input to the enhance queue's two biggest
+    # pools. A GSC outage returns few/no rows, which would quietly write a near-empty snapshot and
+    # starve the queue with everything still reporting success. Refuse the write and say so loudly
+    # instead — a monitor that can only ever look healthy is not a monitor.
+    prev_path = os.path.join(SNAP_DIR, "latest.json")
+    if os.path.exists(prev_path):
+        try:
+            old_n = len(json.load(open(prev_path)).get("pages", []))
+        except Exception:
+            old_n = 0
+        if old_n and len(rows) < old_n * 0.5:
+            sys.stderr.write(
+                f"ERROR: money snapshot collapsed {old_n} -> {len(rows)} pages (>50% drop). "
+                f"Keeping the previous snapshot; NOT overwriting. Likely a GSC fetch failure — "
+                f"cur={len(cur)} prev={len(prev)} rows returned.\n")
+            return json.load(open(prev_path))
+
     json.dump(snap, open(os.path.join(SNAP_DIR, f"{today_str}.json"), "w"), indent=2)
-    json.dump(snap, open(os.path.join(SNAP_DIR, "latest.json"), "w"), indent=2)
+    json.dump(snap, open(prev_path, "w"), indent=2)
     return snap
 
 

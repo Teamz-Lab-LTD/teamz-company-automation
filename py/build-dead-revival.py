@@ -37,6 +37,20 @@ AUTO = os.path.dirname(HERE)
 # Every other builder resolves the host from config; do the same. The nightly exports
 # TEAMZ_HOST_SITE_ROOT (=teamzlab-tools); fall back to __file__ math only when run standalone.
 HOST = os.environ.get("TEAMZ_HOST_SITE_ROOT") or os.path.dirname(AUTO)
+# FAIL LOUD on a bad HOST instead of limping on with a wrong path. config.sh resolves
+# TEAMZ_HOST_SITE_ROOT by walking up from CWD for .teamz-automation.env, then falls back to
+# TEAMZ_AUTOMATION_ROOT/.. = teamz-projects/ — which is NOT a site. Any launcher that starts
+# outside a host repo (e.g. scripts/overnight-opus-loop.sh) hits that fallback, and the only
+# symptom was a misleading "index-status-prune.csv not found — run build-index-status-check.py
+# first" repeated ~20x per nightly. The CSV existed the whole time, in teamzlab-tools/data/;
+# the script was reading teamz-projects/data/. Same guard as build-money-tracker.py.
+if os.path.basename(os.path.normpath(HOST)) == "teamz-company-automation" \
+        or not os.path.exists(os.path.join(HOST, "tools.json")):
+    sys.stderr.write(
+        f"FATAL: build-dead-revival resolved HOST to {HOST}, which is not a Teamz Lab content "
+        f"site (no tools.json). Set TEAMZ_HOST_SITE_ROOT to the host repo. Refusing to run "
+        f"against the wrong tree and report a false 'audit CSV missing'.\n")
+    sys.exit(2)
 DATA = os.path.join(HOST, "data")
 AUDIT = os.path.join(DATA, "zero-visitor-audit")
 

@@ -612,6 +612,13 @@ else
     # block later launchd fires (the 29h-freeze that locked 2026-05-31→06-01).
     # A normal finish cancels the watchdog immediately.
     AGENT_MAX_SECONDS="${AGENT_MAX_SECONDS:-2700}"
+    # Snapshot the dirty SOURCE files before the agent starts. If the agent is killed at the
+    # wall it is mid-edit on exactly one page, and that half-written file stays uncommitted —
+    # which makes the NEXT run see REPO_DIRTY_AT_START and skip the whole Claude phase. One
+    # timeout then costs TWO runs. Measured on tool.teamzlab.com: 18% of runs time out, and
+    # 10 of ~62 July runs produced zero enhancements for a dirty tree. Diffing against this
+    # baseline lets the cleanup below touch ONLY what the agent dirtied, never the owner's WIP.
+    AGENT_PRE_DIRTY="$(git status --porcelain --ignore-submodules 2>/dev/null | awk '{print $2}' | sort)"
     claude --print --verbose --dangerously-skip-permissions --model "$BUILD_MODEL" -p "$(cat "$PROMPT_FILE")" 2>&1 &
     AGENT_PID=$!
     ( sleep "$AGENT_MAX_SECONDS"; kill -TERM "$AGENT_PID" 2>/dev/null; sleep 60; kill -KILL "$AGENT_PID" 2>/dev/null ) &
@@ -624,6 +631,26 @@ else
         echo "  ✗ Claude agent TIMED OUT (>${AGENT_MAX_SECONDS}s) — killed to prevent zombie. Next run retries fresh."
         record_health_alert "Claude agent timed out (${AGENT_MAX_SECONDS}s) — killed to prevent zombie"
         osascript -e "display notification \"Claude agent TIMED OUT, killed to avoid zombie. Next run retries.\" with title \"Teamz Build TIMEOUT\" sound name \"Basso\"" 2>/dev/null
+
+        # Unblock the NEXT run. The agent commits each page as it finishes, so anything left
+        # uncommitted after a kill is the single half-written page. Revert ONLY files that were
+        # clean before the agent started (AGENT_PRE_DIRTY) — never the owner's pre-existing WIP,
+        # never generated output (data/, logs/, docs/ are already excluded from the dirty guard).
+        # Without this, a partial page re-locks the guard and the next run does nothing at all.
+        AGENT_POST_DIRTY="$(git status --porcelain --ignore-submodules 2>/dev/null \
+            | grep -E '\.(html|js|css|py|sh)$' | awk '{print $2}' | sort)"
+        AGENT_ORPHANS="$(comm -13 <(printf '%s\n' "$AGENT_PRE_DIRTY") <(printf '%s\n' "$AGENT_POST_DIRTY"))"
+        if [ -n "$AGENT_ORPHANS" ]; then
+            ORPHAN_COUNT="$(printf '%s\n' "$AGENT_ORPHANS" | grep -c .)"
+            echo "  Reverting $ORPHAN_COUNT half-written file(s) left by the killed agent:"
+            printf '%s\n' "$AGENT_ORPHANS" | sed 's/^/    /'
+            printf '%s\n' "$AGENT_ORPHANS" | while read -r _f; do
+                [ -n "$_f" ] && git checkout -- "$_f" 2>/dev/null
+            done
+            record_health_alert "Timeout cleanup: reverted $ORPHAN_COUNT partial file(s) so the next run is not skipped"
+        else
+            echo "  No half-written files left behind — next run is not blocked."
+        fi
     fi
 
     if [ "$BUILD_EXIT" -ne 0 ]; then

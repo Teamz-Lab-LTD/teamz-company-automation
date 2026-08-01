@@ -1,8 +1,18 @@
 # RevenueCat Growth Playbook — Evidence Companion
 
+> ## ⚠️ THIS FILE IS ONE PRODUCT'S APPLICATION, NOT A GENERAL PLAYBOOK
+>
+> Every recommendation below was written for **one specific app**: a **$79.99 / 90-day exam-prep subscription** (NoteTube's Exam Cycle). The $79.99 price, the 90-day pass, the diagnostic-then-readiness-score onboarding, the exam keyword clusters and the Education category medians are **that product's answers**, not defaults.
+>
+> **Working on a different app? Read [`RevenueCat_Benchmarks_2026.md`](./RevenueCat_Benchmarks_2026.md) instead.** It holds the same RevenueCat evidence with the exam framing stripped out, plus ~12 figures this file predates, plus a TRIPWIRES table an agent is expected to act on. Come back here only for a worked example of applying a benchmark to a real product.
+>
+> Copying this file's offer structure into another app is the single most likely way to misuse this knowledge base.
+
 > **What this file is:** The full research report distilling RevenueCat's growth content (2026 State of Subscription Apps, growth blog, Sub Club case studies) for a 90-day exam-prep subscription app. Compiled Jul 28, 2026 via research run; sources linked throughout.
 >
-> **How to use it:** This is the STATIC EVIDENCE APPENDIX to the Shipaton 2026 Knowledge Base. The book's §9.2.1 holds the locked decisions; come here only when you need the "why," a benchmark's context, or a case study. Read task-attached (15 min per decision), never cover-to-cover. Principles are evergreen; refresh benchmark numbers when the next annual State of Subscription Apps report publishes.
+> **How to use it:** This is the STATIC EVIDENCE APPENDIX to the Shipaton 2026 Knowledge Base. The book's §9.2 holds the locked decisions; come here only when you need the "why," a benchmark's context, or a case study. Read task-attached (15 min per decision), never cover-to-cover. Principles are evergreen; refresh benchmark numbers when the next annual State of Subscription Apps report publishes.
+>
+> **Known gap vs the benchmarks file:** this run missed the Apple **free-trial-toggle rejection** (a submission blocker), refund-rate-by-price-tier, D14/D60 revenue-per-install medians, time-to-$1K/$10K, the trial-reminder triad and the micro-commitment pattern. Those live in `RevenueCat_Benchmarks_2026.md`.
 
 ---
 

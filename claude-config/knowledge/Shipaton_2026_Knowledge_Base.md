@@ -212,6 +212,8 @@ The calendar is ~3 months but the **scored window is only 2**: publishing before
 
 ### 9.2 ✅ FINAL LOCKED PLAN (decided in session, July 2026) — Two tracks, three owners
 
+> **Before touching pricing, trials, paywall structure or the launch funnel on ANY app here, read [`RevenueCat_Benchmarks_2026.md`](./RevenueCat_Benchmarks_2026.md) — start at its TRIPWIRES table.** It is product-neutral and its tripwires are meant to stop an agent mid-task. [`RevenueCat_Growth_Playbook.md`](./RevenueCat_Growth_Playbook.md) is a worked example for ONE product (a $79.99/90-day exam-prep app) — do not copy its offer structure into another app.
+
 The contingency is resolved. **Structure: two apps, cleanly divided by owner, zero overlap on any one person's attention.** Resume Checker is SHELVED (adding it would put a second app on the lead's plate — the one forbidden move).
 
 | Track | Owner | App | Target categories |
@@ -291,6 +293,9 @@ Register as a **team of individuals** on Devpost, not as the company — simpler
 **Sep 21–30 (submission as a production):** Nail the **≤2-min video** (hook in first 10s). Story-driven description. Test the **free trial / promo code**. Embed **RevenueCat verified public metrics** to prove traction.
 
 ### 10.3 Criteria to nail (ranked)
+
+> ⚠️ **Submission blocker on #1:** Apple is now **rejecting free-trial toggle paywalls** as confusing/misleading. If your paywall is RevenueCat-hosted, the toggle is configured in the **RevenueCat dashboard**, not in app code — grepping the repo finds nothing. Verify before submitting. See [`RevenueCat_Benchmarks_2026.md`](./RevenueCat_Benchmarks_2026.md) §3 (including the caveat that this rests on a single unverified citation and should be checked against Apple's current guidelines).
+
 1. Working, **honest** RevenueCat paywall with ≥1 live IAP (and/or RevenueCat Ads for Catvertising).
 2. Real published store link, **early**.
 3. Tight ≤2-min demo video with an immediate hook.

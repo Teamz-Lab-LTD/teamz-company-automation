@@ -1,0 +1,159 @@
+# Shipaton 2026 — Category Registry
+
+> **Canonical.** Mirror in `team_mvp_kit/prompts/` must stay byte-identical in body.
+>
+> **What this file is for:** the owner should never again have to ask "am I touching all the
+> categories?" or re-derive which are reachable. This answers it once, per app, mechanically.
+>
+> **How to use it:** run `/shipaton-check <app-slug>`. That command reads this file, reads the
+> app's `docs/shipaton/CATEGORY-TRACKER.md`, and reports every reachable category that is not
+> yet claimed. Do not read this file cover-to-cover — read §1 (the verdict table) and the
+> §4 traps, then the rows you need.
+>
+> **Related:** [`Shipaton_2026_Knowledge_Base.md`](./Shipaton_2026_Knowledge_Base.md) (strategy, app
+> allocation, #BuildInPublic engine) · [`RevenueCat_Benchmarks_2026.md`](./RevenueCat_Benchmarks_2026.md)
+> (pricing tripwires — read before touching price/trial/paywall)
+
+**Built:** 2026-08-03, from the official Devpost rules text + live fetches.
+**Source of truth:** https://revenuecat-shipaton-2026.devpost.com/rules
+**Refresh trigger:** sponsors are added mid-event. Re-fetch the rules page before any submission.
+
+---
+
+## 0. The two dates and the one gate
+
+| | |
+|---|---|
+| Submission Period | **Jul 31, 2026 8:00am PDT → Sep 30, 2026 11:45pm PDT** |
+| #BuildInPublic Engagement Period | same window |
+| Judging | Oct 1 – Oct 13, 2026 |
+| Winners announced | Oct 21, 2026 |
+
+**The gate that kills entries:** the app must be **fully published** on the App Store, Google Play,
+**or** the Samsung Galaxy Store by the deadline. Not TestFlight. Not internal testing. Published.
+Store review takes days and can bounce. **Every category below except Next Gen requires this.**
+
+**"or" is load-bearing** — ONE store qualifies you for everything. An Android-only release is a
+complete, valid entry. Do not buy an Apple Developer account ($99/yr) unless a category
+specifically demands iOS (only JetBrains does, and it demands Kotlin anyway).
+
+**Newly-published rule:** the app may be old, but its **first public store release must fall inside
+the Submission Period**. An app already live on any eligible store before Jul 31, 2026 is
+permanently ineligible. Check this FIRST for any candidate app — it is unfixable.
+
+---
+
+## 1. Verdict table — every category, and the test that decides it
+
+`OPEN IF` is a **test to run per app**, not a verdict copied from a previous app. A Kotlin app opens
+JetBrains; a game opens Best Game. Re-run the test, do not inherit the answer.
+
+| # | Category | 1st / 2nd / 3rd | Cost to enter | OPEN IF |
+|---|---|---|---|---|
+| 1 | **Grand Prize** | **$100k** / — / — | $0 | always — every submission is auto-eligible. Shortlisted by **total RevenueCat revenue** in the window, then judged on growth story. |
+| 2 | **#BuildInPublic** | **$30k / $20k / $10k** | $0 | always. Needs public posts tagged `#Shipaton` + links on the form. **Audience size explicitly does not matter.** |
+| 3 | **Keep Them Coming Back** (OneSignal) | **$25k / $15k / $5k** | $0 (free tier) | always. Needs OneSignal SDK + **≥1 deployed campaign** + App ID on the form. |
+| 4 | **HAMM** | $15k / $10k / $5k | $0 | app has ≥1 real IAP. Needs a monetization-strategy description. |
+| 5 | **RevenueCat Design Award** | $15k / $10k / $5k | $0 | always. Needs a description of design elements + where judges should look. |
+| 6 | **RevenueCat Peace Prize** | $15k / $10k / $5k | $0 | app has a credible social-good angle. Needs a description. Do not fake it. |
+| 7 | **Catvertising** | $15k / $10k / $5k | $0 (ads earn) | app serves **RevenueCat Ads** — NOT AdMob. See §4 trap 3. |
+| 8 | **Growth Loop** (Layers) | $15k / $10k / $5k | $0 | always. Install Layers SDK **before judging** + describe one growth experiment. Explicitly says the winner "will not necessarily have the most downloads, revenue, or traction." |
+| 9 | **Funnel Vision** (Stripe) | $15k / $10k / $5k | $0 upfront | you can operate **Stripe** (country-gated) + build a web funnel via **RevenueCat Funnels**. Judged primarily on **web payment volume**. |
+| 10 | **Most Viral App** (Noise) | $15k / $10k / $5k | **COSTS CASH** | you have UA budget. Pay-per-view UGC marketplace at `platform.getnoise.com`. See §4 trap 5. |
+| 11 | **Best App for Galaxy** (Samsung) | **non-monetary** (featured placement) | $0 | you publish to the Galaxy Store. 20% of score is Galaxy optimization (foldables, multi-window). |
+| 12 | **Best Game** | $15k / $10k / $5k | $0 | the app is a game. |
+| 13 | **Next Gen** | $15k / $10k / $5k | $0 | a **student** with a qualifying academic email is on the team. **No store release needed** — video + public open-source repo (with a license file) instead. |
+| 14 | **Ship Kotlin Everywhere** (JetBrains) | $15k / $10k / $5k | $99/yr (needs iOS too) | app is **Kotlin Multiplatform / Compose Multiplatform** AND published on **both** App Store and Google Play. Flutter/Dart apps score zero — this is structural, not effort. |
+| 15 | **Idea to Income** (Replit) | $15k / $10k / $5k | $0 | the app was **actually built with Replit** + RevenueCat integrated via Replit Agent. Claiming this falsely risks disqualification. |
+| 16–20 | **Influencer Awards** ×5 | $15k / $10k / $5k each | $0 | the app genuinely serves that influencer's audience. **Only ONE influencer category per project.** Categories: Productivity (Christopher Lawley) · Nutrition (Abbey's Kitchen) · Yoga/Fitness (Simone Sharice) · Career Coaching (Leadership Heather) · Gaming (Mr Lewis Blogs). |
+| — | Conflict of Interest | no cash | — | you work for RevenueCat or a sponsor. |
+
+**A single project may enter every category it qualifies for** (except: one influencer category max).
+Entering more costs a form field, not a build.
+
+---
+
+## 2. The four "free after ship" categories
+
+Once the app is live with an IAP, these cost **one paragraph each** on the submission form:
+
+- **HAMM** — describe how it makes money, the paywall, pricing approach, any conversion numbers.
+- **Design Award** — describe unique design elements and which screens judges should look at.
+- **Peace Prize** — describe how it benefits individuals, a community, or society.
+- **Grand Prize** — describe what you did post-launch to grow, with numbers.
+
+**Never skip these.** Zero marginal work for $15k–$100k of exposure. An agent that ships an app and
+does not claim all four has left the cheapest money on the board.
+
+## 3. The $0-budget path
+
+Everything except Noise and the Apple account is free:
+
+| Item | Cost |
+|---|---|
+| Release keystore (`keytool`) | $0 |
+| RevenueCat | $0 under $2.5k monthly revenue |
+| OneSignal | $0 free tier |
+| Layers SDK | $0 (sponsor) |
+| Stripe | $0 upfront, % of sales |
+| Samsung Galaxy Store seller | $0 |
+| Google Play Developer | **$25 one-time** — the only unavoidable cost, and only if not already owned |
+| Apple Developer | $99/yr — **skip unless chasing JetBrains** |
+| Noise | pay-per-view UGC — **the only category requiring spend** |
+
+**Ship Kit — free perks the owner keeps forgetting to claim.** Up to **25 sponsor perks** across
+five milestones: registration complete · **RevenueCat project created** · first test purchase ·
+first Store API call · first real purchase. Delivered by email, redeemed via the Shipaton Discord.
+Creating the RC project is both a submission requirement AND a perk trigger. Claim them.
+
+## 4. Traps — every one of these was gotten wrong in a real session
+
+1. **"Public repo is required."** **False.** Only **Next Gen** needs a public open-source repo.
+   A leaked-credential problem blocking a repo from going public does **not** block #BuildInPublic
+   or any other category.
+2. **"Ads-only eligibility is unconfirmed."** **Resolved.** Official rules: *"uses the RevenueCat SDK
+   to power at least one in-app or web purchase, **or that serves ads through RevenueCat Ads**."*
+   The ads-only path is real. (Superseding the KB's earlier "treat as unconfirmed" note.)
+3. **AdMob ≠ RevenueCat Ads.** Catvertising judges name **RevenueCat Ads** explicitly. An app with
+   `google_mobile_ads` and no RevenueCat Ads scores zero. RevenueCat Ads needs `purchases_flutter`
+   **10.x**.
+4. **"The shared kit pins an old SDK, so we need the teammate's agreement to upgrade."** **False.**
+   `dependency_overrides` in the *app's own* pubspec applies only to that app's resolution. The
+   other app that shares the kit resolves independently and is untouched. No kit edit, no
+   negotiation. (Whether the kit's code compiles against the new major is a separate, testable
+   question — ~30 min to find out.)
+5. **"Noise is impossible."** **False — it is open but costs money.** It is a pay-per-view UGC
+   marketplace (brand side: `platform.getnoise.com/auth/sign-up`; the App Store app named
+   "Noise — Make Money Posting" is the *creator* app, not yours). No minimum, no contract, you set
+   CPM and budget. But judging is *"did the content produce viral or semi-viral posts"* — bought
+   distribution is not virality. **Worst money-per-dollar on the board.** Skip at $0 budget.
+6. **Under-counting the sponsor categories.** OneSignal pays **$25k** for first place — the second
+   largest category prize — for roughly one day of SDK work. Layers pays $15k for installing an SDK
+   and writing a description. These are routinely forgotten because they were announced after the
+   main category list.
+7. **Samsung pays nothing.** Featured placement only. Do it for distribution, not prize money.
+8. **Don't fake-target an influencer category.** Criterion #1 in each is audience relevance. A
+   job-search app entered under "Career Coaching (new managers practising difficult conversations)"
+   scores near zero and burns the one influencer slot.
+9. **Grand Prize is revenue-gated.** Shortlist is built from total RevenueCat revenue in the window.
+   Zero revenue = never shortlisted, no matter how good the growth story.
+
+## 5. Submission checklist — required for EVERY entry
+
+- [ ] App **fully published** on Play / App Store / Galaxy Store (Next Gen exempt)
+- [ ] First public release falls **inside** the Submission Period
+- [ ] RevenueCat SDK powering ≥1 real purchase, **or** RevenueCat Ads
+- [ ] **Free trial OR a working promo code** so judges can unlock premium
+- [ ] Demo video **≤2 min**, public on YouTube/Vimeo, real device footage
+- [ ] Text description of features and functionality
+- [ ] **1024×1024** app icon
+- [ ] ≥1 screenshot at **1179×2556**, **no device frame**
+- [ ] App installable **from the United States**
+- [ ] All materials in English (or with English translation)
+- [ ] Per-category description paragraphs (§2)
+
+## 6. Per-app tracker
+
+Every app repo carries `docs/shipaton/CATEGORY-TRACKER.md`, seeded from §1 by running
+`/shipaton-check <app-slug>`. The tracker is the state; this registry is the rulebook. When they
+disagree, re-fetch the official rules — sponsors get added mid-event.

@@ -75,4 +75,42 @@ bash teamz-company-automation/sh/aso-refresh-selftest.sh devicegpt
 
 Exit 0 = all guards intact. Exit 1 = something missing — fix before any real ASO work.
 
+---
+
+## Shipaton / hackathon categories — ALWAYS use /shipaton-check, never answer from memory
+
+For ANY question about hackathon categories, prizes, eligibility, or what a teamzlab app still has
+to do to be submittable:
+
+**MANDATORY:** Invoke `/shipaton-check <app-slug>`. Never list categories, quote a prize amount, or
+declare a category open/closed from memory or from a previous session's conclusion.
+
+The command is at `~/.claude/commands/shipaton-check.md` (symlink to this repo's
+`claude-config/commands/shipaton-check.md`). It reads the rulebook
+(`claude-config/knowledge/Shipaton_2026_Category_Registry.md` — 20 categories, prize amounts, a
+per-app `OPEN IF` test for each, and 9 documented traps) plus the app's own
+`docs/shipaton/CATEGORY-TRACKER.md`, then reports every reachable category sitting at NOT STARTED,
+ranked by prize per hour of work.
+
+**Coverage is the default, not a choice.** Every app claims every category it can reach. Four of
+them (HAMM, Design, Peace, Grand Prize) cost literally one paragraph each once the app ships —
+never submit without all four. Reachability is computed **per app**: a Kotlin app opens JetBrains, a
+game opens Best Game. Re-run the tests; never inherit another app's verdict.
+
+**Publishing gates everything.** Every category except Next Gen needs a *fully published* store
+listing. If the app is not published, that blocker leads the report — category strategy under an
+unpublished app is motion, not progress.
+
+**Assume the owner's budget is $0** unless told otherwise in that session. Exactly one category
+(Noise) requires cash; exactly one line item (Google Play Developer, $25 one-time) is unavoidable.
+Everything else is free, and the RevenueCat project also unlocks free Ship Kit sponsor perks.
+
+Why this rule exists: the category list, eligibility rules and prize amounts were re-derived across
+several separate sessions. Each pass reached different conclusions, under-counted the sponsor
+categories, mis-priced the OneSignal award by $10k, and twice declared a reachable category
+impossible. The registry + command + `claude-config/memory/shipaton_category_coverage.md` fix this.
+Bypassing them repeats the mistake.
+
+---
+
 (Add more snippets here as new rules get formalized. Each new section gets a header + a clear "what this is" + "where it goes" line.)

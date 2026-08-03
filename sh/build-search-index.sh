@@ -83,7 +83,7 @@ echo "=== Rebuilding llms.txt + llms-full.txt (AI search index) ==="
 (
 cd "$BASE" || { echo "ERROR: cd \$BASE failed" >&2; exit 1; }
 python3 -c "
-import glob, re, html
+import glob, re, html, json
 
 hub_names = {
     '3d':'3D Tools','ai':'AI Tools','accessibility':'Accessibility','amazon':'Amazon Seller',
@@ -135,10 +135,46 @@ hubs_count = len(tools_by_hub)
 main = sorted([h for h in tools_by_hub if len(h)>2 or h in ('ai','us','uk','eu','3d')], key=lambda h: hub_names.get(h,h))
 country = sorted([h for h in tools_by_hub if len(h)<=2 and h not in ('ai','us','uk','eu','3d')], key=lambda h: hub_names.get(h,h))
 
+# ─── Popular Tools — DERIVED from real clicks, not hand-typed ───
+# The old version was 12 lines typed once and never revisited: it led with
+# the IPL 2026 Playoff Calculator (season over) and three FIFA World Cup
+# 2026 tools (tournament ended 2026-07-19) for weeks, under a comment that
+# falsely claimed 90-day GSC ranking — nothing here ever read GSC. Every AI
+# crawler that fetched llms.txt got pointed at corpses. Reads the same
+# money-snapshot the nightly enhance-queue already uses (real clicks, fresh
+# daily) instead of adding a second data pull. If the snapshot is missing —
+# properties other than tools do not have one — the section is OMITTED
+# entirely rather than showing something wrong; that already happened here:
+# learn.teamzlab.com's llms.txt was listing tool.teamzlab.com calculator
+# URLs as its own Popular Tools, from this same shared, vendored script.
+by_url = {}
+for _hub_tools in tools_by_hub.values():
+    for _title, _url, _short, _full in _hub_tools:
+        by_url[_url] = (_title, _short, _full)
+
+popular_lines = []
+try:
+    with open('data/money-snapshots/latest.json') as _f:
+        _snap = json.load(_f)
+    _ranked = sorted(_snap.get('pages', []), key=lambda p: p.get('clicks', 0), reverse=True)
+    for _p in _ranked:
+        if len(popular_lines) >= 12:
+            break
+        if _p.get('clicks', 0) < 5:
+            break
+        _url = 'https://tool.teamzlab.com' + _p.get('url', '')
+        if _url not in by_url:
+            continue
+        _title, _short, _full = by_url[_url]
+        _desc = _full if _full else _short
+        popular_lines.append(f'- [{_title}]({_url}): {_desc}')
+except Exception:
+    popular_lines = []
+
 # ─── llms.txt (curated index, spec-compliant, under 10KB per llmstxt.org) ───
-# GEO-optimized per Princeton research: authority-first blockquote, statistics,
-# data-driven Popular Tools picked by 90-day GSC clicks. AlwaysReady block is
-# NOT folded in (lives in llms-full only) to keep this file under spec cap.
+# GEO-optimized per Princeton research: authority-first blockquote, statistics.
+# AlwaysReady block is NOT folded in (lives in llms-full only) to keep this
+# file under spec cap.
 L = [
 '# Teamz Lab Tools',
 '',
@@ -148,26 +184,16 @@ f'> {total}+ free browser-based calculators and SEO/dev/AI tools across {hubs_co
 '- Full tool index: https://tool.teamzlab.com/llms-full.txt',
 '- Sitemap: https://tool.teamzlab.com/sitemap.xml',
 '',
-'## Popular Tools',
-'',
-'Ranked by 90-day Google Search clicks. Mix of evergreen calculators and active tournament / seasonal tools.',
-'',
-'- [IPL 2026 Playoff Calculator](https://tool.teamzlab.com/cricket/ipl-playoff-calculator/): IPL playoff qualification scenarios — Net Run Rate (NRR), points table permutations, top-4 paths for all 10 franchises with live IPL 2026 fixtures.',
-'- [UK Probation Period Calculator](https://tool.teamzlab.com/work/probation-period-calculator/): UK probation end-date calculator with statutory notice rules per Employment Rights Act 1996 and business-day counting.',
-'- [通勤手当 計算サイト](https://tool.teamzlab.com/jp/tsuukin-hi-keisan/): Japanese commuting allowance calculator with non-taxable limit (非課税限度額) per National Tax Agency rules for train, bus, bicycle, and car.',
-'- [Bangladesh Electricity Bill Calculator](https://tool.teamzlab.com/bd/electricity-bill-calculator/): DESCO, DPDC, REB, BPDB tariff slab calculator using current BERC rates, demand charge, VAT, and meter rent.',
-'- [FIFA World Cup 2026 Office Pool & Sweepstake Generator](https://tool.teamzlab.com/football/fifa-world-cup-2026-office-pool-generator/): Free World Cup 2026 office sweepstake — create a league, share a 6-char join code, auto-draw all 48 teams in fair strength tiers, live knockout leaderboard. No login or app.',
-'- [FIFA World Cup 2026 Best Third Place Calculator](https://tool.teamzlab.com/football/fifa-world-cup-2026-best-third-place-calculator/): How the 8 best third-placed teams from 12 groups qualify for the 32-team Round of 32 — ranked by points, goal difference, then goals scored.',
-'- [FIFA World Cup 2026 Bracket Maker](https://tool.teamzlab.com/football/fifa-world-cup-2026-bracket-maker/): 48-team World Cup 2026 bracket — 12 groups of 4, top 2 + 8 best third-placed advance, 32-team knockout, MetLife Stadium final 19 July 2026.',
-'- [Football Salary Calculator](https://tool.teamzlab.com/football/football-salary-calculator/): Net weekly / monthly wage after tax for EPL, La Liga, Bundesliga, Serie A, Ligue 1 with country-specific income tax rates.',
-'- [ACA Subsidy Calculator 2026](https://tool.teamzlab.com/us/aca-subsidy-calculator/): US Affordable Care Act premium subsidy eligibility for 2026 plan year using federal poverty level and modified AGI.',
-'- [Bangladesh Government Salary Calculator](https://tool.teamzlab.com/bd/govt-salary-calculator/): Bangladesh National Pay Scale 2015 grade-by-grade salary breakdown with house rent, medical, and 9% annual increment.',
-'- [Student Attendance Percentage Calculator](https://tool.teamzlab.com/student/attendance-percentage-calculator/): Attendance percentage with classes-to-attend or classes-to-skip calculations against required threshold.',
-'- [Einkommensteuer Rechner 2026](https://tool.teamzlab.com/de/einkommensteuer-rechner/): German income tax (Einkommensteuer) calculator with Solidaritätszuschlag, Kirchensteuer, and 2026 Grundfreibetrag per BMF Steuertarif.',
-'',
-'## Categories',
-'',
 ]
+if popular_lines:
+    L.append('## Popular Tools')
+    L.append('')
+    L.append('Ranked by real clicks from the nightly money-tracker snapshot. Mix of evergreen calculators and active tournament / seasonal tools — updates on its own as demand shifts.')
+    L.append('')
+    L.extend(popular_lines)
+    L.append('')
+L.append('## Categories')
+L.append('')
 # Compact one-line per hub (general/topical categories) — count without the word tools as suffix saves ~700B
 for hub in main:
     name = hub_names.get(hub, hub.title())

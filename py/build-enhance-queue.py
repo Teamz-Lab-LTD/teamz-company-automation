@@ -700,6 +700,81 @@ def pool_thin_faq_demand(host_root, cfg):
     return cands, None
 
 
+# Below this floor a "Google visits, AI never has" gap is noise, not demand.
+AI_INVISIBLE_GOOGLE_FLOOR = 10
+
+
+def pool_ai_invisible(host_root, cfg, days=90):
+    """Pages with PROVEN Google demand that AI has NEVER sent a single session
+    to, in `days` days. Investigation 2026-08-03: 1,065 such pages on this
+    property — real searchers want them, ChatGPT/Perplexity/etc have simply
+    never surfaced them. Of those, ~446 are the WebApplication/FAQPage schema
+    gap (fixed separately, mechanically, for free); the rest need content —
+    that's this pool. Additive-only: the goal is legibility, not a rewrite.
+
+    UNION with the other pools, never a replacement — the picker rule that
+    once hid 98.9% of revenue behind a hardcoded niche list is exactly the
+    mistake a REPLACEMENT pool would repeat here."""
+    import urllib.parse as _p
+    import urllib.request as _u
+    tok_path = Path(cfg["ga4_token_file"])
+    pid = cfg.get("ga4_property_id")
+    if not tok_path.exists() or not pid:
+        return [], "GA4 token/property not configured"
+    try:
+        t = json.loads(tok_path.read_text())
+        data = _p.urlencode({
+            "client_id": t["client_id"], "client_secret": t["client_secret"],
+            "refresh_token": t["refresh_token"], "grant_type": "refresh_token",
+        }).encode()
+        token = json.load(_u.urlopen(_u.Request(
+            t.get("token_uri", "https://oauth2.googleapis.com/token"), data=data),
+            timeout=30))["access_token"]
+        body = json.dumps({
+            "dateRanges": [{"startDate": f"{days}daysAgo", "endDate": "today"}],
+            "dimensions": [{"name": "landingPage"}, {"name": "sessionDefaultChannelGroup"}],
+            "metrics": [{"name": "sessions"}],
+            "limit": 10000,
+        }).encode()
+        req = _u.Request(
+            f"https://analyticsdata.googleapis.com/v1beta/properties/{pid}:runReport",
+            data=body, method="POST",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+        rows = json.load(_u.urlopen(req, timeout=90)).get("rows", [])
+    except Exception as e:  # noqa: BLE001
+        return [], f"GA4 pull failed: {type(e).__name__}: {e}"
+
+    google, ai_seen = {}, set()
+    for r in rows:
+        path = r["dimensionValues"][0]["value"].split("?")[0]
+        path = path if path.endswith("/") else path + "/"
+        ch = r["dimensionValues"][1]["value"]
+        sess = int(r["metricValues"][0]["value"])
+        if ch == "Organic Search":
+            google[path] = google.get(path, 0) + sess
+        elif ch == "AI Assistant":
+            ai_seen.add(path)
+
+    cands = []
+    for slug, sess in google.items():
+        if sess < AI_INVISIBLE_GOOGLE_FLOOR or slug in ai_seen:
+            continue
+        if not slug_exists(slug, host_root):
+            continue
+        score = min(120.0, sess / 5.0)
+        cands.append({
+            'slug': slug,
+            'query': f"(AI-invisible — {sess} Google sessions/{days}d, 0 AI sessions -> add citable structure)",
+            'signal_score': round(score, 2),
+            'mode': 'A',
+            'source': 'ai-invisible-demand-gap',
+            'citation': f"GA4 {sess} Organic Search sessions/{days}d, 0 AI Assistant sessions "
+                        f"[sessionDefaultChannelGroup]",
+        })
+    cands.sort(key=lambda c: -c['signal_score'])
+    return cands, None
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--cap', type=int, default=7)
@@ -735,6 +810,8 @@ def main():
     if e10: errors['striking_distance'] = e10
     p11, e11 = pool_thin_faq_demand(host_root, cfg)
     if e11: errors['thin_faq'] = e11
+    p12, e12 = pool_ai_invisible(host_root, cfg)
+    if e12: errors['ai_invisible'] = e12
     p4 = pool_gaps_seasonal(host_root)
     p5 = pool_autocomplete_trends()
 
@@ -747,6 +824,7 @@ def main():
     print(f"[enhance-queue] pool9 dead-revival:      {len(p8r)}")
     print(f"[enhance-queue] pool10 striking-dist:    {len(p10)}")
     print(f"[enhance-queue] pool11 thin-faq+demand:  {len(p11)}")
+    print(f"[enhance-queue] pool12 ai-invisible:     {len(p12)}")
     print(f"[enhance-queue] pool4 gaps:              {len(p4['gaps'])}")
     print(f"[enhance-queue] pool4 seasonal:          {len(p4['seasonal'])}")
     print(f"[enhance-queue] pool5 autocomplete:      {len(p5['suggestions'])}")
@@ -755,9 +833,12 @@ def main():
         for k, v in errors.items():
             print(f"[enhance-queue]   ! {k}: {v}")
 
-    # Merge target pools (1-3, 6, 7, 8-cold-start), dedupe by slug, apply cooldown
+    # Merge target pools (1-3, 6, 7, 8-cold-start, 12), dedupe by slug, apply cooldown.
+    # pool12 (ai_invisible) is a UNION addition, never a replacement for any pool
+    # above — the last time a picker swapped a rule instead of adding one, it hid
+    # 98.9% of revenue behind a hardcoded niche list.
     by_slug = {}
-    for c in p10 + p11 + p1 + p2 + p3 + p6 + p7 + p8c + p8r:
+    for c in p10 + p11 + p12 + p1 + p2 + p3 + p6 + p7 + p8c + p8r:
         if c['slug'] in cooldown_set:
             continue
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
@@ -882,10 +963,12 @@ def main():
             'scripts/build-content-ideas.py --gaps',
             'scripts/build-content-ideas.py --seasonal',
             '/tmp/nightly-{suggestions,trends}.txt (Phase 0 cron outputs)',
+            'GA4 sessionDefaultChannelGroup, 90d (Pool 12 AI-invisible demand gap)',
         ],
         'pool_counts': {
             'striking_distance': len(p10),
             'thin_faq': len(p11),
+            'ai_invisible': len(p12),
             'rising': len(p1),
             'opportunities': len(p2),
             'bing': len(p3),

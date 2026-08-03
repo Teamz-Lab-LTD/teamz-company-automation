@@ -405,6 +405,33 @@ def score(issue: dict, active_users: int | None, previous: dict | None) -> tuple
     users, events = issue["users"], issue["events"]
     fatal = issue["error_type"] in ("FATAL", "ANR")
 
+    severity, reason = _raw_score(issue, active_users, previous, users, events, fatal)
+
+    # A NON_FATAL is never critical. It is a recorded exception, not a dead app.
+    #
+    # This monitor scores impact and ignored error type in two of its three branches: the ratio
+    # branch and the spike branch both returned "critical" on reach alone. So Hazira Khata's
+    # `armClassListLoadDead` — which is `AppLogger.logFailure(...)` -> `recordException()`, a
+    # DELIBERATE diagnostic that fires when a class list has not resolved in 12s and then shows
+    # the content anyway — was reported as "1 CRITICAL crash" at 21 users, every session, for
+    # days. Nothing had crashed. Filtering the same account to FATAL+ANR does not return it.
+    #
+    # The cost is not the wrong label. It is that this monitor's whole job is to be believed:
+    # exit code 2 gates the nightly on it, the session hook opens with it, and a banner that
+    # cries crash when no app died trains the reader to skip the banner — on the day a real
+    # 2-user FATAL is sitting underneath it, which is exactly what was happening.
+    #
+    # Capped, not silenced: a widespread non-fatal still reports as "warning", and warning is
+    # still alerted on while it is new (see worth_alerting). It just stops claiming a crash and
+    # stops forcing exit 2.
+    if severity == "critical" and not fatal:
+        return "warning", f"{reason} — NON_FATAL (recorded exception, no crash), capped at warning"
+    return severity, reason
+
+
+def _raw_score(issue: dict, active_users: int | None, previous: dict | None,
+               users: int, events: int, fatal: bool) -> tuple[str, str]:
+    """Impact scoring on reach alone. Error type is applied by the caller."""
     # Regression check first: a known issue that suddenly got much worse.
     if previous:
         prev_events = previous.get("events", 0)
@@ -532,16 +559,19 @@ def render_markdown(findings: list[dict], alerts: list[dict], window_hours: int,
                        f"{coverage['unreachable']} target(s) unreachable — treat as unknown, not healthy.")
         lines += ["## No new or critical issues", "", verdict, ""]
     else:
+        # Type is in this table, not only the one below it: a reader deciding whether to drop
+        # everything needs "FATAL" or "NON_FATAL" in the same row as the severity. Without it the
+        # top table read as a crash list even when nothing in it had crashed.
         lines += ["## Needs attention", "",
-                  "| Sev | App | Platform | Users | Events | Issue | Why |",
-                  "|---|---|---|---|---|---|---|"]
+                  "| Sev | App | Platform | Type | Users | Events | Issue | Why |",
+                  "|---|---|---|---|---|---|---|---|"]
         for f in alerts:
             new = " (new)" if f["is_new"] else ""
             title = (f["title"] or "?")[:52].replace("|", "\\|")
             reason = f["reason"].replace("|", "\\|")
             lines.append(
                 f"| {SEV_ICON[f['severity']]} | {f['app']} | {f['platform']} | "
-                f"{f['users']} | {f['events']} | {title}{new} | {reason} |"
+                f"{f['error_type']} | {f['users']} | {f['events']} | {title}{new} | {reason} |"
             )
         lines.append("")
 
@@ -560,7 +590,11 @@ def render_markdown(findings: list[dict], alerts: list[dict], window_hours: int,
     lines += ["---", "",
               "Impact is scored as a **ratio of active users** when a baseline exists in "
               "`data/crashlytics-apps.json`; otherwise absolute counts are used and the row says so. "
-              "A raw event count cannot tell 4-of-12 users apart from 4-of-10,000."]
+              "A raw event count cannot tell 4-of-12 users apart from 4-of-10,000.",
+              "",
+              "**Only FATAL and ANR can be `[CRIT]`.** A NON_FATAL is a recorded exception — the app "
+              "kept running — so however far it reaches it is capped at `[WARN]`. Check the **Type** "
+              "column before treating a row as an outage."]
     return "\n".join(lines)
 
 
@@ -661,20 +695,36 @@ def write_project_status(
         elif not mine:
             lines += ["## ✅ No crashes in window", ""]
         else:
+            # This file is what an agent reads at session start, so the split between "the app
+            # died" and "the app logged something" belongs in the HEADING, not inferred from a
+            # row further down. "17 open issue(s)" over a table of non-fatals reads as 17 crashes.
             crit = [f for f in mine if f["severity"] == "critical"]
+            crashes = [f for f in mine if f.get("error_type") in ("FATAL", "ANR")]
+            head = f"## {len(mine)} open issue(s)"
+            if crit:
+                head += f" — {len(crit)} CRITICAL"
+            head += f" · {len(crashes)} crash-type (FATAL/ANR), {len(mine) - len(crashes)} non-fatal"
             lines += [
-                f"## {len(mine)} open issue(s){f' — {len(crit)} CRITICAL' if crit else ''}",
+                head,
                 "",
-                "| Sev | Users | Events | Issue |",
-                "|---|---|---|---|",
+                "| Sev | Type | Users | Events | Issue |",
+                "|---|---|---|---|---|",
             ]
             for f in mine[:15]:
                 title = (f.get("title") or "?").replace("|", "\\|")[:70]
                 lines.append(
-                    f"| {f['severity']} | {f.get('users', '?')} | {f.get('events', '?')} | {title} |"
+                    f"| {f['severity']} | {f.get('error_type', '?')} | "
+                    f"{f.get('users', '?')} | {f.get('events', '?')} | {title} |"
                 )
             if len(mine) > 15:
-                lines.append(f"| … | | | and {len(mine) - 15} more |")
+                lines.append(f"| … | | | | and {len(mine) - 15} more |")
+            # A non-fatal cannot be critical (see score()); say so here too, because this file is
+            # frequently read on its own with no access to the fleet report's footnotes.
+            lines += [
+                "",
+                "Only FATAL/ANR rows are crashes. A `NON_FATAL` is a recorded exception — the app "
+                "kept running — and is capped at `warning` however far it reaches.",
+            ]
             lines += [
                 "",
                 "Full fleet report: `teamz-company-automation/data/crashlytics-monitor-report.md`",

@@ -280,9 +280,108 @@ def check_revenue_serp():
         add("SERP difficulty", WARN, f"serp_difficulty failed: {type(e).__name__}")
 
 
+# ------------------------------------------------- 9. AI crawler reachability
+#
+# Found 2026-08-03 on hazirakhata.xyz: every OpenAI, Anthropic and Perplexity agent got a hard
+# 403 from Cloudflare — including /llms.txt, the file whose entire audience is those agents —
+# while Googlebot and browsers got 200. Nobody turned that on. Cloudflare's MANAGED AI-crawler
+# block enabled itself on the zone and injected its own "User-agent: GPTBot / Disallow: /" block
+# ON TOP of the site's own robots.txt, which allows all of them.
+#
+# This is the same failure class the whole script exists for: the site is up, uptime is green,
+# Googlebot is fine, rankings look normal — and the AI answer engines cannot read a single page.
+# No existing check could see it, because every existing check fetches as a browser.
+#
+# It can also come BACK on: it is a vendor-managed default, flipped on Cloudflare's schedule and
+# not ours. So this probes reachability every night rather than trusting a one-time dashboard fix.
+AI_CRAWLER_SITES = [s.strip().rstrip("/") for s in (
+    os.environ.get("TEAMZ_AI_CRAWLER_SITES")
+    or "https://hazirakhata.xyz,https://apps.teamzlab.com,https://teamzlab.com"
+).split(",") if s.strip()]
+
+# Agents that SEND READERS: they fetch a page to answer a live question, and the answer can carry
+# a link back. Blocking these costs traffic, so blocked = RED.
+AI_FETCH_AGENTS = {
+    "OAI-SearchBot": "Mozilla/5.0 (compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot)",
+    "ChatGPT-User": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot",
+    "PerplexityBot": "Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)",
+    "Claude-User": "Mozilla/5.0 (compatible; Claude-User/1.0; +Claude-User@anthropic.com)",
+}
+# Training-corpus crawlers. Blocking these is a legitimate business choice, so blocked = WARN, not
+# RED — the check reports the state without deciding it for you.
+AI_TRAIN_AGENTS = {
+    "GPTBot": "Mozilla/5.0 (compatible; GPTBot/1.2; +https://openai.com/gptbot)",
+    "ClaudeBot": "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)",
+}
+BROWSER_UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+              "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
+
+
+def _http_probe(url, ua, timeout=15, read_bytes=0):
+    """(status_code, body) for one URL under one User-Agent. status 0 = transport failure.
+
+    HTTPError is caught rather than raised because a 403 IS the answer here — an edge block is
+    reported as an HTTP error by urllib, and treating it as an exception would lose the code."""
+    import urllib.request, urllib.error
+    req = urllib.request.Request(url, headers={"User-Agent": ua, "Accept": "*/*"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.status, (r.read(read_bytes).decode("utf-8", "replace") if read_bytes else "")
+    except urllib.error.HTTPError as e:
+        return e.code, ""
+    except Exception as e:
+        return 0, type(e).__name__
+
+
+def check_ai_crawlers():
+    """Every AI answer engine must be able to fetch the site, and robots.txt must be ours."""
+    if FAST:
+        add("AI crawler reach", GREEN, "skipped (--fast)")
+        return
+    for site in AI_CRAWLER_SITES:
+        host = site.split("//", 1)[-1]
+        # Baseline first. Without it a plain outage reads as a bot-block and fires a RED that
+        # sends you hunting through Cloudflare bot settings for a problem that is not there.
+        base, _ = _http_probe(site + "/", BROWSER_UA)
+        if base != 200:
+            add(f"AI crawler reach {host}", WARN, f"site itself returned {base} as a browser — not a bot-block signal")
+            continue
+
+        blocked_fetch = [n for n, ua in AI_FETCH_AGENTS.items() if _http_probe(site + "/", ua)[0] != 200]
+        blocked_train = [n for n, ua in AI_TRAIN_AGENTS.items() if _http_probe(site + "/", ua)[0] != 200]
+
+        # A 403 on llms.txt is the loudest possible signal: that file exists for nothing but these
+        # agents. 404 is not a block — plenty of properties simply do not publish one.
+        llms_code, _ = _http_probe(site + "/llms.txt", AI_FETCH_AGENTS["OAI-SearchBot"])
+        llms_blocked = llms_code not in (200, 404)
+
+        # Cloudflare stamps its own directives over the origin's file. Ours ships from public/ and
+        # allows these agents, so this marker means the live policy is not the one in the repo.
+        _, robots = _http_probe(site + "/robots.txt", BROWSER_UA, read_bytes=20000)
+        managed_robots = "Cloudflare Managed" in robots
+
+        if blocked_fetch:
+            add(f"AI crawler reach {host}", RED,
+                f"BLOCKED: {', '.join(blocked_fetch)}"
+                + (f" + /llms.txt {llms_code}" if llms_blocked else "")
+                + " — Cloudflare AI-crawler block; turn it off on the zone")
+        elif managed_robots:
+            add(f"AI crawler reach {host}", RED,
+                "pages reachable but robots.txt is Cloudflare-managed and disallows AI agents — "
+                "well-behaved crawlers will obey it and stay out; turn off managed robots.txt")
+        elif llms_blocked:
+            add(f"AI crawler reach {host}", RED, f"/llms.txt returned {llms_code} to OAI-SearchBot")
+        elif blocked_train:
+            add(f"AI crawler reach {host}", WARN,
+                f"fetch agents OK; training crawlers blocked: {', '.join(blocked_train)} (fine if deliberate)")
+        else:
+            add(f"AI crawler reach {host}", GREEN,
+                f"all {len(AI_FETCH_AGENTS) + len(AI_TRAIN_AGENTS)} AI agents get 200, robots.txt is ours")
+
+
 CHECKS = [check_compile_all, check_keyword_signals, check_gsc_auth,
           check_bing_key, check_dataforseo, check_output_freshness,
-          check_manual_google_volume, check_revenue_serp]
+          check_manual_google_volume, check_revenue_serp, check_ai_crawlers]
 
 
 def main():

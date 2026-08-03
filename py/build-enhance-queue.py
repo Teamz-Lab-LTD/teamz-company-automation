@@ -40,6 +40,109 @@ from _teamz_config import load_runtime  # noqa: E402
 
 
 # -----------------------------------------------------------------------------
+# AI-channel guard (ported from build-content-queue.py, which goalkit/apps/learn
+# already use — this file, vendored into tool.teamzlab.com, had none of it, even
+# though tools carries the MOST AI traffic of the four properties). It exists
+# because a goalkit page with 81 AI sessions and 0 Google clicks nearly had its
+# title rewritten by a clicks-only rule that called it "nothing to lose": ChatGPT
+# was sending it more traffic than Google sent the property's entire top ten.
+#
+# Return contract deliberately differs from the source function: that one returns
+# {} for BOTH "the fetch failed" and "the fetch succeeded, zero pages had AI
+# traffic" — the exact ambiguity a monitor must never have. Here None means
+# "could not check", {} means "checked, zero found".
+#
+# NOTE: this file is symlinked into BOTH teamzlab-tools/scripts/ and
+# teamz-lab-generic-landing-pages/scripts/, but apps' own nightly instructions
+# never call it — apps' real pipeline is build-content-queue.py via
+# nightly-site.sh. Confirmed 2026-08-03 (no reference to build-enhance-queue in
+# that repo outside this vendored symlink). This guard is therefore live for
+# tools only; if apps' nightly is ever wired to call this file, the guard
+# already covers it for free.
+# -----------------------------------------------------------------------------
+AI_SOURCES = ("chatgpt", "openai", "perplexity", "claude", "copilot", "gemini",
+              "you.com", "phind", "poe.com", "deepseek", "grok", "mistral")
+
+
+def ga4_ai_sessions(cfg, days=28):
+    """{landing_path: ai_sessions} over the trailing `days`, or None if the GA4
+    call could not be made. Callers MUST treat None as unknown and fail closed —
+    never as zero AI traffic."""
+    import urllib.parse as _p
+    import urllib.request as _u
+    tok_path = Path(cfg["ga4_token_file"])
+    pid = cfg.get("ga4_property_id")
+    if not tok_path.exists() or not pid:
+        return None
+    try:
+        t = json.loads(tok_path.read_text())
+        data = _p.urlencode({
+            "client_id": t["client_id"], "client_secret": t["client_secret"],
+            "refresh_token": t["refresh_token"], "grant_type": "refresh_token",
+        }).encode()
+        token = json.load(_u.urlopen(_u.Request(
+            t.get("token_uri", "https://oauth2.googleapis.com/token"), data=data),
+            timeout=30))["access_token"]
+
+        body = json.dumps({
+            "dateRanges": [{"startDate": f"{days}daysAgo", "endDate": "today"}],
+            "dimensions": [{"name": "landingPagePlusQueryString"}, {"name": "sessionSource"}],
+            "metrics": [{"name": "sessions"}],
+            "limit": 500,
+        }).encode()
+        req = _u.Request(
+            f"https://analyticsdata.googleapis.com/v1beta/properties/{pid}:runReport",
+            data=body, method="POST",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+        rows = json.load(_u.urlopen(req, timeout=90)).get("rows", [])
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  AI-channel signal UNAVAILABLE ({type(e).__name__}). Failing CLOSED: "
+              f"every Mode B candidate downgrades to Mode A tonight.")
+        return None
+
+    out = {}
+    for r in rows:
+        lp = r["dimensionValues"][0]["value"]
+        src = r["dimensionValues"][1]["value"].lower()
+        if not any(a in src for a in AI_SOURCES):
+            continue
+        if not lp.startswith("/"):
+            continue
+        path = lp.split("?")[0]
+        path = path if path.endswith("/") else path + "/"
+        out[path] = out.get(path, 0) + int(r["metricValues"][0]["value"])
+    return out
+
+
+# Below this floor, downgrading Mode B is not worth the lost upside — a page with
+# 1-2 AI sessions/28d earning nothing from Google genuinely has nothing to lose.
+AI_MODE_B_GUARD_FLOOR = 5
+
+
+def apply_ai_guard(cands, ai_by_path, ai_known):
+    """Downgrade Mode B -> Mode A wherever the AI signal says this page is not
+    actually dead. Runs AFTER every pool so it covers pool_opportunities and
+    pool_gsc_anomalies — the two Mode-B-capable pools — without each pool having
+    to remember to call it."""
+    if not ai_known:
+        # GA4 unreachable: cannot rule out AI traffic on ANY page tonight.
+        # Fail closed across the board rather than per-candidate.
+        for c in cands:
+            if c.get('mode') == 'B':
+                c['mode'] = 'A'
+                c['ai_sessions'] = 0
+                c['ai_guard'] = 'GA4 unreachable — failed closed to additive'
+        return cands
+    for c in cands:
+        ai_hits = ai_by_path.get(c['slug'], 0)
+        c['ai_sessions'] = ai_hits
+        if c.get('mode') == 'B' and ai_hits >= AI_MODE_B_GUARD_FLOOR:
+            c['mode'] = 'A'
+            c['ai_guard'] = f"downgraded — {ai_hits} AI sessions/28d, title is earning traffic Google doesn't see"
+    return cands
+
+
+# -----------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------
 
@@ -659,6 +762,14 @@ def main():
             continue
         if c['slug'] not in by_slug or c['signal_score'] > by_slug[c['slug']]['signal_score']:
             by_slug[c['slug']] = c
+
+    # AI-channel guard — downgrade Mode B (title/meta rewrite) wherever ChatGPT/
+    # Perplexity/etc already send this page real traffic Google doesn't see.
+    # See ga4_ai_sessions()/apply_ai_guard() above for why this exists.
+    ai_by_path = ga4_ai_sessions(cfg)
+    ai_known = ai_by_path is not None
+    print(f"[enhance-queue] AI channel: {'unavailable — Mode B failed closed to A' if not ai_known else f'{len(ai_by_path)} page(s) with AI traffic (28d)'}")
+    apply_ai_guard(list(by_slug.values()), ai_by_path or {}, ai_known)
 
     # Revenue weighting: bias the queue toward higher-RPM niches so enhancement effort goes
     # to pages that EARN, not just rank. Reuses revenue_priority (no new RPM math). Multiplies

@@ -51,6 +51,18 @@ SITES = [
     ("teamzlab-website",                "https://teamzlab.com/",          "com.teamzlab.brand-nightly"),
 ]
 
+# repo -> GA4 property ID, read from each repo's own .teamz-automation.env
+# (TEAMZ_GA4_PROPERTY_ID). teamzlab-website is a KNOWN GA4 blind spot (prop
+# 469101682 gets no traffic — the Framer site is missing the tag); it stays
+# in this map so a failed pull renders as UNREACHABLE, not a silent zero.
+GA4_PROPERTY = {
+    "teamzlab-tools":                  "528521795",
+    "teamz-lab-generic-landing-pages": "524940073",
+    "goalkit-bd":                      "537333788",
+    "teamz-lab-learning":              "527372960",
+    "teamzlab-website":                "469101682",
+}
+
 
 def token():
     t = json.loads((CFG / "search-console-token.json").read_text())
@@ -59,6 +71,77 @@ def token():
         "refresh_token": t["refresh_token"], "grant_type": "refresh_token"}).encode()
     return json.load(urllib.request.urlopen(
         urllib.request.Request("https://oauth2.googleapis.com/token", data=data), timeout=30))["access_token"]
+
+
+def ga4_token():
+    """Separate failure domain from the GSC token — GA4 can be down while GSC
+    is fine, or vice versa. Never let one silently mask the other."""
+    t = json.loads((CFG / "analytics-token.json").read_text())
+    data = urllib.parse.urlencode({
+        "client_id": t["client_id"], "client_secret": t["client_secret"],
+        "refresh_token": t["refresh_token"], "grant_type": "refresh_token"}).encode()
+    return json.load(urllib.request.urlopen(
+        urllib.request.Request(t.get("token_uri", "https://oauth2.googleapis.com/token"),
+                                data=data), timeout=30))["access_token"]
+
+
+def _ga4_report(property_id, tok, body):
+    req = urllib.request.Request(
+        f"https://analyticsdata.googleapis.com/v1beta/properties/{property_id}:runReport",
+        data=json.dumps(body).encode(),
+        headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"})
+    return json.load(urllib.request.urlopen(req, timeout=60))
+
+
+def ai_channel_totals(property_id, tok, start, end):
+    """Sessions + ad revenue by sessionDefaultChannelGroup. Raises on failure —
+    NEVER returns an empty/zero result silently; the caller renders that as
+    UNREACHABLE. Query window must be D-2 or older: session-scoped derived
+    dimensions (this one included) come back ~58% blank on D-0/D-1 — GSC's
+    existing `end = today - 3d` window (passed in here) already satisfies that.
+
+    Also: GA4 created the "AI Assistant" channel group around June 2026 and
+    moved chatgpt.com out of "Referral" into it. Never diff `Referral` totals
+    across that boundary — it reads as a collapse that never happened.
+    """
+    res = _ga4_report(property_id, tok, {
+        "dateRanges": [{"startDate": start.isoformat(), "endDate": end.isoformat()}],
+        "dimensions": [{"name": "sessionDefaultChannelGroup"}],
+        "metrics": [{"name": "sessions"}, {"name": "totalAdRevenue"}],
+        "limit": 25,
+    })
+    out = []
+    for r in res.get("rows", []):
+        ch = r["dimensionValues"][0]["value"]
+        sess = int(r["metricValues"][0]["value"])
+        rev = float(r["metricValues"][1]["value"])
+        out.append((ch, sess, rev))
+    return out
+
+
+def ai_weekly_trend(property_id, tok, weeks=6):
+    """AI Assistant sessions by ISO week, most recent `weeks` — the durable-base
+    signal. A collapse or a surge should be visible the week it starts, not
+    require someone to open GA4 by hand and eyeball a chart (which is exactly
+    how this whole workstream started)."""
+    end = date.today() - timedelta(days=3)
+    start = end - timedelta(days=7 * weeks + 7)
+    res = _ga4_report(property_id, tok, {
+        "dateRanges": [{"startDate": start.isoformat(), "endDate": end.isoformat()}],
+        "dimensions": [{"name": "week"}],
+        "metrics": [{"name": "sessions"}, {"name": "totalAdRevenue"}],
+        "dimensionFilter": {"filter": {"fieldName": "sessionDefaultChannelGroup",
+                                       "stringFilter": {"value": "AI Assistant"}}},
+        "limit": 20,
+    })
+    rows = []
+    for r in res.get("rows", []):
+        wk = r["dimensionValues"][0]["value"]
+        sess = int(r["metricValues"][0]["value"])
+        rev = float(r["metricValues"][1]["value"])
+        rows.append((wk, sess, rev))
+    rows.sort(key=lambda x: x[0])
+    return rows[-weeks:]
 
 
 def totals(prop, tok, start, end):
@@ -338,6 +421,67 @@ def main():
             L.append(f"- `{prop}` → {why}. URL-prefix properties end in `/`; "
                      f"domain properties (`sc-domain:`) must NOT. This exact mistake made "
                      f"goalkit read as 0 clicks for months while it really had 938.")
+
+    # --- AI channel (sessionDefaultChannelGroup="AI Assistant") ---
+    #
+    # Before this, the ONLY way to see this channel was opening GA4 by hand — which is
+    # literally how this section came to exist. Separate token/failure domain from GSC on
+    # purpose: GA4 down must not blank the GSC table, and vice versa.
+    L.append("")
+    L.append("## AI channel (ChatGPT / Perplexity / Claude / Gemini)")
+    try:
+        gtok = ga4_token()
+        gtok_err = None
+    except Exception as e:  # noqa: BLE001
+        gtok, gtok_err = None, f"{type(e).__name__}: {e}"
+
+    if gtok is None:
+        L.append(f"⚠️ **UNREACHABLE** — GA4 auth down ({gtok_err}). Could not check; treat as unknown, not zero.")
+    else:
+        L.append("| property | AI sessions | vs prev | AI revenue | $/1k sessions | organic $/1k |")
+        L.append("|---|---|---|---|---|---|")
+        ai_unreachable = []
+        for repo, prop, _ in SITES:
+            pid = GA4_PROPERTY.get(repo)
+            if not pid:
+                continue
+            try:
+                cur = {ch: (s, r) for ch, s, r in ai_channel_totals(pid, gtok, start, end)}
+                prev = {ch: (s, r) for ch, s, r in ai_channel_totals(pid, gtok, pstart, pend)}
+                ai_s, ai_r = cur.get("AI Assistant", (0, 0.0))
+                ai_ps, _ = prev.get("AI Assistant", (0, 0.0))
+                org_s, org_r = cur.get("Organic Search", (0, 0.0))
+                ai_rpm = 1000 * ai_r / ai_s if ai_s else 0.0
+                org_rpm = 1000 * org_r / org_s if org_s else 0.0
+                L.append(f"| {prop} | {ai_s:,} | {arrow(ai_s, ai_ps)} | ${ai_r:.2f} | "
+                         f"${ai_rpm:.2f} | ${org_rpm:.2f} |")
+            except Exception as e:  # noqa: BLE001
+                # One property's GA4 property ID being wrong/unlinked must not blank the
+                # others. teamzlab-website (prop 469101682) is a KNOWN blind spot — the
+                # Framer site is missing the GA4 tag — and belongs in this list, not silently
+                # dropped, so the gap stays visible instead of looking like "0 AI traffic".
+                ai_unreachable.append((prop, type(e).__name__))
+                L.append(f"| {prop} | ⚠️ **UNREACHABLE** | — | {type(e).__name__} | — | — |")
+        if ai_unreachable:
+            L.append("")
+            for prop, why in ai_unreachable:
+                L.append(f"- `{prop}` AI channel → {why}.")
+
+        # Weekly trend for the property that actually carries this channel. Raw total, no
+        # event filtering — trailing weeks here still carry the World Cup's decay (it ended
+        # 2026-07-19), but going forward this becomes the durable-base signal on its own as
+        # that recedes. Read week-over-week shape, not the absolute trailing-week numbers.
+        try:
+            wk = ai_weekly_trend(GA4_PROPERTY["teamzlab-tools"], gtok, weeks=6)
+            if wk:
+                L.append("")
+                L.append("### tool.teamzlab.com — AI Assistant sessions, last 6 weeks")
+                L.append("| week | sessions | revenue |")
+                L.append("|---|---|---|")
+                for w, s, r in wk:
+                    L.append(f"| {w} | {s:,} | ${r:.2f} |")
+        except Exception as e:  # noqa: BLE001
+            L.append(f"\n_(weekly AI trend unavailable: {type(e).__name__})_")
 
     L.append("")
     L.append("## What the engine actually did")

@@ -70,7 +70,16 @@ def check_property(name, repo):
             issues.append(f"nightly exit_code={nightly.get('exit_code')}")
         build = nightly.get("build", "")
         if build and build != "ok":
-            issues.append(f"build={build}")
+            # Relay WHAT was wrong, not just how many. "ok:11-health-alerts" sent
+            # the owner into a 49k-line log to find out; the texts are written by
+            # nightly-build.sh's status trap and cost nothing to carry.
+            texts = nightly.get("health_alert_texts") or []
+            if texts:
+                issues.append(f"build={build} -> " + " | ".join(t[:120] for t in texts[:3]))
+                if len(texts) > 3:
+                    issues[-1] += f" (+{len(texts) - 3} more)"
+            else:
+                issues.append(f"build={build}")
         if nightly.get("deploy") == "failed":
             issues.append("deploy=failed")
         if nightly.get("push") == "failed":

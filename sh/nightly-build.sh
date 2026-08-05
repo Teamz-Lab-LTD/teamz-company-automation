@@ -281,10 +281,19 @@ write_nightly_status() {
     deploy="failed"
   fi
   mkdir -p "$PROJECT_DIR/data" 2>/dev/null || return 0
+  # The alert TEXTS ride along after the fixed args. Only the count used to be
+  # written, so the watchdog could relay "build=ok:11-health-alerts" and nothing
+  # about WHAT was wrong — a number is not a diagnosis, and the owner had to open
+  # a 49k-line log to find out. "${HEALTH_ALERTS[@]+"${HEALTH_ALERTS[@]}"}" is the
+  # bash 3.2 safe expansion for a possibly-empty array under `set -u` (macOS ships
+  # bash 3.2; a bare "${arr[@]}" aborts the trap on an unset empty array, which
+  # would silently stop the status file being written at all).
   python3 - "$PROJECT_DIR/data/nightly-status.json" "$rc" "https://tool.teamzlab.com/" \
-           "$PLIST_NAME" "$deploy" "${#HEALTH_ALERTS[@]}" <<'PYEOF' 2>/dev/null || true
+           "$PLIST_NAME" "$deploy" "${#HEALTH_ALERTS[@]}" \
+           ${HEALTH_ALERTS[@]+"${HEALTH_ALERTS[@]}"} <<'PYEOF' 2>/dev/null || true
 import json, sys, datetime
 path, rc, site, label, deploy, alerts = sys.argv[1:7]
+texts = sys.argv[7:]
 json.dump({
     "site": site,
     "label": label,
@@ -294,6 +303,9 @@ json.dump({
     "build": "ok" if int(alerts) == 0 else f"ok:{alerts}-health-alerts",
     "deploy": deploy,
     "health_alerts": int(alerts),
+    # Truncated per line and capped in count: this file is read by /growth and
+    # relayed into a WhatsApp message, and an unbounded dump would blow both.
+    "health_alert_texts": [t[:200] for t in texts[:12]],
 }, open(path, "w"), indent=2)
 PYEOF
 }

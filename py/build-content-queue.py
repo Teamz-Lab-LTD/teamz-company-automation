@@ -482,8 +482,48 @@ def _enhance_entry(path, query, pos, impr, clicks, ctr, score, source, why,
     return entry
 
 
+_NOINDEX_CACHE = {}
+
+
+def noindex_paths(host):
+    """Site paths whose BUILT html carries <meta name="robots" ... noindex>.
+
+    A noindex page cannot gain a search click no matter what is written on it — Google was
+    explicitly told to drop it. Queueing one spends a slot on work that is dead by definition.
+
+    apps.teamzlab.com's `/search/` (noindex since 3432b3f, 2026-06-04) consumed an enhance slot
+    two nights running; the nightly agent re-verified the noindex with curl and reported it
+    BOTH times before this existed. Its 86 impressions are the decaying tail of the 90-day GSC
+    window, which is exactly why the GSC-only picker could not see the page was already gone.
+
+    FAILS OPEN. A missing/unbuilt HTML root returns an empty set, so the queue behaves exactly
+    as it did before this function existed. The opposite (treating "cannot read" as "noindex")
+    would silently empty the enhance pool on any property whose dist/ is not present at pick
+    time — a far worse failure than the wasted slot this prevents.
+    """
+    key = str(host)
+    if key in _NOINDEX_CACHE:
+        return _NOINDEX_CACHE[key]
+    import re as _re
+    found = set()
+    root = host / os.getenv("TEAMZ_CONTENT_HTML_ROOT", "")
+    if root.exists():
+        for f in root.rglob("index.html"):
+            try:
+                head = f.read_text(errors="ignore")[:4000]
+            except OSError:
+                continue
+            if _re.search(r'<meta[^>]+name=["\']robots["\'][^>]+content=["\'][^"\']*noindex',
+                          head, _re.I):
+                p = "/" + str(f.parent.relative_to(root)).strip(".").strip("/")
+                found.add("/" if p == "/" else p.rstrip("/") + "/")
+    _NOINDEX_CACHE[key] = found
+    return found
+
+
 def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny_topics,
-                 force_additive=False, click_floor=0, ai_by_path=None, ai_known=True):
+                 force_additive=False, click_floor=0, ai_by_path=None, ai_known=True,
+                 host=None):
     """Existing pages that are CLOSE. position 5-25 = one good push from page 1.
 
     Demand is not always one head term. A blog post can rank #10 across 8 different
@@ -498,6 +538,7 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
     phrase as the actual content target.
     """
     rows = gsc_query(prop, token, ["page", "query"], days=90, row_limit=2000)
+    dead = noindex_paths(host) if host is not None else set()
     grouped = {}   # path -> list of qualifying (position/deny/junk/cooldown-filtered) rows
     best = {}      # path -> best opportunity on that page
     for r in rows:
@@ -509,6 +550,11 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
             continue
         path = url_to_path(page, site_url)
         if any(c in path for c in cooldown):
+            continue
+        # NOINDEX = already dead. See noindex_paths(). GSC still reports a decaying 90-day
+        # tail for these pages, so position/impressions look like a live opportunity when the
+        # page is gone from the index by our own instruction.
+        if path in dead:
             continue
         # DENY LIST — the domain-mismatch guard. A page can rank beautifully and still be
         # worthless: apps.teamzlab.com's price-comparison listicle sits at position 6 with
@@ -1247,7 +1293,7 @@ def main():
     enhance = pool_enhance(prop, token, site_url, cool, args.min_impressions,
                            deny_paths, deny_topics,
                            force_additive=force_additive, click_floor=click_floor,
-                           ai_by_path=ai_by_path, ai_known=ai_known)
+                           ai_by_path=ai_by_path, ai_known=ai_known, host=host)
     existing = {e["path"] for e in enhance}
     # every page the property has ANY impression for — so NEW never duplicates a real page
     click_by_path = {}

@@ -1,0 +1,14 @@
+date,property,window_days,clicks,impressions,ctr,position,queries,pages,countries,sitemaps_ok,sitemap_errors,top_query,status
+2026-07-22,sc-domain:hazirakhata.xyz,28,0,0,0,,0,0,0,2,0,,ok
+2026-07-22,sc-domain:hazirakhata.xyz,28,0,0,0,,0,0,0,2,0,,ok
+2026-07-23,sc-domain:hazirakhata.xyz,28,2,48,0.04167,4.75,6,2,2,2,0,হাজিরা খাতা,ok
+2026-07-24,sc-domain:hazirakhata.xyz,28,4,87,0.04598,4.34,10,2,4,2,0,হাজিরা খাতা,ok
+2026-07-25,sc-domain:hazirakhata.xyz,28,6,141,0.04255,4.23,11,3,5,2,0,হাজিরা খাতা,ok
+2026-07-26,sc-domain:hazirakhata.xyz,28,,,,,,,,,,,error:URLError
+2026-07-27,sc-domain:hazirakhata.xyz,28,12,220,0.05455,4.25,11,3,7,2,0,হাজিরা খাতা,ok
+2026-07-28,sc-domain:hazirakhata.xyz,28,15,250,0.06,4.27,14,3,8,2,0,হাজিরা খাতা,ok
+2026-08-01,sc-domain:hazirakhata.xyz,28,34,479,0.07098,4.28,18,3,8,2,0,হাজিরা খাতা,ok
+2026-08-02,sc-domain:hazirakhata.xyz,28,35,547,0.06399,4.36,19,3,11,2,0,হাজিরা খাতা,ok
+2026-08-03,sc-domain:hazirakhata.xyz,28,37,611,0.06056,4.46,19,3,12,2,0,হাজিরা খাতা,ok
+2026-08-04,sc-domain:hazirakhata.xyz,28,41,680,0.06029,4.56,19,6,14,2,0,হাজিরা খাতা,ok
+2026-08-05,sc-domain:hazirakhata.xyz,28,,,,,,,,,,,error:URLError

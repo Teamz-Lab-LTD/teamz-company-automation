@@ -1,12 +1,20 @@
 {
-  "ran_at": "2026-07-23T19:47:38",
+  "ran_at": "2026-08-05T23:55:01",
   "properties": {
-    "apps": [],
-    "goalkit": [],
-    "learn": [],
+    "apps": [
+      "build=ok:link-health-alert",
+      "push=failed"
+    ],
+    "goalkit": [
+      "push=failed"
+    ],
+    "learn": [
+      "push=failed"
+    ],
     "tools": [
-      "build=ok:4-health-alerts"
+      "build=ok:5-health-alerts",
+      "deploy=failed"
     ]
   },
-  "alert_count": 1
+  "alert_count": 4
 }

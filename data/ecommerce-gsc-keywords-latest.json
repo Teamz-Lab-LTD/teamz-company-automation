@@ -1,19 +1,31 @@
 {
-  "generated_at": "2026-07-21T20:28:17.193331",
+  "generated_at": "2026-08-06T04:16:29.033039",
   "site_url": "https://apps.teamzlab.com/",
-  "keyword_count": 1,
+  "keyword_count": 2,
   "keywords": [
     {
       "keyword": "site:teamzlab.com",
       "page": "/ecommerce-development/",
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 3,
       "ctr": 0,
-      "position": 54,
+      "position": 53.3,
       "intent": "Informational",
       "cpc": 0.5,
       "volume": 10,
-      "difficulty": 27
+      "difficulty": 26
+    },
+    {
+      "keyword": "ecommerce development package",
+      "page": "/ecommerce-development/",
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 86,
+      "intent": "Informational",
+      "cpc": 0.5,
+      "volume": 10,
+      "difficulty": 40
     }
   ]
 }

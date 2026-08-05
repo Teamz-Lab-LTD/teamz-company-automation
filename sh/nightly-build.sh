@@ -450,7 +450,38 @@ run_phase_cmd "Search index rebuild" 5 "./scripts/build-search-index.sh"
 # (Root cause of the 2026-05-30 4-run enhance/deploy stall.) Skip them when
 # dirty; they resume automatically on the next clean run.
 if [ "$REPO_DIRTY_AT_START" -eq 0 ]; then
-    run_phase_cmd "Static schema rebuild" 3 "python3 scripts/build-static-schema.py"
+    # SCHEMA NO-LOSS GATE — runs BEFORE the rebuild, on throwaway copies in a temp dir.
+    #
+    # build-static-schema.py DELETES its whole <!-- STATIC-SCHEMA --> block and rebuilds it
+    # from only what JS extraction produced this run. Any @type written raw by a tool builder
+    # has no JS to re-extract from, so the rebuild destroys it. Measured 2026-08-03 on a
+    # 400-page sample: 118 pages (29.5%) silently lost BreadcrumbList and/or WebApplication in
+    # ONE run — ~2100 sitewide.
+    #
+    # Invisible twice over: the runtime JS re-injects whatever the static block lost, so a
+    # browser looks correct, and "did the script run" says nothing at all. ONLY a before/after
+    # @type comparison catches it — which is what the guard does.
+    #
+    # Blocks the REBUILD, not the night. A skipped schema refresh costs one night of freshness;
+    # an unguarded one costs thousands of pages of structured data, and nothing would surface it
+    # until traffic moved.
+    #
+    # HOST-GUARDED. This file is symlinked by tools, learn, landing-pages and ai_resume_checker,
+    # and scripts/guard-schema-no-loss.py currently exists ONLY in tools. Without the -f test the
+    # missing script would exit non-zero on the other three and permanently skip a schema rebuild
+    # they still need. Absent guard => previous behaviour, byte for byte.
+    if [ -f scripts/guard-schema-no-loss.py ]; then
+        if SCHEMA_GUARD_OUT=$(python3 scripts/guard-schema-no-loss.py --sample 300 2>&1); then
+            printf '%s\n' "$SCHEMA_GUARD_OUT" | tail -3
+            run_phase_cmd "Static schema rebuild" 3 "python3 scripts/build-static-schema.py"
+        else
+            printf '%s\n' "$SCHEMA_GUARD_OUT" | tail -6
+            skip_phase "Static schema rebuild (no-loss guard FAILED — see above)"
+            record_health_alert "Schema no-loss guard FAILED — build-static-schema.py is destroying @types. Rebuild SKIPPED tonight; fix carry_forward_unregenerated() before re-enabling."
+        fi
+    else
+        run_phase_cmd "Static schema rebuild" 3 "python3 scripts/build-static-schema.py"
+    fi
     run_phase_cmd "Orphan fix" 3 "python3 scripts/build-fix-orphans.py fix"
     # Repairs renderRelatedTools entries pointing at slugs that have no page on
     # disk. Sits in this clean-start block because it EDITS tool HTML, exactly

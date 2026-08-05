@@ -268,6 +268,40 @@ Register as a **team of individuals** on Devpost, not as the company — simpler
 
 **Future feature roadmap (owner's wish, recorded):** the long-term vision is bigger than resume checking — expand into a broader career tool ("a lot of things"), with new features chosen **based on real usage data** after launch, not guesses. **Scope guard (binding):** during any Shipaton window, the app launches NARROW (resume check + ATS + the credit loop); data-driven expansion is a **post-competition** activity. The winning pattern is one sharp wedge first, platform later — expansion before traction is the classic way to lose both.
 
+### 9.7 Resume Coach — REACTIVATED by owner override (2026-08-01)
+
+**This section reverses §9.6 and the Resume-app row of the §9.2 matrix. Both are left above
+exactly as written — they are the record of what was decided in July, and this is the record
+of what changed. Read them together, not instead of each other.**
+
+| | |
+|---|---|
+| **Decision** | Resume Coach **enters Shipaton 2026** as a second entry alongside NoteTube. |
+| **Who** | Owner (Gk), explicit instruction, 2026-08-01. |
+| **Targets** | **Design Award** (primary), **HAMM**, **Catvertising**. |
+| **What it reverses** | §9.6 "shelved / parachute, activate only if the ruling goes AGAINST NoteTube" — the trigger never fired (§9.4) and the app is being activated anyway. §9.2's matrix row listing **Design as "physically closed"** for this app. |
+
+**The risk this accepts, stated plainly because §9.1 called it the one forbidden move.**
+§9.1 argues a small team cannot grow two user bases, run two build-in-public streams and
+iterate two paywalls inside a two-month scored window, and §9.2 shelved this app precisely
+so a second app would not land on the lead's plate. That argument has not been refuted — it
+has been **overruled**. Anyone planning against this section should treat attention, not
+build time, as the binding constraint, and should expect the §9.3 NoteTube calendar to be
+the first thing that suffers if something has to give.
+
+**What is being built on the strength of this decision:** a resume **format system** —
+several ATS-safe templates, an on-device recommendation engine, a live preview and a
+template-aware export. Research dossier lives in the app repo at
+`docs/shipaton/research-resume-format-system.md`.
+
+The Design case rests on one claim, and it is worth re-testing before submission rather
+than repeating: of eleven competitors surveyed, **none combines a situational quiz, a stated
+rationale, a live preview and a per-template ATS signal in a single flow.**
+
+**Unchanged by this override:** pricing and the credit unit stay **parked** (owner,
+2026-07-28); the launch stays narrow per the §9.6 scope guard; NoteTube remains the primary
+track.
+
 ---
 
 ## 10. Winning Strategy & Execution Roadmap

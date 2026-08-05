@@ -833,6 +833,33 @@ echo "  Auto-fixed $FIXES issues."
 # HARD, small tap-targets/fonts/contrast = WARN). Non-blocking: the global shared/css 44px
 # rule already handles tap targets site-wide; this is the safety net that ALERTS on a real
 # break so it surfaces instead of shipping silently.
+# JS syntax guard — cheapest gate here, and the one covering the worst failure.
+# A tool with a syntax error in its inline <script> still returns 200 and still
+# renders; every control on it is dead. 89 tools shipped that way and it went
+# unnoticed for months because nothing ever asked whether the JS parses.
+#
+# qa-runtime-test.py catches this and more, but drives a headless browser at
+# ~2s/page and expands to all 6839 tools on any shared/ change (~2.5h), so it
+# lives in the pre-push hook — which gets --no-verify'd, so in practice it does
+# not run. `node --check` is ~10ms/page: a night's dozen enhanced pages cost
+# ~0.1s, cheap enough to sit here and actually execute every night.
+#
+# WARN-only, like the two gates below it: the cron commits --no-verify, so this
+# cannot block. It raises a health alert, which now carries its text into
+# nightly-status.json and out through the watchdog.
+#
+# HOST-GUARDED — apps/learn/ai_resume_checker share this file and have no
+# scripts/guard-js-syntax.py; absent, the block is a no-op there.
+if [ -f scripts/guard-js-syntax.py ]; then
+    echo "  JS syntax guard (post-edit, agent's changed tools)..."
+    JSG_OUT=$(python3 scripts/guard-js-syntax.py --changed 2>&1); JSG_EXIT=$?
+    printf '%s\n' "$JSG_OUT" | tail -8
+    if [ "$JSG_EXIT" -ne 0 ]; then
+        record_health_alert "JS syntax guard: an enhanced tool has inline JS that does not parse — the page renders but every control on it is dead. See nightly log."
+        osascript -e 'display notification "Broken inline JS on an enhanced tool — check nightly log" with title "Teamz JS Guard" sound name "Basso"' 2>/dev/null
+    fi
+fi
+
 echo "  Mobile UX gate (post-edit, agent's changed tools)..."
 MOBILE_OUT=$(python3 teamz-company-automation/py/qa-mobile-ux.py --changed 2>&1); MOBILE_EXIT=$?
 echo "$MOBILE_OUT" | tail -10

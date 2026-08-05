@@ -18,8 +18,18 @@ disk (a monitor that goes silent by crashing must not look like all-clear).
 """
 import json
 import subprocess
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+
+# Shared notifier (WhatsApp -> email -> macOS). Imported defensively: if it is
+# missing or broken, the watchdog must still RUN and still popup — a reporting
+# dependency that can silence the whole monitor is worse than no notifier.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    import teamz_notify as notify
+except Exception:  # noqa: BLE001
+    notify = None
 
 ROOT = Path("/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects")
 OUT = ROOT / "teamz-company-automation" / "data" / "growth-watchdog-status.json"
@@ -97,11 +107,47 @@ def main():
         msg = f"Growth watchdog — {len(alerting)} propert{'y' if len(alerting)==1 else 'ies'} need attention: {summary}"
         if len(msg) > 200:
             msg = msg[:197] + "..."
-        subprocess.run([
-            "osascript", "-e",
-            f'display notification {json.dumps(msg)} with title "Teamz Growth Watchdog" sound name "Basso"',
-        ], capture_output=True)
+
+        # Full detail for WhatsApp/email; the macOS popup truncates to one line
+        # anyway, and a one-line popup is what made these alerts invisible.
+        body = [msg, ""]
+        for name, issues in alerting.items():
+            body.append(f"{name}:")
+            body.extend(f"  - {i}" for i in issues)
+        body.append("")
+        body.append(f"detail: {OUT}")
+        detail_text = "\n".join(body)
+
+        # WHY NOT osascript ALONE. This watchdog correctly caught apps'
+        # dirty-tree lock on 5 nights (2026-07-26/27, 08-01/02/04) and
+        # goalkit+learn push failures on 08-03/04. Every one of those fired a
+        # macOS popup at a Mac the owner was not sitting at — he drives Uber —
+        # so the engine skipped content for a week and nobody knew until he
+        # happened to ask on 08-06. A monitor that cannot leave the machine has
+        # not reported anything.
+        delivered = {}
+        if notify is not None:
+            delivered = notify.dispatch(
+                subject=f"[Teamz] watchdog: {len(alerting)} propert"
+                        f"{'y' if len(alerting)==1 else 'ies'} need attention",
+                text=detail_text, title="Teamz Growth Watchdog",
+            )
+        else:
+            subprocess.run([
+                "osascript", "-e",
+                f'display notification {json.dumps(msg)} with title "Teamz Growth Watchdog" sound name "Basso"',
+            ], capture_output=True)
+            print("  notify/            teamz_notify unavailable — macOS popup only")
+
         print(f"ALERT: {summary}")
+
+        # Say plainly when the alert never left this machine. Reporting a
+        # delivered-nowhere alert as sent is the same failure one layer up.
+        if notify is not None and not notify.reached_owner(delivered):
+            print("  ⚠️  This alert reached the Mac ONLY — no WhatsApp/email channel is")
+            print("      configured, so nobody sees it away from this machine. Fill in")
+            print(f"      {notify.WHATSAPP_ENV}")
+            print(f"      or {notify.SMTP_ENV}  (both ship as .example)")
     else:
         print("clean — all 4 properties healthy, no notification sent")
 

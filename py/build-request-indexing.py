@@ -74,21 +74,99 @@ TOP_PAGES = [
 ]
 
 
+def _own_host():
+    """Hostname of this property, for both URL-prefix and sc-domain: properties.
+
+    urlparse("sc-domain:goalkit.teamzlab.com") yields netloc='' — using netloc
+    alone made every sitemap URL look foreign on the two sc-domain properties
+    and returned an empty page list.
+    """
+    s = SITE_URL.strip()
+    if s.lower().startswith("sc-domain:"):
+        return s.split(":", 1)[1].strip().lstrip("/").lower()
+    return (urllib.parse.urlparse(s).netloc or "").lower()
+
+
+def _host_matches(netloc):
+    """True when a sitemap URL belongs to this property (www. is the same site)."""
+    own, other = _own_host(), (netloc or "").lower()
+    if not other:
+        return True          # relative entry — already ours
+    return other.lstrip("www.") == own.lstrip("www.")
+
+
+def _paths_from_own_sitemap(limit=30):
+    """Paths from THIS property's sitemap.xml. [] if unreadable."""
+    try:
+        urls = get_all_urls_from_sitemap()
+    except Exception:  # noqa: BLE001 - a bad sitemap must not kill the run
+        return []
+    out = []
+    for u in urls:
+        parsed = urllib.parse.urlparse(u)
+        if not _host_matches(parsed.netloc):
+            continue  # never submit another host's URL
+        path = parsed.path or "/"
+        if path not in out:
+            out.append(path)
+        if len(out) >= limit:
+            break
+    return out
+
+
 def get_top_pages():
+    """Pages to spend the daily URL-Inspection quota on.
+
+    ORDER MATTERS, and the fallback is the whole point of this function.
+
+    TOP_PAGES below is a hardcoded list of tool.teamzlab.com paths from
+    2026-03-24. This script is shared by tools, apps, goalkit and learn, and
+    only learn set TEAMZ_TOP_PAGES_FILE. So apps and goalkit spent every
+    night asking Google to inspect THIRTY TOOLS URLS against their own
+    property. Google answered, correctly, "URL is unknown to Google" for all
+    of them — and apps' docs/indexing-report.md has been reporting 3%
+    indexation ever since, describing pages that do not exist on that site.
+
+    Cost: their whole daily inspection quota, every night, while their own
+    106 (apps) pages were never submitted once.
+
+    This is the third instance of the hardcoded-guess-list defect in this
+    repo — see build-bing-submit.py's HIGH_RPM_HUBS and build-enhance-queue's
+    MONEY_NICHES. The pattern: a list that was right for ONE property, in a
+    file shared by four, with no check that it belongs to the caller.
+
+    So the sitemap fallback goes BEFORE the hardcoded list, and the hardcoded
+    list is used only when it actually belongs to this host.
+    """
     custom = os.getenv("TEAMZ_TOP_PAGES_FILE")
-    if not custom:
+    if custom:
+        p = custom if os.path.isabs(custom) else os.path.join(str(_CFG["host_site_root"]), custom)
+        if os.path.exists(p):
+            pages = []
+            with open(p) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        pages.append(line)
+            if pages:
+                return pages
+
+    # TOP_PAGES is a real by-impressions ranking, but ONLY for the property it
+    # was written for. Kept ahead of the sitemap there so tools does not lose
+    # its curated order to arbitrary sitemap order — quota should go to the
+    # pages that actually earn, not to /about/.
+    if _own_host().startswith("tool."):
         return TOP_PAGES
-    p = custom if os.path.isabs(custom) else os.path.join(str(_CFG["host_site_root"]), custom)
-    if not os.path.exists(p):
-        return TOP_PAGES
-    pages = []
-    with open(p) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            pages.append(line)
-    return pages or TOP_PAGES
+
+    # Every other property: its OWN sitemap. Correct by construction.
+    own = _paths_from_own_sitemap()
+    if own:
+        return own
+
+    print(f"  !! No TEAMZ_TOP_PAGES_FILE and no readable sitemap for {SITE_URL}.")
+    print("     Refusing to fall back to the hardcoded tool.teamzlab.com list —")
+    print("     submitting another site's URLs is what this guard exists to stop.")
+    return []
 
 
 def refresh_token():

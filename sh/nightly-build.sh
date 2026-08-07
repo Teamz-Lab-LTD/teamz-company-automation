@@ -862,10 +862,29 @@ echo "  Auto-fixed $FIXES issues."
 if [ -f scripts/guard-js-syntax.py ]; then
     echo "  JS syntax guard (post-edit, agent's changed tools)..."
     JSG_OUT=$(python3 scripts/guard-js-syntax.py --changed 2>&1); JSG_EXIT=$?
-    printf '%s\n' "$JSG_OUT" | tail -8
-    if [ "$JSG_EXIT" -ne 0 ]; then
-        record_health_alert "JS syntax guard: an enhanced tool has inline JS that does not parse — the page renders but every control on it is dead. See nightly log."
-        osascript -e 'display notification "Broken inline JS on an enhanced tool — check nightly log" with title "Teamz JS Guard" sound name "Basso"' 2>/dev/null
+    printf '%s\n' "$JSG_OUT" | tail -12
+    # Exit 2 = tonight's edit BROKE a page that parsed before -> revert exactly those pages,
+    # so the run keeps every good edit and ships none of the dead ones. Exit 1 = the page was
+    # already broken at HEAD; reverting would restore an equally broken file, so alert and
+    # carry on rather than jam the nightly every night over damage it did not cause.
+    if [ "$JSG_EXIT" -eq 2 ]; then
+        echo "  JS syntax guard: reverting the page(s) tonight's run broke..."
+        printf '%s\n' "$JSG_OUT" | sed -n 's/^  ✗ \(.*\)$/\1/p' | while read -r bad; do
+            if python3 -c "
+import subprocess,sys,importlib.util
+s=importlib.util.spec_from_file_location('g','scripts/guard-js-syntax.py')
+g=importlib.util.module_from_spec(s); s.loader.exec_module(g)
+p=subprocess.run(['git','show','HEAD:'+'''$bad'''],capture_output=True,text=True)
+sys.exit(0 if p.returncode==0 and p.stdout and g.first_error(p.stdout) is None else 1)
+" 2>/dev/null; then
+                git checkout -- "$bad" && echo "    reverted $bad (its HEAD version parses)"
+            fi
+        done
+        record_health_alert "JS syntax guard BLOCKED a regression: tonight's edit broke inline JS on a tool that worked before. Those pages were reverted; the rest of the run shipped."
+        osascript -e 'display notification "Reverted a tool that tonight'"'"'s edit broke — check nightly log" with title "Teamz JS Guard" sound name "Basso"' 2>/dev/null
+    elif [ "$JSG_EXIT" -eq 1 ]; then
+        record_health_alert "JS syntax guard: an enhanced tool has inline JS that does not parse — PRE-EXISTING (already broken at HEAD), not caused by tonight's run. The page renders but every control on it is dead. See nightly log."
+        osascript -e 'display notification "Pre-existing broken inline JS on a tool — check nightly log" with title "Teamz JS Guard" sound name "Basso"' 2>/dev/null
     fi
 fi
 

@@ -264,6 +264,20 @@ if [ -f scripts/build-keyword-candidates.py ]; then
     || echo "  (keyword-candidate harvest failed — non-fatal)"
 fi
 
+# 3c. Resolve prepared batches through the Google Ads API — the chore that used to be manual.
+# Batches in data/manual-pull/1-UPLOAD-THESE/ waited for the owner to paste them into Keyword
+# Planner by hand, so they piled up: apps knew volume for 131 keywords and goalkit for 90,
+# which is why their content queues were picking targets on rank alone. Call-capped so it
+# nibbles a few batches a night rather than hammering the API; already-resolved batches are
+# skipped, and a run that resolves nothing leaves the batch pending for tomorrow.
+# Absent script / no credentials / no pending batches -> prints and moves on.
+if [ -f scripts/build-keyword-volume-auto.py ]; then
+  echo ""
+  echo "Resolving pending keyword batches (Google Ads API)..."
+  python3 scripts/build-keyword-volume-auto.py --max-calls 30 2>&1 | sed 's/^/  /' | tail -6 \
+    || echo "  (keyword-volume-auto failed — non-fatal, batches stay pending)"
+fi
+
 # 4. sitemap (skip where the host platform owns it — Framer/Wix generate their own)
 if [ "$DO_SITEMAP" = "1" ] && [ -x scripts/build-sitemap.sh ]; then
   echo ""

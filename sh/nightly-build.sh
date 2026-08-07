@@ -393,6 +393,15 @@ echo "=== Phase 0: Keyword Research (zero quota) ==="
 # Clean previous research
 rm -f /tmp/nightly-suggestions.txt /tmp/nightly-trends.txt /tmp/nightly-multilang.txt /tmp/nightly-research.txt
 
+# Resolve prepared Keyword Planner batches through the Google Ads API instead of by hand.
+# 24 batches sat pending here because each one needed the owner to paste it into the Planner
+# UI. Call-capped, skips already-resolved batches, non-fatal on any failure.
+if [ -f scripts/build-keyword-volume-auto.py ]; then
+    echo "  Resolving pending keyword batches (Google Ads API)..."
+    python3 scripts/build-keyword-volume-auto.py --max-calls 30 2>&1 | sed 's/^/    /' | tail -6 \
+        || echo "    (keyword-volume-auto failed — non-fatal, batches stay pending)"
+fi
+
 # Google Autocomplete suggestions for high-RPM niches
 echo "  Researching keywords..."
 for keyword in "stamp duty calculator" "retirement calculator" "tax calculator" "salary calculator" "mortgage calculator" "budget planner" "loan calculator" "investment calculator" "insurance calculator" "cost of living" "rent vs buy" "salary comparison" "profit margin calculator" "invoice generator" "contract template"; do

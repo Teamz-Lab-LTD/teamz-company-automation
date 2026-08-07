@@ -428,15 +428,17 @@ def try_google_ads_volume(keywords):
             'Content-Type': 'application/json'
         }
 
-        # v18 (this script's original version) and v20 are both sunset — v18/v19
-        # 404 at the routing layer (Google's generic frontend page, not an API
-        # error), v20 responds but with UNSUPPORTED_VERSION. Verified live
-        # 2026-08-08: v21 is the current version that actually returns data.
-        # Google Ads API versions sunset roughly every ~6mo-1yr; if this starts
-        # 404ing/UNSUPPORTED_VERSION again, that is the first thing to check —
-        # NOT the token or the developer-token approval, which the try/except
-        # below would otherwise make indistinguishable from a version rot.
-        url = f"https://googleads.googleapis.com/v21/customers/{customer_id}:generateKeywordIdeas"
+        # The version is NEGOTIATED, never hardcoded. This line used to pin v18, which had
+        # been sunset for months while the broad `except` below reported it as "API not
+        # available yet"; pinning v21 instead lasted hours before Google began blocking that
+        # one mid-rollout. google_ads_api probes newest-first and caches the answer, so a
+        # sunset re-resolves itself instead of silently disabling this function again.
+        import sys as _sys, os as _os
+        _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+        import google_ads_api as _ads
+        url = _ads.endpoint(config, headers)
+        if not url:
+            return None
         r = requests.post(url, headers=headers, json={
             'keywordSeed': {'keywords': keywords[:10]},
             'language': 'languageConstants/1000',

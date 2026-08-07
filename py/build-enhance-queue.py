@@ -860,15 +860,49 @@ def main():
     def _pos_from_citation(cit):
         m = _re_pos.search(r'(?:pos|rank)\s+([0-9]+(?:\.[0-9]+)?)', cit or '', _re_pos.I)
         return float(m.group(1)) if m else None
+    # Layer 1 (measured): what each page ACTUALLY earned, from GA4 totalAdRevenue. The niche
+    # benchmarks below are community-sourced averages (see rpm-benchmarks.json `sources`) and
+    # they put 34 of 105 measurable pages on the wrong side of the 1.0x line — /amazon/
+    # weighted 2.20x while earning $4.99 RPM, the German World Cup page weighted 0.50x while
+    # earning $71.71. Measured wins wherever it exists; every other page keeps the benchmark.
+    # None (GA4 unreachable) or a page below the session floor -> unchanged behaviour.
+    try:
+        import revenue_signals as _rs
+        _measured = _rs.measured_rpm(cfg)
+    except Exception as e:  # noqa: BLE001
+        print(f"[enhance-queue] measured-RPM layer skipped ({type(e).__name__}) — benchmarks only")
+        _measured = None
+    print(f"[enhance-queue] revenue: "
+          + ("measured RPM unavailable — niche benchmarks for every page"
+             if _measured is None else
+             f"{len(_measured)} page(s) weighted by MEASURED revenue, rest by niche benchmark"))
+
     try:
         import revenue_priority as _rp
+
+        # Carry the measured signal to candidates that have no traffic of their own: the
+        # median real RPM of this site's pages in the same niche. See calibrated_niche_rpm()
+        # — the published benchmarks overrate every commercial niche 2-5x for a TOOLS site.
+        _niche_rpm = _rs.calibrated_niche_rpm(
+            _measured, lambda s: _rp.niche_for(s.strip('/').split('/')[0], s, ''))
+        if _niche_rpm:
+            print(f"[enhance-queue] revenue: {len(_niche_rpm)} niche(s) re-priced from this "
+                  f"site's own earnings: "
+                  + ", ".join(f"{n} ${v}" for n, v in sorted(_niche_rpm.items())))
+
+        _src_counts = {}
         for c in by_slug.values():
             hub = c['slug'].strip('/').split('/')[0]
             ed = _rp.expected_dollars(c['slug'], hub, c.get('title', ''),
                                       visitors_mo=1000, serp_winnability=6)
-            c['rpm_mid'] = ed['rpm_mid']
             c['niche'] = ed['niche']
-            rw = max(0.5, min(3.0, ed['rpm_mid'] / 10.0))  # $10 RPM = 1.0x
+            rpm, rpm_src = (_rs.rpm_for(c['slug'], _measured, ed['rpm_mid'],
+                                        niche=ed['niche'], niche_rpm=_niche_rpm)
+                            if _measured is not None else (ed['rpm_mid'], 'niche-benchmark'))
+            _src_counts[rpm_src] = _src_counts.get(rpm_src, 0) + 1
+            c['rpm_mid'] = rpm
+            c['rpm_source'] = rpm_src
+            rw = max(0.5, min(3.0, rpm / 10.0))  # $10 RPM = 1.0x
             # Position-proximity boost: a page in the 11-15 "one nudge from page 1" zone
             # converts to clicks THIS month; an equal-RPM page at pos 25+ needs a quarter.
             # Lead the striking sweet-spot over deeper pages. Pos parsed from the candidate's
@@ -880,6 +914,8 @@ def main():
                 elif pos > 22:        rw *= 0.8    # too deep to convert soon — de-prioritize
             c['pos'] = pos
             c['rev_weight'] = round(rw, 2)
+        print("[enhance-queue] revenue weighting by source: "
+              + ", ".join(f"{k}={v}" for k, v in sorted(_src_counts.items())))
     except Exception as e:
         print(f"[enhance-queue] revenue weighting skipped ({type(e).__name__}) — raw signal sort")
         for c in by_slug.values():

@@ -1294,6 +1294,41 @@ def main():
                            deny_paths, deny_topics,
                            force_additive=force_additive, click_floor=click_floor,
                            ai_by_path=ai_by_path, ai_known=ai_known, host=host)
+
+    # Value weighting. Until now this queue ranked purely on impressions x rank proximity,
+    # so on apps.teamzlab.com a page with 500 impressions and zero store clicks outranked one
+    # with 200 impressions and 12 — the queue could not see conversion at all. Multiply the
+    # SORT KEY by how well each page converts its own visitors, using whichever event this
+    # property declares as valuable (TEAMZ_VALUE_EVENTS in its .teamz-automation.env).
+    # Unset, unreachable, or no page with enough data -> None -> ranking untouched.
+    try:
+        import revenue_signals as _rs
+        _val = _rs.conversion_value(cfg)
+    except Exception as e:  # noqa: BLE001
+        print(f"  value layer skipped ({type(e).__name__}) — impressions-only ranking")
+        _val = None
+    if _val:
+        import statistics as _st
+        _med = _st.median(_val.values())
+        # Section medians carry the signal to candidates too small to have their own rate —
+        # which is most of them, since this queue targets underperforming pages by design.
+        _sect = _rs.section_value(_val)
+        _srcs = {}
+        for t in enhance:
+            rate, src = _rs.value_for(t["path"], _val, _sect)
+            _srcs[src] = _srcs.get(src, 0) + 1
+            # 'none' -> weight 1.0: unknown must not be scored as zero-value, or every page
+            # the layer cannot see gets pushed below every page it can.
+            w = _rs.value_weight(rate, _med) if rate is not None else 1.0
+            t["value_per_1k"] = rate
+            t["value_source"] = src
+            t["value_weight"] = round(w, 2)
+            t["score"] = round(t["score"] * w, 1)
+        enhance.sort(key=lambda x: -x["score"])
+        print(f"  value layer: re-ranked by measured conversion "
+              f"(median {_med:.2f} per 1k sessions; {len(_sect)} section(s) calibrated) — "
+              + ", ".join(f"{k}={v}" for k, v in sorted(_srcs.items())))
+
     existing = {e["path"] for e in enhance}
     # every page the property has ANY impression for — so NEW never duplicates a real page
     click_by_path = {}

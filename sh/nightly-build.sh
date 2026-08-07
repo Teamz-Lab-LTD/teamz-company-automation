@@ -936,8 +936,16 @@ python3 scripts/build-fix-orphans.py fix 2>/dev/null | tail -2
 # there. Same pattern as the sitemap call below.
 if [ -f scripts/build-football-standings.py ]; then
     echo "  Refreshing league standings (table predictors)..."
-    python3 scripts/build-football-standings.py 2>&1 | sed 's/^/  /' \
-        || echo "  (standings refresh failed — non-fatal)"
+    # Command substitution, NOT a pipe. `cmd | sed || echo` reads sed's status, which is
+    # always 0, so the previous form could never see a failure — a revoked API key or a
+    # total outage produced a tidy log and no alert. The fallback sources hide it further:
+    # standings keep working off football-data.co.uk, so nothing looks wrong until BOTH
+    # sources fail on the same night and the retention panel goes dark on the top page.
+    STAND_OUT=$(python3 scripts/build-football-standings.py 2>&1); STAND_EXIT=$?
+    printf '%s\n' "$STAND_OUT" | sed 's/^/  /'
+    if [ "$STAND_EXIT" -ne 0 ]; then
+        record_health_alert "League standings: football-data.org rejected our credentials or rate-limited us. Tables still built from the fallback source, so the predictors look fine — but the API key needs attention. See nightly log."
+    fi
 fi
 
 # NFL playoff predictor feed — same pattern as the football block above.

@@ -403,7 +403,20 @@ def try_google_ads_volume(keywords):
         with open(ADS_TOKEN) as f:
             token_data = json.load(f)
 
-        token = token_data.get('token', '')
+        # The stored access token is ~1h from the OAuth exchange and expires.
+        # Refresh it every call (same pattern as ga4_token()/other loaders in
+        # this repo) so this doesn't just work for the first hour and then
+        # silently fall back to the manual-CSV path with no error shown —
+        # "Returns None if not available yet" below would read as "still
+        # waiting on approval" when the real cause is a stale token.
+        refresh_resp = requests.post(token_data.get('token_uri', 'https://oauth2.googleapis.com/token'), data={
+            'client_id': token_data['client_id'],
+            'client_secret': token_data['client_secret'],
+            'refresh_token': token_data['refresh_token'],
+            'grant_type': 'refresh_token',
+        }, timeout=30)
+        refresh_resp.raise_for_status()
+        token = refresh_resp.json()['access_token']
         customer_id = config['customer_id'].replace('-', '')
         dev_token = config['developer_token']
         login_id = config.get('login_customer_id', customer_id).replace('-', '')
@@ -415,7 +428,15 @@ def try_google_ads_volume(keywords):
             'Content-Type': 'application/json'
         }
 
-        url = f"https://googleads.googleapis.com/v18/customers/{customer_id}:generateKeywordIdeas"
+        # v18 (this script's original version) and v20 are both sunset — v18/v19
+        # 404 at the routing layer (Google's generic frontend page, not an API
+        # error), v20 responds but with UNSUPPORTED_VERSION. Verified live
+        # 2026-08-08: v21 is the current version that actually returns data.
+        # Google Ads API versions sunset roughly every ~6mo-1yr; if this starts
+        # 404ing/UNSUPPORTED_VERSION again, that is the first thing to check —
+        # NOT the token or the developer-token approval, which the try/except
+        # below would otherwise make indistinguishable from a version rot.
+        url = f"https://googleads.googleapis.com/v21/customers/{customer_id}:generateKeywordIdeas"
         r = requests.post(url, headers=headers, json={
             'keywordSeed': {'keywords': keywords[:10]},
             'language': 'languageConstants/1000',

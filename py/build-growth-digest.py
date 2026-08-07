@@ -241,6 +241,29 @@ def nightly_health(repo, label):
             return f"⚠️ ran, but DEPLOY FAILED ({age_h:.0f}h ago) — serving the old build"
         if status.get("build", "").startswith("failed"):
             return f"⚠️ ran, but BUILD FAILED ({age_h:.0f}h ago) — nothing deployed"
+        # `push` is the SAME unread-field bug as `courses` below, caught 2026-08-08. The runner has
+        # written it for years, nothing here ever read it, and three of the four properties sat at
+        # "push": "failed" for six nights (Aug 2 -> Aug 8) while this column printed a clean "ok".
+        # Cause was real: origin was an SSH URL and the machine's only GitHub SSH key authenticates
+        # as an account with no access to the private Teamz-Lab-LTD repos, so every fetch AND push
+        # 404'd. Deploy is rsync and kept working, so the SITE stayed fine and nothing else went
+        # red — exactly why it needs its own line here.
+        #
+        # Checked BEFORE the deploy-unknown branch below on purpose. The tools runner DERIVES its
+        # deploy value from the push result, so one git-auth failure surfaces in both fields; if
+        # deploy spoke first it would send the owner to look at rsync for a problem that is in git.
+        # A real, independent deploy failure still outranks this — it matches "failed" above.
+        if status.get("push", "").startswith("failed"):
+            return (f"⚠️ ran, but GIT PUSH FAILED ({age_h:.0f}h ago) — commits are local-only and "
+                    f"the remote backup is not receiving them; check `git ls-remote origin`")
+        # "unknown" is what the tools runner writes when it never reached a conclusion about the
+        # deploy. It is NOT a pass, and matching only on "failed" let it read as one — tools has
+        # been carrying deploy="unknown" while this column printed "ok". Anything that is not an
+        # explicit ok / n/a is an unknown, and an unknown must look different from all-clear.
+        dep = status.get("deploy", "")
+        if dep and not dep.startswith(("ok", "n/a", "skipped")):
+            return (f"⚠️ ran, but DEPLOY state is {dep.upper()!s} ({age_h:.0f}h ago) — "
+                    f"cannot confirm the new build is live")
         content = status.get("content", "")
         if content.startswith("failed"):
             return f"⚠️ ran, agent FAILED: {content.split(':', 1)[-1]} ({age_h:.0f}h ago)"
@@ -265,6 +288,21 @@ def nightly_health(repo, label):
             rc = 0
         if rc != 0:
             return f"⚠️ ran but EXITED NON-ZERO (code {rc}) — a phase failed ({age_h:.0f}h ago)"
+        # health_alerts: the tools runner reports internal faults by INCREMENTING this and setting
+        # build to "ok:N-health-alerts" — which does not start with "failed", so every check above
+        # waves it through. On 2026-08-08 tools sat at 6 alerts (including "Claude build failed
+        # (exit 1)" and a dead-JS guard hit) while this column printed a clean "ok". The runner
+        # also writes health_alert_texts, so name the first one: a count is not a diagnosis, and
+        # the owner should not have to open a 49k-line log to learn what broke.
+        try:
+            n_alerts = int(status.get("health_alerts", 0))
+        except (TypeError, ValueError):
+            n_alerts = 0
+        if n_alerts:
+            texts = status.get("health_alert_texts") or []
+            first = str(texts[0])[:90] if texts else "see the nightly log"
+            more = f" (+{n_alerts - 1} more)" if n_alerts > 1 else ""
+            return f"⚠️ ran, {n_alerts} HEALTH ALERT(S) ({age_h:.0f}h ago) — {first}{more}"
         # The preflight guard's verdict, if it ran. A failed preflight means the night may have
         # proceeded on a broken root or dropped inputs; a STALE/missing preflight-status once the
         # guard is wired in means the guard itself did not run — both must not read as "ok".

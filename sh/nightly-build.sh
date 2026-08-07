@@ -280,6 +280,19 @@ write_nightly_status() {
   elif [ -n "${PUSH_EXIT:-}" ] || [ -n "${RETRY_EXIT:-}" ]; then
     deploy="failed"
   fi
+  # `push` as its OWN field. It used to be folded into `deploy` alone, which forced the digest to
+  # report a push problem as "deploy state unknown" — true, but it names the wrong phase, and the
+  # owner then goes looking at rsync instead of at git auth. nightly-site.sh has always written
+  # this field; tools never did, so a push failure on the highest-earning property was the one
+  # the cross-property digest could not name.
+  local push="n/a"
+  if [ "${PUSH_EXIT:-1}" -eq 0 ] || [ "${RETRY_EXIT:-1}" -eq 0 ]; then
+    push="ok"
+  elif [ -n "${PUSH_EXIT:-}" ] || [ -n "${RETRY_EXIT:-}" ]; then
+    push="failed"
+  elif [ "${PUSH_SKIPPED:-0}" = "1" ]; then
+    push="failed:skipped-github-unreachable-or-auth"
+  fi
   mkdir -p "$PROJECT_DIR/data" 2>/dev/null || return 0
   # The alert TEXTS ride along after the fixed args. Only the count used to be
   # written, so the watchdog could relay "build=ok:11-health-alerts" and nothing
@@ -289,11 +302,11 @@ write_nightly_status() {
   # bash 3.2; a bare "${arr[@]}" aborts the trap on an unset empty array, which
   # would silently stop the status file being written at all).
   python3 - "$PROJECT_DIR/data/nightly-status.json" "$rc" "https://tool.teamzlab.com/" \
-           "$PLIST_NAME" "$deploy" "${#HEALTH_ALERTS[@]}" \
+           "$PLIST_NAME" "$deploy" "$push" "${#HEALTH_ALERTS[@]}" \
            ${HEALTH_ALERTS[@]+"${HEALTH_ALERTS[@]}"} <<'PYEOF' 2>/dev/null || true
 import json, sys, datetime
-path, rc, site, label, deploy, alerts = sys.argv[1:7]
-texts = sys.argv[7:]
+path, rc, site, label, deploy, push, alerts = sys.argv[1:8]
+texts = sys.argv[8:]
 json.dump({
     "site": site,
     "label": label,
@@ -302,6 +315,7 @@ json.dump({
     "content": "n/a:tools-engine",
     "build": "ok" if int(alerts) == 0 else f"ok:{alerts}-health-alerts",
     "deploy": deploy,
+    "push": push,
     "health_alerts": int(alerts),
     # Truncated per line and capped in count: this file is read by /growth and
     # relayed into a WhatsApp message, and an unbounded dump would blow both.
@@ -1017,7 +1031,13 @@ if host_up_within github.com; then
             || echo "  ⚠ Cloudflare purge failed — pushed but cache may be stale until next purge."
     fi
 else
-    skip_phase "git push (github.com unavailable)"
+    # Record the skip, don't just print it. This branch fired silently for six nights in Aug 2026
+    # while the real cause was auth, not reachability: origin was an SSH URL and the machine's only
+    # GitHub SSH key belongs to an account with no access to the private Teamz-Lab-LTD repos, so
+    # github.com answered but every push 404'd. With no variable set, write_nightly_status could
+    # not tell "push skipped" from "push never needed", and /growth printed a clean ok.
+    PUSH_SKIPPED=1
+    skip_phase "git push (github.com unreachable, or auth rejected — check: git ls-remote origin)"
 fi
 
 # Count what was built

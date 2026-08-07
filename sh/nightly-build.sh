@@ -902,6 +902,26 @@ sys.exit(0 if p.returncode==0 and p.stdout and g.first_error(p.stdout) is None e
     fi
 fi
 
+# Tool-mount guard — catches the class the JS guard structurally CANNOT: JS that
+# parses fine but silently no-ops. UtilityEngine.init({mode:'converter',...}) is
+# valid JavaScript; the engine just has no dispatch branch for 'converter', so
+# #tool-calculator stays empty forever with zero console error. Found 2026-08-08
+# on 3 pages (docker-run-to-compose, barcode-generator, social-card-maker) — 17KB
+# of working parser code sat behind a one-word typo. WARN-only, no revert logic:
+# this defect class was at 0 known instances the moment this guard shipped, so an
+# alert is enough for whatever appears next; see scripts/guard-tool-mounts.py for
+# why qa-runtime-test.py's existing browser check missed all 3 (container-exists
+# check, not container-has-content; no-button is a warning, never an error).
+if [ -f scripts/guard-tool-mounts.py ]; then
+    echo "  Tool-mount guard (post-edit, agent's changed tools)..."
+    TMG_OUT=$(python3 scripts/guard-tool-mounts.py --changed 2>&1); TMG_EXIT=$?
+    printf '%s\n' "$TMG_OUT" | tail -12
+    if [ "$TMG_EXIT" -ne 0 ]; then
+        record_health_alert "Tool-mount guard: an enhanced tool calls UtilityEngine.init() with a mode the engine never dispatches — the calculator silently never renders, no console error. See nightly log."
+        osascript -e 'display notification "A tool'"'"'s calculator mount never renders — check nightly log" with title "Teamz Tool-Mount Guard" sound name "Basso"' 2>/dev/null
+    fi
+fi
+
 echo "  Mobile UX gate (post-edit, agent's changed tools)..."
 MOBILE_OUT=$(python3 teamz-company-automation/py/qa-mobile-ux.py --changed 2>&1); MOBILE_EXIT=$?
 echo "$MOBILE_OUT" | tail -10

@@ -216,6 +216,36 @@ def run_tests(tools, quick_mode=False):
                     if not has_calculator:
                         warnings.append("No .tool-calculator or .tool-hero found")
 
+                    # Check 2b: Calculator container is not an EMPTY shell.
+                    # Static HTML always ships '#tool-calculator'/'.tool-calculator'
+                    # as an empty <section> — UtilityEngine/ToolEngine.init() mounts
+                    # real controls into it at runtime. If init() silently no-ops
+                    # (bad mode string, missing config), Check 2 above still passes
+                    # (the container exists) while the tool is 100% dead. This is
+                    # the exact defect class that shipped 67 broken tool pages
+                    # (teamzlab-tools commit 7b11a654d) undetected by this script.
+                    # '.tool-hero' pages use a different, non-calculator render
+                    # path and are exempted — they were never in scope for this
+                    # check to begin with.
+                    calc_mounted = page.evaluate('''
+                        (function() {
+                            var hero = document.querySelector('.tool-hero');
+                            if (hero) return true;
+                            var calc = document.querySelector('.tool-calculator') ||
+                                       document.querySelector('#tool-calculator');
+                            if (!calc) return true; // Check 2 above already flags absence
+                            return !!calc.querySelector(
+                                'input, select, textarea, button, canvas, table, ' +
+                                '.tool-output, .result, [class*="result"], [class*="output"]'
+                            );
+                        })()
+                    ''')
+                    if not calc_mounted:
+                        errors.append(
+                            "Calculator container present but EMPTY — "
+                            "init() likely no-op'd silently (dead tool, no console error)"
+                        )
+
                     # Check 3: Primary button exists
                     has_button = page.evaluate('''
                         !!document.querySelector('.btn-primary') ||

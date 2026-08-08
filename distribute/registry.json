@@ -16,9 +16,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/alignflow.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "always-ready-care",
@@ -35,9 +35,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/always-ready-care.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "arrow-jam-3d",
@@ -54,9 +54,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/arrow-jam-3d.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "brimful",
@@ -73,9 +73,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/brimful.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "chopstick-landing-games",
@@ -92,9 +92,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/chopstick-landing-games.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "devicegpt",
@@ -111,9 +111,52 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/devicegpt.md",
+      "features": [
+        {
+          "name": "AI Bridge — laptop AI reads live phone data via a local server",
+          "description": "Turn on the Bridge and a laptop AI (via a local MCP wrapper) can query live battery/storage/network/sensor data over your own WiFi — PIN + LAN-only, 10-min auto-timeout, no cloud relay. 29 real endpoints, 3x what the app's own README documents.",
+          "evidence": "services/BridgeService.kt:50-191, services/BridgeHttpServer.kt:70-172, docs/ai-bridge-mcp-wrapper/server.py",
+          "differentiator": "strong — no other phone-health app in this category ships an MCP server"
+        },
+        {
+          "name": "Consent-gated remote photo capture through the Bridge",
+          "description": "A laptop AI can request a phone photo — but it triggers a native on-screen consent dialog first ('goes only to your laptop, not saved, not uploaded'), and only fires the camera on explicit Allow.",
+          "evidence": "services/PhotoCaptureConsentActivity.kt:54-127, services/PhotoCaptureBridge.kt:91-148",
+          "differentiator": "strong — needs the exact consent-gate wording in any copy to stay honest"
+        },
+        {
+          "name": "Android 16 App Functions — Gemini can call DeviceGPT directly",
+          "description": "On Android 16, the Gemini app/Assistant can call DeviceGPT's battery/device/network/privacy functions directly through the OS — a user can just ask Gemini 'is my phone healthy?'",
+          "evidence": "appfunctions/BatteryAppFunctions.kt:14-117 + 4 sibling classes, real KSP-generated manifest entries confirmed",
+          "differentiator": "strong — bleeding-edge, almost nobody else ships this yet"
+        },
+        {
+          "name": "On-device AI explainer, zero network call",
+          "description": "Gemini Nano (ML Kit GenAI) explains scan results entirely on-device — appears as its own 'Private AI · Your phone only · offline' option alongside the 9 cloud AI apps.",
+          "evidence": "ai/ondevice/PrivateAiExplainer.kt:30-156, ui/ai/PrivateAiFlow.kt:69-176,208",
+          "differentiator": "genuine on the specific privacy claim"
+        },
+        {
+          "name": "Best Devices — trust-weighted crowd ranking",
+          "description": "Shows how your phone MODEL compares to others (not just your personal leaderboard rank), with a trust multiplier that discounts rankings built on thin sample data.",
+          "evidence": "utils/BestDeviceCalculator.kt:21-330,318-341, ui/LeaderboardSection.kt:1301-1305",
+          "differentiator": "strong — distinct from the already-marketed personal leaderboard"
+        },
+        {
+          "name": "Cross-device restore via Android Credential Manager",
+          "description": "Reinstall or switch phones and your language/theme/leaderboard identity restore automatically via Google Sign-In + Android's Restore Credentials API — encrypted, bound to the app's signing certificate.",
+          "evidence": "restore/RestoreCredentialManager.kt:49-391",
+          "differentiator": "novel mechanism, modest scope — do NOT call this 'passkey', it's Google Sign-In via Credential Manager, not FIDO2"
+        }
+      ],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": [
+        "ai bridge phone diagnostics",
+        "let chatgpt read phone data",
+        "gemini android app functions phone health",
+        "best android phones ranking",
+        "phone health check app free"
+      ]
     },
     {
       "slug": "forty-thieves-solitaire",
@@ -130,9 +173,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/forty-thieves-solitaire.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "golf-solitaire",
@@ -149,9 +192,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/golf-solitaire.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "hazira-khata-bn",
@@ -168,9 +211,65 @@
       "geo": "BD",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/hazira-khata-bn.md",
+      "features": [
+        {
+          "name": "Guest-mode child tracker, no account needed",
+          "description": "A standalone kid-tracker (attendance, homework, Quran, Salah, mood/sleep, BD govt EPI vaccine reminders) reachable from the very first screen, before login. Data adopts into the account if the parent later signs in.",
+          "evidence": "auth/ui/rolechooser/UserRoleChooserScreenAndroid.kt:55-64, mychild/MyChildActivity.kt:11-44, mychild/MyChildVaccineScreen.kt:39-53",
+          "differentiator": "strong"
+        },
+        {
+          "name": "On-device AI helper (Gemini Nano), free, offline",
+          "description": "Ask AI from the drawer menu — answers fully offline on-device on newer phones, or builds a smart context-aware prompt (screen name + tutorial link) and hands it to ChatGPT/Gemini, with Bangla voice input.",
+          "evidence": "ai/OnDeviceAi.kt:1-61, assist/AiPromptBuilder.kt:54-101, assist/AiAssistSheet.kt:107-109. NOTE: only the drawer entry is guaranteed live — the floating bubble + per-screen contextual button are remote-config gated, default OFF.",
+          "differentiator": "strong"
+        },
+        {
+          "name": "Teacher self check-in, honest about its own limits",
+          "description": "Biometric or QR-poster clock-in that never locks a teacher out (works with no fingerprint sensor), and tells the head master in plain Bangla that a QR scan alone doesn't prove physical presence.",
+          "evidence": "teacher_attendance/ui/TeacherCheckInScreenAndroid.kt:54-70, teacher_attendance/BiometricVerifier.kt:10-32, teacher_attendance/DeviceFingerprint.kt:9-25",
+          "differentiator": "strong"
+        },
+        {
+          "name": "Automatic parent notification the instant attendance is saved",
+          "description": "No manual step — the moment a teacher saves attendance (single or bulk), every connected parent gets present/absent automatically. Default ON.",
+          "evidence": "digital_diary/AttendanceGuardianNotifier.kt:19-32, helper_classes/SharedPreferenceManager.java:72-85 (default true)",
+          "differentiator": "solid"
+        },
+        {
+          "name": "Missed reminders auto-recover instead of vanishing",
+          "description": "If a budget phone's battery-saver kills a class/exam reminder alarm, the app notices next time it opens and still delivers it if the class hasn't started yet.",
+          "evidence": "routine/legacy/RoutineReminderCatchUp.kt:9-58",
+          "differentiator": "solid"
+        },
+        {
+          "name": "Per-student custom fees in one batch screen",
+          "description": "Set a different monthly fee for every student in a class in one screen instead of 200 taps — and explicitly distinguishes ৳0 ('owes nothing') from blank ('use class default').",
+          "evidence": "payment/BulkPerStudentAmounts.kt:9-33,58-90",
+          "differentiator": "solid"
+        },
+        {
+          "name": "Reusable notice templates for real school letterhead",
+          "description": "Save a written notice as a named template; choose whether it prints with the app's digital letterhead or leaves that space blank for a school's own pre-printed paper, with room for a hand signature either way.",
+          "evidence": "notice/NoticeStyle.kt:45-61, notice/HtmlNoticeGenerator.kt:38-89",
+          "differentiator": "solid"
+        },
+        {
+          "name": "Staff ID cards from incomplete data",
+          "description": "Prints ID cards for staff who never logged in and never filled an HR form — builds a usable card from whatever exists across 3 data sources.",
+          "evidence": "staff_id_card/StaffCardPerson.kt:10-37,88-120",
+          "differentiator": "solid"
+        }
+      ],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": [
+        "free child tracker app no signup",
+        "vaccine reminder app bangladesh",
+        "school attendance app automatic parent notification",
+        "offline ai assistant app bangla",
+        "teacher attendance qr code app",
+        "school fee management software"
+      ]
     },
     {
       "slug": "hazira-khata",
@@ -187,9 +286,65 @@
       "geo": "BD",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/hazira-khata.md",
+      "features": [
+        {
+          "name": "Guest-mode child tracker, no account needed",
+          "description": "A standalone kid-tracker (attendance, homework, Quran, Salah, mood/sleep, BD govt EPI vaccine reminders) reachable from the very first screen, before login. Data adopts into the account if the parent later signs in.",
+          "evidence": "auth/ui/rolechooser/UserRoleChooserScreenAndroid.kt:55-64, mychild/MyChildActivity.kt:11-44, mychild/MyChildVaccineScreen.kt:39-53",
+          "differentiator": "strong"
+        },
+        {
+          "name": "On-device AI helper (Gemini Nano), free, offline",
+          "description": "Ask AI from the drawer menu — answers fully offline on-device on newer phones, or builds a smart context-aware prompt (screen name + tutorial link) and hands it to ChatGPT/Gemini, with Bangla voice input.",
+          "evidence": "ai/OnDeviceAi.kt:1-61, assist/AiPromptBuilder.kt:54-101, assist/AiAssistSheet.kt:107-109. NOTE: only the drawer entry is guaranteed live — the floating bubble + per-screen contextual button are remote-config gated, default OFF.",
+          "differentiator": "strong"
+        },
+        {
+          "name": "Teacher self check-in, honest about its own limits",
+          "description": "Biometric or QR-poster clock-in that never locks a teacher out (works with no fingerprint sensor), and tells the head master in plain Bangla that a QR scan alone doesn't prove physical presence.",
+          "evidence": "teacher_attendance/ui/TeacherCheckInScreenAndroid.kt:54-70, teacher_attendance/BiometricVerifier.kt:10-32, teacher_attendance/DeviceFingerprint.kt:9-25",
+          "differentiator": "strong"
+        },
+        {
+          "name": "Automatic parent notification the instant attendance is saved",
+          "description": "No manual step — the moment a teacher saves attendance (single or bulk), every connected parent gets present/absent automatically. Default ON.",
+          "evidence": "digital_diary/AttendanceGuardianNotifier.kt:19-32, helper_classes/SharedPreferenceManager.java:72-85 (default true)",
+          "differentiator": "solid"
+        },
+        {
+          "name": "Missed reminders auto-recover instead of vanishing",
+          "description": "If a budget phone's battery-saver kills a class/exam reminder alarm, the app notices next time it opens and still delivers it if the class hasn't started yet.",
+          "evidence": "routine/legacy/RoutineReminderCatchUp.kt:9-58",
+          "differentiator": "solid"
+        },
+        {
+          "name": "Per-student custom fees in one batch screen",
+          "description": "Set a different monthly fee for every student in a class in one screen instead of 200 taps — and explicitly distinguishes ৳0 ('owes nothing') from blank ('use class default').",
+          "evidence": "payment/BulkPerStudentAmounts.kt:9-33,58-90",
+          "differentiator": "solid"
+        },
+        {
+          "name": "Reusable notice templates for real school letterhead",
+          "description": "Save a written notice as a named template; choose whether it prints with the app's digital letterhead or leaves that space blank for a school's own pre-printed paper, with room for a hand signature either way.",
+          "evidence": "notice/NoticeStyle.kt:45-61, notice/HtmlNoticeGenerator.kt:38-89",
+          "differentiator": "solid"
+        },
+        {
+          "name": "Staff ID cards from incomplete data",
+          "description": "Prints ID cards for staff who never logged in and never filled an HR form — builds a usable card from whatever exists across 3 data sources.",
+          "evidence": "staff_id_card/StaffCardPerson.kt:10-37,88-120",
+          "differentiator": "solid"
+        }
+      ],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": [
+        "free child tracker app no signup",
+        "vaccine reminder app bangladesh",
+        "school attendance app automatic parent notification",
+        "offline ai assistant app bangla",
+        "teacher attendance qr code app",
+        "school fee management software"
+      ]
     },
     {
       "slug": "no-trace-chat",
@@ -206,9 +361,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/no-trace-chat.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "notetube-ai",
@@ -225,9 +380,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/notetube-ai.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "scorpion-solitaire",
@@ -244,9 +399,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/scorpion-solitaire.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "teamz-lab-tools",
@@ -263,9 +418,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/teamz-lab-tools.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "top3picks",
@@ -282,9 +437,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/top3picks.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "toss",
@@ -301,9 +456,63 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/toss.md",
+      "features": [
+        {
+          "name": "Offline-cached search across 2,000+ tools",
+          "description": "The full tool catalog ships inside the app, so search and browse work instantly on install, before any network call succeeds — with typo-tolerant, synonym-aware search.",
+          "evidence": "common/tools_registry.dart:345-394, common/tool_search.dart:12-291",
+          "differentiator": "strong — most wrapper apps just point a WebView at a homepage"
+        },
+        {
+          "name": "Honest per-tool offline tracking (not a fake blanket claim)",
+          "description": "The app tracks which tools you've actually opened before and visibly dims + blocks ones never cached when you're offline, instead of pretending everything works without internet.",
+          "evidence": "common/cache/tool_cache.dart:11-70, screens/tools/teamzlab_tools_screen.dart:727-801",
+          "differentiator": "strong — the honest, correct version of an 'offline' claim"
+        },
+        {
+          "name": "Two-way favorites sync between app and web",
+          "description": "Favorite a tool in the app or on its web page and both stay in sync via an injected JS bridge — no server account needed.",
+          "evidence": "screens/tools/tool_webview_screen.dart:61-186, common/favorites_manager.dart:1-77",
+          "differentiator": "strong — real, non-trivial hybrid-app engineering"
+        },
+        {
+          "name": "Native offline Date Calculator",
+          "description": "Computes date differences and add/subtract entirely on-device, zero network — genuinely useful for working out a due date or deadline offline.",
+          "evidence": "screens/tools/date_calculator_screen.dart:707-740",
+          "differentiator": "table stakes but genuinely native, zero network"
+        },
+        {
+          "name": "Native offline Unit Converter (length/weight/temp/volume)",
+          "description": "Converts common units entirely on-device. Explicitly does NOT include currency conversion.",
+          "evidence": "screens/tools/unit_converter_screen.dart:36-68,477-540",
+          "differentiator": "table stakes — and no currency conversion exists, don't imply otherwise"
+        },
+        {
+          "name": "Password generator that never shares the password itself",
+          "description": "Generates cryptographically secure passwords (Random.secure()) and deliberately blocks the Share button from leaking the actual password text — even analytics only logs the length.",
+          "evidence": "screens/tools/password_generator_screen.dart:495-499,571-584",
+          "differentiator": "strong privacy-by-design detail"
+        },
+        {
+          "name": "Photo-based color picker / eyedropper",
+          "description": "Pick the exact HEX/RGB/HSL/HSV color from any pixel of a camera photo or gallery image, with a live drag-magnifier, entirely on-device.",
+          "evidence": "screens/tools/color_picker_screen.dart:433-577,770-791",
+          "differentiator": "strongest hidden-gem feature in the app — a real design/dev tool buried in a calculator-branded app"
+        },
+        {
+          "name": "Full coin-toss decision game — the app's original identity",
+          "description": "Shake or fling to flip a coin (up to 6 at once), name what you're deciding, and unlock 11 achievements with day-streak tracking. This was the app before it became a calculator-branded utility.",
+          "evidence": "screens/single_coin_toss_widget.dart:40-358, common/statistics_manager.dart:87-293",
+          "differentiator": "strong content hook — 'your calculator app is secretly a full coin-flip game' — true, non-obvious, poor fit for financial branding, which is itself the story"
+        }
+      ],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": [
+        "color picker from photo app",
+        "coin flip decision app",
+        "freelance rate calculator app",
+        "secure password generator app free"
+      ]
     },
     {
       "slug": "voltline",
@@ -320,9 +529,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/voltline.md",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-vibe-coding-service",
@@ -334,9 +543,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-ai-agent-development",
@@ -348,9 +557,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-web-design",
@@ -362,9 +571,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-ecommerce-development",
@@ -376,9 +585,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-ui-ux-design",
@@ -390,9 +599,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-ai-integration",
@@ -404,9 +613,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-vibe-coding-agency",
@@ -418,9 +627,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-vibe-coding-consultants",
@@ -432,9 +641,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-vibe-coding-repair",
@@ -446,9 +655,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-add-ai-to-my-app",
@@ -460,9 +669,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-hire-app-developer-for-startup",
@@ -474,9 +683,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-ride-share-app-development",
@@ -488,9 +697,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-cursor-development-agency",
@@ -502,9 +711,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-claude-code-development-service",
@@ -516,9 +725,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-rag-development-company",
@@ -530,9 +739,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-ai-chatbot-development-company",
@@ -544,9 +753,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-mvp-app-development-for-non-technical-founders",
@@ -558,9 +767,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "svc-shopify-development-agency",
@@ -572,9 +781,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "tools-football",
@@ -587,9 +796,9 @@
         "champions league bracket predictor"
       ],
       "geo": "global",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     },
     {
       "slug": "tools-bd",
@@ -601,9 +810,9 @@
         "electricity bill calculator bd"
       ],
       "geo": "BD",
+      "features": [],
       "enabled": true,
-      "article_angles": [],
-      "features": []
+      "article_angles": []
     }
   ],
   "no_landing_page_gap": [

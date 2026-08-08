@@ -5418,6 +5418,26 @@
           "url": "https://telegra.ph/ENK-skattekalkulator-2025-Beregn-skatten-din-som-selvstendig-næringsdrivende-gratis-05-06",
           "posted_at": "2026-05-06T11:00:02.227104+00:00",
           "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/08/enk-skattekalkulator-2025-beregn.html",
+          "posted_at": "2026-08-08T03:13:16.867265+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3msk4fpzdiq2e",
+          "posted_at": "2026-08-08T03:19:39.058774+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=98153:shorts=1:tutorials=0",
+          "posted_at": "2026-08-08T03:29:33.423347+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=13323:count=1",
+          "posted_at": "2026-08-08T03:35:02.387443+00:00",
+          "status": "published"
         }
       },
       "draft": {
@@ -5439,6 +5459,21 @@
         "substack": {
           "url": "https://substack.com/home/post/p-196684728",
           "posted_at": "2026-05-06T17:17:29.633997+00:00",
+          "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/08/uk-inheritance-tax-calculator-202526.html",
+          "posted_at": "2026-08-08T07:18:05.746029+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mskk2ux7ie2x",
+          "posted_at": "2026-08-08T07:24:07.550763+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/UK-Inheritance-Tax-Calculator-202526--Free-IHT-Estimator-with-Gift-Taper-08-08",
+          "posted_at": "2026-08-08T07:27:55.881960+00:00",
           "status": "published"
         }
       },

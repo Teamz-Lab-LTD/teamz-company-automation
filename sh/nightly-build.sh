@@ -652,6 +652,17 @@ if [ -f scripts/distribute/remotion/upload/comment-catchup.js ]; then
         "cd scripts/distribute/remotion && $(command -v node || echo /opt/homebrew/bin/node) upload/comment-catchup.js --go; cd - > /dev/null"
 fi
 
+# Distribution draft BRIEF — mechanical half of Phase 2b only. Picks the next
+# business + a winnable, self-cannibalization-checked keyword target and
+# writes data/distribution-brief.json. Deliberately does NOT write prose and
+# does NOT call distribute.py draft/post — that boundary is intentional
+# (see build-distribution-drafts.py's own docstring): auto-publishing
+# AI-written copy under the Teamz Lab brand with zero human checkpoint is a
+# real decision the owner hasn't made yet, separate from reviving the
+# engine's plumbing. The brief just sits in REVIEW_GATE state until someone
+# writes from it and explicitly runs `distribute.py draft`.
+run_phase_cmd "Distribution draft brief" 10 "python3 teamz-company-automation/py/build-distribution-drafts.py"
+
 # Phase 3.5: Refresh research cache (DataForSEO volumes, Firecrawl competitor maps,
 # Bing queries, Reddit RPM data) — feeds Phase 4 Claude agent with fresh data
 run_phase_cmd "Research cache refresh" 5 "./scripts/build-research-cache.sh"

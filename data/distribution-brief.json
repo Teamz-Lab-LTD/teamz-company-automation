@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-08-08T13:40:18",
+  "business": {
+    "slug": "alignflow",
+    "name": "AlignFlow",
+    "type": "saas",
+    "landing_url": "https://apps.teamzlab.com/alignflow/",
+    "play_url": null,
+    "app_store_url": null,
+    "geo": "global"
+  },
+  "target_keyword": {
+    "keyword": "dentrix software",
+    "volume": 14800,
+    "competition": "LOW"
+  },
+  "mined_features": [],
+  "article_angles": [],
+  "self_cannibalization_check": {
+    "excluded_query_count": 0,
+    "error": null
+  },
+  "content_rules": {
+    "min_words": 400,
+    "must_include": [
+      "at least 2 real numbers from the business's own data/features",
+      "a first-person build note (\"why I built this\")",
+      "one dated statistic or 'Updated YYYY-MM-DD' line"
+    ],
+    "must_avoid": [
+      "em-dash-heavy listicle voice",
+      "identical H2 skeleton to the last 3 briefs for this business",
+      "claiming any feature not in mined_features/article_angles with file:line evidence"
+    ],
+    "canonical_target": "https://apps.teamzlab.com/alignflow/",
+    "one_contextual_link_max": true
+  },
+  "REVIEW_GATE": {
+    "status": "needs_human_review",
+    "note": "This brief is DATA, not an article. A human (or a separately-reviewed prose-writing step) must write from this brief, then run `distribute.py draft <file> --priority <p>` explicitly. This script never calls cmd_draft/cmd_post — nothing here enters the publish rotation on its own."
+  }
+}

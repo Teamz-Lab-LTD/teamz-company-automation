@@ -44,7 +44,27 @@ set -uo pipefail
 # Symlinked into <repo>/scripts/, and bash does NOT resolve $0, so dirname($0)/..
 # is the CALLING repo — which is what we want. Same trick as nightly-site.sh.
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-AUTOMATION="$(cd "$(dirname "$(readlink "$0" || echo "$0")")/.." && pwd)"
+
+# AUTOMATION must resolve to THIS file's real directory (teamz-company-automation/sh),
+# not the caller's. `readlink "$0"` on macOS/BSD returns the symlink target VERBATIM —
+# if the symlink was made with a relative target (e.g. `../teamz-company-automation/
+# sh/nightly-app.sh`, which `ln -s` produces by default), that relative path is only
+# valid relative to the symlink's OWN directory, not the caller's cwd. Resolving it
+# against cwd (the old one-liner) silently produced a bogus AUTOMATION path whenever
+# invoked with an absolute $0 (any launchd job does this) — every python call in this
+# script failed for every app since 2026-08-04. Fix: resolve the symlink target
+# relative to the symlink's directory explicitly.
+if [ -L "$0" ]; then
+  _SYMLINK_DIR="$(cd "$(dirname "$0")" && pwd)"
+  _TARGET="$(readlink "$0")"
+  case "$_TARGET" in
+    /*) _REAL="$_TARGET" ;;
+    *) _REAL="$_SYMLINK_DIR/$_TARGET" ;;
+  esac
+  AUTOMATION="$(cd "$(dirname "$_REAL")/.." && pwd)"
+else
+  AUTOMATION="$(cd "$(dirname "$0")/.." && pwd)"
+fi
 
 if [ ! -f "$ROOT/.teamz-automation.env" ]; then
   echo "FATAL: no .teamz-automation.env in $ROOT — this repo is not wired to the engine."

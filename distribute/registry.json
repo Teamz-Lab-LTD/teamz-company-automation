@@ -16,8 +16,10 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/alignflow.md",
+      "_disabled_at": "2026-08-08",
+      "enabled": false,
       "features": [],
-      "enabled": true,
+      "_disabled_reason": "Stealth/secret project per owner instruction 2026-08-08 — exclude from distribution entirely, do not target for content or keyword expansion. EDITABLE field, survives registry regen.",
       "article_angles": []
     },
     {
@@ -35,8 +37,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/always-ready-care.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -54,8 +56,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/arrow-jam-3d.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -73,8 +75,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/brimful.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -92,8 +94,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/chopstick-landing-games.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -111,6 +113,7 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/devicegpt.md",
+      "enabled": true,
       "features": [
         {
           "name": "AI Bridge — laptop AI reads live phone data via a local server",
@@ -149,7 +152,6 @@
           "differentiator": "novel mechanism, modest scope — do NOT call this 'passkey', it's Google Sign-In via Credential Manager, not FIDO2"
         }
       ],
-      "enabled": true,
       "article_angles": [
         "ai bridge phone diagnostics",
         "let chatgpt read phone data",
@@ -173,8 +175,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/forty-thieves-solitaire.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -192,8 +194,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/golf-solitaire.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -211,6 +213,7 @@
       "geo": "BD",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/hazira-khata-bn.md",
+      "enabled": true,
       "features": [
         {
           "name": "Guest-mode child tracker, no account needed",
@@ -261,7 +264,6 @@
           "differentiator": "solid"
         }
       ],
-      "enabled": true,
       "article_angles": [
         "free child tracker app no signup",
         "vaccine reminder app bangladesh",
@@ -286,6 +288,7 @@
       "geo": "BD",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/hazira-khata.md",
+      "enabled": true,
       "features": [
         {
           "name": "Guest-mode child tracker, no account needed",
@@ -336,7 +339,6 @@
           "differentiator": "solid"
         }
       ],
-      "enabled": true,
       "article_angles": [
         "free child tracker app no signup",
         "vaccine reminder app bangladesh",
@@ -361,8 +363,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/no-trace-chat.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -380,8 +382,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/notetube-ai.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -399,8 +401,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/scorpion-solitaire.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -418,8 +420,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/teamz-lab-tools.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -437,8 +439,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/top3picks.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -456,6 +458,7 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/toss.md",
+      "enabled": true,
       "features": [
         {
           "name": "Offline-cached search across 2,000+ tools",
@@ -506,7 +509,6 @@
           "differentiator": "strong content hook — 'your calculator app is secretly a full coin-flip game' — true, non-obvious, poor fit for financial branding, which is itself the story"
         }
       ],
-      "enabled": true,
       "article_angles": [
         "color picker from photo app",
         "coin flip decision app",
@@ -529,8 +531,8 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/voltline.md",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -543,8 +545,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -557,8 +559,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -571,8 +573,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -585,8 +587,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -599,8 +601,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -613,8 +615,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -627,8 +629,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -641,8 +643,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -655,8 +657,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -669,8 +671,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -683,8 +685,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -697,8 +699,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -711,8 +713,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -725,8 +727,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -739,8 +741,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -753,8 +755,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -767,8 +769,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -781,8 +783,8 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -796,8 +798,8 @@
         "champions league bracket predictor"
       ],
       "geo": "global",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     },
     {
@@ -810,8 +812,8 @@
         "electricity bill calculator bd"
       ],
       "geo": "BD",
-      "features": [],
       "enabled": true,
+      "features": [],
       "article_angles": []
     }
   ],

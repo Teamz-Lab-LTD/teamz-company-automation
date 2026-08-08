@@ -1,23 +1,24 @@
 {
-  "generated_at": "2026-08-08T13:40:18",
+  "generated_at": "2026-08-08T14:36:05",
   "business": {
-    "slug": "alignflow",
-    "name": "AlignFlow",
+    "slug": "always-ready-care",
+    "name": "AlwaysReady Care",
     "type": "saas",
-    "landing_url": "https://apps.teamzlab.com/alignflow/",
+    "landing_url": "https://apps.teamzlab.com/always-ready-care/",
     "play_url": null,
     "app_store_url": null,
     "geo": "global"
   },
   "target_keyword": {
-    "keyword": "dentrix software",
-    "volume": 14800,
-    "competition": "LOW"
+    "keyword": "care home compliance software uk",
+    "volume": null,
+    "competition": null,
+    "fallback": true
   },
   "mined_features": [],
   "article_angles": [],
   "self_cannibalization_check": {
-    "excluded_query_count": 0,
+    "excluded_query_count": 1,
     "error": null
   },
   "content_rules": {
@@ -32,7 +33,7 @@
       "identical H2 skeleton to the last 3 briefs for this business",
       "claiming any feature not in mined_features/article_angles with file:line evidence"
     ],
-    "canonical_target": "https://apps.teamzlab.com/alignflow/",
+    "canonical_target": "https://apps.teamzlab.com/always-ready-care/",
     "one_contextual_link_max": true
   },
   "REVIEW_GATE": {

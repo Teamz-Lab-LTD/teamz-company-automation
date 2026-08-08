@@ -26,6 +26,16 @@ REPORT_FILE="$TEAMZ_DATA_DIR/seo-latest-report.txt"
 PLIST_NAME="${TEAMZ_NIGHTLY_LABEL:-com.teamzlab.nightly-build}"
 PLIST_PATH="$HOME/Library/LaunchAgents/$PLIST_NAME.plist"
 
+# PYTHON_BIN (2026-08-08) — found while verifying tonight's distribution run: launchd's PATH
+# here puts /usr/bin BEFORE /opt/homebrew/bin, so bare `python3` resolves to Apple's stdlib-only
+# 3.9.6, not Homebrew's. Unlike the node fix, `command -v python3` alone doesn't catch this —
+# /usr/bin/python3 EXISTS, so command -v succeeds and never falls through. Confirmed broken under
+# it: PyYAML (build-business-registry.py) and python-substack (distribute.py's substack poster).
+# Used only for the distribution call sites below — NOT swept across this file's other ~27 bare
+# python3 calls, which are out of scope here and unconfirmed; flagged separately, not silently fixed.
+PYTHON_BIN="/opt/homebrew/bin/python3"
+[ -x "$PYTHON_BIN" ] || PYTHON_BIN="$(command -v python3)"
+
 # Handle flags
 if [ "$1" = "--install" ]; then
     echo "Installing nightly build agent..."
@@ -636,9 +646,9 @@ else
     skip_phase "PageSpeed pull (pagespeedonline.googleapis.com unavailable)"
 fi
 
-run_phase_cmd "Distribution status" 12 "python3 scripts/distribute/distribute.py outcome --days 7"
-run_phase_cmd "Business registry sync" 8 "python3 teamz-company-automation/py/build-business-registry.py"
-run_phase_cmd "Distribution leads snapshot" 10 "python3 teamz-company-automation/py/build-distribution-leads.py --days 28"
+run_phase_cmd "Distribution status" 12 "\"$PYTHON_BIN\" scripts/distribute/distribute.py outcome --days 7"
+run_phase_cmd "Business registry sync" 8 "\"$PYTHON_BIN\" teamz-company-automation/py/build-business-registry.py"
+run_phase_cmd "Distribution leads snapshot" 10 "\"$PYTHON_BIN\" teamz-company-automation/py/build-distribution-leads.py --days 28"
 
 # YouTube comment catch-up — added 2026-08-08. Every video uploads still
 # private/processing, so its first comment ALWAYS 403s at upload time and
@@ -661,7 +671,7 @@ fi
 # real decision the owner hasn't made yet, separate from reviving the
 # engine's plumbing. The brief just sits in REVIEW_GATE state until someone
 # writes from it and explicitly runs `distribute.py draft`.
-run_phase_cmd "Distribution draft brief" 10 "python3 teamz-company-automation/py/build-distribution-drafts.py"
+run_phase_cmd "Distribution draft brief" 10 "\"$PYTHON_BIN\" teamz-company-automation/py/build-distribution-drafts.py"
 
 # Phase 3.5: Refresh research cache (DataForSEO volumes, Firecrawl competitor maps,
 # Bing queries, Reddit RPM data) — feeds Phase 4 Claude agent with fresh data

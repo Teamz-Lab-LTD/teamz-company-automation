@@ -1,24 +1,23 @@
 {
-  "generated_at": "2026-08-08T14:36:05",
+  "generated_at": "2026-08-08T15:44:10",
   "business": {
-    "slug": "always-ready-care",
-    "name": "AlwaysReady Care",
-    "type": "saas",
-    "landing_url": "https://apps.teamzlab.com/always-ready-care/",
-    "play_url": null,
-    "app_store_url": null,
+    "slug": "arrow-jam-3d",
+    "name": "Arrow Jam 3D",
+    "type": "app",
+    "landing_url": "https://apps.teamzlab.com/arrow-jam-3d/",
+    "play_url": "https://play.google.com/store/apps/details?id=com.teamzlab.arrowescape3d",
+    "app_store_url": "https://apps.apple.com/us/app/arrow-jam-3d-logic-puzzle/id6778802226",
     "geo": "global"
   },
   "target_keyword": {
-    "keyword": "care home compliance software uk",
-    "volume": null,
-    "competition": null,
-    "fallback": true
+    "keyword": "3d arrow puzzle",
+    "volume": 10,
+    "competition": "MEDIUM"
   },
   "mined_features": [],
   "article_angles": [],
   "self_cannibalization_check": {
-    "excluded_query_count": 1,
+    "excluded_query_count": 0,
     "error": null
   },
   "content_rules": {
@@ -33,7 +32,7 @@
       "identical H2 skeleton to the last 3 briefs for this business",
       "claiming any feature not in mined_features/article_angles with file:line evidence"
     ],
-    "canonical_target": "https://apps.teamzlab.com/always-ready-care/",
+    "canonical_target": "https://apps.teamzlab.com/arrow-jam-3d/",
     "one_contextual_link_max": true
   },
   "REVIEW_GATE": {

@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-07T21:17:18.841296",
+  "generated_at": "2026-08-08T15:15:49.416054",
   "site": "https://tool.teamzlab.com/",
   "window_days": 28,
   "row_limit": 2000,
   "threshold": 0.78,
   "counts": {
     "gsc_pages": 2000,
-    "live_inventory": 7125,
+    "live_inventory": 7126,
     "existing_redirects": 396,
     "broken_404s": 2,
     "auto_matched": 2,

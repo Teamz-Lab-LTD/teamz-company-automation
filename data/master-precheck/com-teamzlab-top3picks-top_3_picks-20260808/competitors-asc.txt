@@ -1,0 +1,25 @@
+[precheck] >> competitors-asc
+
+Wrote /Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/top_3_picks/automation_data/aso-competitors-latest.json
+App                             Rating  Reviews  Price  Updated     Desc words  Shots  Size    
+------------------------------  ------  -------  -----  ----------  ----------  -----  --------
+Vetted AI Smart Shopping Agent  4.77    913      Free   2026-01-08  195         7      39.5 MB 
+GoWish - Your Digital Wishlist  4.78    159887   Free   2026-07-23  467         5      110.1 MB
+ShopSavvy - Shopping Assistant  4.43    9905     Free   2026-07-30  196         10     311.4 MB
+
+Release Notes (first 200 characters)
+----------------------------------------
+Vetted AI Smart Shopping Agent
+  Bug fixes and minor performance improvements
+
+GoWish - Your Digital Wishlist
+  We've fixed some minor bugs and polished up the app for an even smoother experience – because you deserve the best!
+And just a reminder:
+Create Wishlists that are easy to share and update. Birthday, C…
+
+ShopSavvy - Shopping Assistant
+  - Fixed the comment box floating in the middle of the product screen instead of sitting at the bottom
+
+Deals so good, your accountant will actually smile at your bank statement.
+
+[precheck] OK  competitors-asc

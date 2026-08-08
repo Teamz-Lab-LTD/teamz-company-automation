@@ -16,11 +16,11 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/alignflow.md",
-      "_disabled_at": "2026-08-08",
       "enabled": false,
       "features": [],
       "_disabled_reason": "Stealth/secret project per owner instruction 2026-08-08 — exclude from distribution entirely, do not target for content or keyword expansion. EDITABLE field, survives registry regen.",
-      "article_angles": []
+      "article_angles": [],
+      "_disabled_at": "2026-08-08"
     },
     {
       "slug": "always-ready-care",

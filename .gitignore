@@ -57,3 +57,14 @@ logs/
 # Preflight guard writes this into the SITE repo's data/ at runtime; any copy here is a stray
 # from running the guard with the root pointed at this repo (e.g. a --selftest). Never track it.
 data/preflight-status.json
+
+# Timestamped backups of gitignored secret-bearing files (2026-08-08).
+# distribute/config.json is ignored because it holds live API keys, app passwords
+# and OAuth tokens — but every script that edits it writes a config.json.bak-<ts>
+# copy alongside, and those .bak files were NOT covered by that rule. A single
+# `git add -A` swept five of them (devto.api_key, hashnode.api_key,
+# bluesky.app_password, mastodon.access_token, pinterest.app_secret) into a commit.
+# Caught before push; nothing reached the remote. An ignore rule on the ORIGINAL
+# file is worthless if the tooling writes copies under a different name.
+*.bak-*
+*.bak

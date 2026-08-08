@@ -881,9 +881,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7671616223205967873",
+          "postedAt": "2026-08-08T11:13:22.238Z",
           "retries": 0
         }
       }

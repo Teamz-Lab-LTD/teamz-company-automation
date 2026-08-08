@@ -1,0 +1,950 @@
+{
+  "generated_at": "2026-08-07T23:41:36.854025+00:00",
+  "competitors": {
+    "com.naddad.pricena": {
+      "total_pulled": 500,
+      "negative_count": 62,
+      "sample_negative": [
+        {
+          "score": 1,
+          "at": "2026-07-17T09:02:48",
+          "content": "working only for Amazon store"
+        },
+        {
+          "score": 1,
+          "at": "2025-09-18T03:32:16",
+          "content": "\u062a\u0637\u0628\u064a\u0642 \u0641\u0627\u0634\u0644....\u0644\u0627\u064a\u062d\u0636\u0631 \u0627\u0642\u0644 \u0633\u0639\u0631 \u0641\u0639\u0644\u0627 \u0628\u0644 \u0627\u064a \u0633\u0639\u0631 \u064a\u0642\u0627\u0628\u0644\u0647 \u0627\u0646\u0647 \u0644\u0627 \u064a\u0628\u062d\u062b \u0628\u062c\u062f"
+        },
+        {
+          "score": 1,
+          "at": "2025-06-14T08:12:04",
+          "content": "Rubbish. It is not for UK or Europe, it's for some rubbish middle Eastern countries, not sure why it is in the UK play store?"
+        },
+        {
+          "score": 1,
+          "at": "2025-03-25T18:35:30",
+          "content": "doesn't work and get updates like it used too it feel outdated"
+        },
+        {
+          "score": 3,
+          "at": "2025-01-19T01:42:21",
+          "content": "There is no price alert option for months... Please fix it"
+        },
+        {
+          "score": 2,
+          "at": "2024-11-10T18:37:11",
+          "content": "Great"
+        },
+        {
+          "score": 1,
+          "at": "2024-10-16T01:11:22",
+          "content": "Not accurate at all"
+        },
+        {
+          "score": 1,
+          "at": "2024-10-07T23:38:19",
+          "content": "Foreign"
+        },
+        {
+          "score": 1,
+          "at": "2024-08-11T12:31:41",
+          "content": "Never Ever Actually find the lowest Price - BEYOND USELESS - REPORTS WRONG PRICES ALL THE TIME"
+        },
+        {
+          "score": 1,
+          "at": "2024-01-18T01:49:35",
+          "content": "Useless"
+        },
+        {
+          "score": 1,
+          "at": "2023-10-23T17:06:07",
+          "content": "Search engine so useless you'll save time by manually going to every website and checking the price"
+        },
+        {
+          "score": 3,
+          "at": "2023-02-26T13:42:55",
+          "content": "good"
+        },
+        {
+          "score": 3,
+          "at": "2023-01-23T23:20:40",
+          "content": "\u0644\u0627 \u064a\u0648\u062c\u062f \u0645\u0648\u0627\u0635\u0641\u0627\u062a \u0643\u0627\u0641\u064a\u0629 \u0644\u0627\u062d\u062c\u0627\u0645 \u0627\u0644\u062d\u0644\u0644 \u0648 \u0645\u0642\u0627\u0633\u0627\u062a\u0647\u0627"
+        },
+        {
+          "score": 2,
+          "at": "2023-01-18T10:22:56",
+          "content": "The app tries to bring up a comparative price , but fails to present multiple variants. Only few arent enough."
+        },
+        {
+          "score": 3,
+          "at": "2022-10-09T15:47:01",
+          "content": "not all stores are in"
+        },
+        {
+          "score": 2,
+          "at": "2022-07-07T19:54:45",
+          "content": "\u0634\u0627\u0644\u0648\u0627 \u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0633\u0639\u0631 \u0643\u0627\u0646 \u0641\u064a\u0647 \u062a\u0634\u0627\u0631\u062a \u064a\u0628\u064a\u0646 \u0627\u0644\u0633\u0639\u0631 \u0643\u0627\u0646 \u0643\u0627\u0645 \u0642\u0628\u0644 \u0643\u062f\u0647 \u0627\u062a\u0634\u0627\u0644 \u0648\u0644\u0644\u0623\u0633\u0641 \u062f\u064a \u0645\u064a\u0632\u0629 \u0645\u0647\u0645\u0629 \u0627\u0646\u0627 \u0645\u062d\u062a\u0627\u062c\u0647\u0627 \u0645\u0636\u0637\u0631 \u0627\u0634\u064a\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0648\u0627\u0634\u0648\u0641 \u0627\u0644\u0628\u062f\u064a\u0644"
+        },
+        {
+          "score": 1,
+          "at": "2022-05-30T13:21:32",
+          "content": "Ul"
+        },
+        {
+          "score": 1,
+          "at": "2022-05-18T13:09:42",
+          "content": "Can you add afnan store, cant find one."
+        },
+        {
+          "score": 1,
+          "at": "2022-03-17T00:57:23",
+          "content": "Useless app, foolish comparison, wrong data of prices, and specifications."
+        },
+        {
+          "score": 1,
+          "at": "2022-03-02T16:52:02",
+          "content": "I don't know how to access my shopping cart..."
+        },
+        {
+          "score": 1,
+          "at": "2021-12-23T01:13:12",
+          "content": "Very high number of trackers!!!"
+        },
+        {
+          "score": 3,
+          "at": "2021-12-08T23:34:14",
+          "content": "this ap is awesome"
+        },
+        {
+          "score": 1,
+          "at": "2021-11-29T15:58:13",
+          "content": "Once you open any link to see the price of any item it will go directly to syyarah web site. Please fix this issue soon."
+        },
+        {
+          "score": 3,
+          "at": "2021-11-07T18:35:40",
+          "content": "When asking for updates, it keeps flashes the screen with no action"
+        },
+        {
+          "score": 1,
+          "at": "2021-11-07T01:55:48",
+          "content": "No update on products and They put almost every time price to be announced for the product which is 5-6 years old..."
+        }
+      ]
+    },
+    "com.wikibuy.prod.main": {
+      "total_pulled": 500,
+      "negative_count": 152,
+      "sample_negative": [
+        {
+          "score": 1,
+          "at": "2026-08-06T20:28:42",
+          "content": "They did maintenance yesterday and now I'm missing $50 rewards EDIT - It was credited after 30 days but now the transaction says Ineligible...some BS"
+        },
+        {
+          "score": 1,
+          "at": "2026-08-06T02:22:18",
+          "content": "very invasive permissions"
+        },
+        {
+          "score": 1,
+          "at": "2026-08-05T03:35:37",
+          "content": "why can I not find the app in my apps site"
+        },
+        {
+          "score": 1,
+          "at": "2026-08-04T08:55:14",
+          "content": "Complete scam. You can follow every single stipulation exactly and they will still deny your purchases. Why? I wish I knew, but their email support is beyond useless. It's clear that no human being actually reads your questions. Just a particularly stupid AI who ignores what you say and reiterates t"
+        },
+        {
+          "score": 1,
+          "at": "2026-08-01T10:21:07",
+          "content": "App sucks. Once I turn on the shopping feature in the accessibility section, it removes my phones ability to type. What the hell kind of app is this?"
+        },
+        {
+          "score": 1,
+          "at": "2026-08-01T06:49:52",
+          "content": "Often rewards are not granted or take months to hit the account. I've had luck with % back options with online retailers. When the reward is a fixed $ amount it usually doesn't go through. Not sure if it's intentional or a glitch. There is no customer support, technically there is but I've sent nume"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-31T20:03:55",
+          "content": "Worst App. Horrible experience dealing with the customer service. Be prepared for a robotic response with only copy/paste the same template multiple times when you inquire your rewards status."
+        },
+        {
+          "score": 1,
+          "at": "2026-07-30T21:16:43",
+          "content": "only for first time customers for any cash back offers and most deals require over 30 days to even register honestly seems scammy definitely not as advertised"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-30T19:11:26",
+          "content": "didn't get my 45$ rebate for sign up shopping.???"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-30T01:41:56",
+          "content": "I have made 2 purchases that did not show up on my rewards totally $100 combined, if thinnest purchase I make does not show up, I will take some course ofmaction. I have the extension set up, activate it, and nothing. the advertisement for the rewards shows up with the pic ofnwhst I am going to purc"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-29T14:31:07",
+          "content": "Will not open after ladt update. Tried reinstalling still cant get past opening image update 10 /24. offers keep saying having trouble loading page still having multiple issues contacted customer service and all they do is send me questions to answer no solutions not happy at all cash back doesn't a"
+        },
+        {
+          "score": 3,
+          "at": "2026-07-29T07:25:45",
+          "content": "Edit: Wow! One year later and my In app browsing experience is STILL horrible. I can click on a deal, but once I'm redirected to the online store, nothing is clickable. I thought after a year this would be resolved but obviously not."
+        },
+        {
+          "score": 1,
+          "at": "2026-07-29T01:23:15",
+          "content": "Excruciatingly Awful, The loops one has to go through to even attempt to use CO Shopping is ridiculous nonsense. Capitol One should be embarrassed to put such a garbage program out to the public."
+        },
+        {
+          "score": 2,
+          "at": "2026-07-29T00:36:17",
+          "content": "Won't send the magic link, won't let me use the same email as my cap1 card. \ud83e\udd37\u200d\u2642\ufe0f"
+        },
+        {
+          "score": 2,
+          "at": "2026-07-28T07:59:00",
+          "content": "Sketchy. The app (specifically the offer that appears in the top right corner) glitched twice and would switch from that big number they hook you with in the emails to a MUCH lower reward rate. One of the two purchases I did make isn't appearing on the app and trying to talk to anyone via email to b"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-27T20:42:17",
+          "content": "clunkiest info grab deal app I have ever used and it's not even close. links to apps work 20 percent of the time. all saved information can't be used so hope you remember all your passwords. needs a lot of work."
+        },
+        {
+          "score": 1,
+          "at": "2026-07-27T11:39:19",
+          "content": "Really frustrating. App will take over the screen while I am using other apps and then I cant press literally any other button besides the one to look as some bs offer in the app. I liked the points and used it pretty consistently, but I had to delete it because when the pop up would pop up I would "
+        },
+        {
+          "score": 1,
+          "at": "2026-07-27T09:08:14",
+          "content": "Garbage. Did not get rewarded for offer. Too many exclusions. Delete and uninstall. Save space and sanity."
+        },
+        {
+          "score": 3,
+          "at": "2026-07-27T06:34:56",
+          "content": "this app requires an extreme level of trust from the user, right away, you have to log in to your other accounts inside of the app. that feels very suspicious and potentially very problematic. I immediately! uninstalled!"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-25T10:27:35",
+          "content": "Does nothing but spam ads that prevent me from shopping until I close them. I have yet to see this app do anything it claims to do other then act like a computer virus. Uninstalled!"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-25T07:33:26",
+          "content": "Pops up Way too many times And for sights you are not even on! Then, many times you cannot x, swipe or close it out! So Not worth the savings, Trouble And Repeated Inonvenience! Additionally, when you cannot remove it from your screen, you must turn the screen off for it to hopefully and sometimes d"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-24T02:33:46",
+          "content": "fake reviews on here. the app frequently does not register your purchases. they tell you to wait 30 days until you can no longer return the product, then once you reach back out to them after the wait, they will deny your purchase. they say they can't even review your order details until the thirty "
+        },
+        {
+          "score": 2,
+          "at": "2026-07-23T04:44:41",
+          "content": "annoying popups and emails"
+        },
+        {
+          "score": 3,
+          "at": "2026-07-21T17:42:10",
+          "content": "great when the cashback works out, but they are getting progressively more sneaky with the terms and exclusions to ensure your purchase remains ineligible, and occassionaly even provide offers to websites where nothing sold is eligible. you can get good cash back, and I have, but this isnt like most"
+        },
+        {
+          "score": 1,
+          "at": "2026-07-21T11:20:16",
+          "content": "fraud dont download. I originally had 5 stars until I had $50+ in rewards and the app deleted my rewards. waste of time and effort"
+        }
+      ]
+    },
+    "com.buyvia.android": {
+      "total_pulled": 180,
+      "negative_count": 45,
+      "sample_negative": [
+        {
+          "score": 2,
+          "at": "2021-02-28T16:39:14",
+          "content": "Random finds little variety"
+        },
+        {
+          "score": 1,
+          "at": "2020-12-06T07:19:03",
+          "content": "Not as discribed"
+        },
+        {
+          "score": 1,
+          "at": "2020-10-17T00:40:51",
+          "content": "Didn't provide price comparisons of an item I was searching for. Provides \"deals\" on RANDOM items, even when provided with specific search parameters. Uninstalled the same day."
+        },
+        {
+          "score": 2,
+          "at": "2020-09-26T06:31:28",
+          "content": "Its all walmart"
+        },
+        {
+          "score": 1,
+          "at": "2020-03-11T01:01:26",
+          "content": "Prices are misleading. The prices change to a higher price when i click on the item. Plus it gives me 100s of other items that are not related to my search"
+        },
+        {
+          "score": 2,
+          "at": "2020-01-19T10:27:36",
+          "content": "Unfriendly display of results. If you search for x, you willin fact get x, but also a,b,c etc all mixed in"
+        },
+        {
+          "score": 1,
+          "at": "2020-01-16T00:20:45",
+          "content": "USE ANOTHER APP OR WEB SEARCH TO MAKE SURE YOU ARE GETTING A DEAL. THIS APP DOES NOT GET YOU THAT DEAL. Doesn't provide the cheapest overall price - I was looking for a TV and it showed me the same TV at a few sites for $1,000 more than I eventually paid when I ordered elsewhere. Removed this app in"
+        },
+        {
+          "score": 1,
+          "at": "2020-01-12T03:21:04",
+          "content": "Way out of date"
+        },
+        {
+          "score": 1,
+          "at": "2020-01-05T18:20:57",
+          "content": "Last update was in 2017.I search for a Mac mini and only got cables and non related items. This app should be removed from Google"
+        },
+        {
+          "score": 2,
+          "at": "2019-12-22T02:35:52",
+          "content": "The pictures need to be bigger and you need better description of the peoduct other then that nice job."
+        },
+        {
+          "score": 1,
+          "at": "2019-11-29T19:15:15",
+          "content": "Update your app for android."
+        },
+        {
+          "score": 1,
+          "at": "2019-09-17T03:51:00",
+          "content": "Terrible search engine!"
+        },
+        {
+          "score": 3,
+          "at": "2019-06-12T12:17:31",
+          "content": "just didnt give me time browse"
+        },
+        {
+          "score": 1,
+          "at": "2019-02-14T03:08:54",
+          "content": "nice app"
+        },
+        {
+          "score": 3,
+          "at": "2018-11-14T19:33:17",
+          "content": "A total battery killer. It'll drain your battery even when you exit the app. The items listed as sale products are very limited. I believe because its user runned/posted. The app does sound new and it maybe the reason why theres limited items posted."
+        },
+        {
+          "score": 2,
+          "at": "2018-11-07T21:09:40",
+          "content": "This app does not actively data mine prices for comparing items from multiple stores. If you like deals on random irrelevant items, this may be OK, after all, company infers the app lists \"best top 10 deals\" of the day. Local coupons I have yet to try."
+        },
+        {
+          "score": 1,
+          "at": "2018-06-23T11:29:31",
+          "content": "Sucks.... don't bother"
+        },
+        {
+          "score": 3,
+          "at": "2018-06-11T23:51:36",
+          "content": "Still checking it out..."
+        },
+        {
+          "score": 3,
+          "at": "2018-05-11T16:55:19",
+          "content": "Just got, will see!"
+        },
+        {
+          "score": 2,
+          "at": "2018-03-21T12:05:26",
+          "content": "Only looked up 3 things and all three I know the price on Amazon and Target, and it didn't even have them listed as selling the items. Search was simple but definitely didn't show me the best deals. Only showed me jet deals."
+        },
+        {
+          "score": 2,
+          "at": "2018-01-27T21:43:58",
+          "content": "Its good but VERY SLOW"
+        },
+        {
+          "score": 3,
+          "at": "2018-01-18T23:32:09",
+          "content": "Tis alright"
+        },
+        {
+          "score": 3,
+          "at": "2017-12-25T20:45:10",
+          "content": "Easy to search ... Not sure it has the best deals"
+        },
+        {
+          "score": 3,
+          "at": "2017-12-11T12:20:09",
+          "content": "Not quite sure yet"
+        },
+        {
+          "score": 3,
+          "at": "2017-12-08T06:57:37",
+          "content": "Cool ap"
+        }
+      ]
+    }
+  },
+  "themes": {
+    "missing_feature": [
+      {
+        "app": "com.naddad.pricena",
+        "score": 2,
+        "content": "not adequate; lacks variety of shops to compare between. i'm better off on google's shopping section, there i can find the best prices"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 3,
+        "content": "Good.. the app is incredible but it needs a design overhaul , it feels sluggish , slow , and unresponsive lots of times , but it does it's job pretty well"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "They did maintenance yesterday and now I'm missing $50 rewards EDIT - It was credited after 30 days but now the transaction says Ineligible...some BS"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Complete scam. You can follow every single stipulation exactly and they will still deny your purchases. Why? I wish I knew, but their email support is beyond useless. It's clear that no human being actually reads your questions. Just a particularly stupid AI who ignores what you say and reiterates t"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "clunkiest info grab deal app I have ever used and it's not even close. links to apps work 20 percent of the time. all saved information can't be used so hope you remember all your passwords. needs a lot of work."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 3,
+        "content": "The rewards program itself is great. Redemption options can be a little limited but the app needs to be heavily optimized, way too buggy, slow, and doesn't load pretty often."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "corrupts other apps such as the Walmart usually doesn't work so much time wasted The program needs a complete redesign"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "have multiple rewards i should have recieved not even one has processed been using the app almost 3 months !! I have a few loyalty apps and this is the only one I have issues with the others pay the longest 48 hours!!"
+      }
+    ],
+    "slow_performance": [
+      {
+        "app": "com.naddad.pricena",
+        "score": 3,
+        "content": "Good.. the app is incredible but it needs a design overhaul , it feels sluggish , slow , and unresponsive lots of times , but it does it's job pretty well"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Will not open after ladt update. Tried reinstalling still cant get past opening image update 10 /24. offers keep saying having trouble loading page still having multiple issues contacted customer service and all they do is send me questions to answer no solutions not happy at all cash back doesn't a"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 3,
+        "content": "The rewards program itself is great. Redemption options can be a little limited but the app needs to be heavily optimized, way too buggy, slow, and doesn't load pretty often."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "it takes forever to browse through the retail sites. It lags horribly. Also, I ordered something from a site on this app. After the purchase was completed (after clicking on the offer, spend $50 and get $50 in rewards), it said i was ineligible. I'm deleting this app. it's useless."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 2,
+        "content": "Android app performance is very slow. takes about 3-5 mins to connect."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Never trust Capital One. They are super slow at activating new accounts. They close your account but the fault is theirs. TRULY DEEPLY HORRIBLE COMPANY"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "awful slows down phone interrupting phone use. absolutely coded by idiots."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "oh my gosh this app pops up on your phone when you're trying to buy something and it keeps you from clicking on things and it visibly slows down your phone. I've used this on a PC and it's fine but whole experience is just not worth the savings in my experience."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "the app is incredibly slow and most of the time I get a big red box that says I am not connected to the internet, however everything else on my phone that requires the internet works just fine. the problem is only this app."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Total scam, don't be suckered by false claims about big rewards and cash back. I bought an expensive laptop with 22% off from capital one shopping, amounting to over $400 in rewards, and received $37 and change instead. When i submitted a support ticket i was told to pound sand. These guys are con a"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "App does not work. Crashes and will not link my capital one account. I wasted data downloading this useless and broken app."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "I received a message on my account that gave out a $40 incentive for downloading Capital One Shopping. I never received the incentive on the account, and when I e-mailed support, I was sent exactly the same copy pasted response twice from what I am guessing is their AI tech support named Jeff. I am "
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 2,
+        "content": "app slow to respond"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "system will crash your capital one online account and automated customer service phone will break multiple laws hanging up on you while you try to get a live agent. I suggest just go through any offerings until you get a live agent then tell them what you need. my experience has me questioning my en"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 2,
+        "content": "the idea is great, but this app is extremely slow. it takes FOREVER for pages to load or respond to touch."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "Prices are misleading. The prices change to a higher price when i click on the item. Plus it gives me 100s of other items that are not related to my search"
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 2,
+        "content": "Its good but VERY SLOW"
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "Freezes every time I open it on my S4. Uninstalling."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "You can't swipe between tabs and the app feels super slow overall and glitchy overall"
+      }
+    ],
+    "broken_bug": [
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "doesn't work and get updates like it used too it feel outdated"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 2,
+        "content": "The app tries to bring up a comparative price , but fails to present multiple variants. Only few arent enough."
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 2,
+        "content": "Doesn't work properly anymore, doesn't show many listings and doesn't show all stores. Gets many ads mixed and confused with out of stock items"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "I have made 2 purchases that did not show up on my rewards totally $100 combined, if thinnest purchase I make does not show up, I will take some course ofmaction. I have the extension set up, activate it, and nothing. the advertisement for the rewards shows up with the pic ofnwhst I am going to purc"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "This totally failed on a $399 purchase from Sweetwater, cost me $37! Not too happy! Gotta wonder why!!!\ud83d\ude31"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 3,
+        "content": "The rewards program itself is great. Redemption options can be a little limited but the app needs to be heavily optimized, way too buggy, slow, and doesn't load pretty often."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "doesn't work with my phone"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Very buggy and not getting credited for my purchases."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Great concept, if it worked! It caused massive issues on my phone as well as not working on many sites and never receiving points from all the glitching."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "corrupts other apps such as the Walmart usually doesn't work so much time wasted The program needs a complete redesign"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Not sure what this is supposed to be, as it does.not work/open. How can it be that this app doesn't work on Android? Begs to question, Why then is it on Google Play ? Should be Removed & Only placed on APPLE Store, No ? Or is this just Another SCAM/SCHEME ? Perhaps, you're looking for another Class "
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "App does not work. Crashes and will not link my capital one account. I wasted data downloading this useless and broken app."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "A major time waster. You are promised a giant rebate, make the purchase, wait up to 90 days, and nothing happens. The app gave me an error message when I submitted documentation after not getting a rebate and told me to email it in. I got an auto-reply that the email is not monitored. They don't car"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 2,
+        "content": "Have been denied numerous purchase rewsrds, some of which were purchases explicitly made because of offers from capital one. \"magic link\"sign in system is incredibly broken. If it worked and customer service/the company stood up behind the offers it would be an easy 5 stars."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Not working."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "I have earned a lot of rewards with this app. However it stopped updating at the end of December. They attempted to solve the problem but it is not working. It has only logged 4 shopping trips since December 29. Very very frustrated"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Fake offers claims $25 off $50 at Dicks link fails to load the offer disappears."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 2,
+        "content": "Searches show merchants in other currencies with no accounting for conversion rate. No ability to filter. Altering saved search doesn't work."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "Doesn't work!  I've been waiting for an hour and so far it hasn't downloaded."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "Sat there for 3 min waiting for it to load deals, and it couldn't. Everything I tried told me to wait and then failed to work. Uninstalling."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "Simply doesn't work!!"
+      }
+    ],
+    "privacy_concern": [
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "Useless app, foolish comparison, wrong data of prices, and specifications."
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "This apk shows fake deals, when ever you tried to search something it shows the deal @ Re. 1 but wjen you try to buy that product and it redirect to orginal service provider where the price of that same product will be at orginal price (which would be around 1k-5k accordingly). Be aware for this apk"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Heavily drains my battery life even when I'm not using it. Also I made several purchases specifically because of the promised cash-back rewards, followed all the steps, and my rewards never showed up. No tracking, no pending"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "received an email saying that I've earned a $45 to redeem it had to install this app which has very intrusive privacy permissions only to have no rewards ready to redeem so the email was misleading"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Total Scam. Tracking only works if its not for a lot of money. convenient right? 2% tracks every time. High % never does. 9% tracks but re adjusts to 0.5% Customer service is a joke, its impossible to get a human. You can get lots of totally unrelated automated emails but only if you've waited 90 da"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "You're better off using other cashbacks programs. The app and platform is not user friendly. You have to constantly login or verify your account. They also harvest your data by asking for mailing address, phone number... when everything is digital this is unnecessary. They also have limited gift car"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "uses and sells data, makes you pay more than retail"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "This app is too clunky to use when it works, and just reeks of data mining and extra work for the consumer with minimal returns. Not worth my time when my card's features are already fitting my need. I've tried to use this a few times after countless suggestions from the main app, but largely ignore"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "App does not work. Crashes and will not link my capital one account. I wasted data downloading this useless and broken app."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 2,
+        "content": "Beware that they make it really difficult to get your funds and are harvesting your data"
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 2,
+        "content": "This app does not actively data mine prices for comparing items from multiple stores. If you like deals on random irrelevant items, this may be OK, after all, company infers the app lists \"best top 10 deals\" of the day. Local coupons I have yet to try."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "3 options are offered to sign in.  Was going to sign in using my yahoo, but disagreed to copying & keeping all my contacts. So I was going to sign on with a different Gmail, yet you just pulled my default one, didn't ask if I accepted the terms & signed me right in. You do not have my permission to "
+      }
+    ],
+    "price_complaint": [
+      {
+        "app": "com.naddad.pricena",
+        "score": 3,
+        "content": "There is no price alert option for months... Please fix it"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "Never Ever Actually find the lowest Price - BEYOND USELESS - REPORTS WRONG PRICES ALL THE TIME"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "Search engine so useless you'll save time by manually going to every website and checking the price"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 2,
+        "content": "The app tries to bring up a comparative price , but fails to present multiple variants. Only few arent enough."
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "Useless app, foolish comparison, wrong data of prices, and specifications."
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "Once you open any link to see the price of any item it will go directly to syyarah web site. Please fix this issue soon."
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "No update on products and They put almost every time price to be announced for the product which is 5-6 years old..."
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 2,
+        "content": "not adequate; lacks variety of shops to compare between. i'm better off on google's shopping section, there i can find the best prices"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "Doesn't perform the primary function it was made for. Price comparisons are mainly of out of stock items on multiple portals. What a waste of time."
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "This app is useless all price are higher than outside \u0647\u0630\u0627 \u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c \u0633\u064a\u0626 . \u0627\u0644\u0627\u0633\u0639\u0627\u0631 \u0645\u0631\u062a\u0641\u0639\u0647 \u0641\u064a\u0647 \u062c\u062f\u0627 \u0648\u0644\u0627 \u0627\u0646\u0635\u062d \u0628\u062a\u062d\u0645\u064a\u0644\u0647"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 3,
+        "content": "Great for price comparison."
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "items are very expensive not competitive with other applications"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "I can't check the prices on ebay or Amazon us!!! All markets are local"
+      },
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "This apk shows fake deals, when ever you tried to search something it shows the deal @ Re. 1 but wjen you try to buy that product and it redirect to orginal service provider where the price of that same product will be at orginal price (which would be around 1k-5k accordingly). Be aware for this apk"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Complete scam. You can follow every single stipulation exactly and they will still deny your purchases. Why? I wish I knew, but their email support is beyond useless. It's clear that no human being actually reads your questions. Just a particularly stupid AI who ignores what you say and reiterates t"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "only for first time customers for any cash back offers and most deals require over 30 days to even register honestly seems scammy definitely not as advertised"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Really frustrating. App will take over the screen while I am using other apps and then I cant press literally any other button besides the one to look as some bs offer in the app. I liked the points and used it pretty consistently, but I had to delete it because when the pop up would pop up I would "
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "It is a fake apps. Just a scam like. I am a capital one venture X member for years. Only see the rebate maybe less than 1%. Install bing shopping or other instead."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "scam do not count on rewards you follow the fine print and tells you Ineligible, but never any reason 14 different purchaes"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "14 purchases all of them say ineligible. scam .never got the money or bonus. even buying from their flash sales."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Total Scam. Tracking only works if its not for a lot of money. convenient right? 2% tracks every time. High % never does. 9% tracks but re adjusts to 0.5% Customer service is a joke, its impossible to get a human. You can get lots of totally unrelated automated emails but only if you've waited 90 da"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "scam"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "scam. you dont get the $45 credit it promises in the email."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Not sure what this is supposed to be, as it does.not work/open. How can it be that this app doesn't work on Android? Begs to question, Why then is it on Google Play ? Should be Removed & Only placed on APPLE Store, No ? Or is this just Another SCAM/SCHEME ? Perhaps, you're looking for another Class "
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Total scam, don't be suckered by false claims about big rewards and cash back. I bought an expensive laptop with 22% off from capital one shopping, amounting to over $400 in rewards, and received $37 and change instead. When i submitted a support ticket i was told to pound sand. These guys are con a"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "I just made a Walgreens photo purchase using the Cap One shopping app. It showed me many coupon codes, but not the current one that gave me 50% off of my purchase. What good is this app if it is not applying the current codes? It would have saved me ZERO and actually cost me double the price had I r"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "it claimed to offer a 5* discount at Lowes.Did not apply.Other time it sent me to Ebay to get the discount but the item was more expensive. What a waste of time."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 2,
+        "content": "How do I actually get the $45 credit? There isn't anywhere to read the details about this. Seems like a scam. \ud83d\ude10"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "they removed the gift card I was redeeming right in the middle of the transaction. total scam"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "You now must log in and share login information to your personal bank to use your rewards to get gift cards. seems like a scam. worked without it until recently. They need more information to sell, I suppose. Don't waste your time"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "They require you to log in to your bank account for you to cash out rewards. What a scam. Who would give a random company affiliated with Capitol One the login name and password to their bank account. No thanks! I plan to pay off my balance this month and be done with Capitol One."
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 2,
+        "content": "It didn't show me one item at a lower price than I had already found..looked up several items that were previously researched and found this app couldn't come close to what I found"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "I downloaded your insufferable thing, where is my 45 dollars I keep getting obnoxious banner ads for every time I sign into my main credit account?? Uninstalled immediately when I discovered this was just a scam to get more of my personal information"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "Using this app was not good. I had to use my laptop and had to delete my other similar programs. I had to cancel my order and redo it. After waiting a month for the reward, the selection was limited. I selected VS because I already had a planned purchase but when I was at the store, they said the ca"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "I was doing some browsing and I was sent two emails saying spend $50@ Dick's get $50 I clicked it I spent $50 they gave me $.50 CENTS then they claim they couldn't find the ad/offer SECOND one I was browsing LG for a refrigerator so they sent me something saying 13% off of LG I go on there I make a "
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "A scam. You'll rarely get the rewards you're promised and C1 couldnt care less"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "This app hardly provides discounts. Either you have to a first time purchase. They offer cash back deals and some discount prices."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "Didn't provide price comparisons of an item I was searching for. Provides \"deals\" on RANDOM items, even when provided with specific search parameters. Uninstalled the same day."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "Prices are misleading. The prices change to a higher price when i click on the item. Plus it gives me 100s of other items that are not related to my search"
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "USE ANOTHER APP OR WEB SEARCH TO MAKE SURE YOU ARE GETTING A DEAL. THIS APP DOES NOT GET YOU THAT DEAL. Doesn't provide the cheapest overall price - I was looking for a TV and it showed me the same TV at a few sites for $1,000 more than I eventually paid when I ordered elsewhere. Removed this app in"
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 2,
+        "content": "This app does not actively data mine prices for comparing items from multiple stores. If you like deals on random irrelevant items, this may be OK, after all, company infers the app lists \"best top 10 deals\" of the day. Local coupons I have yet to try."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 2,
+        "content": "Only looked up 3 things and all three I know the price on Amazon and Target, and it didn't even have them listed as selling the items. Search was simple but definitely didn't show me the best deals. Only showed me jet deals."
+      },
+      {
+        "app": "com.buyvia.android",
+        "score": 1,
+        "content": "Bad usability and user interface.  11/2015: Let me input product I want to buy, look it up, save the pertinent info for the product, get prices for places I like to shop, show prices that may be better from other places not in my preferred list, give me some price history, display it logically...  F"
+      }
+    ],
+    "ui_complaint": [
+      {
+        "app": "com.naddad.pricena",
+        "score": 1,
+        "content": "doesn't work and get updates like it used too it feel outdated"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 1,
+        "content": "App is very confusing and not user friendly at all. It sent me an email saying I qualified for rewards for cash back. When I go to redeem it, it never goes through and just ends up being a complete waste of time. Terrible experience"
+      },
+      {
+        "app": "com.wikibuy.prod.main",
+        "score": 3,
+        "content": "confusing \ud83d\ude15"
+      }
+    ]
+  },
+  "theme_counts": {
+    "missing_feature": 8,
+    "slow_performance": 19,
+    "broken_bug": 21,
+    "privacy_concern": 12,
+    "price_complaint": 43,
+    "ui_complaint": 3
+  }
+}

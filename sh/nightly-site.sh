@@ -606,14 +606,30 @@ if [ -n "$(git status --porcelain --ignore-submodules)" ]; then
     # DO NOT pipe the push straight into `tail` — without pipefail the pipe returns tail's exit
     # (0), so a FAILED push (auth expired, rejected, network) looks identical to success and the
     # remote/VPS silently never gets tonight's content. Capture push's own exit, then report.
-    PUSH_OUT="$(git push origin HEAD --no-verify 2>&1)"; PUSH_RC=$?
-    echo "$PUSH_OUT" | tail -3
-    if [ "$PUSH_RC" -eq 0 ]; then
+    #
+    # RETRY, added 2026-08-08. This step had ZERO retries while the deploy below had three —
+    # backwards, since push is the BACKUP and was the less-protected of the two. The sibling
+    # engine (nightly-build.sh, tools) grew a `host_up_within github.com` wait back in July
+    # after a waking-network blink stranded TWENTY commits; that fix was only ever applied to
+    # that one file, so apps/goalkit/learn — the three properties THIS script drives — never
+    # got it. Observed live on 2026-08-07: apps and learn both logged `push: failed` while
+    # `deploy: ok` on the same run. Nothing was lost (a later run pushed them; verified by
+    # `git fetch` + HEAD comparison, not by trusting the status field), but only because a
+    # later run happened to succeed. Same shape as the July incident, one blink from repeating.
+    push_attempt() { PUSH_OUT="$(git push origin HEAD --no-verify 2>&1)"; }
+    if retry 3 20 push_attempt; then
+      echo "$PUSH_OUT" | tail -3
       PUSH_STATUS="ok"
     else
+      echo "$PUSH_OUT" | tail -3
       PUSH_STATUS="failed"
-      echo "  ✗ GIT PUSH FAILED (rc=$PUSH_RC) — commit is LOCAL ONLY; remote/VPS will NOT update."
-      osascript -e "display notification \"git push FAILED on $LABEL — content committed locally only\" with title \"Teamz Nightly\" sound name \"Basso\"" 2>/dev/null
+      # Deploy runs AFTER this and does not depend on the push succeeding — it rsyncs the local
+      # build to the VPS over SSH, a different host and a different network path. The old wording
+      # here ("remote/VPS will NOT update") overstated the damage and would send you hunting for
+      # a dead site that was actually live. What is genuinely at risk is the GitHub BACKUP.
+      echo "  ✗ GIT PUSH FAILED after 3 attempts (last rc: see above) — commit is LOCAL ONLY."
+      echo "    The VPS deploy below is unaffected and still runs; the GitHub backup is what is missing."
+      osascript -e "display notification \"git push FAILED on $LABEL — GitHub backup missing, site deploy unaffected\" with title \"Teamz Nightly\" sound name \"Basso\"" 2>/dev/null
     fi
   else
     echo "  (nothing to commit)"

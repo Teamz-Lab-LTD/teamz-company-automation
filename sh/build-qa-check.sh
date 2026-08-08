@@ -25,10 +25,12 @@ NC='\033[0m'
 HUB_FILTER=""
 VERBOSE=false
 FIX_MODE=false
+CHANGED_MODE=false
 for arg in "$@"; do
   case "$arg" in
     --verbose) VERBOSE=true ;;
     --fix) FIX_MODE=true ;;
+    --changed) CHANGED_MODE=true ;;
     --hub) HUB_FILTER="next" ;;
     *)
       if [ "$HUB_FILTER" = "next" ]; then HUB_FILTER="$arg"; fi
@@ -44,7 +46,27 @@ echo ""
 
 # Build tool list (only actual tool pages, not hubs or redirects)
 TMPFILE=$(mktemp)
-if [ -n "$HUB_FILTER" ] && [ "$HUB_FILTER" != "next" ]; then
+if [ "$CHANGED_MODE" = true ]; then
+  # Scope to tool pages actually being pushed, not the whole site. Added
+  # 2026-08-08 after the full sweep (~15 min over 6,847 pages) got SIGKILLed
+  # mid-push twice in a row when a caller retried without realising the prior
+  # scan was still running. This mode answers "is what I'm about to ship
+  # okay", not "is the whole site okay" — that's still ./build-qa-check.sh
+  # with no flags, run explicitly, never from a push hook.
+  RANGE_BASE=""
+  if git rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then
+    RANGE_BASE='@{u}'
+  elif git rev-parse HEAD~1 >/dev/null 2>&1; then
+    RANGE_BASE='HEAD~1'
+  fi
+  if [ -n "$RANGE_BASE" ]; then
+    git diff --name-only --diff-filter=d "${RANGE_BASE}...HEAD" -- '*/index.html' 2>/dev/null \
+      | grep -v -E '^[^/]+/index\.html$' \
+      | grep -vE '^(shared|branding|docs|node_modules|scripts|about|contact|privacy|terms|\.claude|teamzlab-website|flutter_[^/]*|ai_[^/]*|hazira[^/]*|chopstick[^/]*|notetube[^/]*|jiwer[^/]*|no-trace[^/]*|room_[^/]*|toss_[^/]*|top_3[^/]*|youtube_[^/]*|zoyiai|apps[^/]*)/' \
+      | while read -r f; do [ -f "$f" ] && echo "$f"; done \
+      | sort -u > "$TMPFILE"
+  fi
+elif [ -n "$HUB_FILTER" ] && [ "$HUB_FILTER" != "next" ]; then
   find "$HUB_FILTER" -mindepth 2 -maxdepth 2 -name "index.html" 2>/dev/null | sort > "$TMPFILE"
 else
   find . -name "index.html" -not -path "./index.html" \
@@ -62,6 +84,12 @@ else
 fi
 
 TOOL_COUNT=$(wc -l < "$TMPFILE" | tr -d ' ')
+if [ "$CHANGED_MODE" = true ] && [ "$TOOL_COUNT" -eq 0 ]; then
+  echo "  No tool pages changed vs upstream — nothing to check."
+  echo ""
+  rm -f "$TMPFILE"
+  exit 0
+fi
 echo "  Scanning $TOOL_COUNT tool pages..."
 echo ""
 
@@ -385,6 +413,13 @@ printf "  Total tools:  %d\n" "$TOTAL"
 printf "  Key issues:   %s%d%s\n" "$RED" "$TOTAL_ISSUES" "$NC"
 echo ""
 
+# Structural/safety defects vs content backlog. Only the former can block a
+# push in --changed mode: a broken renderer or a11y violation is very likely
+# something THIS push introduced, while missing FAQs/hreflang/og:image on an
+# old page is legacy backlog (hundreds of pages, unrelated to most edits) and
+# would false-positive-block unrelated fixes if treated the same way.
+HARD_BLOCKERS=$((NO_JS + BAD_FAQ_ID + BAD_RELATED_ID + BAD_BREADCRUMB_ID + DISPLAY_EMPTY + WHITE_ACCENT + AI_NO_ENGINE + NO_COPY_HANDLER))
+
 # Show details for verbose or small hub
 if [ "$VERBOSE" = true ]; then
   if [ -n "$ISSUES_SEO" ]; then echo "  --- SEO Issues ---"; echo "$ISSUES_SEO"; echo ""; fi
@@ -407,3 +442,11 @@ echo "  Run: ./build-qa-check.sh --fix --verbose (fix + show details)"
 echo "============================================"
 
 rm -f "$TMPFILE"
+
+if [ "$CHANGED_MODE" = true ] && [ "$HARD_BLOCKERS" -gt 0 ]; then
+  echo ""
+  printf "  %s✗ %d structural/safety defect(s) in files this push touches — see counts above%s\n" "$RED" "$HARD_BLOCKERS" "$NC"
+  exit 1
+fi
+
+exit 0

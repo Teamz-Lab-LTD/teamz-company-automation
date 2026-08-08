@@ -458,8 +458,15 @@ def try_google_ads_volume(keywords):
                     'cpc_high': round(int(metrics.get('highTopOfPageBidMicros', 0)) / 1_000_000, 2),
                 }
             return results
-    except Exception:
-        pass
+        # Non-200: surface it. A silent `pass` here is the exact trap this function's own
+        # docstring warns about for token refresh — "not approved yet" and "broke today" both
+        # read as None otherwise. Verified live 2026-08-08: Basic Access IS approved and this
+        # path returns real data (e.g. "calculator" -> 24.9M avg monthly searches) — so from
+        # today, a non-200 here means something is actually wrong, not "still waiting."
+        sys.stderr.write(f"  ! Google Ads keyword-volume call failed: HTTP {r.status_code}: "
+                          f"{r.text[:200]}\n")
+    except Exception as e:
+        sys.stderr.write(f"  ! Google Ads keyword-volume call raised {type(e).__name__}: {e}\n")
     return None
 
 

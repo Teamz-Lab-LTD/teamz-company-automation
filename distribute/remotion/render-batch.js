@@ -148,8 +148,11 @@ function randomDuration(template) {
 }
 
 function loadTools() {
-  const idxPath = path.join(PROJECT_ROOT, "shared", "js", "search-index.js");
-  if (!fs.existsSync(idxPath)) { console.error("search-index.js not found"); return []; }
+  // Prefer the project's own explicit dataPath (project-config.js) — the old
+  // PROJECT_ROOT-relative guess broke silently on 2026-06-11 when this repo
+  // moved out of teamzlab-tools; kept only as a last-resort fallback.
+  const idxPath = (CFG && CFG.dataPath) || path.join(PROJECT_ROOT, "shared", "js", "search-index.js");
+  if (!fs.existsSync(idxPath)) { console.error(`search-index.js not found at ${idxPath}`); return []; }
   const raw = fs.readFileSync(idxPath, "utf-8").replace(/[^\x00-\x7F]/g, "");
   const tools = [];
   const re = /\{t:'([^']*)',d:'([^']*)',h:'([^']*)'\}/g;

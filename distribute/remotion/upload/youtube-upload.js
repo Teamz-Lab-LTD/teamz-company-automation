@@ -562,7 +562,10 @@ async function addToPlaylist(playlistId, videoId) {
 // MAIN
 // ═════════════════════════════════════════════════════════════════════════════
 
-(async () => {
+// Locked against tiktok-upload.js / comment-catchup.js — see upload/reel-lock.js.
+const { withLock } = require("./reel-lock");
+
+withLock(async () => {
   // Quota check
   if (hasFlag("--quota")) {
     const q = checkQuota();
@@ -742,4 +745,4 @@ async function addToPlaylist(playlistId, videoId) {
     console.error(`Failed: ${e.message}`);
     process.exit(1);
   }
-})();
+});

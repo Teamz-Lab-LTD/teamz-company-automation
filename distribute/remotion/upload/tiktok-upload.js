@@ -324,7 +324,10 @@ function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null,
 // MAIN
 // ═════════════════════════════════════════════════════════════════════════════
 
-(async () => {
+// Locked against youtube-upload.js / comment-catchup.js — see upload/reel-lock.js.
+const { withLock } = require("./reel-lock");
+
+withLock(async () => {
   // Quota check
   if (hasFlag("--quota")) {
     const check = isSafeToUpload();
@@ -457,4 +460,4 @@ function saveHistory(h) { fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null,
     console.error(`Failed: ${e.message}`);
     process.exit(1);
   }
-})();
+});

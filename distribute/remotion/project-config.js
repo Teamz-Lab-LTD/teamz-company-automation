@@ -10,6 +10,8 @@
  *   3. Done — entire pipeline adapts automatically
  */
 
+const path = require("path");
+
 // ─── Which project is this? ─────────────────────────────────────────────────
 // Auto-detection order (you never need to remember anything):
 //   1. --project flag:    node youtube-autopilot.js --project devicegpt
@@ -82,7 +84,19 @@ const PROJECTS = {
 
     // Where to load product data from
     dataSource: "search-index", // "search-index" | "json-file" | "api"
-    dataPath: null, // auto-detected from PROJECT_ROOT/shared/js/search-index.js
+    // EXPLICIT, not derived. This used to be `null` with a comment claiming
+    // "auto-detected from PROJECT_ROOT/shared/js/search-index.js" — but
+    // PROJECT_ROOT was computed as 3 levels up from this file, which lands on
+    // teamz-projects/ (the sibling-repos folder), not teamzlab-tools/. That
+    // depth assumption broke silently on 2026-06-11 when this automation repo
+    // was moved out of teamzlab-tools and symlinked back in
+    // (teamzlab-tools/scripts/distribute -> ../teamz-company-automation/distribute).
+    // render-batch.js's loadTools() has returned [] ever since — every video
+    // render after that date silently had zero tools to choose from. Fixed
+    // 2026-08-08 by pointing at the real path directly instead of guessing a
+    // directory depth that depends on where this repo happens to be checked out.
+    dataPath: path.join(path.resolve(__dirname, "..", "..", ".."), "teamzlab-tools",
+                         "shared", "js", "search-index.js"),
 
     // CTA buttons
     ctaText: "Try it free",

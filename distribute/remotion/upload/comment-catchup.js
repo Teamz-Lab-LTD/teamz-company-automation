@@ -172,7 +172,12 @@ const SELF_REPLY_TEMPLATES = [
   "Let me know if you want a tutorial on this 👇",
 ];
 
-(async () => {
+// Locked against youtube-upload.js / tiktok-upload.js — all three read-mutate-
+// save the SAME reel-history.json with no merge logic; running two at once
+// silently loses whichever saved first. See upload/reel-lock.js.
+const { withLock } = require("./reel-lock");
+
+withLock(async () => {
   const h = loadHistory();
   let targets = (h.reels || []).filter((r) => {
     const yt = r.platforms && r.platforms.youtube;
@@ -269,4 +274,4 @@ const SELF_REPLY_TEMPLATES = [
   console.log(`\n${"=".repeat(60)}`);
   console.log(`  Complete.  posted: ${posted}  failed: ${failed}  skipped: ${targets.length - posted - failed}`);
   console.log(`${"=".repeat(60)}\n`);
-})();
+});

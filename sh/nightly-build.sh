@@ -636,7 +636,21 @@ else
     skip_phase "PageSpeed pull (pagespeedonline.googleapis.com unavailable)"
 fi
 
-run_phase_cmd "Distribution status" 10 "python3 scripts/distribute/distribute.py list"
+run_phase_cmd "Distribution status" 12 "python3 scripts/distribute/distribute.py outcome --days 7"
+run_phase_cmd "Business registry sync" 8 "python3 teamz-company-automation/py/build-business-registry.py"
+run_phase_cmd "Distribution leads snapshot" 10 "python3 teamz-company-automation/py/build-distribution-leads.py --days 28"
+
+# YouTube comment catch-up — added 2026-08-08. Every video uploads still
+# private/processing, so its first comment ALWAYS 403s at upload time and
+# gets queued (commentPending: true). This script was the only thing that
+# could clear that queue, and it was never wired into anything — comments
+# would sit pending forever unless someone remembered to run it by hand.
+# comment-catchup.js itself already skips videos still private/scheduled
+# (self-limiting, safe to run nightly with no extra guard here).
+if [ -f scripts/distribute/remotion/upload/comment-catchup.js ]; then
+    run_phase_cmd "YouTube comment catch-up" 10 \
+        "cd scripts/distribute/remotion && $(command -v node || echo /opt/homebrew/bin/node) upload/comment-catchup.js --go; cd - > /dev/null"
+fi
 
 # Phase 3.5: Refresh research cache (DataForSEO volumes, Firecrawl competitor maps,
 # Bing queries, Reddit RPM data) — feeds Phase 4 Claude agent with fresh data

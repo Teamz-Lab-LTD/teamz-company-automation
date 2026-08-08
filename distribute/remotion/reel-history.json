@@ -28,7 +28,10 @@
           "videoId": "4iRc2BQdctQ",
           "postedAt": "2026-04-28T23:44:07.728Z",
           "scheduledAt": "2026-04-29T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgyOmz8EVl8sVgxRV4J4AaABAg",
+          "commentedAt": "2026-08-08T01:24:52.673Z"
         },
         "instagram": {
           "posted": false,
@@ -73,7 +76,10 @@
           "videoId": "qqtLjfqbYI4",
           "postedAt": "2026-04-28T23:45:05.799Z",
           "scheduledAt": "2026-04-30T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgwW1FFalPgMAyQFucl4AaABAg",
+          "commentedAt": "2026-08-08T01:25:25.298Z"
         },
         "instagram": {
           "posted": false,
@@ -118,7 +124,10 @@
           "videoId": "nL0jjmzqPjk",
           "postedAt": "2026-04-28T23:46:13.320Z",
           "scheduledAt": "2026-05-01T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgwegMhuUKsH3ZBS7nh4AaABAg",
+          "commentedAt": "2026-08-08T01:26:23.359Z"
         },
         "instagram": {
           "posted": false,
@@ -163,7 +172,10 @@
           "videoId": "ZtOFgHyfPbo",
           "postedAt": "2026-04-28T23:46:21.990Z",
           "scheduledAt": "2026-04-29T19:08:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgxB1q_WLNpqh2p58sB4AaABAg",
+          "commentedAt": "2026-08-08T01:27:00.253Z"
         },
         "instagram": {
           "posted": false,
@@ -201,7 +213,10 @@
           "videoId": "V9kdJVTPbiQ",
           "postedAt": "2026-04-10T19:46:47.728Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgwtsoqYsjRWOSOGfCJ4AaABAg",
+          "commentedAt": "2026-08-08T01:27:43.242Z"
         },
         "instagram": {
           "posted": false,
@@ -280,7 +295,10 @@
           "videoId": "URamVhvIE5I",
           "postedAt": "2026-04-10T19:47:08.438Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgwS9zS8PPZSEVK196J4AaABAg",
+          "commentedAt": "2026-08-08T01:28:37.206Z"
         },
         "instagram": {
           "posted": false,
@@ -359,7 +377,10 @@
           "videoId": "iSFO9LWLXvs",
           "postedAt": "2026-04-10T19:47:26.413Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgxEVHoB5e4l4pTrcxZ4AaABAg",
+          "commentedAt": "2026-08-08T01:29:34.771Z"
         },
         "instagram": {
           "posted": false,
@@ -438,7 +459,10 @@
           "videoId": "UIiV_iWpbVI",
           "postedAt": "2026-04-13T21:21:41.876Z",
           "scheduledAt": "2026-04-14T19:01:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgyGa1d0M74K9kyTENV4AaABAg",
+          "commentedAt": "2026-08-08T01:30:30.787Z"
         },
         "instagram": {
           "posted": false,
@@ -476,7 +500,10 @@
           "videoId": "ZECpWlChKIc",
           "postedAt": "2026-04-14T09:30:35.757Z",
           "scheduledAt": "2026-04-14T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugw_v2tktWX6727f42h4AaABAg",
+          "commentedAt": "2026-08-08T01:31:14.492Z"
         },
         "instagram": {
           "posted": false,
@@ -514,7 +541,10 @@
           "videoId": "hJ9-DVk4ihw",
           "postedAt": "2026-04-14T09:31:39.599Z",
           "scheduledAt": "2026-04-15T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgzQEpUWS_qb0YLa6754AaABAg",
+          "commentedAt": "2026-08-08T01:32:07.069Z"
         },
         "instagram": {
           "posted": false,
@@ -552,7 +582,10 @@
           "videoId": "kux_FVCLyKE",
           "postedAt": "2026-04-14T09:32:47.819Z",
           "scheduledAt": "2026-04-16T19:03:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugxx6s96LoS23i9Wue14AaABAg",
+          "commentedAt": "2026-08-08T01:32:40.083Z"
         },
         "instagram": {
           "posted": false,
@@ -590,7 +623,10 @@
           "videoId": "TgaQrQrH6Pg",
           "postedAt": "2026-04-14T09:32:55.654Z",
           "scheduledAt": "2026-04-14T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgwaFl1IBavSdivpVJB4AaABAg",
+          "commentedAt": "2026-08-08T01:33:34.120Z"
         },
         "instagram": {
           "posted": false,
@@ -628,7 +664,10 @@
           "videoId": "UmJof0QAs_Y",
           "postedAt": "2026-04-14T09:34:21.022Z",
           "scheduledAt": "2026-04-15T19:02:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgyBRrFLaf17oq-qvKR4AaABAg",
+          "commentedAt": "2026-08-08T01:34:11.112Z"
         },
         "instagram": {
           "posted": false,
@@ -666,7 +705,10 @@
           "videoId": "R7x0z_q2bt8",
           "postedAt": "2026-04-09T21:10:30.774Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgzqHho_ZmD3gbwG7yR4AaABAg",
+          "commentedAt": "2026-08-08T01:34:50.040Z"
         },
         "instagram": {
           "posted": false,
@@ -786,7 +828,10 @@
           "videoId": "1HWz8m987VM",
           "postedAt": "2026-04-10T19:15:27.126Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgzVpoxZMJsXlI1JGxB4AaABAg",
+          "commentedAt": "2026-08-08T01:35:27.955Z"
         },
         "instagram": {
           "posted": false,
@@ -823,7 +868,10 @@
           "videoId": "VE8C6Zy_hB0",
           "postedAt": "2026-04-10T19:47:53.550Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgylYtyxe0cSd7U14wZ4AaABAg",
+          "commentedAt": "2026-08-08T01:36:03.631Z"
         },
         "instagram": {
           "posted": false,
@@ -860,7 +908,10 @@
           "videoId": "c0_sYx0GC2o",
           "postedAt": "2026-04-10T19:48:02.899Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgxB9R0RcA5fvfjRnE14AaABAg",
+          "commentedAt": "2026-08-08T01:36:50.712Z"
         },
         "instagram": {
           "posted": false,
@@ -897,7 +948,10 @@
           "videoId": "_vTxXPOMGfg",
           "postedAt": "2026-04-10T19:48:12.592Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgyztAT54D7QzY32QOV4AaABAg",
+          "commentedAt": "2026-08-08T01:37:28.808Z"
         },
         "instagram": {
           "posted": false,
@@ -974,7 +1028,10 @@
           "videoId": "b-J57Co6qiI",
           "postedAt": "2026-04-10T19:48:38.370Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgwQfITZdawH_kHv_Kl4AaABAg",
+          "commentedAt": "2026-08-08T01:38:07.988Z"
         },
         "instagram": {
           "posted": false,
@@ -1011,7 +1068,10 @@
           "videoId": "140zDRv-8_0",
           "postedAt": "2026-04-10T19:48:47.504Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgznRYnvaulT-A-n4tl4AaABAg",
+          "commentedAt": "2026-08-08T01:39:08.948Z"
         },
         "instagram": {
           "posted": false,
@@ -1088,7 +1148,10 @@
           "videoId": "3DNXxcuF5t4",
           "postedAt": "2026-04-10T19:49:06.478Z",
           "scheduledAt": "2026-04-10T21:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugy-ApmfdgFSS09Fjit4AaABAg",
+          "commentedAt": "2026-08-08T01:39:50.042Z"
         },
         "instagram": {
           "posted": false,
@@ -1245,7 +1308,10 @@
           "videoId": "x3tWwCU761A",
           "postedAt": "2026-04-11T20:41:43.169Z",
           "scheduledAt": "2026-04-14T20:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgylgicOomSum8FiPsR4AaABAg",
+          "commentedAt": "2026-08-08T01:40:46.996Z"
         },
         "instagram": {
           "posted": false,
@@ -1282,7 +1348,10 @@
           "videoId": "KnVRY4drD5o",
           "postedAt": "2026-04-11T20:41:50.646Z",
           "scheduledAt": "2026-04-15T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgzjRoqlKDdcBEdNy2Z4AaABAg",
+          "commentedAt": "2026-08-08T01:41:45.033Z"
         },
         "instagram": {
           "posted": false,
@@ -1319,7 +1388,10 @@
           "videoId": "UR9hiGKEgrw",
           "postedAt": "2026-04-11T20:41:56.102Z",
           "scheduledAt": "2026-04-16T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugy4NE4DWKz5k0VzKAt4AaABAg",
+          "commentedAt": "2026-08-08T01:42:36.007Z"
         },
         "instagram": {
           "posted": false,
@@ -1356,7 +1428,10 @@
           "videoId": "wmbCHDtZejY",
           "postedAt": "2026-04-11T20:42:01.607Z",
           "scheduledAt": "2026-04-17T16:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgwPYg0NB24Cj2ucStt4AaABAg",
+          "commentedAt": "2026-08-08T01:43:21.915Z"
         },
         "instagram": {
           "posted": false,
@@ -1395,7 +1470,10 @@
           "videoId": "5qbx6yxSY2U",
           "postedAt": "2026-04-14T10:15:15.019Z",
           "scheduledAt": "2026-04-14T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgzGmKwEozdXd1d9Btd4AaABAg",
+          "commentedAt": "2026-08-08T01:44:22.927Z"
         },
         "instagram": {
           "posted": false,
@@ -1434,7 +1512,10 @@
           "videoId": "kwJtBkKb66U",
           "postedAt": "2026-04-15T22:28:43.164Z",
           "scheduledAt": "2026-04-16T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgxTavx6naqbiHGS_Kt4AaABAg",
+          "commentedAt": "2026-08-08T01:44:57.907Z"
         },
         "instagram": {
           "posted": false,
@@ -1473,7 +1554,10 @@
           "videoId": "ahlIrLrEbHk",
           "postedAt": "2026-04-15T22:29:53.767Z",
           "scheduledAt": "2026-04-17T19:04:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgwvhC4hsgV7ZrgqU9V4AaABAg",
+          "commentedAt": "2026-08-08T01:45:34.225Z"
         },
         "instagram": {
           "posted": false,
@@ -1513,7 +1597,10 @@
           "videoId": "Sl5c63NVp6U",
           "postedAt": "2026-04-30T13:20:48.076Z",
           "scheduledAt": "2026-04-30T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugz70hcnqGSQuJlQwrN4AaABAg",
+          "commentedAt": "2026-08-08T01:46:16.216Z"
         },
         "instagram": {
           "posted": false,
@@ -1553,7 +1640,10 @@
           "videoId": "He_rGWrGPZA",
           "postedAt": "2026-04-30T13:21:41.074Z",
           "scheduledAt": "2026-05-01T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugz-4HD-yHmGaugdjHB4AaABAg",
+          "commentedAt": "2026-08-08T01:47:05.123Z"
         },
         "instagram": {
           "posted": false,
@@ -1593,7 +1683,10 @@
           "videoId": "1JQr7q1qtsM",
           "postedAt": "2026-04-30T13:23:07.834Z",
           "scheduledAt": "2026-05-02T19:04:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "Ugxd_1m-XKfqfklbjUt4AaABAg",
+          "commentedAt": "2026-08-08T01:48:05.067Z"
         },
         "instagram": {
           "posted": false,
@@ -1633,7 +1726,10 @@
           "videoId": "6rOPgZoKDcw",
           "postedAt": "2026-04-30T13:28:32.322Z",
           "scheduledAt": "2026-04-30T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgxRAv1KO-modxTUIRF4AaABAg",
+          "commentedAt": "2026-08-08T01:48:49.979Z"
         },
         "instagram": {
           "posted": false,
@@ -1673,7 +1769,10 @@
           "videoId": "a5QzZ70a9lM",
           "postedAt": "2026-04-30T13:29:38.792Z",
           "scheduledAt": "2026-05-01T19:00:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgydNLrkcQeNcMOUbqF4AaABAg",
+          "commentedAt": "2026-08-08T01:49:28.078Z"
         },
         "instagram": {
           "posted": false,
@@ -1713,7 +1812,10 @@
           "videoId": "5rvbFV9NqXM",
           "postedAt": "2026-05-01T03:00:48.796Z",
           "scheduledAt": "2026-05-01T19:09:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgzynxvKB-79LysO_Rd4AaABAg",
+          "commentedAt": "2026-08-08T01:50:02.063Z"
         },
         "instagram": {
           "posted": false,
@@ -1753,7 +1855,10 @@
           "videoId": "rmUytsNUgJ0",
           "postedAt": "2026-05-02T01:07:23.439Z",
           "scheduledAt": "2026-05-02T19:02:00.000Z",
-          "retries": 0
+          "retries": 0,
+          "commented": true,
+          "commentId": "UgzefbEGt51xgCbJxld4AaABAg",
+          "commentedAt": "2026-08-08T01:50:58.054Z"
         },
         "instagram": {
           "posted": false,
@@ -1788,10 +1893,15 @@
       "lastRendered": "2026-05-06T03:05:54.238Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 1
+          "posted": true,
+          "url": "https://youtube.com/shorts/5CUX_1y6TfA",
+          "videoId": "5CUX_1y6TfA",
+          "postedAt": "2026-08-08T01:17:48.000Z",
+          "scheduledAt": "",
+          "retries": 0,
+          "commented": false,
+          "commentPending": true,
+          "_reconciled_manually": "2026-08-08 — upload succeeded (verified via playlistItems API) but the local upload process was killed by an operator error (piped through `head`, causing SIGPIPE) before it could call saveHistory(). This entry was hand-reconciled against YouTube's own API response, not re-derived from local state."
         },
         "instagram": {
           "posted": false,
@@ -1826,10 +1936,15 @@
       "lastRendered": "2026-05-07T01:02:57.978Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
+          "posted": true,
+          "url": "https://youtube.com/shorts/M7_S3cJ-OLM",
+          "videoId": "M7_S3cJ-OLM",
+          "postedAt": "2026-08-08T01:25:03.000Z",
+          "scheduledAt": "2026-08-08T19:00:00.000Z",
+          "retries": 0,
+          "commented": false,
+          "commentPending": true,
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
         },
         "instagram": {
           "posted": false,
@@ -1864,10 +1979,15 @@
       "lastRendered": "2026-05-08T03:03:43.403Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
+          "posted": true,
+          "url": "https://youtube.com/shorts/Nc_jUbwf0FQ",
+          "videoId": "Nc_jUbwf0FQ",
+          "postedAt": "2026-08-08T01:26:37.000Z",
+          "scheduledAt": "2026-08-09T19:00:00.000Z",
+          "retries": 0,
+          "commented": false,
+          "commentPending": true,
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
         },
         "instagram": {
           "posted": false,
@@ -1902,10 +2022,15 @@
       "lastRendered": "2026-05-09T03:03:12.286Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
+          "posted": true,
+          "url": "https://youtube.com/shorts/UjNQrl1I2Ew",
+          "videoId": "UjNQrl1I2Ew",
+          "postedAt": "2026-08-08T01:27:59.000Z",
+          "scheduledAt": "2026-08-10T19:00:00.000Z",
+          "retries": 0,
+          "commented": false,
+          "commentPending": true,
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
         },
         "instagram": {
           "posted": false,
@@ -1940,10 +2065,15 @@
       "lastRendered": "2026-05-10T03:03:08.588Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
+          "posted": true,
+          "url": "https://youtube.com/shorts/NJQXztKw4ag",
+          "videoId": "NJQXztKw4ag",
+          "postedAt": "2026-08-08T01:29:20.000Z",
+          "scheduledAt": "2026-08-11T19:00:00.000Z",
+          "retries": 0,
+          "commented": false,
+          "commentPending": true,
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
         },
         "instagram": {
           "posted": false,
@@ -1978,10 +2108,15 @@
       "lastRendered": "2026-05-13T07:00:36.932Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
+          "posted": true,
+          "url": "https://youtube.com/shorts/uR61JIDqrzk",
+          "videoId": "uR61JIDqrzk",
+          "postedAt": "2026-08-08T01:30:42.000Z",
+          "scheduledAt": "2026-08-12T19:00:00.000Z",
+          "retries": 0,
+          "commented": false,
+          "commentPending": true,
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
         },
         "instagram": {
           "posted": false,
@@ -2016,10 +2151,15 @@
       "lastRendered": "2026-05-14T01:59:26.049Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
-          "retries": 0
+          "posted": true,
+          "url": "https://youtube.com/shorts/43vDagRQ87Y",
+          "videoId": "43vDagRQ87Y",
+          "postedAt": "2026-08-08T01:32:01.000Z",
+          "scheduledAt": "2026-08-13T19:06:00.000Z",
+          "retries": 0,
+          "commented": false,
+          "commentPending": true,
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
         },
         "instagram": {
           "posted": false,
@@ -2128,6 +2268,82 @@
       "backlinks": null,
       "rendered": "2026-05-17T03:42:11.726Z",
       "lastRendered": "2026-05-17T03:42:11.727Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "insurance_life-insurance-needs-lic-rule-of-thumb-2026-calculator",
+      "title": "Life Insurance Rule of Thumb Calculator (2026)",
+      "hub": "insurance",
+      "language": "en",
+      "template": "CompareThree",
+      "themeIndex": 6,
+      "durationInFrames": 540,
+      "format": "short",
+      "hook": "This free tool is actually insane",
+      "audio": "audio/beat2.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/insurance_life-insurance-needs-lic-rule-of-thumb-2026-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/insurance_life-insurance-needs-lic-rule-of-thumb-2026-calculator.txt",
+      "youtubeTitle": "Life Insurance Rule of Thumb Calculator (2026) — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-08-08T01:23:12.622Z",
+      "lastRendered": "2026-08-08T01:23:12.623Z",
+      "platforms": {
+        "youtube": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "legal_school-bus-accident-injury-calculator",
+      "title": "School Bus Accident Injury Settlement Calculator",
+      "hub": "legal",
+      "language": "en",
+      "template": "ProofCase",
+      "themeIndex": 6,
+      "durationInFrames": 480,
+      "format": "short",
+      "hook": "This free tool is actually insane",
+      "audio": "audio/beat3.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_school-bus-accident-injury-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_school-bus-accident-injury-calculator.txt",
+      "youtubeTitle": "School Bus Accident Injury Settlement Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-08-08T01:23:12.623Z",
+      "lastRendered": "2026-08-08T01:23:12.623Z",
       "platforms": {
         "youtube": {
           "posted": false,

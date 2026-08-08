@@ -379,6 +379,116 @@ def content_activity(repo, days):
 
 
 
+# Distribution engine status — articles (distribute/history.json) + video
+# (distribute/remotion/reel-history.json). Lives only under teamzlab-tools;
+# this is a single cross-business system, not a per-SITES loop like GSC/AI.
+#
+# WHY THIS EXISTS: the nightly used to run `distribute.py list` (always exits
+# 0, proves nothing) and neither build-growth-digest.py nor
+# build-growth-watchdog.py ever read history.json at all. 72 days of
+# Published:0 went unnoticed by every monitor the owner had. Mirrors the same
+# freshness+TRIGGER idiom as kw_volume_freshness() below on purpose — same
+# "how stale, what to do about it" shape the owner already reads nightly.
+DIST_STALE_DAYS = int(os.getenv("TEAMZ_DIST_STALE_DAYS", "7"))
+DIST_HOSTS = ("dev.to", "hashnode", "blogspot", "blogger", "bsky", "bluesky", "mastodon",
+              "pinterest", "telegraph", "substack", "github", "tumblr", "medium",
+              "gitlab", "sites.google", "tiktok", "youtube", "wordpress")
+
+
+def _iso_age_days(iso_ts):
+    try:
+        ts = datetime.fromisoformat(iso_ts.replace("Z", "+00:00"))
+        if ts.tzinfo is not None:
+            ts = ts.replace(tzinfo=None)
+        return (datetime.now() - ts).total_seconds() / 86400
+    except (ValueError, AttributeError, TypeError):
+        return None
+
+
+def distribution_status():
+    """Returns a dict — never raises. A missing/unreadable file is reported
+    as its own row state, not silently skipped (same discipline as
+    kw_volume_freshness's 'no-store')."""
+    base = PROJECTS / "teamzlab-tools" / "scripts" / "distribute"
+    out = {"articles": None, "video": None, "config_enabled": []}
+
+    try:
+        history = json.loads((base / "history.json").read_text())
+        latest, plat, cnt = None, None, 0
+        for post in history.get("posts", []):
+            for p, info in (post.get("platforms") or {}).items():
+                ts = (info or {}).get("posted_at")
+                if not ts:
+                    continue
+                cnt += 1
+                a = _iso_age_days(ts)
+                if a is not None and (latest is None or a < latest):
+                    latest, plat = a, p
+        out["articles"] = {"age_days": latest, "platform": plat, "total_posts": cnt}
+    except FileNotFoundError:
+        out["articles"] = {"error": "history.json not found"}
+    except (json.JSONDecodeError, KeyError) as e:
+        out["articles"] = {"error": f"history.json unreadable: {e}"}
+
+    try:
+        reels = json.loads((base / "remotion" / "reel-history.json").read_text()).get("reels", [])
+        latest, plat, title = None, None, None
+        for reel in reels:
+            for p, info in (reel.get("platforms") or {}).items():
+                if p not in ("youtube", "tiktok") or not (info or {}).get("posted"):
+                    continue
+                ts = info.get("postedAt")
+                a = _iso_age_days(ts) if ts else None
+                if a is not None and (latest is None or a < latest):
+                    latest, plat, title = a, p, reel.get("youtubeTitle") or reel.get("title")
+        out["video"] = {"age_days": latest, "platform": plat, "last_title": title}
+    except FileNotFoundError:
+        out["video"] = {"error": "reel-history.json not found"}
+    except (json.JSONDecodeError, KeyError) as e:
+        out["video"] = {"error": f"reel-history.json unreadable: {e}"}
+
+    try:
+        cfg = json.loads((base / "config.json").read_text())
+        out["config_enabled"] = sorted(p for p, v in cfg.items()
+                                        if isinstance(v, dict) and v.get("enabled"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+
+    return out
+
+
+def distribution_ga4_outcome(days=28):
+    """What distribution actually EARNED, not just what it posted — activity
+    and outcome are different questions and conflating them is how a 72-day
+    silent failure happened in the first place. Fail-loud: GA4 unreachable
+    returns None, rendered by the caller as 'couldn't check', never a zero."""
+    prop = GA4_PROPERTY.get("teamzlab-tools")
+    if not prop:
+        return None
+    try:
+        tok = ga4_token()
+        end = date.today() - timedelta(days=3)
+        start = end - timedelta(days=days)
+        res = _ga4_report(prop, tok, {
+            "dateRanges": [{"startDate": start.isoformat(), "endDate": end.isoformat()}],
+            "dimensions": [{"name": "sessionSource"}],
+            "metrics": [{"name": "sessions"}, {"name": "totalAdRevenue"}],
+            "limit": 500,
+        })
+        rows = res.get("rows", [])
+        if not rows:
+            return None  # zero rows from a live call is ambiguous — treat as unreachable
+        sess = rev = 0.0
+        for r in rows:
+            src = r["dimensionValues"][0]["value"].lower()
+            if any(h in src for h in DIST_HOSTS):
+                sess += int(r["metricValues"][0]["value"])
+                rev += float(r["metricValues"][1]["value"])
+        return {"sessions": int(sess), "revenue": rev, "days": days}
+    except Exception:  # noqa: BLE001 — any failure here means "couldn't check"
+        return None
+
+
 # Keyword-volume freshness. Planner volume is roughly valid ~1 year; ordering stock or gating
 # SEO/GEO on year-old numbers is a real risk the owner named explicitly. WARN before it expires,
 # and treat "never pulled" as a finding, not silence. Cross-property so one digest triggers all.
@@ -532,6 +642,105 @@ def main():
     L.append("")
     L.append("_A quiet property is not necessarily a broken one: the queue skips a night when "
              "no page is close enough and no demand is unserved. Inventing work would be worse._")
+
+    # --- Distribution engine — activity AND outcome, not just "did it run" ---
+    L.append("")
+    L.append("## Distribution (articles + video)")
+    dstat = distribution_status()
+    art, vid = dstat["articles"], dstat["video"]
+    dist_triggers = []
+
+    if art and "error" in art:
+        L.append(f"- ⚠️ articles: **COULD NOT CHECK** — {art['error']} (not a zero, genuinely unknown)")
+    elif art:
+        age = art["age_days"]
+        if age is None:
+            L.append("- ⛔ articles: **NEVER published** anything")
+            dist_triggers.append("articles have never published")
+        elif age > DIST_STALE_DAYS:
+            L.append(f"- 🔴 articles: **STALE** — {age:.1f}d since last publish "
+                     f"({art['platform']}), {art['total_posts']} total posts on record")
+            dist_triggers.append(f"articles stale {age:.0f}d (last: {art['platform']})")
+        else:
+            L.append(f"- ✅ articles: {age:.1f}d ago on {art['platform']}")
+
+    if vid and "error" in vid:
+        L.append(f"- ⚠️ video: **COULD NOT CHECK** — {vid['error']} (not a zero, genuinely unknown)")
+    elif vid:
+        age = vid["age_days"]
+        if age is None:
+            L.append("- ⛔ video: **NEVER published** anything")
+            dist_triggers.append("video has never published")
+        elif age > DIST_STALE_DAYS:
+            L.append(f"- 🔴 video: **STALE** — {age:.1f}d since last upload ({vid['platform']})")
+            dist_triggers.append(f"video stale {age:.0f}d (last: {vid['platform']})")
+        else:
+            title = f' — "{vid["last_title"]}"' if vid.get("last_title") else ""
+            L.append(f"- ✅ video: {age:.1f}d ago on {vid['platform']}{title}")
+
+    L.append(f"- enabled platforms: {', '.join(dstat['config_enabled']) or '(none)'}")
+
+    outcome = distribution_ga4_outcome(28)
+    if outcome is None:
+        L.append("- outcome (28d GA4): **couldn't check** — GA4 unreachable or zero rows")
+    else:
+        rpm = (outcome["revenue"] / outcome["sessions"] * 1000) if outcome["sessions"] else 0
+        L.append(f"- outcome (28d GA4): {outcome['sessions']:,} sessions, "
+                 f"${outcome['revenue']:.2f} (${rpm:.2f}/1k) from distribution-platform referrers")
+
+    # 2-3 month value checkpoint — owner asked explicitly (2026-08-08): "after
+    # 2-3 months I would actually measure if my distribution is adding value
+    # or not." A passive trend line nobody reads isn't that — this prints an
+    # un-missable block once enough days have actually accumulated, with a
+    # verdict computed from the real numbers, not just "here's some data."
+    CHECKPOINT_DUE_DAYS = int(os.getenv("TEAMZ_DIST_CHECKPOINT_DAYS", "60"))  # ~2 months, owner's floor
+    lh = PROJECTS / "teamz-company-automation" / "data" / "distribution-leads-history.jsonl"
+    if lh.exists():
+        try:
+            snaps = [json.loads(l) for l in lh.read_text().splitlines() if l.strip()]
+            if snaps:
+                n_biz = len(snaps[-1].get("businesses", {}))
+                span = (datetime.fromisoformat(snaps[-1]["pulled_at"])
+                        - datetime.fromisoformat(snaps[0]["pulled_at"])).days
+                L.append(f"- per-business leads tracking: {len(snaps)} snapshot(s) on file"
+                         + (f", {span}d span" if span else "")
+                         + f", {n_biz} business(es) matched last pull — "
+                           "`python3 py/build-distribution-leads.py --report-only` for the full table")
+
+                if span >= CHECKPOINT_DUE_DAYS:
+                    first_sess = sum(b.get("sessions", 0) for b in snaps[0].get("businesses", {}).values())
+                    last_sess = sum(b.get("sessions", 0) for b in snaps[-1].get("businesses", {}).values())
+                    first_rev = sum(b.get("revenue", 0) for b in snaps[0].get("businesses", {}).values())
+                    last_rev = sum(b.get("revenue", 0) for b in snaps[-1].get("businesses", {}).values())
+                    if last_sess < 20 and last_rev < 1.0:
+                        verdict = ("**Kill it.** Distribution-attributed sessions/revenue are still "
+                                   "near-zero after 2+ months of the revived, ban-protected engine "
+                                   "running. Same verdict as the pre-revival baseline "
+                                   "($0.83/60d) — it did not become a real channel.")
+                    elif last_sess > first_sess * 1.5 and last_sess >= 20:
+                        verdict = (f"**Worth another cycle.** Sessions grew {first_sess} → "
+                                   f"{last_sess} over {span}d — a real trend, not noise. Keep it "
+                                   "running and re-check in another 2-3 months.")
+                    else:
+                        verdict = (f"**Marginal — owner's call.** {first_sess} → {last_sess} sessions "
+                                   f"over {span}d, ${first_rev:.2f} → ${last_rev:.2f}. Not dead, not "
+                                   "clearly proven either. Weigh against what else that cron/attention "
+                                   "budget could earn.")
+                    L.append("")
+                    L.append(f"### 📅 CHECKPOINT DUE — {span} days of distribution-leads data on file")
+                    L.append(f"- sessions: {first_sess} → {last_sess}   |   revenue: "
+                             f"${first_rev:.2f} → ${last_rev:.2f}")
+                    L.append(f"- {verdict}")
+        except (json.JSONDecodeError, KeyError, ValueError):
+            pass
+
+    if dist_triggers:
+        L.append("")
+        L.append("### 🔔 TRIGGER — distribution engine needs attention")
+        for t in dist_triggers:
+            L.append(f"- {t}")
+        L.append(f"- check: `python3 scripts/distribute/distribute.py outcome --days {DIST_STALE_DAYS}` "
+                 "(tools property) or the nightly's own health_alerts.")
 
     # --- Keyword-volume freshness — the "trigger me before it expires" section ---
     L.append("")

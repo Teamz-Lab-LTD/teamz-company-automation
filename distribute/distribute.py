@@ -30,6 +30,8 @@ Platforms: devto, hashnode, medium, blogger, wordpress, tumblr, bluesky, mastodo
 import json
 import os
 import sys
+import time
+import random
 import hashlib
 import urllib.request
 import urllib.parse
@@ -94,10 +96,36 @@ ALL_PLATFORMS = ["devto", "hashnode", "medium", "blogger", "wordpress", "tumblr"
 UTM_TAG_PLATFORMS = {"devto", "hashnode", "medium", "blogger", "wordpress", "tumblr",
                      "substack", "gitlab", "telegraph", "google_sites"}
 
-_TEAMZLAB_URL_RE = re.compile(r'https?://tool\.teamzlab\.com[^\s)\]"<>\'`]*', re.IGNORECASE)
+# FIXED 2026-08-08 — was `tool\.teamzlab\.com` only, so every article whose
+# canonical_url pointed at apps.teamzlab.com (11 app articles, and every
+# business added since) got ZERO UTM attribution: GA4 could never tell that
+# traffic apart from any other unlabeled referral. Now covers every owned
+# subdomain — extend this list, not a second regex, when a new one goes live.
+_TEAMZLAB_URL_RE = re.compile(
+    r'https?://(?:tool|apps|learn|goalkit|notracechat)\.teamzlab\.com[^\s)\]"<>\'`]*',
+    re.IGNORECASE)
+
+
+def site_url_for(canonical_url, defaults):
+    """Which of our own domains should the backlink footer point at?
+
+    FIXED 2026-08-08 — this used to always be `defaults.get("site_url")`
+    (hardcoded https://tool.teamzlab.com), so an article about DeviceGPT or
+    Hazira Khata still got a footer/backlink pointing at the tools site. Now
+    derives the footer target from the article's OWN canonical_url when it's
+    one of ours; falls back to the global default only when canonical_url is
+    empty or external (an off-site canonical, e.g. alignflow's raw Cloud Run
+    URL, still gets a sane footer rather than crashing or going blank).
+    """
+    if canonical_url:
+        parsed = urllib.parse.urlparse(canonical_url)
+        if parsed.scheme and parsed.netloc:
+            return f"{parsed.scheme}://{parsed.netloc}"
+    return defaults.get("site_url", "https://tool.teamzlab.com")
+
 
 def tag_teamzlab_urls(text, platform, campaign_slug=""):
-    """Inject UTM parameters into every tool.teamzlab.com link in text.
+    """Inject UTM parameters into every owned-domain link in text.
 
     Skips links that already carry utm_source. Preserves existing query params
     and #fragments. Campaign format: YYYY-MM[-slug] so GA4 trends by month.
@@ -158,8 +186,16 @@ PLATFORM_LIMITS = {
 }
 
 # Localized footer text — article language should match tool language
+# EN carries most of the volume, so it's the one that needs variants —
+# added 2026-08-08 alongside the jitter/stagger fixes: an identical footer
+# string on every single post is the same "looks automated" fingerprint as
+# posting at the same minute every time, just in the body instead of the
+# clock. The LINK itself is never varied or dropped — the backlink is the
+# one thing distribution has actually proven to deliver (3 real dofollow
+# domains), only the surrounding phrasing rotates.
 LOCALIZED_FOOTERS = {
-    "en": "Originally published at",
+    "en": ["Originally published at", "First published at", "You can also read this at",
+           "This article also lives at", "Cross-posted from"],
     "de": "Ursprünglich veröffentlicht auf",
     "nl": "Oorspronkelijk gepubliceerd op",
     "fr": "Publié à l'origine sur",
@@ -178,6 +214,17 @@ LOCALIZED_FOOTERS = {
     "vi": "Được xuất bản lần đầu tại",
 }
 
+
+def pick_footer_text(language):
+    """LOCALIZED_FOOTERS values are either a list of variants (currently just
+    "en") or a single legacy string — handles both so adding variants to
+    another language later doesn't need a second code path."""
+    entry = LOCALIZED_FOOTERS.get(language, LOCALIZED_FOOTERS["en"])
+    if isinstance(entry, list):
+        return random.choice(entry)
+    return entry
+
+
 # SSL context for HTTPS requests
 SSL_CTX = ssl.create_default_context()
 
@@ -193,6 +240,82 @@ def load_config():
         sys.exit(1)
     with open(CONFIG_FILE) as f:
         return json.load(f)
+
+
+def save_config(config):
+    """Writes config.json — used only by the ban tripwire below (auto-disable)
+    and cmd_setup. Every other write to this file in this repo's history has
+    been a human hand-editing it; keep it that way for everything except the
+    one automated, narrowly-scoped case this exists for."""
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+
+# HTTP status codes that mean "this account is gone/blocked", not "transient
+# network hiccup, try again." Matched against the error STRING each post_*
+# function already returns (they all format failures as "HTTP <code>: ...").
+# Deliberately narrow — 5xx, timeouts, and DNS errors must NOT count toward
+# this, or a bad night for a platform's OWN servers looks identical to a ban
+# and disables a perfectly fine account.
+_BAN_SHAPED_CODES = ("401", "403", "410")
+
+
+def is_ban_shaped_error(error):
+    if not error:
+        return False
+    return any(f"HTTP {code}" in error for code in _BAN_SHAPED_CODES)
+
+
+def check_ban_tripwire(config, platform, success, error=None, threshold=3):
+    """Auto-disable a platform after `threshold` CONSECUTIVE ban-shaped
+    failures (401/403/410) in a row — the mechanism that would have caught
+    mastodon/dev.to going dark on 2026-05-28 automatically instead of running
+    broken for 72 days undetected. Mutates `config` in place; caller is
+    responsible for save_config(config) after.
+
+    Returns True the run this function newly disables a platform (so the
+    caller can print a ✗-prefixed line the nightly's health-alert regex will
+    catch), False otherwise — including when the platform was already
+    disabled or this failure didn't cross the threshold.
+
+    A single success resets the counter to 0: this tracks CONSECUTIVE
+    failures, not lifetime failures — a platform having one bad day a month
+    ago should not count against it today.
+    """
+    if platform not in config or not isinstance(config[platform], dict):
+        return False
+    cfg = config[platform]
+
+    if success:
+        if cfg.get("_consecutive_ban_failures"):
+            cfg["_consecutive_ban_failures"] = 0
+        return False
+
+    if not is_ban_shaped_error(error):
+        return False  # a 5xx/timeout/etc. — don't let transient noise trip this
+
+    cfg["_consecutive_ban_failures"] = cfg.get("_consecutive_ban_failures", 0) + 1
+    cfg["_last_ban_failure_at"] = datetime.now(timezone.utc).isoformat()
+    cfg["_last_ban_failure_error"] = str(error)[:200]
+
+    if cfg["_consecutive_ban_failures"] >= threshold and cfg.get("enabled"):
+        cfg["enabled"] = False
+        cfg["_disabled_at"] = date_today_str()
+        cfg["_disabled_reason"] = (
+            f"AUTO-DISABLED by the ban tripwire: {threshold} consecutive "
+            f"ban-shaped failures (401/403/410). Last error: {str(error)[:200]}. "
+            "This is the automated version of what caught mastodon/dev.to by "
+            "hand on 2026-08-08, 72 days after they actually died. Re-enabling "
+            "needs a human to confirm the account is actually alive again — "
+            "clear _consecutive_ban_failures and set enabled=true once verified."
+        )
+        return True
+    return False
+
+
+def date_today_str():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
 def load_history():
@@ -910,19 +1033,32 @@ def post_bluesky(config, title, body, tags, canonical_url):
     did = session.get("did")
     access_jwt = session.get("accessJwt")
 
-    # Create post text with link
-    text = f"{title}\n\n"
+    # Create post text with link.
+    # FIXED 2026-08-08 — the old order built title+summary+url+hashtags THEN
+    # crudely truncated the whole string to 297 chars. If title+summary alone
+    # ran long, that truncation could slice canonical_url in half or drop it
+    # past the cut — "canonical_url in text" then failed below, so the
+    # app.bsky.richtext.facet#link was silently never built. Verified live:
+    # bluesky posts were shipping with the URL as dead plain text, no
+    # clickable link, no facet, no embed card driving clicks. Fixed by
+    # reserving room for the URL + hashtags FIRST and fitting title+summary
+    # into whatever's left — the URL now always survives; the summary is
+    # what gets trimmed if something has to give.
+    tail = ""
+    if canonical_url:
+        tail += f"\n\n{canonical_url}"
+    if tags:
+        tail += "\n\n" + " ".join(f"#{t.replace(' ', '')}" for t in tags[:5])
+
+    budget = max(300 - len(tail), 0)
+    head = title
     summary = truncate(body.split("\n")[0] if body else "", 200)
     if summary:
-        text += f"{summary}\n\n"
-    if canonical_url:
-        text += canonical_url
-    if tags:
-        text += "\n\n" + " ".join(f"#{t.replace(' ', '')}" for t in tags[:5])
+        head += f"\n\n{summary}"
+    if len(head) > budget:
+        head = (head[:budget - 3] + "...") if budget > 3 else head[:budget]
 
-    # Truncate to 300 chars (Bluesky limit)
-    if len(text) > 300:
-        text = text[:297] + "..."
+    text = head + tail
 
     # Build facets for link detection
     facets = []
@@ -1126,13 +1262,22 @@ def post_gitlab(config, title, body, tags, canonical_url):
         return None, "No GitLab access_token"
 
     try:
-        # Add footer link to body
-        body_with_link = body + "\n\n---\n\n*Originally published at [tool.teamzlab.com](https://tool.teamzlab.com)*"
+        # FIXED 2026-08-08 — was hardcoded to tool.teamzlab.com regardless of
+        # what the article was actually about; derives from the article's own
+        # canonical_url now (falls back to the config default when empty).
+        # Also UTM-tags the footer link itself — the body passed in here is
+        # already UTM-tagged for IN-BODY links (cmd_post/cmd_flush do that
+        # before calling this function), but this footer is built fresh
+        # afterward, so without this line it would ship untagged forever.
+        site_url = tag_teamzlab_urls(
+            site_url_for(canonical_url, config.get("defaults", {})), "gitlab",
+            re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-'))
+        body_with_link = body + f"\n\n---\n\n*Originally published at [{site_url}]({site_url})*"
 
         slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
         payload = json.dumps({
             "title": title,
-            "description": f"Free browser-based tools — no signup, 100% private. Visit https://tool.teamzlab.com",
+            "description": f"Free browser-based tools — no signup, 100% private. Visit {site_url}",
             "visibility": "public",
             "files": [{
                 "file_path": f"{slug}.md",
@@ -1269,11 +1414,18 @@ def post_substack(config, title, body, tags, canonical_url):
                         all_chunks.append({'content': '\n'})
                 post.add({'type': 'paragraph', 'content': all_chunks})
 
-        # Add footer with link
+        # Add footer with link — FIXED 2026-08-08, was hardcoded to
+        # tool.teamzlab.com regardless of the article's actual business.
+        # Also UTM-tagged (see the matching post_gitlab comment for why the
+        # footer needs its own tagging call, separate from the body's).
+        site_url = tag_teamzlab_urls(
+            site_url_for(canonical_url, config.get("defaults", {})), "substack",
+            re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-'))
+        site_label = urllib.parse.urlparse(site_url).netloc or site_url
         post.add({'type': 'horizontal_rule'})
         post.add({'type': 'paragraph', 'content': [
             {'content': 'Originally published at '},
-            {'content': 'tool.teamzlab.com', 'marks': [{'type': 'link', 'href': 'https://tool.teamzlab.com'}]}
+            {'content': site_label, 'marks': [{'type': 'link', 'href': site_url}]}
         ]})
 
         # Create and publish
@@ -2041,9 +2193,10 @@ def cmd_post(title, filepath, platforms):
     print(f"  Platforms: {', '.join(platforms)}")
     print(f"{'=' * 60}\n")
 
-    # Add localized backlink footer to body
-    site_url = defaults.get("site_url", "https://tool.teamzlab.com")
-    footer_text = LOCALIZED_FOOTERS.get(language, LOCALIZED_FOOTERS["en"])
+    # Add localized backlink footer to body — points at THIS article's own
+    # business (derived from canonical_url), not always tool.teamzlab.com.
+    site_url = site_url_for(canonical_url, defaults)
+    footer_text = pick_footer_text(language)
     body_with_footer = body + f"\n\n---\n\n*{footer_text} [{site_url}]({site_url})*"
 
     # Find or create history entry for this slug
@@ -2083,6 +2236,7 @@ def cmd_post(title, filepath, platforms):
     }
 
     results = {}
+    posted_count = 0  # real network posts made so far THIS call — drives the stagger below
     for platform in platforms:
         if platform not in platform_funcs:
             print(f"  [{platform}] SKIP — unknown platform")
@@ -2119,6 +2273,18 @@ def cmd_post(title, filepath, platforms):
             # Safe but with warning
             print(f"  [{platform}] {reason}")
 
+        # STAGGER — added 2026-08-08. Before this, cmd_next handing safe_platforms
+        # straight to cmd_post meant every enabled platform got hit within the
+        # same second: the same article, same links, 6+ networks, one tight loop.
+        # That specific shape (fast fan-out, identical content, identical domain)
+        # is named directly in the config.json _disabled_reason for both banned
+        # accounts. Skips the wait before the FIRST real post — only spaces out
+        # platform N+1 from platform N.
+        if posted_count > 0:
+            wait_s = random.uniform(120, 480)  # 2-8 min between platforms
+            print(f"  [{platform}] waiting {wait_s:.0f}s before posting (anti-fanout stagger)...")
+            time.sleep(wait_s)
+
         print(f"  [{platform}] Posting...", end=" ", flush=True)
 
         # UTM-tag outbound teamzlab.com links so GA4 attributes this platform's
@@ -2142,6 +2308,8 @@ def cmd_post(title, filepath, platforms):
         else:
             url, error = platform_funcs[platform](config, title, tagged_body_with_footer, tags, tagged_canonical)
 
+        posted_count += 1  # a real network call was made, regardless of outcome below
+
         if url:
             print(f"OK — {url}")
             entry["platforms"][platform] = {
@@ -2150,10 +2318,15 @@ def cmd_post(title, filepath, platforms):
                 "status": "published"
             }
             results[platform] = {"status": "published", "url": url}
+            check_ban_tripwire(config, platform, success=True)
         else:
             print(f"FAILED — {error}")
             results[platform] = {"status": "failed", "error": error}
+            if check_ban_tripwire(config, platform, success=False, error=error):
+                print(f"  ✗ AUTO-DISABLED {platform} — {config[platform]['_consecutive_ban_failures']} "
+                      f"consecutive ban-shaped failures. See config.json for details.")
 
+    save_config(config)
     save_history(history)
 
     # Summary
@@ -2514,8 +2687,8 @@ def cmd_flush(clear_only=False):
         language = meta.get("language", meta.get("lang", "en"))
 
         defaults = config.get("defaults", {})
-        site_url = defaults.get("site_url", "https://tool.teamzlab.com")
-        footer_text = LOCALIZED_FOOTERS.get(language, LOCALIZED_FOOTERS["en"])
+        site_url = site_url_for(canonical_url, defaults)
+        footer_text = pick_footer_text(language)
         body_with_footer = body + f"\n\n---\n\n*{footer_text} [{site_url}]({site_url})*"
 
         # Post it
@@ -2532,11 +2705,23 @@ def cmd_flush(clear_only=False):
         if platform not in platform_funcs:
             continue
 
+        # FIXED 2026-08-08 — cmd_flush published UNTAGGED bodies: the UTM
+        # injection cmd_post does (tag_teamzlab_urls) was never mirrored here,
+        # so anything that went through the safety queue (rate-limited, then
+        # posted later via `flush`) lost GA4 attribution entirely and read as
+        # unlabeled Direct/Referral traffic forever.
+        if platform in UTM_TAG_PLATFORMS:
+            tagged_body = tag_teamzlab_urls(body, platform, slug)
+            tagged_body_with_footer = tag_teamzlab_urls(body_with_footer, platform, slug)
+        else:
+            tagged_body = body
+            tagged_body_with_footer = body_with_footer
+
         print(f"  [{platform}] {title[:40]}... posting...", end=" ", flush=True)
         if platform in ("telegraph", "substack", "gitlab", "google_sites"):
-            url, error = platform_funcs[platform](config, title, body, tags, canonical_url)
+            url, error = platform_funcs[platform](config, title, tagged_body, tags, canonical_url)
         else:
-            url, error = platform_funcs[platform](config, title, body_with_footer, tags, canonical_url)
+            url, error = platform_funcs[platform](config, title, tagged_body_with_footer, tags, canonical_url)
 
         if url:
             print(f"OK — {url}")
@@ -2561,10 +2746,15 @@ def cmd_flush(clear_only=False):
             }
             item["status"] = "done"
             flushed += 1
+            check_ban_tripwire(config, platform, success=True)
         else:
             print(f"FAILED — {error}")
             item["status"] = "error"
+            if check_ban_tripwire(config, platform, success=False, error=error):
+                print(f"  ✗ AUTO-DISABLED {platform} — {config[platform]['_consecutive_ban_failures']} "
+                      f"consecutive ban-shaped failures. See config.json for details.")
 
+    save_config(config)
     save_history(history)
     save_queue(queue)
 
@@ -3238,6 +3428,123 @@ def cmd_delete(slug, platforms):
     save_history(history)
 
 
+def cmd_outcome(days=7, json_out=False):
+    """
+    Outcome check, not an activity check. Replaces the nightly's old
+    `distribute.py list` call, which only proved the command could run —
+    `list` always exits 0 whether or not anything was ever published, which
+    is exactly how 72 days of Published:0 went unnoticed by three separate
+    monitors (nightly-build.sh, build-growth-digest.py, build-growth-watchdog.py
+    — none of them read this file).
+
+    Reads REAL published-at timestamps from history.json (articles) and
+    reel-history.json (video) and asks one question: has ANYTHING actually
+    gone out in the last N days? Prints a `✗ ` line on staleness — that
+    exact prefix is what nightly-build.sh's extract_health_issue() regex
+    (sh/nightly-build.sh:187-189) already scans for, so this wires into the
+    existing health_alerts pipeline with zero new plumbing on that side.
+
+    Exit code: 0 = something published within `days`. 1 = stale (nothing
+    published) OR every platform in config.json is currently disabled — a
+    fully-disabled config is functionally the same as a dead engine and
+    should alarm the same way, not read as "healthy, just quiet."
+    """
+    history = load_history()
+    config = load_config()
+    now = datetime.now(timezone.utc)
+
+    def age_days(iso_ts):
+        try:
+            ts = datetime.fromisoformat(iso_ts.replace("Z", "+00:00"))
+            if ts.tzinfo is None:
+                ts = ts.replace(tzinfo=timezone.utc)
+            return (now - ts).total_seconds() / 86400
+        except (ValueError, AttributeError):
+            return None
+
+    # Articles: newest posted_at across every platform of every post.
+    article_latest, article_platform = None, None
+    for post in history.get("posts", []):
+        for plat, info in (post.get("platforms") or {}).items():
+            ts = (info or {}).get("posted_at")
+            if ts:
+                a = age_days(ts)
+                if a is not None and (article_latest is None or a < article_latest):
+                    article_latest, article_platform = a, plat
+
+    # Video: newest postedAt across youtube/tiktok in reel-history.json.
+    # Separate file, separate failure domain — a broken read here must not
+    # silently zero out the article result above.
+    video_latest, video_platform, video_error = None, None, None
+    reel_history_path = SCRIPT_DIR / "remotion" / "reel-history.json"
+    try:
+        reels = json.loads(reel_history_path.read_text()).get("reels", [])
+        for reel in reels:
+            for plat, info in (reel.get("platforms") or {}).items():
+                if plat not in ("youtube", "tiktok") or not (info or {}).get("posted"):
+                    continue
+                ts = info.get("postedAt")
+                if ts:
+                    a = age_days(ts)
+                    if a is not None and (video_latest is None or a < video_latest):
+                        video_latest, video_platform = a, plat
+    except FileNotFoundError:
+        video_error = f"reel-history.json not found at {reel_history_path}"
+    except (json.JSONDecodeError, KeyError, AttributeError) as e:
+        video_error = f"reel-history.json unreadable: {e}"
+
+    enabled_platforms = [p for p in ALL_PLATFORMS if config.get(p, {}).get("enabled")]
+
+    result = {
+        "days_window": days,
+        "article": {
+            "age_days": round(article_latest, 1) if article_latest is not None else None,
+            "platform": article_platform,
+            "stale": article_latest is None or article_latest > days,
+        },
+        "video": {
+            "age_days": round(video_latest, 1) if video_latest is not None else None,
+            "platform": video_platform,
+            "stale": video_error is None and (video_latest is None or video_latest > days),
+            "error": video_error,
+        },
+        "enabled_platforms": enabled_platforms,
+        "all_disabled": len(enabled_platforms) == 0,
+    }
+    overall_stale = result["article"]["stale"] and (result["video"]["error"] or result["video"]["stale"])
+    result["ok"] = not overall_stale and not result["all_disabled"]
+
+    if json_out:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"\n  Distribution outcome check — last {days}d\n")
+        if result["article"]["stale"]:
+            if article_latest is None:
+                print("  ✗ articles: NEVER published anything")
+            else:
+                print(f"  ✗ articles: stale — {article_latest:.1f}d since last publish ({article_platform})")
+        else:
+            print(f"  ✓ articles: {article_latest:.1f}d ago on {article_platform}")
+
+        if result["video"]["error"]:
+            print(f"  ⚠ video: COULD NOT CHECK — {video_error} (not a zero — genuinely unknown)")
+        elif result["video"]["stale"]:
+            if video_latest is None:
+                print("  ✗ video: NEVER published anything")
+            else:
+                print(f"  ✗ video: stale — {video_latest:.1f}d since last publish ({video_platform})")
+        else:
+            print(f"  ✓ video: {video_latest:.1f}d ago on {video_platform}")
+
+        if result["all_disabled"]:
+            print("  ✗ ALL platforms disabled in config.json — engine is fully off, not just quiet")
+        else:
+            print(f"  enabled platforms: {', '.join(enabled_platforms)}")
+        print()
+
+    sys.exit(0 if result["ok"] else 1)
+
+
 def cmd_list(platform=None):
     """List all posts, optionally filtered by platform."""
     config = load_config()
@@ -3421,9 +3728,17 @@ def main():
                 target_slug = sys.argv[i + 1]
         cmd_next(count, target_slug)
 
+    elif command == "outcome":
+        days = 7
+        json_out = "--json" in sys.argv[2:]
+        for i, arg in enumerate(sys.argv[2:], 2):
+            if arg == "--days" and i + 1 < len(sys.argv):
+                days = int(sys.argv[i + 1])
+        cmd_outcome(days, json_out)
+
     else:
         print(f"  Unknown command: {command}")
-        print(f"  Available: post, edit, delete, list, status, test, setup, safety, queue, flush, draft, drafts, next")
+        print(f"  Available: post, edit, delete, list, status, test, setup, safety, queue, flush, draft, drafts, next, outcome")
         sys.exit(1)
 
 

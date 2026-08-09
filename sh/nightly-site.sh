@@ -371,8 +371,22 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
       #      claude was never killed, the exact zombie the watchdog exists to prevent.
       # Output is printed (indented) after the run; under launchd (file redirect) live-vs-buffered
       # is invisible, and correct exit capture is worth it.
+      #
+      # 2026-08-10: that "live-vs-buffered is invisible [so it doesn't matter]" call was wrong —
+      # proven on the tools property's twin of this watchdog (nightly-build.sh): a killed run's
+      # output showed ZERO lines for the entire wall, even though a same-night SUCCESSFUL run
+      # streamed visible progress throughout. Default text output-format fully-buffers when
+      # stdout isn't a TTY (piped/backgrounded, exactly this setup) — every past timeout here was
+      # therefore a black box too, no way to tell "hung on one tool" from "did real work that
+      # never flushed before the kill". Switched to --output-format stream-json
+      # --include-partial-messages (verified this flushes per-event to a plain file, same as the
+      # tools fix) + a jq render pass so the printed output stays human-readable, and the LAST
+      # tool call before a kill is captured into LAST_TOOL_CALL (a global, since $AGENT_OUT gets
+      # rm'd by the caller before the timeout case statement reads it).
+      LAST_TOOL_CALL=""
       _run_content_agent() {
-        claude --print --verbose --dangerously-skip-permissions \
+        claude --print --verbose --output-format stream-json --include-partial-messages \
+               --dangerously-skip-permissions \
                --model "$CONTENT_MODEL" -p "$(cat "$CONTENT_PROMPT")" > "$AGENT_OUT" 2>&1 &
         AGENT_PID=$!
         # `set -m` gives the watchdog subshell its OWN process group so cancelling it takes its
@@ -385,7 +399,21 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
         wait "$AGENT_PID"; AGENT_EXIT=$?
         kill -- "-$WD_PID" 2>/dev/null || kill "$WD_PID" 2>/dev/null   # group first, subshell as fallback
         wait "$WD_PID" 2>/dev/null
-        sed 's/^/  /' "$AGENT_OUT"
+        if command -v jq >/dev/null 2>&1 && [ -s "$AGENT_OUT" ]; then
+          jq -r '
+            if .type == "assistant" then
+              (.message.content[]? |
+                if .type == "tool_use" then "  [tool] " + .name + " " + ((.input // {}) | tostring | .[0:150])
+                elif .type == "text" and (.text // "") != "" then "  " + .text
+                else empty end)
+            elif .type == "result" then
+              "  [agent finished] " + (.result // .subtype // "no result text")
+            else empty end
+          ' "$AGENT_OUT" 2>/dev/null || sed 's/^/  /' "$AGENT_OUT"
+          LAST_TOOL_CALL="$(jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name' "$AGENT_OUT" 2>/dev/null | tail -1)"
+        else
+          sed 's/^/  /' "$AGENT_OUT"
+        fi
       }
 
       HEAD_BEFORE="$(git rev-parse HEAD 2>/dev/null)"
@@ -410,6 +438,9 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
                  echo "  ✓ content agent finished" ;;
         143|137) CONTENT_STATUS="failed:timeout"
                  echo "  ✗ content agent TIMED OUT (>${AGENT_MAX_SECONDS}s) — killed to prevent a zombie. Next run retries fresh."
+                 if [ -n "$LAST_TOOL_CALL" ]; then
+                   echo "  Last tool call before kill: $LAST_TOOL_CALL — likely where it hung."
+                 fi
                  osascript -e "display notification \"Content agent TIMED OUT on $LABEL\" with title \"Teamz Content\" sound name \"Basso\"" 2>/dev/null ;;
         *)       CONTENT_STATUS="failed:exit-$AGENT_EXIT"
                  echo "  ✗ content agent failed (exit $AGENT_EXIT) even after retry — build+deploy continue with whatever it committed."

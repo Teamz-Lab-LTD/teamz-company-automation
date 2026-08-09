@@ -720,7 +720,24 @@ else
     # 10 of ~62 July runs produced zero enhancements for a dirty tree. Diffing against this
     # baseline lets the cleanup below touch ONLY what the agent dirtied, never the owner's WIP.
     AGENT_PRE_DIRTY="$(git status --porcelain --ignore-submodules 2>/dev/null | awk '{print $2}' | sort)"
-    claude --print --verbose --dangerously-skip-permissions --model "$BUILD_MODEL" -p "$(cat "$PROMPT_FILE")" 2>&1 &
+    # 2026-08-10: was `claude --print --verbose ... 2>&1 &` writing straight into the log.
+    # Default text output-format is fully-buffered when stdout isn't a TTY (piped+backgrounded,
+    # exactly this case) — verified: a killed run showed ZERO lines of output for the entire
+    # 3600s before SIGTERM, even though the same command produces visible streaming output when
+    # run interactively. That means every past timeout was a black box — no way to tell "hung
+    # on one tool for an hour" from "made real progress that never got flushed". Switching to
+    # --output-format stream-json --include-partial-messages: verified this DOES flush per-event
+    # to a plain file redirect (no pipe needed, so kill still targets the real claude PID below —
+    # piping through a formatter here would background the PIPELINE and $! would be the
+    # formatter's PID, killing the wrong process and leaving claude itself to zombie). Raw
+    # NDJSON goes to AGENT_RAW_LOG; a readable summary is rendered from it after the wait below,
+    # for BOTH the normal-finish and the timeout case.
+    AGENT_RAW_LOG="$PROJECT_DIR/logs/last-agent-stream.ndjson"
+    mkdir -p "$(dirname "$AGENT_RAW_LOG")"
+    : > "$AGENT_RAW_LOG"
+    claude --print --verbose --output-format stream-json --include-partial-messages \
+        --dangerously-skip-permissions --model "$BUILD_MODEL" -p "$(cat "$PROMPT_FILE")" \
+        > "$AGENT_RAW_LOG" 2>&1 &
     AGENT_PID=$!
     ( sleep "$AGENT_MAX_SECONDS"; kill -TERM "$AGENT_PID" 2>/dev/null; sleep 60; kill -KILL "$AGENT_PID" 2>/dev/null ) &
     AGENT_WATCHDOG_PID=$!
@@ -728,9 +745,33 @@ else
     BUILD_EXIT=$?
     kill "$AGENT_WATCHDOG_PID" 2>/dev/null
     wait "$AGENT_WATCHDOG_PID" 2>/dev/null
+
+    # Render the raw stream into readable lines (tool calls + text + final result), regardless
+    # of how the agent ended — a killed run shows exactly what it was doing when the wall hit.
+    if has_command jq && [ -s "$AGENT_RAW_LOG" ]; then
+        jq -r '
+          if .type == "assistant" then
+            (.message.content[]? |
+              if .type == "tool_use" then "  [tool] " + .name + " " + ((.input // {}) | tostring | .[0:150])
+              elif .type == "text" and (.text // "") != "" then "  " + .text
+              else empty end)
+          elif .type == "result" then
+            "  [agent finished] " + (.result // .subtype // "no result text")
+          else empty end
+        ' "$AGENT_RAW_LOG" 2>/dev/null || echo "  (stream render failed — raw NDJSON at $AGENT_RAW_LOG)"
+    fi
+
     if [ "$BUILD_EXIT" -eq 143 ] || [ "$BUILD_EXIT" -eq 137 ]; then
         echo "  ✗ Claude agent TIMED OUT (>${AGENT_MAX_SECONDS}s) — killed to prevent zombie. Next run retries fresh."
-        record_health_alert "Claude agent timed out (${AGENT_MAX_SECONDS}s) — killed to prevent zombie"
+        # Last tool call before the kill = where it actually hung. This is the line that was
+        # impossible to know before this fix.
+        LAST_TOOL="$(has_command jq && jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name' "$AGENT_RAW_LOG" 2>/dev/null | tail -1)"
+        if [ -n "$LAST_TOOL" ]; then
+            echo "  Last tool call before kill: $LAST_TOOL — likely where it hung."
+            record_health_alert "Claude agent timed out (${AGENT_MAX_SECONDS}s), stuck in: $LAST_TOOL"
+        else
+            record_health_alert "Claude agent timed out (${AGENT_MAX_SECONDS}s) — killed to prevent zombie"
+        fi
         osascript -e "display notification \"Claude agent TIMED OUT, killed to avoid zombie. Next run retries.\" with title \"Teamz Build TIMEOUT\" sound name \"Basso\"" 2>/dev/null
 
         # Unblock the NEXT run. The agent commits each page as it finishes, so anything left

@@ -68,7 +68,10 @@ def money_pages():
         if not slug or not url:
             continue
         last = slug.split("/")[-1].replace("-", " ")
-        hub = slug.split("/")[0]
+        # 2026-08-10: was `hub = slug.split("/")[0]`, wrong whenever slug has no "/" (the
+        # normal case) — silently misclassified 702 pages into niche="productivity". Use the
+        # real hub tools.json already carries. See revenue_priority.py's 2026-08-10 note.
+        hub = t.get("hub") or rp.hub_for(slug, HOST)
         niche = rp.niche_for(hub, slug, t.get("title", ""))
         hit = kvm.manual_lookup(mv, last)
         vol = hit["vol"] if hit and hit["vol"] is not None else 0   # blank Planner cell = unknown

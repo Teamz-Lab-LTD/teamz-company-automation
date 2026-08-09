@@ -883,8 +883,12 @@ def main():
         # Carry the measured signal to candidates that have no traffic of their own: the
         # median real RPM of this site's pages in the same niche. See calibrated_niche_rpm()
         # — the published benchmarks overrate every commercial niche 2-5x for a TOOLS site.
+        # 2026-08-10: was `s.strip('/').split('/')[0]` as hub — wrong whenever slug has no "/"
+        # (the normal case), silently mispriced 702 pages to niche="productivity" ($6.5 RPM).
+        # rp.hub_for() reads tools.json's real hub field instead. See revenue_priority.py's
+        # 2026-08-10 note for the full story.
         _niche_rpm = _rs.calibrated_niche_rpm(
-            _measured, lambda s: _rp.niche_for(s.strip('/').split('/')[0], s, ''))
+            _measured, lambda s: _rp.niche_for(_rp.hub_for(s, host_root), s, ''))
         if _niche_rpm:
             print(f"[enhance-queue] revenue: {len(_niche_rpm)} niche(s) re-priced from this "
                   f"site's own earnings: "
@@ -892,7 +896,7 @@ def main():
 
         _src_counts = {}
         for c in by_slug.values():
-            hub = c['slug'].strip('/').split('/')[0]
+            hub = _rp.hub_for(c['slug'], host_root)
             ed = _rp.expected_dollars(c['slug'], hub, c.get('title', ''),
                                       visitors_mo=1000, serp_winnability=6)
             c['niche'] = ed['niche']

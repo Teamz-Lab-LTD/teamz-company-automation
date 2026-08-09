@@ -270,7 +270,21 @@ def main():
             stores.append("iOS")
         if e.get("web_url"):
             stores.append("web")
-        print(f"  {'✓' if e.get('enabled') else '✗':1} {e['slug']:<28} [{e['type']:<5}] "
+        # 2026-08-10: was bare '✗' for every disabled business. nightly-build.sh's
+        # extract_health_issue greps ANY '✗ ' as a health alert — which meant alignflow
+        # (deliberately disabled 2026-08-08, documented in _disabled_reason, meant to STAY off
+        # indefinitely) tripped a false "problem" alert every single night. A business with a
+        # documented _disabled_reason is a known, intentional state, not a fresh issue — use a
+        # marker extract_health_issue doesn't match. A business disabled WITHOUT a documented
+        # reason (shouldn't normally happen, but if it does) keeps the real '✗' so it still
+        # alerts — that one actually IS worth a human looking at.
+        if e.get("enabled"):
+            mark = "✓"
+        elif e.get("_disabled_reason"):
+            mark = "○"   # known + documented — informational only, not a health alert
+        else:
+            mark = "✗"   # disabled with no reason on file — genuinely worth flagging
+        print(f"  {mark:1} {e['slug']:<28} [{e['type']:<5}] "
               f"{','.join(stores) or '(no store link)':<14} geo={e.get('geo')}")
 
     if args.dry_run:

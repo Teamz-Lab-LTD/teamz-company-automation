@@ -249,9 +249,25 @@ withLock(async () => {
     }
     if (!res.ok) {
       failed++;
-      console.log(`  FAILED: HTTP ${res.status} — ${String(res.body).slice(0, 180)}`);
+      // 2026-08-10: was `String(res.body).slice(0, 180)` — YouTube's error body is pretty-
+      // printed JSON with real newlines, so the 180-char slice still wrapped onto multiple
+      // physical lines. nightly-build.sh's extract_health_issue uses `grep -m1` (first LINE
+      // only), so the health alert only ever showed "FAILED: HTTP 403 — {" — indistinguishable
+      // from a real auth failure even when the actual reason was ordinary rate-limiting.
+      // Pull the real reason out and put it on the SAME line as "FAILED", so it survives.
+      let reason = "unknown";
+      try {
+        const parsed = JSON.parse(res.body);
+        reason = parsed?.error?.errors?.[0]?.reason || parsed?.error?.status || "unknown";
+      } catch (e) { /* body wasn't JSON — reason stays "unknown" */ }
+      console.log(`  FAILED: HTTP ${res.status} reason=${reason} — ${String(res.body).replace(/\s+/g, " ").slice(0, 180)}`);
       if (res.status === 401 || res.status === 403) {
-        console.log(`\n  STOPPING. Scope or auth issue. Re-auth: python3 scripts/distribute/youtube-auth.py\n`);
+        // quotaExceeded/rateLimitExceeded/userRateLimitExceeded = temporary, retry later, NOT
+        // an auth problem — only actually re-auth for real scope/permission reasons.
+        const isRateLimit = /quota|rate.?limit/i.test(reason);
+        console.log(isRateLimit
+          ? `\n  STOPPING. Rate-limited (reason=${reason}), not an auth problem — retry on a later run.\n`
+          : `\n  STOPPING. Scope or auth issue (reason=${reason}). Re-auth: python3 scripts/distribute/youtube-auth.py\n`);
         break;
       }
       console.log();

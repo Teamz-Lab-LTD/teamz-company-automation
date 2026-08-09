@@ -515,6 +515,57 @@ def kw_volume_freshness(repo):
     return ("fresh", age, len(results))
 
 
+FRESHNESS_STALE_HOURS = 36   # nightly runs daily; >36h means it did not run last night
+
+
+def freshness_and_deadlines():
+    """(state, checked_at, issues, events) for the tools property.
+
+    Why this exists: build-data-freshness.py already watches every dated asset —
+    season kickoffs, stale feeds, year-stamped titles, open build windows — and on
+    2026-08-08 it correctly reported that the NFL fantasy-draft window was open and
+    still 'planned'. It printed that into a nightly log among hundreds of lines and
+    nobody saw it. The check was never the missing piece; visibility was.
+
+    state is one of green / issues / STALE / unreadable / missing. 'missing' and
+    'unreadable' must never render as green — an unread sentinel and a passing one
+    look identical only to a monitor that lies.
+    """
+    base = PROJECTS / "teamzlab-tools" / "data"
+    status_file = base / "freshness-status.json"
+    events = []
+    cal = base / "event-calendar.json"
+    if cal.exists():
+        try:
+            raw = json.loads(cal.read_text())
+            for ev in (raw if isinstance(raw, list) else raw.get("events", [])):
+                ds = (ev.get("date") or ev.get("start") or "")[:10]
+                try:
+                    dd = datetime.fromisoformat(ds).date()
+                except ValueError:
+                    continue
+                days = (dd - datetime.now().date()).days
+                if 0 <= days <= 120:
+                    events.append((days, dd, ev.get("name") or ev.get("event") or "?",
+                                   ev.get("status", "?")))
+            events.sort()
+        except (ValueError, OSError):
+            events = None   # distinct from [] — [] means "none due", None means "couldn't read"
+
+    if not status_file.exists():
+        return ("missing", None, [], events)
+    try:
+        d = json.loads(status_file.read_text())
+    except (ValueError, OSError):
+        return ("unreadable", None, [], events)
+    checked = d.get("checked_at", "")
+    age_d = _iso_age_days(checked)
+    if age_d is not None and age_d * 24 > FRESHNESS_STALE_HOURS:
+        return ("STALE", checked, d.get("issues", []), events)
+    return ("issues" if d.get("issue_count") else "green", checked,
+            d.get("issues", []), events)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int, default=28)
@@ -770,6 +821,44 @@ def main():
         for prop, state, age in triggers:
             L.append(f"- **{prop}** — {state}, {age} days old. Re-pull before you order stock or "
                      f"trust its SEO/GEO gating. This is the cross-project alert you asked for.")
+
+    # --- Deadlines the owner would otherwise have to remember ---
+    # Deliberately LAST so it is the final thing read, and deliberately loud: the
+    # owner's words were "I am super busy so I might forget them". The sentinel
+    # already tracks all of this; this section is the part that reaches a human.
+    fstate, fchecked, fissues, fevents = freshness_and_deadlines()
+    L.append("")
+    L.append("## ⏰ Deadlines + data health (tools)")
+    if fstate == "missing":
+        L.append("- ⚠️ **couldn't check** — no `data/freshness-status.json`. Either the sentinel "
+                 "has not run since this was wired up, or it crashed before writing. "
+                 "This is NOT 'all clear'.")
+    elif fstate == "unreadable":
+        L.append("- ⚠️ **couldn't check** — `freshness-status.json` is corrupt. NOT 'all clear'.")
+    elif fstate == "STALE":
+        L.append(f"- 🔴 **sentinel last ran {fchecked}** — over {FRESHNESS_STALE_HOURS}h ago, so the "
+                 f"nightly did not run last night. Deadlines below may be out of date.")
+    elif fstate == "issues":
+        L.append(f"- 🔴 **{len(fissues)} open issue(s)** (checked {fchecked}):")
+        for i in fissues:
+            L.append(f"  - {i}")
+    else:
+        L.append(f"- ✅ all data-freshness checks green (checked {fchecked})")
+
+    if fevents is None:
+        L.append("- ⚠️ **couldn't read** `event-calendar.json` — upcoming windows unknown.")
+    elif not fevents:
+        L.append("- no calendar events inside the next 120 days.")
+    else:
+        L.append("")
+        L.append("| in | date | event | status |")
+        L.append("|---|---|---|---|")
+        for days, dd, name, st in fevents:
+            # 'planned' inside the build window is the one that costs money: the
+            # EVENT FORMULA needs 4-6 weeks of lead time, so a planned event <42d
+            # out is already late, not upcoming.
+            flag = " 🔔 **BUILD NOW**" if st == "planned" and days <= 42 else ""
+            L.append(f"| {days}d | {dd} | {name} | {st}{flag} |")
 
     text = "\n".join(L)
     out = PROJECTS / "teamz-company-automation" / "docs" / "growth-digest.md"

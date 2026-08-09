@@ -52,6 +52,14 @@ MONEY_NICHES = {"finance", "tax", "mortgage", "insurance", "legal", "real-estate
 DEMAND_MIN_IMPR = 10        # matches pool_thin_faq_demand's own floor, so no consumer loses rows
 
 
+#  2026-08-10: alert threshold for the check below. Baseline right after fixing the hub-
+#  derivation bug (see revenue_priority.py's 2026-08-10 note) was 1010/6844 = 14.8% — that
+#  includes REAL productivity tools (hub 'tools'/'text'), not just misclassified ones, so 0%
+#  is not the target. Set with real headroom above baseline (the bug itself hit 39.3%) so
+#  ordinary catalog growth doesn't false-alarm, but a regression of the same shape still trips.
+NICHE_FALLBACK_ALERT_PCT = 25.0
+
+
 def money_pages():
     """Candidate pages -> [{slug, url, vol, rpm, niche, old_rule}].
 
@@ -63,22 +71,46 @@ def money_pages():
     mv = kvm.load_manual_volume(DATA)
     d = json.load(open(os.path.join(HOST, "tools.json")))
     out = []
+    n_total = 0
+    n_fallback = 0
     for t in d["tools"]:
         slug = (t.get("slug") or "").strip("/"); url = t.get("url")
         if not slug or not url:
             continue
+        n_total += 1
         last = slug.split("/")[-1].replace("-", " ")
         # 2026-08-10: was `hub = slug.split("/")[0]`, wrong whenever slug has no "/" (the
         # normal case) — silently misclassified 702 pages into niche="productivity". Use the
         # real hub tools.json already carries. See revenue_priority.py's 2026-08-10 note.
         hub = t.get("hub") or rp.hub_for(slug, HOST)
         niche = rp.niche_for(hub, slug, t.get("title", ""))
+        # Real productivity tools live under hub 'tools'/'text' on purpose — only count a
+        # NON-productivity-hub page landing on the productivity NICHE as a fallback hit; that's
+        # the signature of niche_for() giving up, not a genuine classification.
+        if niche == "productivity" and hub not in ("tools", "text"):
+            n_fallback += 1
         hit = kvm.manual_lookup(mv, last)
         vol = hit["vol"] if hit and hit["vol"] is not None else 0   # blank Planner cell = unknown
         old_rule = niche in MONEY_NICHES and vol >= 1000
         rpm = rp.expected_dollars(slug, hub, t.get("title", ""), 100, 7)["rpm_mid"]
         out.append({"slug": slug, "url": url, "vol": int(vol), "rpm": rpm, "niche": niche,
                     "old_rule": old_rule})
+    # Standing check (added 2026-08-10, after this exact failure mode hid for 5 months): if a
+    # future change to niche_for()/hub_for() breaks classification again, this catches it as an
+    # ERROR: line, which run_phase_cmd's extract_health_issue already greps for — no new nightly
+    # plumbing needed. See revenue_priority.py's 2026-08-10 note for the story.
+    pct = (100.0 * n_fallback / n_total) if n_total else 0.0
+    if pct > NICHE_FALLBACK_ALERT_PCT:
+        sys.stderr.write(
+            f"ERROR: {n_fallback}/{n_total} pages ({pct:.1f}%) landing on niche=productivity "
+            f"outside the 'tools'/'text' hubs — above the {NICHE_FALLBACK_ALERT_PCT:.0f}% "
+            f"alert ceiling. Likely a hub-derivation or keyword-matching regression in "
+            f"revenue_priority.py — see its 2026-08-10 note before assuming this is normal "
+            f"catalog growth.\n")
+    else:
+        print(f"[money-tracker] niche-classification health: {n_fallback}/{n_total} "
+              f"({pct:.1f}%) on productivity fallback — under the "
+              f"{NICHE_FALLBACK_ALERT_PCT:.0f}% ceiling, OK")
     # dedupe by url, keep highest vol
     by = {}
     for r in out:

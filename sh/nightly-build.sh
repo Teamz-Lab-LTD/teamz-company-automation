@@ -678,6 +678,63 @@ run_phase_cmd "Distribution draft brief" 10 "\"$PYTHON_BIN\" teamz-company-autom
 run_phase_cmd "Research cache refresh" 5 "./scripts/build-research-cache.sh"
 run_phase_cmd "Ideas brief" 2 "./scripts/build-ideas.sh --quick"
 
+# Weekly refresh of dead-revival's INPUT POOL. Found 2026-08-10: the zero-visitor-audit chain
+# (build-zero-visitor-audit.py -> build-index-status-check.py -> index-status-prune.csv, which
+# build-dead-revival.py below reads) was run ONCE by hand on 2026-06-03 and never wired to any
+# schedule — dead-revival's nightly picker ran correctly every night, but against a frozen June
+# 3 pool. 62 pages got revived in the first two nights, then ZERO new ones for 68 days, because
+# there was nothing new in the input to find. Weekly, not nightly: the audit sweeps the WHOLE
+# catalog (6847 pages, GSC+Bing+DataForSEO per page) — real cost, and "which pages are dead"
+# moves slowly enough that daily freshness buys nothing. Sunday (date +%u == 7), same
+# .dead-revival-enabled + clean-tree gate as the picker below so this and the picker stay
+# consistent about when it's safe to run. Verified 2026-08-10: a real run took the prune pool
+# from 426 (June, stale) to 727 (today, real) candidates in well under 2 minutes.
+if [ "$(date +%u)" = "7" ] && [ -f "$PROJECT_DIR/data/.dead-revival-enabled" ] && [ "$REPO_DIRTY_AT_START" -eq 0 ]; then
+    echo ""
+    echo "=== Weekly: refresh zero-visitor audit (feeds dead-revival) ==="
+    # Hard wall-clock cap on EACH stage, same TERM-then-KILL watchdog shape as the Claude agent
+    # above. Added after watching this live 2026-08-10: build-zero-visitor-audit.py ran clean in
+    # under a minute, but build-index-status-check.py (727 GSC URL-Inspection calls, self-
+    # throttled) took 64+ MINUTES on a real run — no infinite-retry bug in its code (checked: real
+    # 60s per-call timeout, clean break on 429), just real-world network latency far past its own
+    # ~90s napkin estimate. Unbounded, that would delay or block everything after it on a real
+    # Sunday night. -u = unbuffered stdout, so if a future run genuinely hangs, the log actually
+    # shows where — not the same blind spot just fixed for the Claude agent.
+    ZVA_LOG="$PROJECT_DIR/logs/.weekly-zero-visitor-audit.log"
+    : > "$ZVA_LOG"
+    python3 -u "$_SCRIPT_DIR/build-zero-visitor-audit.py" > "$ZVA_LOG" 2>&1 &
+    ZVA_PID=$!
+    ( sleep 600; kill -TERM "$ZVA_PID" 2>/dev/null; sleep 30; kill -KILL "$ZVA_PID" 2>/dev/null ) &
+    ZVA_WD=$!
+    wait "$ZVA_PID"; ZVA_EXIT=$?
+    kill "$ZVA_WD" 2>/dev/null; wait "$ZVA_WD" 2>/dev/null
+    sed 's/^/  /' "$ZVA_LOG"
+    if [ "$ZVA_EXIT" -eq 143 ] || [ "$ZVA_EXIT" -eq 137 ]; then
+        echo "  ✗ zero-visitor audit TIMED OUT (>600s) — killed, retries next Sunday."
+        record_health_alert "Weekly zero-visitor audit timed out (600s)"
+    fi
+
+    IDX_LOG="$PROJECT_DIR/logs/.weekly-index-status-check.log"
+    : > "$IDX_LOG"
+    python3 -u "$_SCRIPT_DIR/build-index-status-check.py" prune > "$IDX_LOG" 2>&1 &
+    IDX_PID=$!
+    ( sleep 1800; kill -TERM "$IDX_PID" 2>/dev/null; sleep 30; kill -KILL "$IDX_PID" 2>/dev/null ) &
+    IDX_WD=$!
+    wait "$IDX_PID"; IDX_EXIT=$?
+    kill "$IDX_WD" 2>/dev/null; wait "$IDX_WD" 2>/dev/null
+    sed 's/^/  /' "$IDX_LOG"
+    if [ "$IDX_EXIT" -eq 143 ] || [ "$IDX_EXIT" -eq 137 ]; then
+        # Checked, not assumed: build-index-status-check.py only writes its CSV ONCE, at the very
+        # end (holds everything in memory until then) — a kill produces ZERO new rows, not a
+        # partial file. dead-revival below still runs fine either way; it just reads whatever the
+        # LAST successful write of index-status-prune.csv was (never reverts to nothing).
+        echo "  ✗ index-status check TIMED OUT (>1800s) — killed. It only writes its output at the"
+        echo "    very end, so this run produced no new data; dead-revival below uses last week's"
+        echo "    file. Retries next Sunday."
+        record_health_alert "Weekly index-status check timed out (1800s)"
+    fi
+fi
+
 # Dead-tool revival: find demand re-targets for indexed-but-no-demand pages.
 # Opt-in via data/.dead-revival-enabled (other consumers unaffected). Non-blocking,
 # low cap (4/night), Trends-disabled for speed. Output feeds Pool 9 of the enhance

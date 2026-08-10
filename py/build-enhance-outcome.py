@@ -145,7 +145,26 @@ def to_url_path(f):
     Two site shapes across the properties:
       static HTML (tools, learn, goalkit)  us/foo/index.html -> /us/foo/
                                            c/slug.html       -> /c/slug.html
-      Astro collections (apps)             src/content/<coll>/<slug>.md -> /<coll>/<slug>/
+      Astro collections (apps)             src/content/<coll>/<slug>.md -> URL depends on
+                                            the COLLECTION's own page router, NOT the
+                                            collection folder name — they are not the same
+                                            string. Checked each router directly (2026-08-11):
+                                              apps      -> src/pages/[slug].astro       -> /<slug>/   (NO prefix)
+                                              blog      -> src/pages/blog/[slug].astro  -> /blog/<slug>/
+                                              roadmaps  -> src/pages/roadmap/[slug].astro -> /roadmap/<slug>/  (singular!)
+                                            hazira-guides/hazira-tutorials have NO dedicated
+                                            router at all — they render as an embedded
+                                            component inside another page (HaziraGuides.astro),
+                                            not as their own addressable URL. Stays unmappable.
+
+    2026-08-11 bug found live: this used to return f"/{collection}/{slug}/" for EVERY
+    collection, so 'apps' commits (the collection with the most pages) mapped to
+    /apps/<slug>/ — a URL that has never existed. enhance-outcome.json was silently querying
+    a 404 for every apps page: /no-trace-chat/ (the REAL, live page, 49 real impressions)
+    got read as 0/0 forever, reported "inconclusive: not enough baseline clicks" — the
+    learning loop could never tell whether any apps edit worked. Root-caused from apps'
+    own nightly content-agent report flagging it, not found independently — see
+    data/last-night-content.md 2026-08-10 for the original catch.
 
     Returns None rather than guessing. apps' commits frequently edit src/data/services.ts,
     a single file backing MANY service pages — attributing that to one URL would be a
@@ -157,9 +176,13 @@ def to_url_path(f):
         return "/" + f[: -len("index.html")]
     if f.endswith(".html"):
         return "/" + f
+    COLLECTION_URL_PREFIX = {"apps": "", "blog": "blog/", "roadmaps": "roadmap/"}
     m = re.match(r"^src/content/([^/]+)/(.+)\.(md|mdx)$", f)
     if m:
-        return f"/{m.group(1)}/{m.group(2)}/"
+        coll, slug = m.group(1), m.group(2)
+        if coll not in COLLECTION_URL_PREFIX:
+            return None   # no confirmed router for this collection — don't guess
+        return f"/{COLLECTION_URL_PREFIX[coll]}{slug}/"
     return None
 
 

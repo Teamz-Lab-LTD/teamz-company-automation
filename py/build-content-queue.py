@@ -46,6 +46,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import urllib.parse
@@ -227,6 +228,23 @@ def cooldown_paths(host_root, days):
     # tools really does have a /de/ section whose pages are NOT mirrors of the root ones.
     lang_prefixes = {s.strip() for s in os.getenv("TEAMZ_CONTENT_LANG_PREFIXES", "bn").split(",") if s.strip()}
 
+    # 2026-08-11: apps' own nightly agent flagged src/data/services.ts as invisible to
+    # cooldown — content edited there twice in one week and re-served straight away. Root
+    # cause: this file backs 18 DIFFERENT pages (a many-to-1 relationship), but the
+    # basename-stem heuristic below only ever produces ONE token ("services", from
+    # services.ts) — which can't match any of the 18 individual URLs anyway (e.g.
+    # "services" is not a substring of "/claude-code-development-service/", singular). No
+    # mechanism here has ever been able to cool a shared-data-file page. Fix: when this file
+    # is touched, parse the CURRENT file for every `slug: '...'` entry and cool all of
+    # them — parsed at runtime (not a hardcoded list) so it can't silently drift out of sync
+    # if a service is renamed or added later. Slightly coarse (cools all 18 even if the edit
+    # only changed one) but that's the safe direction to be wrong in, same tradeoff already
+    # accepted for the cosmetic-floor logic above.
+    SHARED_DATA_SLUG_SOURCES = {
+        "src/data/services.ts": (host_root / "src" / "data" / "services.ts",
+                                  re.compile(r"slug:\s*['\"]([^'\"]+)['\"]")),
+    }
+
     touched = set()
     for line in real_edit_files:
         touched.add(line)                       # the raw file, for source-file matches
@@ -237,6 +255,14 @@ def cooldown_paths(host_root, days):
             touched.add("/" + "/".join(parts) + "/")            # /bn/products/foo/
             if parts and parts[0] in lang_prefixes and len(parts) > 1:
                 touched.add("/" + "/".join(parts[1:]) + "/")    # ...also cools /products/foo/
+
+        if line in SHARED_DATA_SLUG_SOURCES:
+            src_path, slug_re = SHARED_DATA_SLUG_SOURCES[line]
+            try:
+                for m in slug_re.finditer(src_path.read_text()):
+                    touched.add(f"/{m.group(1)}/")
+            except OSError:
+                pass   # file unreadable — falls back to the (useless-but-harmless) stem match below
 
         stem = p.stem
         if stem and stem != "index":

@@ -585,6 +585,20 @@ run_phase_cmd "GSC broken pages → auto-redirect" 10 "python3 scripts/build-gsc
 # is meant to remove (it did, on the first run — all 488 pages scored an identical £3.45).
 [ -f scripts/build-geo-value.py ] && \
     run_phase_cmd "Geo value per page" 10 "python3 scripts/build-geo-value.py --json-only"
+# Refreshes the NFL player values behind the fantasy tools' autocomplete, from Sleeper's
+# free public API. Two calls, deliberately:
+#   1. the pull, which NEVER overwrites a good snapshot with a bad one — a failed or
+#      malformed response keeps the previous file so the site is unaffected;
+#   2. --check, which is what actually raises the alarm. Without it a permanently dead
+#      upstream would look healthy forever: the pull fails, the old data still serves,
+#      every page still works, and nothing ever says the data stopped moving. --check
+#      exits non-zero once the last SUCCESSFUL pull is >45d old, so silent decay becomes
+#      a health alert instead of quietly stale numbers on a money page.
+# HOST-GUARDED: this file is symlinked by 5 properties; the script exists only in tools.
+[ -f scripts/build-nfl-player-values.py ] && {
+    run_phase_cmd "NFL player values (Sleeper)" 5 "python3 scripts/build-nfl-player-values.py || true"
+    run_phase_cmd "NFL player values freshness" 3 "python3 scripts/build-nfl-player-values.py --check"
+}
 
 echo "  Checking freshness (stale data)..."
 run_phase_cmd "Freshness validation" 10 "./scripts/build-validate-freshness.sh"

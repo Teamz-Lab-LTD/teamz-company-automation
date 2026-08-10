@@ -36,7 +36,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 CFG = Path.home() / ".config" / "teamzlab"
@@ -515,6 +515,62 @@ def kw_volume_freshness(repo):
     return ("fresh", age, len(results))
 
 
+def external_feed_health():
+    """Health of third-party data feeds the money pages depend on.
+
+    Returns a list of (name, icon, state, detail, is_trigger).
+
+    Why this section exists: /us/fantasy-football-trade-analyzer/ autofills player values
+    from a snapshot built off Sleeper's free, unauthenticated API. The site never calls
+    Sleeper at runtime — it reads our own committed file — which is what keeps a dead
+    upstream from breaking the page. That safety has a cost: if the pull dies, NOTHING
+    visibly breaks. The tool keeps working, the numbers just quietly stop matching
+    reality. That is precisely the silent-decay shape this whole digest exists to catch,
+    so the freshness gets its own row instead of living only in a nightly log line.
+
+    Reads a status file written on every run, success or failure. A missing file is
+    reported as "couldn't check", never as healthy — an unread signal and a clean signal
+    must never look the same.
+    """
+    out = []
+    status_path = PROJECTS / "teamzlab-tools" / "data" / "nfl-player-values-status.json"
+    data_path = PROJECTS / "teamzlab-tools" / "data" / "nfl-player-values.json"
+    name = "NFL player values (Sleeper API)"
+    if not status_path.exists():
+        out.append((name, "—", "not wired", "no status file — feed not set up on this machine", False))
+        return out
+    try:
+        with open(status_path) as fh:
+            s = json.load(fh)
+    except (OSError, ValueError) as e:
+        out.append((name, "⚠️", "couldn't check", f"status file unreadable ({type(e).__name__})", True))
+        return out
+
+    n = s.get("player_count") or 0
+    last_success = s.get("last_success")
+    if not last_success:
+        out.append((name, "⛔", "NEVER SUCCEEDED", "no successful pull on record", True))
+        return out
+    try:
+        age = (datetime.now(timezone.utc) - datetime.fromisoformat(last_success)).days
+    except (ValueError, TypeError):
+        out.append((name, "⚠️", "couldn't check", "unparseable last_success timestamp", True))
+        return out
+
+    have_data = data_path.exists()
+    if not have_data:
+        out.append((name, "⛔", "DATA MISSING", "snapshot file absent — autocomplete is empty", True))
+    elif age > 45:
+        out.append((name, "🔴", "STALE", f"{age}d since last good pull ({n} players) — "
+                                        f"Sleeper pull is failing silently", True))
+    elif not s.get("ok"):
+        out.append((name, "🟡", "last run FAILED", f"kept previous snapshot ({n} players, {age}d old) — "
+                                                  f"site unaffected: {str(s.get('message'))[:80]}", False))
+    else:
+        out.append((name, "✅", "fresh", f"{n} players, pulled {age}d ago", False))
+    return out
+
+
 FRESHNESS_STALE_HOURS = 36   # nightly runs daily; >36h means it did not run last night
 
 
@@ -821,6 +877,26 @@ def main():
         for prop, state, age in triggers:
             L.append(f"- **{prop}** — {state}, {age} days old. Re-pull before you order stock or "
                      f"trust its SEO/GEO gating. This is the cross-project alert you asked for.")
+
+    # --- External data feeds the money pages depend on ---
+    feeds = external_feed_health()
+    if feeds:
+        L.append("")
+        L.append("## External data feeds (third-party APIs behind tool pages)")
+        L.append("| feed | state | detail |")
+        L.append("|---|---|---|")
+        feed_triggers = []
+        for fname, icon, fstate_, detail, is_trig in feeds:
+            L.append(f"| {fname} | {icon} {fstate_} | {detail} |")
+            if is_trig:
+                feed_triggers.append((fname, fstate_, detail))
+        if feed_triggers:
+            L.append("")
+            L.append("### 🔔 TRIGGER — a tool's data feed needs attention")
+            for fname, fstate_, detail in feed_triggers:
+                L.append(f"- **{fname}** — {fstate_}. {detail}. The page keeps working on the "
+                         f"last good snapshot, so nothing looks broken to visitors — that is "
+                         f"exactly why this needs a human.")
 
     # --- Deadlines the owner would otherwise have to remember ---
     # Deliberately LAST so it is the final thing read, and deliberately loud: the

@@ -907,29 +907,26 @@ with open('$f','w') as fh: fh.write(c)
         FIXES=$((FIXES + 1))
     fi
 
-    # 2. Fix hardcoded header (should be empty for common.js to render)
-    if grep -q '<header id="site-header" class="site-header"><a' "$f" 2>/dev/null; then
-        python3 -c "
-import re
-with open('$f','r') as fh: c=fh.read()
-c=re.sub(r'<header id=\"site-header\" class=\"site-header\">.*?</header>', '<header id=\"site-header\" class=\"site-header\"></header>', c, flags=re.DOTALL)
-with open('$f','w') as fh: fh.write(c)
-"
-        echo "    Fixed: hardcoded header in $f"
-        FIXES=$((FIXES + 1))
-    fi
-
-    # 3. Fix hardcoded footer (should be empty for common.js to render)
-    if grep -q '<footer id="site-footer" class="site-footer"><div' "$f" 2>/dev/null; then
-        python3 -c "
-import re
-with open('$f','r') as fh: c=fh.read()
-c=re.sub(r'<footer id=\"site-footer\" class=\"site-footer\">.*?</footer>', '<footer id=\"site-footer\" class=\"site-footer\"></footer>', c, flags=re.DOTALL)
-with open('$f','w') as fh: fh.write(c)
-"
-        echo "    Fixed: hardcoded footer in $f"
-        FIXES=$((FIXES + 1))
-    fi
+    # 2 + 3. REMOVED 2026-08-11 — these emptied a static header/footer back out
+    # on the premise "should be empty for common.js to render". That premise is
+    # false, and the rules were destroying deliberate work every night:
+    #
+    #   - common.js:276 guards with `if (!header.querySelector('.header-logo'))`,
+    #     so a populated header is SKIPPED, not duplicated. Static markup is the
+    #     supported path, not a defect.
+    #   - build-static-header.sh exists to WRITE that markup, and says why:
+    #     "Prevents CLS by pre-rendering header content in HTML". Emptying it
+    #     reintroduces the layout shift it was added to remove — a Core Web
+    #     Vitals regression.
+    #   - GPTBot and PerplexityBot do not execute JS. An emptied header means no
+    #     logo, no site name and no nav links in the raw HTML they read. A
+    #     ChatGPT session is worth 3.85x a Google one here.
+    #
+    # Measured cost on the night this was found: 1,282 pages stripped in one run
+    # (commit 0f9ffa01c), silently, under a "1457 issues fixed" message. The two
+    # scripts had been undoing each other for months; whichever ran last won.
+    # Only teamzlab-tools carries this markup, so removing these is a no-op for
+    # the other properties sharing this file.
 
     # 4. Fix alert() → showToast()
     if grep -q 'alert(' "$f" 2>/dev/null; then

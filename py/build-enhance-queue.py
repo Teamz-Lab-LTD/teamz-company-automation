@@ -185,14 +185,34 @@ def slug_exists(slug, host_root):
     return (host_root / slug.strip('/') / 'index.html').exists()
 
 
+# A commit touching more than this many tool pages is a site-wide mechanical
+# sweep (trust bar rollout, schema dateModified bump, bulk link fix) — not a
+# per-tool content enhance. Those must not arm the cooldown: one sweep across
+# 6,900 pages would otherwise freeze the entire enhance queue for `days`.
+BULK_SWEEP_THRESHOLD = 50
+
+
 def get_cooldown_slugs(host_root, days):
     out, _, _ = run_script(host_root, ['git', 'log', f'--since={days} days ago',
-                                       '--name-only', '--pretty=format:'])
+                                       '--name-only', '--pretty=format:%H'])
     touched = set()
+    commit_slugs = []          # slugs seen in the commit currently being parsed
+
+    def flush():
+        if commit_slugs and len(commit_slugs) <= BULK_SWEEP_THRESHOLD:
+            touched.update(commit_slugs)
+        commit_slugs.clear()
+
     for line in out.splitlines():
         line = line.strip()
+        if not line:
+            continue
         if line.endswith('/index.html'):
-            touched.add('/' + line.rsplit('/', 1)[0] + '/')
+            commit_slugs.append('/' + line.rsplit('/', 1)[0] + '/')
+        else:
+            # bare sha line = start of a new commit block
+            flush()
+    flush()
     return touched
 
 

@@ -533,7 +533,20 @@ def noindex_paths(host):
     import re as _re
     found = set()
     root = host / os.getenv("TEAMZ_CONTENT_HTML_ROOT", "")
-    if root.exists():
+    if not root.exists():
+        # FAILING OPEN IS FINE. FAILING OPEN QUIETLY IS NOT.
+        # On 2026-08-12 apps.teamzlab.com queued /search/ as its #1 target — a page
+        # carrying <meta name="robots" content="noindex, nofollow"> since 2026-06-04
+        # and Disallow'd in robots.txt, so nothing written there can ever be read by
+        # Google. Re-running this function by hand the next day correctly returned
+        # {'/search/', '/fedex-shipping-for-woocommerce/'}, which means the guard was
+        # not broken: it simply had no built HTML to read that night and returned an
+        # empty set without saying so. A guard that switches itself off in silence is
+        # indistinguishable from a guard that found nothing wrong.
+        print(f"  noindex guard: OFF tonight — no built HTML at {root} "
+              f"(set TEAMZ_CONTENT_HTML_ROOT, or build before queueing). "
+              f"noindex pages CAN reach the queue in this state.")
+    else:
         for f in root.rglob("index.html"):
             try:
                 head = f.read_text(errors="ignore")[:4000]

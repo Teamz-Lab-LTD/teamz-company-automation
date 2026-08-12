@@ -1,5 +1,5 @@
 {
-  "ran_at": "2026-08-13T04:13:31",
+  "ran_at": "2026-08-13T04:18:53",
   "window": {
     "recent": "7d ending D-2",
     "baseline": "28d ending D-9"
@@ -20,6 +20,33 @@
       "pages_watched": 17,
       "pages_below_min_daily": 8,
       "watched_revenue_share_pct": 94.2,
+      "top_pages": [
+        {
+          "page": "/football/premier-league-table-predictor/",
+          "daily": 5.72,
+          "share_pct": 53.4
+        },
+        {
+          "page": "/games/arrow-escape-3d/",
+          "daily": 0.58,
+          "share_pct": 5.4
+        },
+        {
+          "page": "/ar/ar-measure-tape/",
+          "daily": 0.37,
+          "share_pct": 3.4
+        },
+        {
+          "page": "/football/penalty-shootout-simulator/",
+          "daily": 0.26,
+          "share_pct": 2.4
+        },
+        {
+          "page": "/tools/ai-emotion-detector/",
+          "daily": 0.21,
+          "share_pct": 2.0
+        }
+      ],
       "cliffs": [],
       "fades": [
         {

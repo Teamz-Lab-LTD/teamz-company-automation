@@ -276,6 +276,16 @@ def check_property(mod, tok, repo):
         "pages_watched": len(watch),
         "pages_below_min_daily": len(ranked) - len(watch),
         "watched_revenue_share_pct": round(100.0 * covered / site_base, 1) if site_base else 0.0,
+        # Recorded so /growth can show the concentration without re-querying GA4.
+        # Concentration IS the risk here and it belongs where the owner looks:
+        # a top page at 31% is a different business from a top page at 6%, and
+        # only one of those is worth losing sleep over.
+        "top_pages": [
+            {"page": p,
+             "daily": round(w0.get(p, 0.0), 2),
+             "share_pct": round(100.0 * w0.get(p, 0.0) / site_recent, 1) if site_recent else 0.0}
+            for p, _ in sorted(w0.items(), key=lambda kv: -kv[1])[:5]
+        ],
         "cliffs": cliffs,
         "fades": fades,
         "minor": minor,

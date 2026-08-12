@@ -494,6 +494,147 @@ def distribution_ga4_outcome(days=28):
 # and treat "never pulled" as a finding, not silence. Cross-property so one digest triggers all.
 KW_STALE_DAYS = int(os.getenv("TEAMZ_KW_STALE_DAYS", "300"))   # warn ~2 months before the year
 
+def _alert_channel_ready():
+    """True only if an alert can actually LEAVE this Mac.
+
+    Reuses teamz_notify's own definition of "configured" rather than restating
+    it, so the two can never drift into disagreeing about whether the owner is
+    reachable. Fails closed: if the module cannot be imported we report NOT
+    ready, because claiming reachability we cannot verify is the worse error.
+    """
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import teamz_notify as tn
+        wa = tn.load_env_file(tn.WHATSAPP_ENV)
+        if wa.get("CALLMEBOT_PHONE") and wa.get("CALLMEBOT_APIKEY"):
+            return True
+        sm = tn.load_env_file(tn.SMTP_ENV)
+        return all(sm.get(k) for k in ("SMTP_HOST", "SMTP_USER", "SMTP_PASS", "ALERT_EMAIL_TO"))
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def revenue_section():
+    """The money section: is revenue holding, and how concentrated is it?
+
+    /growth is where the owner looks — he drives Uber and has said plainly he
+    cannot check dashboards daily — so the revenue watchdog's verdict has to
+    surface HERE, not only in a notification he might be driving through.
+
+    Reads data/revenue-watchdog-status.json, written by build-revenue-watchdog.py
+    on EVERY run, clean or not. Three states that must never collapse into each
+    other:
+
+        file missing / stale  -> "couldn't check" (the watchdog is not running)
+        state == unreachable  -> "couldn't check" (GA4 refused; NOT 'no drop')
+        state == ok           -> real numbers
+
+    Rendering an unread signal as healthy is the single bug this whole
+    monitoring layer exists to prevent, so every branch below says which one it
+    is in words.
+    """
+    L = ["", "## Money — is revenue holding?"]
+    path = PROJECTS / "teamz-company-automation" / "data" / "revenue-watchdog-status.json"
+    if not path.exists():
+        L.append("")
+        L.append("⚠️ **couldn't check** — no `revenue-watchdog-status.json`. The revenue "
+                 "watchdog has never run on this machine, so nothing is watching earnings.")
+        return L
+    try:
+        s = json.loads(path.read_text())
+    except (OSError, ValueError) as e:
+        L.append("")
+        L.append(f"⚠️ **couldn't check** — status file unreadable ({type(e).__name__}).")
+        return L
+
+    ran = s.get("ran_at", "")
+    try:
+        age_h = (datetime.now() - datetime.fromisoformat(ran)).total_seconds() / 3600
+    except ValueError:
+        age_h = None
+    if age_h is None:
+        L.append("")
+        L.append(f"⚠️ **couldn't check** — unparseable `ran_at` ({ran!r}).")
+        return L
+    if age_h > 30:
+        L.append("")
+        L.append(f"⚠️ **STALE — last ran {age_h:.0f}h ago** ({ran}). Treat everything below as "
+                 f"history, not today. A watchdog this old is not watching anything.")
+    else:
+        L.append("")
+        L.append(f"_Checked {ran} ({age_h:.0f}h ago). Recent = 7d ending D-2 vs the 3 weeks "
+                 f"before it; GA4 per-page revenue needs ~48h to settle._")
+
+    for repo, r in (s.get("properties") or {}).items():
+        st = r.get("state")
+        if st == "unreachable":
+            L.append("")
+            L.append(f"### {repo}")
+            L.append(f"⚠️ **couldn't check** — {r.get('why')}. This is NOT 'no drop'.")
+            continue
+        if st == "no-ad-revenue":
+            L.append("")
+            L.append(f"### {repo}")
+            L.append("_No ad revenue on this property — nothing to watch._")
+            continue
+
+        now, base = r.get("site_daily_recent", 0), r.get("site_daily_baseline", 0)
+        delta = -r.get("site_drop_pct", 0)
+        L.append("")
+        L.append(f"### {repo} — ${now}/day now vs ${base}/day baseline ({delta:+.1f}%)")
+        L.append(f"_Watching {r.get('pages_watched', 0)} pages = "
+                 f"**{r.get('watched_revenue_share_pct', 0)}% of revenue**._")
+
+        top = r.get("top_pages") or []
+        if top:
+            L.append("")
+            L.append("| top earner | $/day | share |")
+            L.append("|---|---|---|")
+            for t in top:
+                L.append(f"| `{t['page']}` | ${t['daily']} | {t['share_pct']}% |")
+            lead = top[0]
+            if lead["share_pct"] >= 25:
+                L.append("")
+                L.append(f"🔔 **CONCENTRATION: one page is {lead['share_pct']}% of this "
+                         f"property's revenue.** Losing it costs about "
+                         f"${lead['daily'] * 30:.0f}/month. Diversification here means "
+                         f"growing high-RPM pages, not more traffic to this one.")
+
+        for d in r.get("cliffs", []):
+            L.append("")
+            L.append(f"🔔 **DROP: `{d['page']}` down {d['drop_pct']}%** — "
+                     f"${d['was_daily']}/day → ${d['now_daily']}/day, "
+                     f"~${d['monthly_at_risk']}/month at risk. Weekly $/day: "
+                     f"{' → '.join(str(x) for x in d['weekly_daily'])}.")
+
+        fades = r.get("fades") or []
+        if fades:
+            L.append("")
+            L.append("**Fading (expected wind-down, not an alarm):**")
+            for d in fades:
+                L.append(f"- `{d['page']}` — {' → '.join(str(x) for x in d['weekly_daily'])} "
+                         f"$/day, ~${d['monthly_at_risk']}/mo below its old rate")
+
+        minor = r.get("minor") or []
+        if minor:
+            L.append("")
+            L.append(f"_{len(minor)} smaller page(s) also fell but are under the notify "
+                     f"floor — see `revenue-watchdog-status.json` for the list._")
+
+    # An alarm nobody receives is not an alarm. Say so here, every time, until fixed.
+    #
+    # Test the VALUES, never the file. Both whatsapp-callmebot.env and smtp.env exist
+    # on this machine and both are placeholders, so an exists() check reported the
+    # alert channel as configured while teamz_notify was printing "not configured"
+    # on the same run. Same rule as everywhere else here: presence is not proof.
+    if not _alert_channel_ready():
+        L.append("")
+        L.append("⚠️ **These alerts reach the Mac only.** No WhatsApp or email channel is "
+                 "configured, so a revenue drop fires into an empty room while you are out. "
+                 "Two-minute one-time fix: `~/.config/teamzlab/whatsapp-callmebot.env.example`.")
+    return L
+
+
 def kw_volume_freshness(repo):
     """(state, age_days_or_None, n_results). state in fresh/aging/STALE/never/no-store."""
     base = PROJECTS / repo / "data"
@@ -737,6 +878,8 @@ def main():
                     L.append(f"| {w} | {s:,} | ${r:.2f} |")
         except Exception as e:  # noqa: BLE001
             L.append(f"\n_(weekly AI trend unavailable: {type(e).__name__})_")
+
+    L.extend(revenue_section())
 
     L.append("")
     L.append("## What the engine actually did")

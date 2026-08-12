@@ -1497,12 +1497,77 @@ def main():
     new, retarget, vanity_skipped = pool_new(prop, token, site_url, args.min_impressions,
                                              existing, deny_topics, kw_vol=kw_vol)
 
+    # A QUERY WE ARE ALREADY SPLITTING IS NOT AN UNSERVED GAP.
+    # pool_new's demand-gap test is "impressions are real AND our best position is >= 25" —
+    # nobody of ours RANKS, so it reads as open ground. That test cannot tell "no page
+    # addresses this" from "two pages address it and cancel each other out". Measured on
+    # apps.teamzlab.com 2026-08-13, the queue's only NEW candidate was:
+    #
+    #     'cqc audit software'  33 impr, best position #65
+    #         /blog/best-care-home-compliance-software-uk-2026/   #63.7
+    #         /always-ready-care/                                 #83.4
+    #
+    # Two pages already trying and both buried — so the engine was about to write a THIRD
+    # and split it three ways. It even printed "Google serves it today with: <page>" one line
+    # before queueing the duplicate. gsc_cannibalization() knows this; nothing consulted it.
+    #
+    # RETARGET is untouched on purpose: pointing an existing page at the query is the correct
+    # response to a clash. Only writing a brand-new competitor is refused.
+    if new and gsc_canni:
+        clashing = {c["query"].strip().lower() for c in gsc_canni}
+        kept = []
+        for t in new:
+            topic = str(t.get("topic", "")).strip().lower()
+            if topic in clashing:
+                pages = next(c["pages"] for c in gsc_canni
+                             if c["query"].strip().lower() == topic)
+                print(f"  NEW refused (cannibalisation): '{t.get('topic')}' — "
+                      f"{len(pages)} of our pages already compete for it "
+                      + ", ".join(f"{p['path']} #{p['position']}" for p in pages[:3])
+                      + ". A third page would split it further; strengthen one of these instead.")
+                continue
+            kept.append(t)
+        new = kept
+
     if new_budget:
         # 2nd choice: net-new ground adjacent to what this site already converts. Only when
         # there is no measured gap — a proxy signal must never outrank a measured one.
         if not new:
             country = os.getenv("TEAMZ_CONTENT_COUNTRY", "us")
             new = pool_expand(prop, token, site_url, existing, deny_topics, country)
+
+        # DO NOT SHIP TOMORROW'S CANNIBALISATION TONIGHT.
+        # pool_expand scores autocomplete suggestions independently, so near-duplicates of
+        # each other both survive. Measured on apps.teamzlab.com 2026-08-13, the two NEW
+        # candidates for one night were:
+        #
+        #     'offline chat app without internet'
+        #     'offline chat app without internet for android'
+        #
+        # One topic is a strict superset of the other. Writing both creates exactly the clash
+        # gsc_cannibalization() now reports and that the vibe cluster took a month and a 301
+        # to undo — self-inflicted, on the same night, from one seed.
+        #
+        # Containment, not similarity: 'offline chat app' vs 'offline chat app for android'
+        # is one topic phrased twice, while 'ios chat app' vs 'android chat app' overlaps
+        # heavily and is genuinely two pages. Only a full subset is refused, and the SHORTER
+        # topic is kept — the broader phrasing can rank for the narrower one, never the
+        # reverse.
+        if len(new) > 1:
+            ordered = sorted(new, key=lambda t: len(str(t.get("topic", "")).split()))
+            kept = []
+            for t in ordered:
+                tok = set(str(t.get("topic", "")).lower().split())
+                dup = next((k for k in kept
+                            if set(str(k.get("topic", "")).lower().split()) <= tok), None)
+                if dup:
+                    print(f"  NEW refused (same-batch overlap): '{t.get('topic')}' contains "
+                          f"'{dup.get('topic')}', already queued tonight. Two pages, one topic.")
+                    continue
+                kept.append(t)
+            # Restore the pool's own ranking; the sort above was only to test containment
+            # shortest-first, and must not become the order work is done in.
+            new = [t for t in new if t in kept]
         new = new[:new_budget]
     else:
         new = []

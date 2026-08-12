@@ -1033,6 +1033,73 @@ def intent_key(title):
     return " ".join(sorted(set(_re.findall(r"[a-z']{2,}", t))))
 
 
+def gsc_cannibalization(prop, token, site_url, deny_paths, min_impr=25, min_pages=2, max_out=8):
+    """Cannibalisation MEASURED in GSC: one query, two or more of OUR pages ranking for it.
+
+    pool_cannibalization() below INFERS the same problem from <title> token overlap. That is
+    the right tool when Google has not yet shown us both pages, but it cannot see a clash
+    whose titles honestly describe different things. apps.teamzlab.com, measured 2026-08-13:
+
+        "vibe coding agency"  950 impressions, 0 clicks
+            /vibe-coding-agency/       644 impr  position 69.2
+            /vibe-coding-consultants/  306 impr  position 28.6
+
+    Their titles are "Vibe Coding Agency - AI-First App Developers" and "Vibe Coding
+    Consultants - AI Dev Tool Stack & Audit": overlap ~0.43, under the 0.5 gate, and the gate
+    was RIGHT — an agency and an audit really are different offers. Google disagrees, and
+    Google is the one ranking them. The same split runs across the whole cluster ("vibe coding
+    consultant", "vibe coding agencies", "vibe coding team"), and the page named for the term
+    is the one buried at 69 while its sibling sits at 28. This is the single biggest query on
+    that property and it earns nothing.
+
+    Inference is a proxy. This is the measurement. Both stay: this one needs Google to have
+    already shown both pages, so it is blind to a clash that has not surfaced yet, which is
+    precisely the case the title check catches before it costs anything.
+
+    REPORT ONLY, DELIBERATELY. Fixing a real clash means merging pages, redirecting a URL or
+    rewriting an offer — outward-facing decisions with no undo. pool_cannibalization can
+    auto-fix its finds because it only touches clashes where every page earns zero clicks;
+    here the whole point is that the cluster HAS demand. So this surfaces it and stops.
+    """
+    rows = gsc_query(prop, token, ["query", "page"], days=90, row_limit=25000)
+    by_q = {}
+    for r in rows:
+        query, page = r["keys"]
+        if looks_like_junk(query):
+            continue
+        path = url_to_path(page, site_url)
+        if denied(path, deny_paths):
+            continue
+        by_q.setdefault(query, []).append(
+            {"path": path, "impressions": r["impressions"],
+             "clicks": r["clicks"], "position": round(r["position"], 1)})
+
+    out = []
+    for query, pages in by_q.items():
+        # Only pages with real presence count as competitors — a single stray impression on
+        # a fifth page is not a clash, it is noise.
+        real = [p for p in pages if p["impressions"] >= 5]
+        total = sum(p["impressions"] for p in real)
+        if len(real) < min_pages or total < min_impr:
+            continue
+        real.sort(key=lambda p: -p["impressions"])
+        best = min(real, key=lambda p: p["position"])
+        out.append({
+            "query": query,
+            "total_impressions": total,
+            "total_clicks": sum(p["clicks"] for p in real),
+            "pages": real,
+            "best_position": best["position"],
+            "best_path": best["path"],
+            "why": (f"{len(real)} of our pages rank for '{query}' ({total} impr, "
+                    f"{sum(p['clicks'] for p in real)} clicks). Best is {best['path']} at "
+                    f"position {best['position']}. Google is splitting the site's signal "
+                    f"across them; one page should own this query."),
+        })
+    out.sort(key=lambda c: -c["total_impressions"])
+    return out[:max_out]
+
+
 def pool_cannibalization(host, site_url, click_by_path, cooldown, deny_paths, max_out=1,
                          ai_by_path=None, ai_known=True):
     """Two of OUR pages chasing ONE query. Detect it nightly and fix it — never by hand.
@@ -1400,6 +1467,24 @@ def main():
         max_out=int(os.getenv("TEAMZ_CONTENT_CANNIBAL_CAP", "1")),
         ai_by_path=ai_by_path, ai_known=ai_known)
 
+    # Measured clashes, from GSC rather than from title similarity. Report-only — see the
+    # docstring for why this one never auto-fixes.
+    try:
+        gsc_canni = gsc_cannibalization(prop, token, site_url, deny_paths)
+    except Exception as e:  # noqa: BLE001
+        # An API failure here must not take the night's queue down, but it must also not be
+        # mistaken for "no clashes found".
+        print(f"  ⚠️  measured-cannibalisation check UNAVAILABLE ({type(e).__name__}) — "
+              f"title-overlap check still ran")
+        gsc_canni = None
+    if gsc_canni:
+        top = gsc_canni[0]
+        print(f"  cannibalisation (measured): {len(gsc_canni)} quer(y/ies) split across our own "
+              f"pages — worst '{top['query']}' {top['total_impressions']} impr / "
+              f"{top['total_clicks']} clicks over {len(top['pages'])} pages")
+    elif gsc_canni is not None:
+        print("  cannibalisation (measured): none — no query has 2+ of our pages ranking")
+
     ledger, ledger_corrupt = load_ledger(host)
     recent_new = new_posts_this_week(ledger)
     # Corrupt ledger => fail CLOSED. Treating an unreadable log as "0 posts this week" would
@@ -1496,6 +1581,9 @@ def main():
         # Clashes we deliberately did NOT auto-fix because a page in them earns clicks. Not
         # silence — the report must name them so a human can judge.
         "cannibalization_flagged": canni_flagged,
+        # None (not []) when the GSC check could not run, so "we looked and found nothing"
+        # and "we could not look" stay distinguishable to every downstream reader.
+        "cannibalization_measured": gsc_canni,
         "targets": targets,
     }
 

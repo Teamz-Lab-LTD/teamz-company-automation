@@ -534,15 +534,13 @@ def noindex_paths(host):
     found = set()
     root = host / os.getenv("TEAMZ_CONTENT_HTML_ROOT", "")
     if not root.exists():
-        # FAILING OPEN IS FINE. FAILING OPEN QUIETLY IS NOT.
-        # On 2026-08-12 apps.teamzlab.com queued /search/ as its #1 target — a page
-        # carrying <meta name="robots" content="noindex, nofollow"> since 2026-06-04
-        # and Disallow'd in robots.txt, so nothing written there can ever be read by
-        # Google. Re-running this function by hand the next day correctly returned
-        # {'/search/', '/fedex-shipping-for-woocommerce/'}, which means the guard was
-        # not broken: it simply had no built HTML to read that night and returned an
-        # empty set without saying so. A guard that switches itself off in silence is
-        # indistinguishable from a guard that found nothing wrong.
+        # FAILING OPEN IS FINE. FAILING OPEN QUIETLY IS NOT. A guard that switches itself
+        # off in silence is indistinguishable from a guard that found nothing wrong, and
+        # this one returns an empty set on any property whose HTML is not built yet.
+        # (This is a separate hole from the /search/ incident of 2026-08-12 — that one was
+        # pool_enhance's Pass 3 never consulting `dead` at all. Both were live at once,
+        # which is exactly why the empty set needs to announce itself: while chasing that
+        # bug, an empty return here was a completely plausible explanation for it.)
         print(f"  noindex guard: OFF tonight — no built HTML at {root} "
               f"(set TEAMZ_CONTENT_HTML_ROOT, or build before queueing). "
               f"noindex pages CAN reach the queue in this state.")
@@ -666,6 +664,17 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
         if path in best or not (5 <= pos <= 25) or impr < cfg_min_impr:
             continue
         if any(c in path for c in cooldown):
+            continue
+        # NOINDEX — the same gate Pass 1 and Pass 2 apply. Pass 3 was added later and never
+        # got it, which made noindex_paths() look broken when it was not: on 2026-08-12 all
+        # four of apps.teamzlab.com's ENHANCE targets came from this pass, led by /search/ —
+        # noindex since 2026-06-04 and Disallow'd in robots.txt, so nothing written there can
+        # ever be read. Running noindex_paths() by hand the next day correctly returned
+        # {'/search/', '/fedex-shipping-for-woocommerce/'}; the set was right, this loop just
+        # never consulted it. Pass 3 is the pass that finds the most candidates on
+        # long-tail-heavy properties, so the one place the gate was missing is the place it
+        # mattered most. Found and reported by the nightly agent that same night.
+        if path in dead:
             continue
         anchor = anchor_query.get(path)
         # A path with zero visible crossed-dimension rows has no query text to check against

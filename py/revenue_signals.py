@@ -54,6 +54,27 @@ different question. It has no business in revenue weighting.
 import json
 from pathlib import Path
 
+
+def _strip_www(host):
+    h = (host or "").strip().lower()
+    return h[4:] if h.startswith("www.") else h
+
+
+def _host_of(url):
+    """Bare hostname from a site URL, www- and scheme-stripped. '' when unparseable.
+
+    Returning '' on failure is deliberate: the caller treats an empty want-host as "do not
+    filter", so a property whose site_url is missing or malformed keeps its old behaviour
+    instead of having its whole conversion signal silently filtered to nothing.
+    """
+    import urllib.parse
+    u = (url or "").strip()
+    if not u:
+        return ""
+    if "//" not in u:
+        u = "https://" + u
+    return _strip_www(urllib.parse.urlparse(u).netloc)
+
 # A page needs this many sessions before its measured RPM is believable. One session that
 # happened to earn $0.40 computes to a $400 RPM and would rocket a dead page to the top of
 # the queue. Below the floor we do not "trust it less" — the page is simply absent from the
@@ -261,7 +282,9 @@ def conversion_value(cfg, days=28):
         body = json.dumps({
             "dateRanges": [{"startDate": f"{days}daysAgo",
                             "endDate": f"{GA4_LAG_DAYS}daysAgo"}],
-            "dimensions": [{"name": "landingPagePlusQueryString"}, {"name": "eventName"}],
+            "dimensions": [{"name": "hostName"},
+                           {"name": "landingPagePlusQueryString"},
+                           {"name": "eventName"}],
             "metrics": [{"name": "eventCount"}, {"name": "sessions"}],
             "limit": 5000,
         }).encode()
@@ -278,19 +301,50 @@ def conversion_value(cfg, days=28):
     # sessions is repeated per eventName row for the same landing page, so it must be taken
     # as a max per page rather than summed — summing multiplies the denominator by the number
     # of distinct events and silently divides every conversion rate by ~10.
-    conv, sess = {}, {}
+    # ONE GA4 PROPERTY CAN COLLECT MORE THAN ONE SITE, AND THIS ONE DOES.
+    # Property 524940073 is configured on apps.teamzlab.com AND hazirakhata.xyz (the Hazira
+    # site is built and deployed out of the same repo, so it carries the same tag). Measured
+    # 2026-08-13 over 28 days:
+    #
+    #     499 sessions  hazirakhata.xyz
+    #     405 sessions  apps.teamzlab.com
+    #       4 sessions  www.hazirakhata.xyz
+    #
+    # Without a host filter the majority of the "which page converts" signal steering the
+    # apps content queue came from a different website. Worse than merely noisy: paths
+    # collide across hosts, and section_value() then calibrated on /bn/* — a Hazira-only
+    # section that no apps page can ever inherit from. The queue's own log said
+    # "1 section(s) calibrated ... none=13", i.e. every candidate fell through to no signal
+    # at all while the layer reported itself as working.
+    want = _host_of(cfg.get("site_url") or cfg.get("site_property") or "")
+    conv, sess, skipped_hosts = {}, {}, {}
     for r in rows:
-        lp = r["dimensionValues"][0]["value"]
+        host = _strip_www(r["dimensionValues"][0]["value"])
+        lp = r["dimensionValues"][1]["value"]
+        if want and host != want:
+            skipped_hosts[host] = skipped_hosts.get(host, 0) + 1
+            continue
         if not lp.startswith("/"):
             continue
         path = lp.split("?")[0]
         path = path if path.endswith("/") else path + "/"
-        ev = r["dimensionValues"][1]["value"]
+        ev = r["dimensionValues"][2]["value"]
         n = int(r["metricValues"][0]["value"] or 0)
         s = int(r["metricValues"][1]["value"] or 0)
         sess[path] = max(sess.get(path, 0), s)
         if ev in events:
             conv[path] = conv.get(path, 0) + n
+
+    if skipped_hosts:
+        print("  value layer: ignored " + ", ".join(
+            f"{h} ({n} rows)" for h, n in sorted(skipped_hosts.items(), key=lambda kv: -kv[1]))
+            + f" — not {want}")
+    if want and not sess:
+        # Every row belonged to some other host. Returning an empty signal quietly would look
+        # identical to "this property simply has no conversions yet".
+        print(f"  ⚠️  value layer: GA4 returned rows but NONE for {want} — check that "
+              f"TEAMZ_SITE_URL matches the hostname this property actually collects.")
+        return None
 
     out = {p: round(c / sess[p] * 1000, 2)
            for p, c in conv.items()
@@ -317,10 +371,24 @@ def section_value(values, min_pages=3):
     import statistics
     buckets = {}
     for path, v in values.items():
-        seg = path.strip("/").split("/")
-        buckets.setdefault(seg[0] if seg and seg[0] else "/", []).append(v)
+        buckets.setdefault(_section_key(path), []).append(v)
     return {s: round(statistics.median(v), 2)
             for s, v in buckets.items() if len(v) >= min_pages}
+
+
+# Top-level pages share ONE bucket instead of each being its own section of one.
+# Keying on seg[0] gave /top3picks/, /arrow-jam-3d/, /no-trace-chat/ a bucket each, and
+# min_pages=3 then discarded every one of them — so apps.teamzlab.com's actual product
+# pages, the whole reason the value layer exists, could never inherit a rate. Only /blog/
+# survived, which meant the one section that calibrated was the section that converts
+# WORST. Grouping them is also what they are: a single tier of landing pages, priced
+# together the way /blog/ posts are priced together.
+_ROOT_SECTION = "(root)"
+
+
+def _section_key(path):
+    seg = [s for s in path.strip("/").split("/") if s]
+    return seg[0] if len(seg) > 1 else _ROOT_SECTION
 
 
 def value_for(path, values, sections):
@@ -328,8 +396,7 @@ def value_for(path, values, sections):
     if values and path in values:
         return values[path], "page"
     if sections:
-        seg = path.strip("/").split("/")
-        key = seg[0] if seg and seg[0] else "/"
+        key = _section_key(path)
         if key in sections:
             return sections[key], "section"
     return None, "none"

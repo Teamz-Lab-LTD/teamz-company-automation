@@ -957,8 +957,13 @@ def freshness_and_deadlines():
                     continue
                 days = (dd - datetime.now().date()).days
                 if 0 <= days <= 120:
+                    # lead_weeks and build MUST travel with the event. The first version kept
+                    # only (days, date, name, status) and threw `build` away — and `build` is
+                    # where the actual instruction lives. See the render block for what that cost.
                     events.append((days, dd, ev.get("name") or ev.get("event") or "?",
-                                   ev.get("status", "?")))
+                                   ev.get("status", "?"),
+                                   int(ev.get("lead_weeks") or 4),
+                                   (ev.get("build") or "").strip()))
             events.sort()
         except (ValueError, OSError):
             events = None   # distinct from [] — [] means "none due", None means "couldn't read"
@@ -1286,14 +1291,38 @@ def main():
         L.append("- no calendar events inside the next 120 days.")
     else:
         L.append("")
-        L.append("| in | date | event | status |")
-        L.append("|---|---|---|---|")
-        for days, dd, name, st in fevents:
-            # 'planned' inside the build window is the one that costs money: the
-            # EVENT FORMULA needs 4-6 weeks of lead time, so a planned event <42d
-            # out is already late, not upcoming.
-            flag = " 🔔 **BUILD NOW**" if st == "planned" and days <= 42 else ""
-            L.append(f"| {days}d | {dd} | {name} | {st}{flag} |")
+        # "live" MEANS THE PAGE EXISTS. IT DOES NOT MEAN THE SEASON'S WORK IS DONE.
+        #
+        # The alarm used to fire only on status == "planned". The UCL 2026-27 row reads
+        # status "live" and build "refresh existing UCL pages Aug 20-28, build NOTHING new
+        # (locked decision)" — the instruction was written down, dated, and decided. The digest
+        # printed the row without the `build` column and without a flag, so it rendered as
+        # settled. The owner found it on 2026-08-14 by asking six questions in a row about why
+        # UCL earns nothing; the answer was sitting in this file the whole time.
+        #
+        # A live page ranked #7 three weeks before its season is exactly the case that needs
+        # work, and it was the one case guaranteed to pass silently. So the window — not the
+        # status — now drives the alarm: once today is inside `lead_weeks` of the date, the row
+        # fires unless it is explicitly "done". Late is louder than open, because a window that
+        # has already closed is the failure this whole section exists to prevent.
+        L.append("| in | date | event | status | window | what to do |")
+        L.append("|---|---|---|---|---|---|")
+        for days, dd, name, st, lead, build in fevents:
+            lead_days = max(0, lead * 7)
+            opens_in = days - lead_days
+            if st == "done":
+                win = "closed (done)"
+                flag = ""
+            elif days <= lead_days // 2 and st == "planned":
+                win = f"**LATE** — needed {lead}w lead"
+                flag = " 🔔 **BUILD NOW**"
+            elif days <= lead_days:
+                win = "**OPEN NOW**"
+                flag = " 🔔 **ACT THIS WEEK**"
+            else:
+                win = f"opens in {opens_in}d"
+                flag = ""
+            L.append(f"| {days}d | {dd} | {name} | {st}{flag} | {win} | {build or '—'} |")
 
     text = "\n".join(L)
     out = PROJECTS / "teamz-company-automation" / "docs" / "growth-digest.md"

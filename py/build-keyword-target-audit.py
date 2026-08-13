@@ -11,24 +11,24 @@ forever. Nothing in the engine has ever asked whether the target itself is worth
 Measured on apps.teamzlab.com, 2026-08-13, Google Keyword Planner (US), against each page's
 own declared primaryKeyword:
 
-    notetube-ai    'youtube to flashcards'       10 /mo   <- 'youtube video summarizer' 8,100/mo Low
-    devicegpt      'phone health check app'      20 /mo   <- 'battery health android'   1,000/mo Low
-    arrow-jam-3d   '3d arrow puzzle'             10 /mo   <- 'arrow puzzles'            1,600/mo Low
-    brimful        'color sort puzzle'          140 /mo   <- 'water sort puzzle'        2,900/mo Med
-    top3picks      'AI gift finder app'           0 /mo   <- its own <title> already said
-                                                              'price comparison app' 2,400/mo Low
-    chopstick      'rocket landing simulator'    50 /mo   <- nothing better exists, correctly small
+    notetube-ai    'youtube to flashcards'       10 /mo
+    devicegpt      'phone health check app'      20 /mo
+    arrow-jam-3d   '3d arrow puzzle'             10 /mo
+    brimful        'color sort puzzle'          140 /mo
+    top3picks      'AI gift finder app'           0 /mo
+    chopstick      'rocket landing simulator'    50 /mo   (nothing bigger exists — correctly small)
 
 Five of seven pages were built around terms almost nobody types. That is not a writing
 problem and no amount of nightly enhancement fixes it — the engine was faithfully polishing
 pages aimed at nothing. This is the check that would have caught it on day one.
 
 WHAT IT DOES NOT DO.
-It never edits a page. Retargeting rewrites a title, a tagline and body copy, and picking the
-replacement needs judgement this script does not have: 'unblock puzzle game' outranks 'arrow
-puzzles' on volume but means a different genre, and 'hourly rate calculator' beats every Toss
-term while belonging to tool.teamzlab.com, which already owns three pages for it. So this
-reports, ranks by opportunity, and stops.
+It never edits a page, and it never says a keyword is WINNABLE — only that the current one is
+too small to be worth owning. Those are different claims and conflating them is exactly the
+error this file's threshold note records. Picking a replacement needs judgement this script
+does not have: 'unblock puzzle game' outranks 'arrow puzzles' on volume but means a different
+genre, and 'hourly rate calculator' beats every Toss term while belonging to
+tool.teamzlab.com, which already owns three pages for it. So this reports and stops.
 
 QUOTA.
 Keyword Planner is rate-limited and this repo has already been bitten by re-pulling the world
@@ -56,11 +56,24 @@ sys.path.insert(0, str(HERE))
 TTL_DAYS = int(os.getenv("TEAMZ_KWAUDIT_TTL_DAYS", "14"))
 # A target under this is treated as "aimed at nothing worth owning".
 DEAD_TARGET_VOL = int(os.getenv("TEAMZ_KWAUDIT_DEAD_VOL", "150"))
-# A replacement must clear this to be worth the disruption of a retarget.
-MIN_ALT_VOL = int(os.getenv("TEAMZ_KWAUDIT_MIN_ALT", "500"))
-# Above this, a term is a vanity head term: real volume, no realistic chance for this site.
-# Same doctrine build-content-queue already applies to NEW posts.
-VANITY_VOL = int(os.getenv("TEAMZ_KWAUDIT_VANITY", "10000"))
+
+# VOLUME IS NOT WINNABILITY, AND THE PLANNER'S "COMPETITION" COLUMN IS NOT EITHER.
+#
+# That column is ADVERTISER competition — how many accounts bid on the term in Google Ads. It
+# is not SEO difficulty and the two disagree hard. Every keyword chosen on 2026-08-13 read
+# "Low competition" and then measured 1.0-2.3 out of 10 on real SERP composition, because all
+# ten top slots were held by authority domains:
+#
+#     battery health android    Low comp  ->  winnability 2.3/10
+#     arrow puzzles             Low comp  ->  winnability 2.1/10
+#     youtube video summarizer  Low comp  ->  winnability 1.7/10
+#     water sort puzzle         Low comp  ->  winnability 1.0/10
+#
+# So this file deliberately reports volume ONLY, and never claims a term is winnable.
+# build-serp-difficulty.py measures who actually ranks; where it has scored a keyword, that
+# number is shown alongside, and where it has not, the gap is stated rather than filled with
+# the advertiser-competition proxy. build-course-radar.py already follows exactly this rule.
+SERP_FILE = "data/serp-difficulty.json"
 
 
 def _load(name):
@@ -146,6 +159,14 @@ def main():
               "No verdict this run.", file=sys.stderr)
         return 1
 
+    # Measured SERP winnability, where build-serp-difficulty.py has scored the keyword.
+    serp = {}
+    try:
+        sd = json.loads((host / SERP_FILE).read_text())
+        serp = {k.lower(): v for k, v in (sd.get("keywords") or {}).items()}
+    except (OSError, ValueError):
+        pass  # never scored on this property yet — reported as "not scored", never guessed
+
     flagged, ok, wrong_geo = [], 0, []
     for slug, kw, src in targets:
         # GEO TRAP. Volume is pulled for ONE country (default US). A Bangla or otherwise
@@ -164,9 +185,14 @@ def main():
         if cur_vol is not None and cur_vol > DEAD_TARGET_VOL:
             ok += 1
             continue
+        sw = serp.get(kw.lower())
         flagged.append({
             "slug": slug, "source": src,
             "current": kw, "current_vol": cur_vol,
+            # None means "never SERP-scored", NOT "easy". The advertiser-competition column is
+            # deliberately not substituted here — see the note at the top of this file.
+            "serp_winnability": sw.get("winnability") if sw else None,
+            "serp_why": sw.get("why") if sw else None,
         })
 
     # NO AUTOMATIC REPLACEMENT SUGGESTION. This deliberately reports the problem and stops.
@@ -194,8 +220,8 @@ def main():
     out_path.write_text(json.dumps({
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "geo": args.geo,
-        "thresholds": {"dead_target_vol": DEAD_TARGET_VOL, "min_alt_vol": MIN_ALT_VOL,
-                       "vanity_vol": VANITY_VOL},
+        "thresholds": {"dead_target_vol": DEAD_TARGET_VOL},
+        "serp_scored": sum(1 for c in flagged if c["serp_winnability"] is not None),
         "pages_audited": len(targets),
         "pages_well_targeted": ok,
         "not_auditable_wrong_geo": wrong_geo,
@@ -209,11 +235,13 @@ def main():
         print(f"    (skipped) {w['slug']} <- '{w['current']}' — {w['why']}")
     for c in flagged:
         cv = f"{c['current_vol']:>5}/mo" if c["current_vol"] is not None else " no data"
-        print(f"    {cv}  {c['slug']}  <- '{c['current']}'")
+        w = c["serp_winnability"]
+        wtxt = f"  win {w}/10" if w is not None else "  win not scored"
+        print(f"    {cv}{wtxt}  {c['slug']}  <- '{c['current']}'")
     if flagged:
-        print(f"    (threshold: a declared target under {DEAD_TARGET_VOL}/mo. No replacement is "
-              "suggested — picking one needs judgement token overlap cannot supply. Research "
-              "the page's real intent, then retarget.)")
+        print(f"    (flagged = declared target under {DEAD_TARGET_VOL}/mo. Volume is NOT "
+              "winnability: run build-serp-difficulty.py for the 'win' column, and never read "
+              "Planner's Low/Medium/High as SEO difficulty — that is advertiser competition.)")
     return 0
 
 

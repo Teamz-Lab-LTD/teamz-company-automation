@@ -627,6 +627,80 @@ def segment_section(tok):
     return L
 
 
+def apps_revenue_section():
+    """Do the mobile apps earn anything, and can we even see it?
+
+    THE GAP THIS CLOSES. The owner's stated goal is that the apps side eventually earns what the
+    tools site earns. Every part of that sentence is measured except the apps side: this digest
+    reports AdSense (web) revenue and GSC clicks, and NOTHING reads AdMob. Checked 2026-08-13,
+    `admob` appears in pre-release-verify.sh and aso-refresh-runner.sh and in no nightly, no
+    watchdog, and no cron. So the apps could have earned nothing for a year, or tripled, and this
+    page would have looked identical either way.
+
+    Worse, when it was first called by hand the pipe turned out to be broken: the stored AdMob
+    refresh token returns invalid_grant, i.e. revoked. A dead credential behind a check nobody runs
+    is exactly the shape of every silent killer this file exists to catch.
+
+    This does NOT try to fix the token — re-auth is a browser flow only the owner can complete
+    (`python3 py/admob.py auth`). It makes the breakage LOUD, every single morning, until it is."""
+    import subprocess as _sp
+    L = ["", "## Apps — are the mobile apps earning?"]
+    tok_file = CFG / "admob-token.json"
+    if not tok_file.exists():
+        L.append("")
+        L.append("⚠️ **couldn't check** — no `~/.config/teamzlab/admob-token.json`. Nothing has "
+                 "ever read AdMob earnings on this machine.")
+        L.append("")
+        L.append("🔔 **TRIGGER:** run `python3 py/admob.py auth` (browser flow, one time).")
+        return L
+    try:
+        t = json.loads(tok_file.read_text())
+        data = urllib.parse.urlencode({
+            "client_id": t["client_id"], "client_secret": t["client_secret"],
+            "refresh_token": t["refresh_token"], "grant_type": "refresh_token"}).encode()
+        urllib.request.urlopen(
+            urllib.request.Request("https://oauth2.googleapis.com/token", data=data), timeout=30)
+    except Exception as e:  # noqa: BLE001
+        detail = ""
+        if isinstance(e, urllib.error.HTTPError):
+            body = e.read().decode(errors="ignore")
+            detail = " (`invalid_grant` — the token was revoked)" if "invalid_grant" in body else ""
+        L.append("")
+        L.append(f"❌ **AdMob UNREACHABLE — apps revenue is UNMEASURED**{detail}. This is not "
+                 "\"the apps earned nothing\"; it is \"nobody can tell\".")
+        L.append("")
+        L.append("🔔 **TRIGGER:** `cd teamz-company-automation && python3 py/admob.py auth`, then "
+                 "this section starts reporting per-app earnings.")
+        return L
+
+    try:
+        out = _sp.run([sys.executable, str(Path(__file__).resolve().parent / "admob.py"),
+                       "report", "--days", "28", "--dimensions", "APP",
+                       "--metrics", "ESTIMATED_EARNINGS,IMPRESSIONS"],
+                      capture_output=True, text=True, timeout=180)
+    except Exception as e:  # noqa: BLE001
+        L.append(f"\n⚠️ **couldn't check** — AdMob report failed ({type(e).__name__}).")
+        return L
+    if out.returncode != 0:
+        L.append(f"\n⚠️ **couldn't check** — AdMob report exited {out.returncode}: "
+                 f"`{(out.stderr or '').strip().splitlines()[-1][:120] if out.stderr else 'no stderr'}`")
+        return L
+    body = (out.stdout or "").strip()
+    if not body:
+        # Empty output is ambiguous — it could be a real zero or a silent API change. Say which
+        # one we cannot distinguish rather than printing £0.00 and letting it read as fact.
+        L.append("\n⚠️ **couldn't check** — AdMob returned no rows. Cannot distinguish "
+                 "\"earned nothing\" from \"query returned nothing\".")
+        return L
+    L.append("")
+    L.append("```")
+    L.extend(body.splitlines()[:25])
+    L.append("```")
+    L.append("")
+    L.append("_Store/AdMob earnings, the only valid revenue source. Never analytics events._")
+    return L
+
+
 def revenue_section():
     """The money section: is revenue holding, and how concentrated is it?
 
@@ -993,6 +1067,7 @@ def main():
             L.append(f"\n_(weekly AI trend unavailable: {type(e).__name__})_")
 
     L.extend(segment_section(tok))
+    L.extend(apps_revenue_section())
     L.extend(revenue_section())
 
     L.append("")

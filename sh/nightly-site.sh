@@ -337,6 +337,16 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
     echo "  SKIP: api.anthropic.com unreachable after ~${TEAMZ_NET_RETRIES:-20} min."
     echo "        The morning catch-up sweep will retry this site."
   else
+    # Is each page even AIMED at a keyword anyone searches? The queue below answers "which
+    # page should I improve" and takes every page's declared target as given, so a page built
+    # around a 10/mo phrase looks merely small, forever. On apps.teamzlab.com that was 5 of 7
+    # app pages. Cached for TEAMZ_KWAUDIT_TTL_DAYS (14) — a cached run costs zero Keyword
+    # Planner calls, so this is safe nightly. Never fatal: a bad keyword target is a slow
+    # problem, and it must not stop tonight's content work.
+    if [ -f "$ROOT/teamz-company-automation/py/build-keyword-target-audit.py" ]; then
+      python3 "$ROOT/teamz-company-automation/py/build-keyword-target-audit.py" 2>&1 \
+        | sed 's/^/  /' || echo "  (keyword-target audit failed — non-fatal)"
+    fi
     python3 scripts/build-content-queue.py 2>&1 | sed 's/^/  /'
     QUEUE="$ROOT/data/content-queue.json"
     N_TARGETS=$(python3 -c "import json,sys;print(len(json.load(open('$QUEUE'))['targets']))" 2>/dev/null || echo 0)

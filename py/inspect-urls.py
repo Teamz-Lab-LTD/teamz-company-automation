@@ -57,7 +57,12 @@ import xml.etree.ElementTree as ET
 SC_TOKEN = os.path.expanduser(
     os.environ.get("TEAMZ_SC_TOKEN_FILE", "~/.config/teamzlab/search-console-token.json")
 )
-SITE_URL = os.environ.get("TEAMZ_SITE_URL", "").rstrip("/") + "/"
+# Do NOT append "/" to an unset value. `"".rstrip("/") + "/"` yields "/", which is TRUTHY, so
+# the "must be set" guard below could never fire — the script printed `Property: /`, sent that
+# to the API and got HTTP 400 "Invalid input" on every URL. A missing config read as a bad
+# request instead of as a missing config.
+_su = os.environ.get("TEAMZ_SITE_URL", "").strip()
+SITE_URL = (_su.rstrip("/") + "/") if _su else ""
 SITE_PROPERTY = os.environ.get("TEAMZ_SITE_PROPERTY", SITE_URL)
 GCP_PROJECT = os.environ.get("TEAMZ_GOOGLE_CLOUD_PROJECT", "")
 

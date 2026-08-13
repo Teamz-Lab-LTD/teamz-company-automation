@@ -514,6 +514,119 @@ def _alert_channel_ready():
         return False
 
 
+# A segment needs at least this many clicks in the window before a trend arrow means anything.
+# apps.teamzlab.com took 48 clicks in the 28 days to 2026-08-13, split four ways. On numbers that
+# small, ordinary week-to-week noise swamps any real change: 6 clicks vs 9 clicks is "+50%" and
+# also completely meaningless. Printing an arrow there would be the monitor telling a comforting
+# story, which is the one thing this file is not allowed to do. Below the floor it says so.
+SEGMENT_TREND_FLOOR = 25
+
+
+def _segment_of(path, apps, saas, services):
+    p = [x for x in path.strip("/").split("/") if x]
+    if not p:
+        return "home"
+    if p[0] == "blog":
+        return "blog"
+    if p[0] in saas:
+        return "SaaS"
+    if p[0] in apps:
+        return "app"
+    if p[0] in services:
+        return "service"
+    return "other"
+
+
+def _segment_slugs(repo_root):
+    """(app slugs, saas slugs, service slugs) read from the property's own source of truth.
+
+    Hardcoding the three lists here is the defect class this repo has been bitten by repeatedly
+    (MONEY_NICHES, HIGH_RPM_HUBS, rpm-benchmarks): a new app ships, the list is not updated, and
+    the new page silently lands in 'other' where nobody looks at it. These are derived, so adding
+    a landing page enrols it automatically."""
+    import re as _re
+    apps_dir = repo_root / "src" / "content" / "apps"
+    apps = {f.stem for f in apps_dir.glob("*.md")} - {"README", "readme"} if apps_dir.exists() else set()
+    # AlignFlow and AlwaysReady Care live in the apps collection but are sold as SaaS, at a price
+    # per deal that dwarfs an install. They are broken out because averaging them into 'app' hides
+    # the highest-value surface on the property behind the noisiest one.
+    saas = {s for s in ("alignflow", "always-ready-care") if s in apps}
+    apps -= saas
+    svc_file = repo_root / "src" / "data" / "services.ts"
+    services = set()
+    if svc_file.exists():
+        services = set(_re.findall(r"^\s*slug: '([a-z0-9-]+)',", svc_file.read_text(errors="ignore"), _re.M))
+    return apps, saas, services
+
+
+def segment_section(tok):
+    """apps.teamzlab.com is THREE businesses in one Search Console property.
+
+    App landing pages sell installs, AlignFlow/AlwaysReady sell SaaS deals, and the service pages
+    sell agency work. The digest reported one clicks number for all of them, so a service cluster
+    could sit at 1 click on 1,320 impressions for months while the property line read 'flat' — and
+    it did. The owner has said plainly that apps, SaaS and services are separate businesses to him;
+    the monitor now separates them too.
+
+    Measured 2026-08-13, 28 days: app 32 clicks / 2.65% CTR, blog 15 / 0.60%, service 1 / 0.08%,
+    SaaS 0 on 29 impressions. Same property, four completely different stories."""
+    repo = PROJECTS / "teamz-lab-generic-landing-pages"
+    prop = "https://apps.teamzlab.com/"
+    L = ["", "## Apps property, split by business", ""]
+    apps, saas, services = _segment_slugs(repo)
+    if not apps and not services:
+        L.append("- couldn't check — could not read the app/service slug lists from the repo.")
+        return L
+
+    def _window(days_back, days):
+        end = date.today() - timedelta(days=days_back)
+        start = end - timedelta(days=days - 1)
+        body = json.dumps({"startDate": start.isoformat(), "endDate": end.isoformat(),
+                           "dimensions": ["page"], "rowLimit": 1000}).encode()
+        url = ("https://www.googleapis.com/webmasters/v3/sites/"
+               f"{urllib.parse.quote(prop, safe='')}/searchAnalytics/query")
+        req = urllib.request.Request(url, data=body, headers={
+            "Authorization": f"Bearer {tok}", "Content-Type": "application/json"})
+        agg = {}
+        for r in json.load(urllib.request.urlopen(req, timeout=60)).get("rows", []):
+            path = r["keys"][0].split("teamzlab.com", 1)[-1]
+            s = _segment_of(path, apps, saas, services)
+            a = agg.setdefault(s, [0.0, 0.0])
+            a[0] += r["clicks"]
+            a[1] += r["impressions"]
+        return agg
+
+    try:
+        now, prev = _window(3, 28), _window(31, 28)
+    except Exception as e:  # noqa: BLE001
+        # Unreadable must never render as zero — see the monitor-honesty rule.
+        L.append(f"- couldn't check — Search Console unreachable ({type(e).__name__}).")
+        return L
+
+    L.append("| business | clicks 28d | vs prior 28d | impressions | CTR |")
+    L.append("|---|---|---|---|---|")
+    order = ["app", "SaaS", "service", "blog", "home", "other"]
+    for s in order:
+        c, i = now.get(s, [0.0, 0.0])
+        pc = prev.get(s, [0.0, 0.0])[0]
+        trend = arrow(c, pc) if c >= SEGMENT_TREND_FLOOR or pc >= SEGMENT_TREND_FLOOR \
+            else f"too small to judge (<{SEGMENT_TREND_FLOOR})"
+        ctr = f"{100 * c / i:.2f}%" if i else "—"
+        L.append(f"| {s} | {int(c)} | {trend} | {int(i)} | {ctr} |")
+
+    # The failure this table exists to surface: a segment Google shows a lot and nobody clicks.
+    # Impressions without clicks is demand arriving at a page that is ranked too low to be seen,
+    # and it is invisible in a whole-property total.
+    for s in ("service", "SaaS", "app"):
+        c, i = now.get(s, [0.0, 0.0])
+        if i >= 300 and c <= 2:
+            L.append("")
+            L.append(f"🔔 **{s}: {int(i)} impressions, {int(c)} click(s) in 28 days.** Google is "
+                     f"showing these pages and nobody is reaching them — that is a ranking-depth "
+                     f"problem, not a copy problem. Check position before rewriting anything.")
+    return L
+
+
 def revenue_section():
     """The money section: is revenue holding, and how concentrated is it?
 
@@ -879,6 +992,7 @@ def main():
         except Exception as e:  # noqa: BLE001
             L.append(f"\n_(weekly AI trend unavailable: {type(e).__name__})_")
 
+    L.extend(segment_section(tok))
     L.extend(revenue_section())
 
     L.append("")

@@ -645,7 +645,34 @@ def apps_revenue_section():
     (`python3 py/admob.py auth`). It makes the breakage LOUD, every single morning, until it is."""
     import subprocess as _sp
     L = ["", "## Apps — are the mobile apps earning?"]
+
+    # THE OWNER ALREADY KNOWS THE NUMBER. He said so: ~£9/month, 2026-08-14.
+    # The first version of this section shouted ❌ UNMEASURED every morning and demanded a
+    # re-auth. That is a monitor arguing with the person it reports to. A figure he states is
+    # better evidence than an API this machine cannot currently reach, so if TEAMZ_APPS_REVENUE_
+    # GBP_MONTH is set, that is the answer and the re-auth becomes a quiet footnote — the API is
+    # worth having for the PER-APP split (which of the ~20 carry the £9), never for the total.
+    # Read the env FILE too, not just the process environment: /growth is run by hand from an
+    # arbitrary shell that has never sourced automation.base.env, so os.getenv alone would find
+    # nothing and the section would fall back to shouting — the exact behaviour being fixed.
+    manual = os.getenv("TEAMZ_APPS_REVENUE_GBP_MONTH", "").strip()
+    if not manual:
+        try:
+            for line in (CFG / "automation.base.env").read_text().splitlines():
+                line = line.strip()
+                if line.startswith("TEAMZ_APPS_REVENUE_GBP_MONTH="):
+                    manual = line.split("=", 1)[1].strip().strip('"').strip("'")
+        except OSError:
+            pass
     tok_file = CFG / "admob-token.json"
+    if manual:
+        L.append("")
+        L.append(f"**£{manual}/month**, owner-stated. Compare: tools ≈ £140/month.")
+        L.append("")
+        L.append("_Per-app split unavailable (AdMob not connected), so which of the apps carry "
+                 "this is unknown. Run `python3 py/admob.py auth` when the split matters._")
+        return L
+
     if not tok_file.exists():
         L.append("")
         L.append("⚠️ **couldn't check** — no `~/.config/teamzlab/admob-token.json`. Nothing has "

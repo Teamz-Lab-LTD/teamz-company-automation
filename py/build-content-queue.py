@@ -987,6 +987,101 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics, kw_vo
             vanity_skipped)
 
 
+def app_blog_coverage(host):
+    """{app_slug: how many blog posts link to /app-slug/}.
+
+    Measured on apps.teamzlab.com 2026-08-14, and the result is the clearest correlation on the
+    property:
+
+        no-trace-chat      13 posts  -> real non-brand queries ('invisible chat application' etc)
+        top3picks           7 posts  -> real non-brand queries
+        always-ready-care   4 posts  -> real non-brand queries
+        the other 14 apps   0 posts  -> shown almost ONLY for their own brand name
+                                        (/devicegpt/ got 5 impressions in 90 days, 4 of them
+                                         for the string "device_gpt")
+
+    Nobody searches "brimful". An app landing page has no query of its own to rank for, so the
+    blog posts around it are not a nice-to-have — they are the entire non-brand door into it.
+    An app with zero posts is structurally unreachable, however good its landing page is."""
+    apps_dir = host / "src" / "content" / "apps"
+    blog_dir = host / "src" / "content" / "blog"
+    if not apps_dir.exists():
+        return {}
+    slugs = {f.stem for f in apps_dir.glob("*.md")} - {"README", "readme"}
+    cov = {s: 0 for s in slugs}
+    if blog_dir.exists():
+        for f in blog_dir.glob("*.md"):
+            txt = f.read_text(errors="ignore")
+            for s in slugs:
+                if re.search(rf'\]\(/{re.escape(s)}/\)|href="/{re.escape(s)}/"', txt):
+                    cov[s] += 1
+    return cov
+
+
+def pool_app_coverage(host, existing, deny_topics, kw_vol=None, cov=None, max_out=1):
+    """A NEW post for the app with NO blog behind it — the last-resort NEW candidate.
+
+    This runs only when the measured-demand pool and the autocomplete-expansion pool both came
+    back empty, so it can never outrank a measured signal and never inflates the weekly NEW cap.
+    It exists because both of those pools ask "which QUERY is unserved", and neither ever asks
+    "which of our own products has nothing pointing at it" — so 14 naked apps stayed naked
+    indefinitely while the engine polished the three that were already covered.
+
+    The topic comes from the app's OWN declared secondaryKeywords, never invented, and is skipped
+    if the site already has a page for it. Volume-ranked where a Keyword Planner pull exists."""
+    cov = app_blog_coverage(host) if cov is None else cov
+    if not cov:
+        return []
+    naked = sorted((s for s, n in cov.items() if n == 0), key=lambda s: (cov[s], s))
+    out = []
+    for slug in naked:
+        f = host / "src" / "content" / "apps" / f"{slug}.md"
+        try:
+            head = f.read_text(errors="ignore").split("\n---", 1)[0]
+        except OSError:
+            continue
+        kws = re.findall(r"^\s{2}-\s+['\"]?(.+?)['\"]?\s*$",
+                         (re.search(r"^secondaryKeywords:\n((?:\s{2}-.*\n)+)", head, re.M) or
+                          type("x", (), {"group": lambda *_: ""})()).group(1) or "", re.M)
+        # NEVER the app page's own primaryKeyword. The first version used it as first choice and
+        # produced 'dental practice management software' -> a new blog post, while /alignflow/
+        # targets that exact term. That is not coverage, it is a self-inflicted clash: the post
+        # would fight the landing page it was written to support. A supporting post must take a
+        # DIFFERENT query and hand the authority over via the link. Secondary keywords only.
+        pk = re.search(r"^primaryKeyword:\s*['\"]?(.+?)['\"]?\s*$", head, re.M)
+        primary = pk.group(1).strip().lower() if pk else None
+        cands = [k.strip() for k in kws if k.strip().lower() != primary]
+        # Non-Latin targets are a different geo's demand; a US-pull volume on them reads ~0 and
+        # would silently rank them last. Skipped rather than mis-scored.
+        cands = [c for c in cands if c and all(ord(ch) < 128 for ch in c)]
+        best = None
+        for c in cands:
+            if c.lower() in deny_topics or f"/blog/{slugify(c)}/" in existing:
+                continue
+            vol = (kw_vol or {}).get(_norm(c), {}).get("vol")
+            if best is None or (vol or 0) > (best[1] or 0):
+                best = (c, vol)
+        if not best:
+            continue
+        topic, vol = best
+        out.append({
+            "mode": "NEW", "topic": topic, "slug": slugify(topic),
+            "impressions": 0, "clicks": 0, "position": 0.0,
+            "score": float(vol or 1),
+            "source": "app-coverage",
+            "must_link": f"/{slug}/",
+            "why": (f"/{slug}/ has ZERO blog posts linking to it. Nobody searches the app's own "
+                    f"name, so its landing page has no non-brand door into it — measured on this "
+                    f"property, the only three apps with blog coverage are the only three that "
+                    f"get non-brand impressions at all. Write a post answering '{topic}' (the "
+                    f"app's own declared keyword) and link it to /{slug}/ in the body."
+                    + (f" [Keyword Planner: ~{int(vol)}/mo]" if vol else "")),
+        })
+        if len(out) >= max_out:
+            break
+    return out
+
+
 def family_key(path):
     """Pages that are the SAME thing in a different season. The clash-prevention primitive.
 
@@ -1510,6 +1605,18 @@ def main():
     else:
         print("  AI channel : UNAVAILABLE — pools fail closed (additive/flag-only) tonight")
 
+    # APP COVERAGE — reported every night whether or not it drives a target tonight, because a
+    # naked app is a standing structural gap, not a one-off task. 14 of 17 were naked on
+    # 2026-08-14 and nothing in this engine had ever mentioned it.
+    _app_cov = app_blog_coverage(host)
+    if _app_cov:
+        _naked = sorted(s for s, n in _app_cov.items() if n == 0)
+        _covered = sum(1 for n in _app_cov.values() if n)
+        print(f"  app coverage: {_covered}/{len(_app_cov)} app page(s) have a blog behind them"
+              + (f" — NAKED: {', '.join(_naked[:8])}" + ("…" if len(_naked) > 8 else "")
+                 if _naked else " — all covered"))
+
+
     enhance = pool_enhance(prop, token, site_url, cool, args.min_impressions,
                            deny_paths, deny_topics,
                            force_additive=force_additive, click_floor=click_floor,
@@ -1640,6 +1747,14 @@ def main():
         if not new:
             country = os.getenv("TEAMZ_CONTENT_COUNTRY", "us")
             new = pool_expand(prop, token, site_url, existing, deny_topics, country)
+
+        # 3rd choice: an app with NOTHING pointing at it. Last, so a measured query always wins,
+        # and inside new_budget, so the weekly NEW cap is untouched. See pool_app_coverage().
+        if not new:
+            new = pool_app_coverage(host, existing, deny_topics, kw_vol=kw_vol, cov=_app_cov)
+            for t in new:
+                print(f"  NEW (app coverage): '{t['topic']}' -> must link {t['must_link']} "
+                      f"— that app has zero blog posts behind it.")
 
         # DO NOT SHIP TOMORROW'S CANNIBALISATION TONIGHT.
         # pool_expand scores autocomplete suggestions independently, so near-duplicates of

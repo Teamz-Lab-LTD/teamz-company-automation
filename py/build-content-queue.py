@@ -92,12 +92,52 @@ def kw_winnability(q, kw_vol):
             "vanity": vol is not None and vol >= VANITY_VOL}
 
 
-def _kw_note(win):
-    """The '[Keyword Planner: ...]' clause for a target's why-string — only when we have a real,
-    non-None volume (an unknown volume must not print as '~0/mo')."""
+_SERP_WIN = {}   # keyword -> measured winnability 1-10, loaded once per run from serp-difficulty.json
+
+
+def load_serp_winnability(data_dir):
+    """Measured SERP winnability, if this property has run build-serp-difficulty.py.
+
+    Missing file -> {} -> notes fall back to volume alone. Never guessed."""
+    p = Path(data_dir) / "serp-difficulty.json"
+    try:
+        d = json.loads(p.read_text())
+    except (OSError, ValueError):
+        return {}
+    if not d.get("calibrated", True):
+        # Scored on a corpus too small to calibrate — every keyword reads near-unwinnable there.
+        # Publishing that into a brief would tell the writer to give up on winnable terms.
+        print("  serp win   : serp-difficulty.json is calibrated=false — ignoring (corpus too small)")
+        return {}
+    return {k.lower(): v for k, v in (d.get("keywords") or {}).items()
+            if not v.get("thin_serp")}
+
+
+def _kw_note(win, q=None):
+    """The '[Keyword Planner: ...]' clause for a target's why-string.
+
+    THE WORD "COMPETITION" HERE USED TO BE A LIE BY OMISSION.
+    This note is read by the nightly agent that writes the page, and it used to render as
+    "~1200/mo, Low competition". That column is Google Ads ADVERTISER competition — how many
+    accounts bid — and it is NOT SEO difficulty. The two disagree hard: measured on this property
+    2026-08-13, every keyword marked "Low" scored 4.0-5.6 out of 10 on real SERP composition, and
+    one marked "Low" (`how to detect spyware on android`) has 7 of 10 slots held by authorities.
+    A writer told "Low competition" reasonably concludes the term is winnable and it is not.
+
+    So: the ad metric is now labelled as the ad metric, and where build-serp-difficulty.py has
+    MEASURED the SERP, that number leads. Unmeasured stays unmeasured — never substituted."""
     if not win or win.get("vol") is None:
         return ""
-    return f" [Keyword Planner: ~{int(win['vol'])}/mo, {win.get('comp') or 'unknown'} competition]"
+    note = f" [Keyword Planner: ~{int(win['vol'])}/mo"
+    sw = _SERP_WIN.get((q or "").strip().lower())
+    if sw:
+        note += f"; MEASURED SERP winnability {sw['winnability']}/10 ({sw['why']})"
+    else:
+        note += "; SERP not measured"
+    comp = win.get("comp")
+    if comp:
+        note += f"; {comp} ADVERTISER competition (ad bidding, NOT SEO difficulty)"
+    return note + "]"
 
 
 def _attach_kw(target, win):
@@ -853,7 +893,7 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics, kw_vo
                         f"with 0 clicks. We are NOT writing a new page for it — {owner} already "
                         f"owns this topic, and a second page would cannibalise it. Make THAT page "
                         f"actually answer '{q}': it is already indexed, so it can move in days."
-                        + _kw_note(win)
+                        + _kw_note(win, q)
                         + (" (head term — deprioritised: worth an additive pass but do not expect "
                            "to win it)" if vanity else "")),
             }
@@ -875,7 +915,7 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics, kw_vo
             "serving_page_today": rp or "(none)",
             "why": (f"Google shows us for '{q}' {int(impr)} times in 90 days but we sit at "
                     f"#{pos:.0f} with 0 clicks, and the page it picks ({rp or 'n/a'}) is not "
-                    f"about it — real demand, no page serving it" + _kw_note(win)),
+                    f"about it — real demand, no page serving it" + _kw_note(win, q)),
         }
         out.append(_attach_kw(t, win))
     return (sorted(out, key=lambda x: -x["score"]),
@@ -1386,6 +1426,7 @@ def main():
     # Absent -> {} -> every winnability check returns None -> engine behaves exactly as before.
     try:
         kw_vol = load_manual_volume(host / "data")
+        _SERP_WIN.update(load_serp_winnability(host / "data"))
     except Exception:
         kw_vol = {}
     if kw_vol:

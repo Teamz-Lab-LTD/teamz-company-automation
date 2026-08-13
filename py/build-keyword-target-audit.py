@@ -100,10 +100,20 @@ def page_targets(host):
         for f in sorted(root.glob("*.md")):
             if f.stem.lower() == "readme":
                 continue
-            head = f.read_text(errors="ignore")[:4000]
+            # READ THE WHOLE FRONTMATTER, NOT A FIXED PREFIX.
+            # The first version capped the read at 4000 chars. Several pages carry a long provenance
+            # comment above the fields — notetube-ai.md declares primaryKeyword on line 42, past the
+            # cap — so the page was reported as "no target declared" and dropped from the audit
+            # silently. A page missing from a coverage report is the worst possible failure here: it
+            # reads as nothing-to-fix. Frontmatter is small; read it all.
+            txt = f.read_text(errors="ignore")
+            head = txt.split("\n---", 1)[0] if txt.startswith("---") else txt[:8000]
             mk = re.search(r"^primaryKeyword:\s*['\"]?(.+?)['\"]?\s*$", head, re.M)
             if mk:
                 out.append((f.stem, mk.group(1).strip(), str(f.relative_to(host))))
+            else:
+                # Undeclared is a finding, not a skip — it is how a page ends up aimed at nothing.
+                out.append((f.stem, None, str(f.relative_to(host))))
     return out
 
 
@@ -139,6 +149,9 @@ def main():
                 return 0
         except (ValueError, KeyError, OSError):
             pass  # unreadable cache -> re-pull, never silently skip the audit
+
+    undeclared = [{"slug": s, "source": src} for s, kw, src in targets if not kw]
+    targets = [t for t in targets if t[1]]
 
     kva = _load("build-keyword-volume-auto")
     seeds = [kw for _, kw, _ in targets]
@@ -225,12 +238,15 @@ def main():
         "pages_audited": len(targets),
         "pages_well_targeted": ok,
         "not_auditable_wrong_geo": wrong_geo,
+        "no_target_declared": undeclared,
         "retarget_candidates": flagged,
     }, indent=2))
 
     print(f"keyword-target audit: {len(targets)} page(s), {ok} aimed at a real term, "
           f"{len(flagged)} flagged"
           + (f", {len(wrong_geo)} not auditable at geo {args.geo}" if wrong_geo else ""))
+    for u in undeclared:
+        print(f"    (no target) {u['slug']} — no primaryKeyword in frontmatter")
     for w in wrong_geo:
         print(f"    (skipped) {w['slug']} <- '{w['current']}' — {w['why']}")
     for c in flagged:

@@ -58,6 +58,15 @@ RESERVE_CREDITS = int(os.getenv("TEAMZ_FIRECRAWL_RESERVE", "50"))   # never spen
 # the engine would keep ranking clusters on a stale reading and never notice it had gone wrong —
 # the failure mode is silent and gets worse with time. Anything older than this is re-measured.
 STALE_DAYS = int(os.getenv("TEAMZ_SERP_STALE_DAYS", "90"))
+# CORPUS FLOOR — below this the scores are arithmetic, not measurement, and they fail SILENTLY LOW.
+# Per-slot authority is min(1.0, appearances / (corpus * 0.15)). At corpus=6 the denominator is 0.9,
+# so ANY domain seen even ONCE scores full authority, every slot reads "strong", and every keyword
+# lands at winnability 1-2 whatever the real SERP looks like. Measured here 2026-08-13: a 6-keyword
+# run returned auth_share 1.00 and 10/10 strong slots for all six — that is the formula talking, not
+# the SERP. The learn property's 676-keyword corpus needs 101 appearances for the same weight, which
+# is why its numbers are trustworthy. Below the floor everything is still written, but flagged
+# calibrated=false so no downstream reader mistakes it for a measurement.
+MIN_CORPUS = int(os.getenv("TEAMZ_SERP_MIN_CORPUS", "25"))
 
 UGC_HOSTS = ("reddit.com", "quora.com", "stackexchange.com", "stackoverflow.com",
              "medium.com", "youtube.com", "facebook.com", "linkedin.com")
@@ -175,7 +184,16 @@ def score(kw, results, auth, corpus_size):
     difficulty -= (diversity - 0.8) * 1.5          # diversity measured against a typical 8/10-distinct SERP
     difficulty = max(1.0, min(10.0, difficulty))
 
+    # THIN SERP — fewer than half the requested slots came back. auth_share is a MEAN over the
+    # slots returned, so one authority in a 1-result SERP reads as auth 1.00 / hopeless, and one
+    # weak site in a 2-result SERP reads as wide open. Both are sample size, not difficulty.
+    # Measured 2026-08-13: 'flutter uber clone' returned a single result and scored 1.7/10, the
+    # worst in a 42-keyword batch, purely because it was the smallest sample in it.
+    thin = len(doms) < max(5, TOP_N // 2)
+
     why = f"{strong}/{len(doms)} strong slots (auth {auth_share:.2f})"
+    if thin:
+        why = f"THIN SERP ({len(doms)} results) — score unreliable; " + why
     if ugc:
         why += f"; {ugc} UGC = opening"
     if diversity < 0.8:
@@ -189,6 +207,7 @@ def score(kw, results, auth, corpus_size):
         "strong_slots": strong,
         "ugc_results": ugc,
         "distinct_domains": len(uniq),
+        "thin_serp": thin,
         "top_domains": doms[:TOP_N],
         "why": why,
     }
@@ -299,7 +318,20 @@ def main():
     serps = {k: v.get("_results") for k, v in cache.items() if v.get("_results")}
     today = time.strftime("%Y-%m-%d")
     stamped, failed = {}, []
+    # THE PRE-FLIGHT BUDGET IS NOT ENOUGH — IT ASSUMES ONE CREDIT PER KEYWORD.
+    # fetch_serp retries up to 3x on 429/502/503, and every attempt bills. A 47-keyword run against
+    # a 71-credit balance with RESERVE=20 passed the up-front check (71-20=51 >= 47) and still drove
+    # the account to -1, because the rate-limited tail retried. Measured here 2026-08-13; the last
+    # 11 keywords then died on 402 and were never scored. So the balance is re-read mid-run and the
+    # loop stops the moment it crosses the reserve — a hard floor, not an estimate.
     for i, kw in enumerate(todo, 1):
+        if i % 10 == 0:
+            live = credits_left(key)
+            if live <= RESERVE_CREDITS:
+                print(f"  credit floor reached ({live} left, {RESERVE_CREDITS} reserved) — "
+                      f"stopping after {i - 1} of {len(todo)}. Re-run to finish.", file=sys.stderr)
+                failed.extend(todo[i - 1:])
+                break
         res = fetch_serp(key, kw)
         if res is None:
             failed.append(kw)             # keep the old score rather than dropping the keyword
@@ -311,12 +343,19 @@ def main():
 
     auth = authority_index(serps)
     corpus = len(serps)
+    calibrated = corpus >= MIN_CORPUS
+    if not calibrated:
+        print(f"\n  ⚠ CORPUS TOO SMALL TO CALIBRATE: {corpus} SERPs (floor {MIN_CORPUS}). Authority "
+              f"saturates at {corpus * 0.15:.1f} appearances, so every domain reads as an authority "
+              "and every keyword will score near-unwinnable. Numbers below are marked "
+              "calibrated=false — do NOT retarget a page on them.", file=sys.stderr)
     scored, moved = {}, []
     for kw, res in serps.items():
         s = score(kw, res, auth, corpus)
         if not s:
             continue
         s["_results"] = res               # cached so a re-run recomputes authority without refetching
+        s["calibrated"] = calibrated      # false = the corpus was too small; see MIN_CORPUS
         # Keep the ORIGINAL measurement date for anything not refetched this run, so a keyword can
         # never look freshly-verified just because some other keyword was scored today.
         s["scored_at"] = stamped.get(kw) or cache.get(kw, {}).get("scored_at") or today
@@ -329,6 +368,8 @@ def main():
     out_p.write_text(json.dumps({
         "generated_at": time.strftime("%Y-%m-%d"),
         "corpus_size": corpus,
+        "calibrated": calibrated,
+        "min_corpus": MIN_CORPUS,
         "top_authorities": auth.most_common(25),
         "failed": failed,
         "keywords": scored,

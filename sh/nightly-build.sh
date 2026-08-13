@@ -610,6 +610,13 @@ run_phase_cmd "Freshness validation" 10 "./scripts/build-validate-freshness.sh"
 
 echo "  Checking internal link health..."
 run_phase_cmd "Internal link health" 5 "scripts/build-internal-links.sh --quick"
+# Marooned pages: linked, indexed, and still unreachable because every page linking to them is
+# itself dead. The orphan fix above cannot see these — it counts inbound links and they HAVE
+# inbound links. Measured 2026-08-14: three NFL pages each had 2 inbound links and 0 impressions
+# in 90 days, because every one of those links came from a page with 4 impressions. Report-only;
+# it names a topically-adjacent donor with real traffic, and the content agent writes the
+# sentence that carries the link.
+run_phase_cmd "Marooned pages" 5 "python3 ../teamz-company-automation/py/build-marooned-pages.py --site tools --top 10"
 
 echo "  Running QA check..."
 run_phase_cmd "QA check" 10 "./scripts/build-qa-check.sh"

@@ -343,6 +343,18 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
     # app pages. Cached for TEAMZ_KWAUDIT_TTL_DAYS (14) — a cached run costs zero Keyword
     # Planner calls, so this is safe nightly. Never fatal: a bad keyword target is a slow
     # problem, and it must not stop tonight's content work.
+    # MAROONED PAGES — indexed, linked, and still unreachable because every page linking to
+    # them is itself dead. build-fix-orphans.py cannot see these: it counts inbound links and
+    # they HAVE inbound links. Three NFL pages passed it with 2 links each and took 0
+    # impressions in 90 days, because every link came from a page with 4. Report-only; the
+    # content agent writes the sentence that carries the link. Non-fatal by design.
+    if [ -f "$ROOT/teamz-company-automation/py/build-marooned-pages.py" ]; then
+      MAROON_SITE="${TEAMZ_MAROON_SITE:-apps}"
+      python3 "$ROOT/teamz-company-automation/py/build-marooned-pages.py" \
+        --site "$MAROON_SITE" --top 8 2>&1 | sed 's/^/  /' \
+        || echo "  (marooned-page scan failed — non-fatal)"
+    fi
+
     if [ -f "$ROOT/teamz-company-automation/py/build-keyword-target-audit.py" ]; then
       python3 "$ROOT/teamz-company-automation/py/build-keyword-target-audit.py" 2>&1 \
         | sed 's/^/  /' || echo "  (keyword-target audit failed — non-fatal)"

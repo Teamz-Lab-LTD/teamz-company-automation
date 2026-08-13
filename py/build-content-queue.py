@@ -510,6 +510,38 @@ def edit_mode_for(clicks, floor):
     return "additive" if clicks > floor else "full"
 
 
+# A title is only "proven" if it EARNS. These are the floors below which, at a given position,
+# a title has demonstrably failed rather than merely been untested.
+SNIPPET_MIN_IMPR = int(os.getenv("TEAMZ_SNIPPET_MIN_IMPR", "100"))
+SNIPPET_CTR_TOP10 = float(os.getenv("TEAMZ_SNIPPET_CTR_TOP10", "0.015"))   # 1.5% by position 10
+SNIPPET_CTR_TOP20 = float(os.getenv("TEAMZ_SNIPPET_CTR_TOP20", "0.007"))   # 0.7% by position 20
+
+
+def title_is_disproven(pos, impr, ctr):
+    """True when this page's own Google CTR says the title FAILED, not that it is untested.
+
+    THE HOLE THIS PLUGS. edit_mode_for() is right that a title earning clicks must not be
+    rewritten — a single variant has been measured costing 16% of organic traffic. But its test is
+    `clicks > floor`, floor defaults to 0, and one click is indistinguishable from a thousand under
+    `> 0`. So on apps.teamzlab.com the listicle sitting at position 9.9 with 1,657 impressions and
+    ONE click was classified ADDITIVE, and the brief told the agent in as many words: "Its title is
+    proven; do not rewrite it." It is the opposite of proven. Measured 2026-08-14: 18 pages, all
+    inside the top 25, 6,027 impressions, 22 clicks between them — and the queue had been correctly
+    picking several of them for months while forbidding the one edit that addresses the defect. The
+    agent rewrote bodies instead, which Google's snippet does not show.
+
+    AI SESSIONS CANNOT VOUCH FOR A TITLE. _enhance_entry adds ai_sessions into the same
+    `attention` number. ChatGPT never renders your title tag, so an AI-heavy page can be locked
+    into "title proven" by traffic that never saw the title. Only Google CTR is evidence here.
+
+    Conservative on purpose: needs real impressions (noise cannot convict a title), only judges
+    inside the top 20 where position sets a fair expectation, and stays silent otherwise — silence
+    means today's behaviour, unchanged."""
+    if impr < SNIPPET_MIN_IMPR or pos > 20:
+        return False
+    return ctr < (SNIPPET_CTR_TOP10 if pos <= 10 else SNIPPET_CTR_TOP20)
+
+
 def _enhance_entry(path, query, pos, impr, clicks, ctr, score, source, why,
                    ai_by_path, ai_known, force_additive, click_floor, extra=None):
     # ATTENTION, not Google clicks. A page can earn nothing from Google and still be
@@ -519,8 +551,13 @@ def _enhance_entry(path, query, pos, impr, clicks, ctr, score, source, why,
     # unknown means fail closed (additive), never "wave it through".
     ai_hits = (ai_by_path or {}).get(path, 0)
     attention = clicks + ai_hits
+    # SNIPPET REPAIR outranks the additive lock — but never the explicit --additive flag, and never
+    # a failed AI read (fail-closed stays fail-closed). See title_is_disproven().
+    snippet = (not force_additive) and ai_known and title_is_disproven(pos, impr, ctr)
     if force_additive or not ai_known:
         emode = "additive"
+    elif snippet:
+        emode = "full"
     else:
         emode = edit_mode_for(attention, click_floor)
     entry = {
@@ -531,7 +568,16 @@ def _enhance_entry(path, query, pos, impr, clicks, ctr, score, source, why,
         "score": round(score, 1), "source": source,
         "why": why,
         "ai_sessions": int(ai_hits),
+        "fix_type": "snippet" if snippet else "content",
         "edit_mode_why": (
+            f"SNIPPET REPAIR — this page ranks #{pos:.0f} and Google showed it {int(impr)} times "
+            f"for {int(clicks)} click(s) ({ctr * 100:.2f}% CTR). At that position the title has "
+            f"FAILED, not gone untested, so the additive lock does not apply. Rewrite the "
+            f"metaTitle and description to match how people actually phrase this search — the "
+            f"measured queries are listed below. Do NOT pad the body: the body is not what the "
+            f"searcher sees. Change the snippet and nothing else, so the next reading of CTR "
+            f"attributes cleanly."
+            if snippet else
             (f"ADDITIVE — this page already earns {int(clicks)} Google clicks and "
              f"{int(ai_hits)} AI-assistant sessions. Its title is proven; do not rewrite "
              f"it. Add depth only."
@@ -675,6 +721,24 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
                                     "striking-distance-aggregate", why, ai_by_path, ai_known,
                                     force_additive, click_floor,
                                     extra={"phrase_count": len(prows)})
+
+    # A snippet rewrite is only as good as the wording it is aimed at. Attach the page's real
+    # top queries so the agent writes the title against how people actually type the search
+    # instead of against the page's own vocabulary. Measured 2026-08-14: the disappearing-messages
+    # post ranked #10.5 on "what apps have disappearing messages" / "app that deletes messages
+    # after read" — pure question intent — while its title promised "Delete-on-Read vs Timer",
+    # a concept comparison. Nobody asking "which app" clicks that. Without these lines the agent
+    # would have to guess the intent from the slug, which is how that mismatch happened.
+    for path, entry in best.items():
+        if entry.get("fix_type") != "snippet":
+            continue
+        prows = sorted((r for r in grouped.get(path, []) if not looks_like_junk(r["keys"][1])),
+                       key=lambda r: -r["impressions"])[:6]
+        entry["snippet_queries"] = [
+            {"query": r["keys"][1], "impressions": int(r["impressions"]),
+             "clicks": int(r["clicks"]), "position": round(r["position"], 1)}
+            for r in prows
+        ]
 
     # Pass 3 — rescue pages whose demand GSC has almost entirely anonymized away at the query
     # level. Google suppresses individual query rows for rare/long-tail searches, and on some

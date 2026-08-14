@@ -237,6 +237,13 @@ def nightly_health(repo, label):
             return f"⚠️ STALE — {age_h/24:.0f}d since last run"
         # Report the FIRST thing that went wrong, loudest first. Deploy failing is worse than the
         # agent skipping: a skipped agent loses one night, an undeployed build loses the work.
+        # This one first: it is a DIFFERENT failure from "the deploy command errored".
+        # Here the command exited 0 and reported success, and the live site still does
+        # not serve the pages — so the generic "serving the old build" wording would
+        # send the owner to look at a deploy log that says everything went fine.
+        if status.get("deploy", "") == "failed:built-but-not-live":
+            return (f"🔴 ran, deploy REPORTED SUCCESS but pages are NOT live ({age_h:.0f}h ago) "
+                    f"— the deploy command lied; check the live-site verify block in the log")
         if status.get("deploy", "").startswith("failed"):
             return f"⚠️ ran, but DEPLOY FAILED ({age_h:.0f}h ago) — serving the old build"
         if status.get("build", "").startswith("failed"):
@@ -264,6 +271,14 @@ def nightly_health(repo, label):
         if dep and not dep.startswith(("ok", "n/a", "skipped")):
             return (f"⚠️ ran, but DEPLOY state is {dep.upper()!s} ({age_h:.0f}h ago) — "
                     f"cannot confirm the new build is live")
+        # "ok:unverified" starts with "ok", so the branch above waves it through — which
+        # is right, it is not a failure. But it is not the same as "ok:verified-live"
+        # either: it means the deploy command exited 0 and the live-site check could not
+        # be completed. Added with verify-deploy-live.py (2026-08-14); before that every
+        # deploy on every property was in this state permanently and unlabelled.
+        if dep.startswith("ok:unverified"):
+            return (f"✅ ran ({age_h:.0f}h ago) — deploy exited 0 but was NOT verified "
+                    f"against the live site")
         content = status.get("content", "")
         if content.startswith("failed"):
             return f"⚠️ ran, agent FAILED: {content.split(':', 1)[-1]} ({age_h:.0f}h ago)"

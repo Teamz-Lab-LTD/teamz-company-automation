@@ -1201,6 +1201,30 @@ if host_up_within github.com; then
         python3 "$_SCRIPT_DIR/../py/cloudflare-purge.py" --site https://tool.teamzlab.com/ 2>&1 | tail -3 \
             || echo "  ⚠ Cloudflare purge failed — pushed but cache may be stale until next purge."
     fi
+
+    # Prove it by effect. `deploy` in nightly-status.json is derived purely from
+    # PUSH_EXIT — the exit status of `git push`. tool.teamzlab.com publishes from that
+    # push, so a green push has always been reported as a green deploy, and anything
+    # breaking downstream of GitHub would leave the push at 0 and the monitor at "ok".
+    # This is the property carrying ~90% of revenue and 6,854 pages; it should not be
+    # the one taking a deploy on trust. Asks the live sitemap whether every URL we
+    # just built is actually being served.
+    #
+    # Non-fatal: a failure here is a health alert, not a dead night. But it must be
+    # LOUD, and "could not check" must never read as "all clear".
+    if [ -f "$_SCRIPT_DIR/../py/verify-deploy-live.py" ]; then
+        echo "  Verifying the live site serves what we built..."
+        DEPLOY_VERIFY_OUT="$(TEAMZ_SITE_URL="https://tool.teamzlab.com/" \
+            TEAMZ_HOST_SITE_ROOT="$PROJECT_DIR" \
+            python3 "$_SCRIPT_DIR/../py/verify-deploy-live.py" 2>&1)"
+        DEPLOY_VERIFY_RC=$?
+        printf '%s\n' "$DEPLOY_VERIFY_OUT" | sed 's/^/    /'
+        if [ "$DEPLOY_VERIFY_RC" -eq 1 ]; then
+            record_health_alert "Push succeeded but the LIVE site is missing pages we built — deploy did not land. $(printf '%s' "$DEPLOY_VERIFY_OUT" | grep -c 'https://') URL(s) affected."
+        elif [ "$DEPLOY_VERIFY_RC" -ne 0 ]; then
+            record_health_alert "Deploy could NOT be verified against the live site (see log). Not proof it failed; not proof it worked."
+        fi
+    fi
 else
     # Record the skip, don't just print it. This branch fired silently for six nights in Aug 2026
     # while the real cause was auth, not reachability: origin was an SSH URL and the machine's only

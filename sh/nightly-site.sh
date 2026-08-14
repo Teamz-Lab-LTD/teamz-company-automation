@@ -701,6 +701,32 @@ if [ -n "$DEPLOY_CMD" ]; then
   echo "=== deploy: $DEPLOY_CMD ==="
   if retry 3 20 deploy_attempt; then
     DEPLOY_STATUS="ok"
+    # A zero exit from the deploy command is a claim about a command, not about the
+    # internet. goalkit's deploy is an rsync followed by cloudflare-purge.py, which is
+    # already known to print ERROR and still exit 0 — so "deploy ok" has been provable
+    # only by hand. Ask the live site instead: does it serve every URL we just built?
+    #
+    # Three outcomes, deliberately distinguishable. "could not check" must never render
+    # the same as "all clear" — that equivalence is the bug this whole layer exists to
+    # prevent.
+    if [ -f "$ROOT/py/verify-deploy-live.py" ]; then
+      echo "  --- verifying against the live site ---"
+      VERIFY_OUT="$(python3 "$ROOT/py/verify-deploy-live.py" 2>&1)"; VERIFY_RC=$?
+      printf '%s\n' "$VERIFY_OUT" | sed 's/^/  /'
+      case "$VERIFY_RC" in
+        0) DEPLOY_STATUS="ok:verified-live" ;;
+        1) DEPLOY_STATUS="failed:built-but-not-live"
+           echo "  ✗ The deploy command exited 0 but the live site does not have these pages."
+           osascript -e "display notification \"$LABEL: deploy exited 0 but pages are NOT live\" with title \"Teamz Nightly\" sound name \"Basso\"" 2>/dev/null || true ;;
+        *) DEPLOY_STATUS="ok:unverified"
+           echo "  ! Deploy exited 0 but could NOT be verified. Not proof it failed; not proof it worked." ;;
+      esac
+    else
+      # Never silent. If the verifier goes missing, the status must say so rather than
+      # inheriting a bare "ok" that now means less than it used to.
+      DEPLOY_STATUS="ok:unverified"
+      echo "  ! verify-deploy-live.py not found at $ROOT/py — deploy is UNVERIFIED."
+    fi
   else
     DEPLOY_STATUS="failed"
     echo "  ✗ DEPLOY FAILED after 3 attempts — site still serving the previous build."

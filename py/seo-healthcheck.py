@@ -171,7 +171,15 @@ def check_dataforseo():
             if bal and bal > 0:
                 add("DataForSEO balance", GREEN, f"${bal:.2f} available")
             else:
-                add("DataForSEO balance", WARN, f"balance ${bal} — top up for exact Google volume (free sources cover meanwhile)")
+                # Deliberately not urgent, and NOT a nudge to spend. This line used to
+                # read "top up for exact Google volume", which was true when written and
+                # is now advice to pay for something we already get free: Google Ads
+                # Keyword Planner Basic Access was approved 2026-08-08 and its exact
+                # volumes feed the composite score directly as of 2026-08-14.
+                add("DataForSEO balance", WARN,
+                    f"balance ${bal} — empty, and that is fine. Exact Google volume now "
+                    f"comes free from Keyword Planner; only top up if a check needs "
+                    f"DataForSEO SERP data specifically")
         else:
             add("DataForSEO balance", WARN, f"HTTP {r.status_code} (was 402=out of credits)")
     except Exception as e:

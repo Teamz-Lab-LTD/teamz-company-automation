@@ -17,8 +17,11 @@ Usage:
   python3 scripts/build-keyword-volume.py --bulk          # check all tools
   python3 scripts/build-keyword-volume.py --top 20        # top 20 by score
 
-Note: When Google Ads API Basic Access is approved, this script will
-also pull exact monthly volumes. Until then, scores are relative estimates.
+Google Ads Basic Access WAS approved (2026-08-08) and exact Keyword Planner
+volumes now feed the composite score at the highest weight (2026-08-14). Before
+that they were fetched, printed in a table, and thrown away — the score itself was
+built from Bing. Set TEAMZ_KW_GEO to choose the country being measured; the banner
+prints it, because a volume number without its country is not a number.
 """
 
 import json
@@ -485,6 +488,28 @@ def try_google_ads_volume(keywords):
     return None
 
 
+_ADS_VOLUME_CACHE = {}
+
+
+def prefetch_ads_volumes(keywords):
+    """Fill _ADS_VOLUME_CACHE for a whole run, 10 keywords per API call.
+
+    Keyword Planner takes up to 10 seeds per request, so this is batched once per
+    run rather than called inside estimate_volume — a per-keyword call would turn a
+    50-keyword run into 50 requests against a quota'd API for data one request can
+    return.
+    """
+    todo = [k for k in dict.fromkeys(k.lower() for k in keywords)
+            if k not in _ADS_VOLUME_CACHE]
+    for i in range(0, len(todo), 10):
+        got = try_google_ads_volume(todo[i:i + 10])
+        if not got:
+            continue
+        for k, v in got.items():
+            _ADS_VOLUME_CACHE[k.lower()] = v
+    return _ADS_VOLUME_CACHE
+
+
 def estimate_volume(keyword):
     """
     Composite volume estimation from multiple free signals.
@@ -521,6 +546,26 @@ def estimate_volume(keyword):
     # Signal 5: Bing Keyword Research API (real search volume data)
     bing = fetch_bing_keyword_volume(keyword)
     result['bing_volume'] = bing
+
+    # Signal 6: Google Ads Keyword Planner — Google's own exact monthly volume.
+    # This was already being fetched and PRINTED in a table below the results, and
+    # then thrown away: `ads_volume` was initialised to None above and never assigned,
+    # so the 0-100 tier every downstream consumer reads was built from autocomplete,
+    # Trends, a result count and BING. For a site optimising for Google, Bing volume
+    # was standing in for Google volume while Google volume sat unread on the same page.
+    #
+    # It matters more now, not less: the nightly SEO health-check has been RED on
+    # "Trends returned '---'" and Trends carried weight 4. Reviving a scraped Trends
+    # endpoint Google actively blocks is the wrong repair — using the authoritative
+    # number that is already on disk makes Trends' absence stop mattering.
+    ads = _ADS_VOLUME_CACHE.get(keyword.lower())
+    if ads is None and os.path.exists(ADS_CONFIG) and os.path.exists(ADS_TOKEN):
+        got = try_google_ads_volume([keyword])
+        if got:
+            for k, v in got.items():
+                _ADS_VOLUME_CACHE[k.lower()] = v
+            ads = _ADS_VOLUME_CACHE.get(keyword.lower())
+    result['ads_volume'] = ads
 
     # Compute composite score (weighted average of available signals)
     scores = []
@@ -585,7 +630,31 @@ def estimate_volume(keyword):
         else:
             bing_score = 10
         scores.append(bing_score)
-        weights.append(6)  # Highest weight — real search volume data
+        weights.append(6)  # Real search volume — but from Bing, not Google
+
+    # Google Ads exact volume: outranks everything else here. Same banding as Bing so
+    # the two are directly comparable, weight 9 vs Bing's 6 — when both are present the
+    # Google number should decide the tier, because Google is the engine being ranked in.
+    if ads is not None and ads.get('volume', 0) > 0:
+        gv = ads['volume']
+        if gv > 50000:
+            ads_score = 98
+        elif gv > 10000:
+            ads_score = 90
+        elif gv > 5000:
+            ads_score = 80
+        elif gv > 1000:
+            ads_score = 65
+        elif gv > 500:
+            ads_score = 50
+        elif gv > 100:
+            ads_score = 35
+        elif gv > 10:
+            ads_score = 20
+        else:
+            ads_score = 10
+        scores.append(ads_score)
+        weights.append(9)
 
     # Weighted average
     if scores and weights:
@@ -840,7 +909,7 @@ def main():
     else:
         print("  Google Ads Keyword Planner: NOT CONFIGURED (using free estimates)")
 
-    print("  Signals: Autocomplete + Google Trends + Result Count + Search Console + Bing Volume")
+    print("  Signals: Google Ads exact volume (w9) + Bing volume (w6) + Search Console (w5)\n          + Google Trends (w4) + Autocomplete (w3) + Result Count (w2)")
 
     if sys.argv[1] == '--bulk' or sys.argv[1] == '--top':
         top_n = 50
@@ -852,6 +921,11 @@ def main():
         print(f"  Found {len(tool_keywords)} tools. Estimating volumes...")
         print(f"  (This takes ~1 sec per keyword due to rate limiting)")
         print()
+
+        # One Planner call per 10 keywords instead of one per keyword. Without this,
+        # wiring Google volume into the score would turn a 6,800-keyword bulk run into
+        # 6,800 requests against a quota'd API.
+        prefetch_ads_volumes([kw for kw, _ in tool_keywords])
 
         results = []
         total = len(tool_keywords)

@@ -38,6 +38,21 @@ ADS_CONFIG = os.path.expanduser("~/.config/teamzlab/google-ads-config.json")
 ADS_TOKEN = os.path.expanduser("~/.config/teamzlab/google-ads-token.json")
 BING_API_KEY_FILE = os.path.expanduser("~/.config/teamzlab/bing-webmaster-api-key.txt")
 
+# Which country Keyword Planner measures. This used to be hardcoded to the US
+# constant with no way to change it, which quietly made every Bangladesh-market
+# pull meaningless: measured 2026-08-14, "bkash" reads 1,900/mo on geo 2840 and
+# 246,000/mo on geo 2050, and "manchester united jersey" reads 27,100 vs 2,400.
+# Every goalkit and Hazira keyword decision ever taken through this script was
+# therefore reading American demand for a Bangladeshi query. Default stays US so
+# nothing about the tools property changes; BD callers set TEAMZ_KW_GEO=2050.
+#
+# IDs are Google Ads geoTargetConstants. Verified live, by effect, not assumed:
+# 2840 = United States, 2050 = Bangladesh. 1000352 — which
+# build-distribution-drafts.py was passing for BD — is not a valid constant at
+# all and returns HTTP 400 INVALID_ARGUMENT.
+KW_GEO = os.getenv("TEAMZ_KW_GEO", "2840").strip() or "2840"
+KW_LANG = os.getenv("TEAMZ_KW_LANG", "1000").strip() or "1000"
+
 
 def fetch_bing_keyword_volume(keyword, country='us', language='en-US'):
     """
@@ -441,8 +456,8 @@ def try_google_ads_volume(keywords):
             return None
         r = requests.post(url, headers=headers, json={
             'keywordSeed': {'keywords': keywords[:10]},
-            'language': 'languageConstants/1000',
-            'geoTargetConstants': ['geoTargetConstants/2840'],
+            'language': f'languageConstants/{KW_LANG}',
+            'geoTargetConstants': [f'geoTargetConstants/{KW_GEO}'],
             'keywordPlanNetwork': 'GOOGLE_SEARCH'
         })
 
@@ -812,7 +827,14 @@ def main():
     if os.path.exists(ADS_CONFIG):
         ads_data = try_google_ads_volume(["test"])
         if ads_data is not None:
-            print("  Google Ads Keyword Planner: ACTIVE (exact volumes available)")
+            # Name the country in the banner. A volume number is meaningless without
+            # it, and reading a US number as a Bangladeshi one is the exact mistake
+            # this script made silently for months.
+            geo_name = {"2840": "United States", "2050": "Bangladesh", "2826": "United Kingdom",
+                        "2124": "Canada", "2036": "Australia", "2276": "Germany",
+                        "2250": "France", "2356": "India"}.get(KW_GEO, "UNKNOWN GEO")
+            print(f"  Google Ads Keyword Planner: ACTIVE (exact volumes) — "
+                  f"measuring {geo_name} (geo {KW_GEO}; set TEAMZ_KW_GEO to change)")
         else:
             print("  Google Ads Keyword Planner: PENDING (using free estimates)")
     else:

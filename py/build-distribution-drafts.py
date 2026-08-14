@@ -72,8 +72,15 @@ SSL_CTX = ssl.create_default_context()
 # defaults to a broad/global read via the US constant (Keyword Planner
 # has no true "worldwide" constant; US is the standard broad proxy used
 # elsewhere in this repo's keyword scripts).
+#
+# BD was "geoTargetConstants/1000352" here until 2026-08-14. That is not a valid
+# constant — the API answers HTTP 400 INVALID_ARGUMENT for it, so every Bangladesh
+# business (goalkit, Hazira) got zero keyword data from this path and the failure
+# looked like "no keywords found" rather than "the request was malformed." The
+# country constant for Bangladesh is 2050, confirmed by effect: "bkash" returns
+# 246,000/mo on 2050 and 1,900/mo on 2840.
 GEO_TARGET = {
-    "BD": "geoTargetConstants/1000352",  # Bangladesh
+    "BD": "geoTargetConstants/2050",  # Bangladesh
     "global": "geoTargetConstants/2840",  # United States (broad proxy)
 }
 

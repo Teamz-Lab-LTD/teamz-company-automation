@@ -28,7 +28,21 @@ from _teamz_config import load_runtime
 _CFG = load_runtime(__file__)
 
 SITE_URL_SC = _CFG["site_property"]  # Search Console property format (trailing slash required)
-SITE_URL = SITE_URL_SC.rstrip("/")
+# The browsable origin, which is NOT the same string as the Search Console property.
+# This used to be site_property.rstrip("/"), which is fine while the property is a
+# URL-prefix one ("https://tool.teamzlab.com/") and silently wrong the moment it is
+# a domain property. goalkit's is "sc-domain:goalkit.teamzlab.com", so it produced:
+#
+#   IndexNow keyLocation   sc-domain:goalkit.teamzlab.com/teamzlab-indexnow-key.txt
+#   sitemap ping           sc-domain:goalkit.teamzlab.com/sitemap.xml
+#   urlparse(...).hostname None -> IndexNow host fell back to "localhost"
+#
+# So IndexNow and the sitemap ping have never worked on that property — Bing,
+# DuckDuckGo, Yandex and Seznam were never told about a single page. It failed as a
+# "Key file not found" warning, which reads like a missing file on the server rather
+# than a malformed URL. Google URL Inspection kept working throughout because it
+# correctly uses SITE_URL_SC, which is why the run still looked mostly healthy.
+SITE_URL = _CFG["site_url"].rstrip("/")
 _GOOGLE_PROJECT = (_CFG.get("google_project") or "").strip()
 SC_TOKEN_FILE = str(_CFG["sc_token_file"])
 INDEXNOW_KEY = os.getenv("TEAMZ_INDEXNOW_KEY", "teamzlab-indexnow-key")

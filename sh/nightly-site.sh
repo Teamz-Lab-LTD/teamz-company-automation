@@ -351,7 +351,7 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
     if [ -f "$ROOT/teamz-company-automation/py/build-marooned-pages.py" ]; then
       MAROON_SITE="${TEAMZ_MAROON_SITE:-apps}"
       python3 "$ROOT/teamz-company-automation/py/build-marooned-pages.py" \
-        --site "$MAROON_SITE" --top 8 2>&1 | sed 's/^/  /' \
+        --site "$MAROON_SITE" --top 8 --fix --fix-limit "${TEAMZ_MAROON_FIX_LIMIT:-10}" 2>&1 | sed 's/^/  /' \
         || echo "  (marooned-page scan failed — non-fatal)"
     fi
 

@@ -30,16 +30,26 @@ The third clause is the one that is new. It is also the only one that suggests a
 best DONOR — the highest-traffic page that is topically adjacent — so the link goes somewhere
 that can actually pass authority, rather than to another quiet sibling.
 
-WHAT IT DOES NOT DO
--------------------
-It does not edit pages. Inserting a link means writing a sentence that earns it, in the donor
-page's voice, and a link dropped into a footer block is worth roughly what it costs to add. The
-nightly content agent writes that sentence; this reports the pair and stops. Same split as
-build-keyword-target-audit.py, and for the same reason: a confident wrong edit to a page that
-earns money is worse than a report nobody reads.
+WHAT --fix ACTUALLY WRITES
+--------------------------
+It adds the marooned page to the donor's `RELATED_TOOLS` array — structured data, not prose. That
+distinction is the whole safety argument. A link inside a SENTENCE has to be written in the donor
+page's voice, and a machine-written one reads like a machine wrote it; RELATED_TOOLS is this
+site's own existing mechanism (build-fix-orphans.py edits the same array), so a real crawlable
+link appears without inventing a single word of copy. Capped at MAX_RELATED per donor, because a
+twenty-link block helps nobody.
+
+Without --fix it only reports, and that stays the default.
+
+GRADUAL, NOT ALL AT ONCE. --fix-limit defaults to 25 a night against a backlog of ~1,090. Adding
+a thousand internal links in one commit is a footprint, not a fix: it is the shape of an
+automated link scheme, the diff is unreviewable, and a wrong donor rule would be wrong a thousand
+times simultaneously. At 25 a night the backlog clears in about six weeks, each diff stays
+readable, and the effect shows up in Search Console while there is still time to stop.
 
 Usage:
-  python3 build-marooned-pages.py --site tools
+  python3 build-marooned-pages.py --site tools                  # report only
+  python3 build-marooned-pages.py --site tools --fix            # report + link 25
   python3 build-marooned-pages.py --site apps --max-impr 5
 """
 import argparse
@@ -122,11 +132,83 @@ def link_graph(root):
     return {p for p, _ in pages}, graph
 
 
+MAX_RELATED = 8          # same cap build-fix-orphans.py uses; a 20-link block helps nobody
+
+# NOT EVERY /path/index.html IS A PAGE WORTH SENDING PEOPLE TO.
+# The first --fix run proposed linking /roktolagbe/dashboard/ from a monitoring tool with 3,632
+# impressions. roktolagbe is a separate product mounted in this repo as a submodule, and
+# /dashboard/ is its logged-in surface — not a public tool, and the last place to send organic
+# search traffic. A page having no impressions is often the correct state for it; this list is
+# what "correct" looks like. Checked BEFORE anything is written, never after.
+SKIP_SEGMENTS = ("dashboard", "admin", "login", "logout", "account", "signin", "signup",
+                 "checkout", "cart", "profile", "settings", "onboarding", "app", "api",
+                 "preview", "draft", "test", "staging", "internal", "private", "thank-you")
+# Directories owned by another product (git submodules) — their pages are not this site's to
+# link into, and their traffic is not this site's to judge.
+SKIP_ROOTS = tuple(s for s in os.getenv("TEAMZ_MAROON_SKIP_ROOTS", "roktolagbe,games,"
+                                        "interview-coach-teamzlab").split(",") if s)
+
+
+def is_linkable(path):
+    segs = [s for s in path.strip("/").split("/") if s]
+    if not segs:
+        return False, "site root"
+    if segs[0] in SKIP_ROOTS:
+        return False, f"submodule/product '{segs[0]}'"
+    for s in segs:
+        if s in SKIP_SEGMENTS:
+            return False, f"non-public segment '{s}'"
+    return True, ""
+
+
+def page_title(f):
+    m = re.search(r"<title>(.*?)</title>", f.read_text(errors="ignore"), re.S)
+    if not m:
+        return None
+    return re.sub(r"\s*[—|]\s*(Teamz Lab.*|Free.*)$", "", m.group(1).strip())[:70]
+
+
+def add_related(donor_file, target_path, target_name):
+    """Insert target into the donor's RELATED_TOOLS array. Returns True if written.
+
+    Structured data, not prose — deliberately. A link inside a sentence has to be WRITTEN, in the
+    donor page's voice, and a machine-written one reads like a machine wrote it. RELATED_TOOLS is
+    the site's own existing mechanism (build-fix-orphans.py edits the same array), so this adds a
+    real crawlable link without inventing a single word of copy."""
+    html = donor_file.read_text(errors="ignore")
+    m = re.search(r"(var|const|let)\s+RELATED_TOOLS\s*=\s*\[", html)
+    if not m:
+        return False, "donor has no RELATED_TOOLS array"
+    slug = target_path.strip("/")
+    if f"'{slug}'" in html or f'"{slug}"' in html:
+        return False, "already linked"
+    start = html.index("[", m.start())
+    depth, end = 0, start
+    for i in range(start, len(html)):
+        if html[i] == "[":
+            depth += 1
+        elif html[i] == "]":
+            depth -= 1
+            if depth == 0:
+                end = i
+                break
+    if html[start:end].count("{ slug:") + html[start:end].count("{slug:") >= MAX_RELATED:
+        return False, f"donor already at {MAX_RELATED} related links"
+    name = (target_name or slug.split("/")[-1].replace("-", " ").title()).replace("'", "\\'")
+    entry = f"\n          {{ slug: '{slug}', name: '{name}', description: '' }},"
+    donor_file.write_text(html[:start + 1] + entry + html[start + 1:])
+    return True, "linked"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--site", default="tools", choices=sorted(SITES))
     ap.add_argument("--max-impr", type=int, default=MAX_IMPR)
     ap.add_argument("--top", type=int, default=20)
+    ap.add_argument("--fix", action="store_true",
+                    help="actually add the link to the suggested donor's RELATED_TOOLS")
+    ap.add_argument("--fix-limit", type=int, default=int(os.getenv("TEAMZ_MAROON_FIX_LIMIT", "25")),
+                    help="max pages to link per run — gradual on purpose, see below")
     args = ap.parse_args()
 
     repo, prop = SITES[args.site]
@@ -146,8 +228,13 @@ def main():
 
     pages, graph = link_graph(root)
     marooned = []
+    skipped_kind = {}
     for p in sorted(pages):
         if impr.get(p, 0.0) > args.max_impr:
+            continue
+        ok_link, why_not = is_linkable(p)
+        if not ok_link:
+            skipped_kind[why_not] = skipped_kind.get(why_not, 0) + 1
             continue
         sources = graph.get(p, set())
         best_donor = max(sources, key=lambda s: impr.get(s, 0.0), default=None)
@@ -206,6 +293,44 @@ def main():
 
     print(f"marooned pages [{args.site}]: {len(marooned)} of {len(pages)} scanned — indexed, "
           f"linked, and no inbound link from any page above {DONOR_MIN_IMPR} impressions")
+    if skipped_kind:
+        print("  excluded from the count (correctly unlinked): "
+              + ", ".join(f"{v} {k}" for k, v in sorted(skipped_kind.items())))
+
+    if args.fix:
+        # GRADUAL ON PURPOSE — fix-limit defaults to 25 a night, not all 1,092.
+        # Adding a thousand internal links to a site in one commit is a footprint, not a fix: it
+        # is the shape of an automated link scheme, the diff is unreviewable, and if the donor
+        # choice turns out to be wrong it is wrong a thousand times at once. At 25 a night the
+        # whole backlog clears in about six weeks, each night's diff is readable, and the effect
+        # shows up in Search Console while there is still time to stop.
+        done, skipped = 0, {}
+        for r in marooned:
+            if done >= args.fix_limit:
+                break
+            donor = r.get("suggested_donor")
+            if not donor:
+                skipped["no donor with traffic"] = skipped.get("no donor with traffic", 0) + 1
+                continue
+            if not is_linkable(donor)[0]:
+                skipped["donor not public"] = skipped.get("donor not public", 0) + 1
+                continue
+            dfile = root / donor.strip("/") / "index.html"
+            tfile = root / r["path"].strip("/") / "index.html"
+            if not dfile.exists() or not tfile.exists():
+                skipped["file missing"] = skipped.get("file missing", 0) + 1
+                continue
+            ok, why = add_related(dfile, r["path"], page_title(tfile))
+            if ok:
+                done += 1
+                r["fixed_from"] = donor
+                print(f"    linked {r['path']}  <-  {donor} ({r['suggested_donor_impr']} impr)")
+            else:
+                skipped[why] = skipped.get(why, 0) + 1
+        print(f"  fixed {done} page(s) this run (limit {args.fix_limit}); "
+              + (", ".join(f"{v} {k}" for k, v in sorted(skipped.items())) if skipped else "no skips"))
+        if done:
+            print(f"  {len(marooned) - done} still marooned — cleared at ~{args.fix_limit}/night.")
     for r in marooned[:args.top]:
         src = (f"{r['best_existing_source']} ({r['best_existing_source_impr']} impr)"
                if r["best_existing_source"] else "nothing links here")

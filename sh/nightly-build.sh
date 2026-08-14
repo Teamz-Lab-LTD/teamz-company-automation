@@ -616,7 +616,7 @@ run_phase_cmd "Internal link health" 5 "scripts/build-internal-links.sh --quick"
 # in 90 days, because every one of those links came from a page with 4 impressions. Report-only;
 # it names a topically-adjacent donor with real traffic, and the content agent writes the
 # sentence that carries the link.
-run_phase_cmd "Marooned pages" 5 "python3 ../teamz-company-automation/py/build-marooned-pages.py --site tools --top 10"
+run_phase_cmd "Marooned pages" 5 "python3 ../teamz-company-automation/py/build-marooned-pages.py --site tools --top 10 --fix --fix-limit ${TEAMZ_MAROON_FIX_LIMIT:-25}"
 
 echo "  Running QA check..."
 run_phase_cmd "QA check" 10 "./scripts/build-qa-check.sh"

@@ -153,6 +153,8 @@ def link_graph(root):
     return {p for p, _ in pages}, graph
 
 
+GENERIC_HUBS = {"blog", "posts", "articles", "news", "guides", "tutorials", "docs", "pages"}
+
 MAX_RELATED = 8          # same cap build-fix-orphans.py uses; a 20-link block helps nobody
 
 # NOT EVERY /path/index.html IS A PAGE WORTH SENDING PEOPLE TO.
@@ -277,17 +279,43 @@ def main():
         # invented. Rank by shared slug words first, so the suggestion is a page whose readers
         # plausibly want the target, and use traffic only to break ties.
         hub = ("/" + p.strip("/").split("/")[0] + "/") if p.strip("/") else "/"
+        # STOPWORDS, AND WHY THIS LIST IS LONG.
+        # The first version stripped only a handful of words, and matched on whatever was left.
+        # Its actual output on apps.teamzlab.com:
+        #
+        #   /hazira-khata/guides/attendance-app-for-teachers/  <-  /hire-app-developer-for-startup/
+        #   /hazira-khata/tutorials/ask-ai/                    <-  /notetube-ai/
+        #   /blog/uber-clone-source-code/                      <-  /blog/best-price-comparison-websites/
+        #
+        # Shared token: "app". "ai". "best". A school attendance app and a developer-hiring
+        # service page have nothing to say to each other, and a link between them is one no reader
+        # clicks and Google discounts. This is the SAME defect already written up in
+        # build-keyword-target-audit.py — token overlap suggesting 'care home compliance software
+        # uk' -> 'best black friday sales' because both contain "best" — and I reproduced it here
+        # the same day. Generic words are not topics.
+        STOP = {"calculator", "comparison", "compare", "vs", "tool", "tools", "free", "online",
+                "best", "top", "guide", "guides", "tutorial", "tutorials", "app", "apps", "ai",
+                "how", "to", "for", "the", "and", "with", "your", "my", "is", "in", "of", "a",
+                "new", "2025", "2026", "2027", "2028", "blog", "en", "bn", "us", "uk", ""}
+
         def _toks(path):
-            return set(re.split(r"[-/]+", path.strip("/").lower())) - {
-                "calculator", "comparison", "vs", "tool", "free", "online", "2026", "2027", ""}
+            return set(re.split(r"[-/]+", path.strip("/").lower())) - STOP
         tgt_toks = _toks(p)
         cands = []
         for q, v in impr.items():
             if v < DONOR_MIN_IMPR or q == p:
                 continue
             overlap = len(tgt_toks & _toks(q))
-            same_hub = q.startswith(hub)
-            if not overlap and not same_hub:
+            # A HUB IS ONLY A TOPIC IF IT IS ABOUT SOMETHING.
+            # /finance/, /football/, /bd/ group pages that genuinely relate. /blog/ does not — on
+            # apps.teamzlab.com it holds uber-clone pricing, encrypted messaging, CQC compliance
+            # and price comparison in one folder. Treating that as a topical match paired
+            # 'uber clone source code' with 'best price comparison websites'. Generic containers
+            # must earn the match on shared words like anything else.
+            same_hub = q.startswith(hub) and hub.strip("/") not in GENERIC_HUBS
+            # One shared word can still be coincidence once the generic ones are gone; two is a
+            # topic. Same-hub alone stays allowed, because a hub IS a topical grouping.
+            if overlap < 2 and not same_hub:
                 continue
             cands.append((overlap, same_hub, v, q))
         cands.sort(reverse=True)

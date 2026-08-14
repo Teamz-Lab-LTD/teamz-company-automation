@@ -105,6 +105,27 @@ def impressions_by_path(prop, tok, days=90):
     return out
 
 
+def content_root(repo_root):
+    """Where this property's crawlable pages actually live, and whether --fix may write there.
+
+    STATIC-HTML SITES (tools, goalkit) keep index.html in the repo, so the repo IS the site and a
+    link written into it is a link the crawler gets.
+
+    ASTRO SITES (apps, learn) keep content as .md under src/content and BUILD index.html into
+    dist/. The first version scanned the repo root and skipped dist/, so on apps it found seven
+    "pages" — every one of them under /apps-teamzlab-deploy/, a stray deploy folder — and reported
+    all seven as marooned. Seven false positives and 239 real pages invisible. learn came back
+    "0 of 1 scanned", which reads as a clean site and means the opposite.
+
+    So dist/ is used where it exists, and --fix is DISABLED there: editing dist/ is editing build
+    output, wiped on the next build. The finding is still worth having; the fix has to go into
+    src/content and that is the content agent's job, not this script's."""
+    dist = repo_root / "dist"
+    if dist.exists() and any(dist.rglob("index.html")):
+        return dist, False        # scan the build, never write to it
+    return repo_root, True
+
+
 def link_graph(root):
     """{target_path: set(source_path)} from the built HTML.
 
@@ -226,7 +247,11 @@ def main():
               "No verdict this run.", file=sys.stderr)
         return 1
 
-    pages, graph = link_graph(root)
+    scan_root, may_write = content_root(root)
+    if scan_root != root:
+        print(f"  scanning built output at {scan_root.name}/ (Astro property) — "
+              "--fix is disabled here, dist/ is regenerated on every build")
+    pages, graph = link_graph(scan_root)
     marooned = []
     skipped_kind = {}
     for p in sorted(pages):
@@ -297,7 +322,10 @@ def main():
         print("  excluded from the count (correctly unlinked): "
               + ", ".join(f"{v} {k}" for k, v in sorted(skipped_kind.items())))
 
-    if args.fix:
+    if args.fix and not may_write:
+        print("  --fix ignored: this property's pages are build output. The link belongs in "
+              "src/content, which the nightly content agent edits.")
+    if args.fix and may_write:
         # GRADUAL ON PURPOSE — fix-limit defaults to 25 a night, not all 1,092.
         # Adding a thousand internal links to a site in one commit is a footprint, not a fix: it
         # is the shape of an automated link scheme, the diff is unreviewable, and if the donor
@@ -315,8 +343,8 @@ def main():
             if not is_linkable(donor)[0]:
                 skipped["donor not public"] = skipped.get("donor not public", 0) + 1
                 continue
-            dfile = root / donor.strip("/") / "index.html"
-            tfile = root / r["path"].strip("/") / "index.html"
+            dfile = scan_root / donor.strip("/") / "index.html"
+            tfile = scan_root / r["path"].strip("/") / "index.html"
             if not dfile.exists() or not tfile.exists():
                 skipped["file missing"] = skipped.get("file missing", 0) + 1
                 continue

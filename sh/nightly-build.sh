@@ -678,7 +678,20 @@ run_phase_cmd "Distribution leads snapshot" 10 "\"$PYTHON_BIN\" teamz-company-au
 # would sit pending forever unless someone remembered to run it by hand.
 # comment-catchup.js itself already skips videos still private/scheduled
 # (self-limiting, safe to run nightly with no extra guard here).
-if [ -f scripts/distribute/remotion/upload/comment-catchup.js ]; then
+#
+# OFF by default since 2026-08-14. It has been failing every night with
+# HTTP 403 "insufficient permissions" — an OAuth scope problem, not a transient —
+# and each failure burned one of the three health-alert slots on tool.teamzlab.com,
+# the property carrying ~90% of revenue. Two of the three alerts the owner saw this
+# morning were this and a stale WARN; only one was real. A monitor that cries every
+# night trains you to stop reading it.
+#
+# Not repaired, deliberately. It serves the distribution engine, which returned
+# $0.03 lifetime and which the owner has explicitly ruled do-not-revive — fixing the
+# scope would be reviving a killed branch to post comments nobody reads.
+#
+# One line to bring back if that ever changes: TEAMZ_YT_COMMENT_CATCHUP=1.
+if [ "${TEAMZ_YT_COMMENT_CATCHUP:-0}" = "1" ] && [ -f scripts/distribute/remotion/upload/comment-catchup.js ]; then
     run_phase_cmd "YouTube comment catch-up" 10 \
         "cd scripts/distribute/remotion && $(command -v node || echo /opt/homebrew/bin/node) upload/comment-catchup.js --go; cd - > /dev/null"
 fi

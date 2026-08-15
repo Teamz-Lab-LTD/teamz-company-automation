@@ -274,8 +274,21 @@ fi
 if [ -f scripts/build-keyword-volume-auto.py ]; then
   echo ""
   echo "Resolving pending keyword batches (Google Ads API)..."
-  python3 scripts/build-keyword-volume-auto.py --max-calls 30 2>&1 | sed 's/^/  /' | tail -6 \
-    || echo "  (keyword-volume-auto failed — non-fatal, batches stay pending)"
+  # ${PIPESTATUS[0]}, not `||`. The `||` here tested `tail`, which always exits 0, so
+  # this failure branch was unreachable — the script could exit non-zero and the
+  # nightly would print nothing. Combined with the script returning 0 on a config
+  # refusal, goalkit's keyword batches went unresolved for two nights in Aug 2026
+  # with a clean log. Two layers of silence over the same fault.
+  python3 scripts/build-keyword-volume-auto.py --max-calls 30 2>&1 | sed 's/^/  /' | tail -6
+  KWAUTO_RC=${PIPESTATUS[0]}
+  if [ "$KWAUTO_RC" -ne 0 ]; then
+    # nightly-site.sh has no record_health_alert() (that lives in nightly-build.sh),
+    # so this notifies directly rather than calling a function that does not exist —
+    # a guarded call to a missing function would be one more layer of silence.
+    echo "  ✗ keyword-volume-auto exited $KWAUTO_RC — keyword batches are NOT being priced."
+    echo "    Most likely TEAMZ_KW_GEO is set to a value no script recognises."
+    osascript -e "display notification \"$LABEL: keyword batches not priced (exit $KWAUTO_RC) — check TEAMZ_KW_GEO\" with title \"Teamz Nightly\"" 2>/dev/null || true
+  fi
 fi
 
 # 4. sitemap (skip where the host platform owns it — Framer/Wix generate their own)

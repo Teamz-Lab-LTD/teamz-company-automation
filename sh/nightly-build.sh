@@ -422,8 +422,14 @@ rm -f /tmp/nightly-suggestions.txt /tmp/nightly-trends.txt /tmp/nightly-multilan
 # UI. Call-capped, skips already-resolved batches, non-fatal on any failure.
 if [ -f scripts/build-keyword-volume-auto.py ]; then
     echo "  Resolving pending keyword batches (Google Ads API)..."
-    python3 scripts/build-keyword-volume-auto.py --max-calls 30 2>&1 | sed 's/^/    /' | tail -6 \
-        || echo "    (keyword-volume-auto failed — non-fatal, batches stay pending)"
+    # ${PIPESTATUS[0]}, not `||` — the `||` tested `tail`, which always exits 0, making
+    # this failure branch unreachable. See the twin fix in nightly-site.sh.
+    python3 scripts/build-keyword-volume-auto.py --max-calls 30 2>&1 | sed 's/^/    /' | tail -6
+    KWAUTO_RC=${PIPESTATUS[0]}
+    if [ "$KWAUTO_RC" -ne 0 ]; then
+        echo "    ✗ keyword-volume-auto exited $KWAUTO_RC — batches stay pending"
+        record_health_alert "keyword-volume-auto exited $KWAUTO_RC — keyword batches are NOT being priced; check TEAMZ_KW_GEO."
+    fi
 fi
 
 # Google Autocomplete suggestions for high-RPM niches

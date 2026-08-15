@@ -183,9 +183,15 @@ def main():
     geo_id, geo_name = _teamz_geo.resolve(os.getenv("TEAMZ_KW_GEO"))
     if not geo_id:
         # Guessing a geo would silently price Bangladeshi demand at US volumes.
+        #
+        # EXIT 2, not 0. This returned 0 until 2026-08-16 — the script refused to do
+        # its job and told the nightly it had succeeded, so goalkit's keyword batches
+        # went unresolved for two nights with a clean-looking log. Refusing to work is
+        # not success, and the exit code is the only part of this the runner reads.
         print(f"  TEAMZ_KW_GEO='{geo_name}' is not recognised — refusing to guess. "
-              f"Add it to ID_TO_NAME/NAME_TO_ID/CODE_TO_ID in _teamz_geo.py.")
-        return 0
+              f"Add it to ID_TO_NAME/NAME_TO_ID/CODE_TO_ID in _teamz_geo.py.",
+              file=sys.stderr)
+        return 2
 
     batches = sorted(glob.glob(str(pend_dir / "batch-*.csv")))
     if not batches:

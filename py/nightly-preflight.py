@@ -231,8 +231,50 @@ def check_status_freshness(root):
                         f"completed a run in days (crashing before its EXIT trap, or not firing).")
 
 
+def check_shared_env_contracts(root):
+    """Every consumer of a shared env var must agree on what its value means.
+
+    This exists because of a real two-night outage on goalkit, 2026-08-14..16.
+    TEAMZ_KW_GEO was set to "2050" to fix build-keyword-volume.py, which wants a
+    numeric Google Ads geoTargetConstant. Two OTHER scripts read the same variable
+    and wanted a country NAME:
+
+        build-keyword-volume-auto.py   -> "2050" not in its name->id dict
+        build-keyword-candidates.py    -> wrote "SET LOCATION = 2050" for a human
+
+    build-keyword-volume-auto.py printed "refusing to guess" and returned 0, so the
+    nightly recorded success while goalkit's pending Keyword Planner batches were
+    never resolved. Nothing shouted for two nights.
+
+    The lesson is not "remember to grep before changing config" — that is a promise,
+    not a guard. The guard is: validate the value against the SHARED resolver before
+    the night runs, and abort loudly if no consumer can use it. A config value that
+    no script understands must never reach a phase that will quietly skip itself.
+    """
+    geo = os.getenv("TEAMZ_KW_GEO")
+    if not geo:
+        return  # unset is legal — every reader has its own documented default
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import _teamz_geo
+    except ImportError as e:
+        raise CheckFail("geo-resolver-missing",
+                        f"TEAMZ_KW_GEO={geo!r} is set but _teamz_geo.py could not be "
+                        f"imported ({e}) — the scripts that read it cannot agree on its "
+                        f"meaning.")
+    gid, name = _teamz_geo.resolve(geo)
+    if not gid:
+        raise CheckFail(
+            "kw-geo-unresolvable",
+            f"TEAMZ_KW_GEO={geo!r} resolves to nothing. build-keyword-volume-auto.py "
+            f"will refuse to price any keyword batch and STILL exit 0, so the night "
+            f"would look clean while keyword data silently stops updating. Add it to "
+            f"_teamz_geo.py (ID_TO_NAME / NAME_TO_ID / CODE_TO_ID) or unset it.")
+
+
 # --------------------------------------------------------------------------- runners
-PRE = [check_root_is_real, check_manual_volume_coverage, check_min_html, check_tokens_present]
+PRE = [check_root_is_real, check_manual_volume_coverage, check_min_html, check_tokens_present,
+       check_shared_env_contracts]
 POST = [check_content_queue_parses, check_status_freshness]
 
 

@@ -346,8 +346,13 @@ if [ "${TEAMZ_NIGHTLY_CONTENT:-0}" = "1" ]; then
     # MAROONED PAGES — indexed, linked, and still unreachable because every page linking to
     # them is itself dead. build-fix-orphans.py cannot see these: it counts inbound links and
     # they HAVE inbound links. Three NFL pages passed it with 2 links each and took 0
-    # impressions in 90 days, because every link came from a page with 4. Report-only; the
-    # content agent writes the sentence that carries the link. Non-fatal by design.
+    # impressions in 90 days, because every link came from a page with 4.
+    #
+    # This WRITES. It used to be report-only and this comment still said so for a while
+    # after --fix was added, which is the worst kind of stale comment: it tells a future
+    # reader the nightly only looks, while the nightly is editing pages. It adds ONE line
+    # per page — an entry in the donor's RELATED_TOOLS array — never deletes, never touches
+    # prose, and is capped by --fix-limit (10 here, 25 on tools). Non-fatal by design.
     if [ -f "$ROOT/teamz-company-automation/py/build-marooned-pages.py" ]; then
       MAROON_SITE="${TEAMZ_MAROON_SITE:-apps}"
       python3 "$ROOT/teamz-company-automation/py/build-marooned-pages.py" \

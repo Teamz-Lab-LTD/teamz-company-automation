@@ -1,19 +1,12 @@
 {
-  "ran_at": "2026-08-07T23:55:01",
+  "ran_at": "2026-08-14T23:55:06",
   "properties": {
     "apps": [
-      "build=ok:link-health-alert",
-      "push=failed"
-    ],
-    "goalkit": [
       "build=skipped:dirty-tree"
     ],
-    "learn": [
-      "push=failed"
-    ],
-    "tools": [
-      "build=ok:6-health-alerts -> Nightly self-healed a leftover-tool-page deadlock (auto-committed 24 page(s)). Review the recovery commit. | SEO health-check found a RED \u2014 a data source may be silently broken (see log top) | Claude build failed (exit 1) (+3 more)"
-    ]
+    "goalkit": [],
+    "learn": [],
+    "tools": []
   },
-  "alert_count": 4
+  "alert_count": 1
 }

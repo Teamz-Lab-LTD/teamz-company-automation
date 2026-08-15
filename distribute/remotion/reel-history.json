@@ -922,9 +922,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7671865170927355921",
+          "postedAt": "2026-08-09T03:20:10.102Z",
           "retries": 0
         }
       }
@@ -962,9 +963,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7671931974461982736",
+          "postedAt": "2026-08-09T07:38:12.502Z",
           "retries": 0
         }
       }
@@ -1002,9 +1004,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7672240601442437136",
+          "postedAt": "2026-08-10T03:33:17.507Z",
           "retries": 0
         }
       }
@@ -1901,9 +1904,11 @@
           "postedAt": "2026-08-08T01:17:48.000Z",
           "scheduledAt": "",
           "retries": 0,
-          "commented": false,
+          "commented": true,
           "commentPending": true,
-          "_reconciled_manually": "2026-08-08 — upload succeeded (verified via playlistItems API) but the local upload process was killed by an operator error (piped through `head`, causing SIGPIPE) before it could call saveHistory(). This entry was hand-reconciled against YouTube's own API response, not re-derived from local state."
+          "_reconciled_manually": "2026-08-08 — upload succeeded (verified via playlistItems API) but the local upload process was killed by an operator error (piped through `head`, causing SIGPIPE) before it could call saveHistory(). This entry was hand-reconciled against YouTube's own API response, not re-derived from local state.",
+          "commentId": "Ugw_8bKXEUrGhq_icX54AaABAg",
+          "commentedAt": "2026-08-09T09:53:19.348Z"
         },
         "instagram": {
           "posted": false,
@@ -1944,9 +1949,11 @@
           "postedAt": "2026-08-08T01:25:03.000Z",
           "scheduledAt": "2026-08-08T19:00:00.000Z",
           "retries": 0,
-          "commented": false,
+          "commented": true,
           "commentPending": true,
-          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring.",
+          "commentId": "UgyZXqnKCBpNAMyGtLV4AaABAg",
+          "commentedAt": "2026-08-09T09:53:55.160Z"
         },
         "instagram": {
           "posted": false,
@@ -1987,9 +1994,11 @@
           "postedAt": "2026-08-08T01:26:37.000Z",
           "scheduledAt": "2026-08-09T19:00:00.000Z",
           "retries": 0,
-          "commented": false,
+          "commented": true,
           "commentPending": true,
-          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring.",
+          "commentId": "UgyegcZGbWjxHVUVnLR4AaABAg",
+          "commentedAt": "2026-08-10T09:49:41.106Z"
         },
         "instagram": {
           "posted": false,
@@ -2030,9 +2039,11 @@
           "postedAt": "2026-08-08T01:27:59.000Z",
           "scheduledAt": "2026-08-10T19:00:00.000Z",
           "retries": 0,
-          "commented": false,
+          "commented": true,
           "commentPending": true,
-          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring.",
+          "commentId": "Ugx8TOx1rvYShTWCW3B4AaABAg",
+          "commentedAt": "2026-08-11T09:46:38.145Z"
         },
         "instagram": {
           "posted": false,
@@ -2073,9 +2084,11 @@
           "postedAt": "2026-08-08T01:29:20.000Z",
           "scheduledAt": "2026-08-11T19:00:00.000Z",
           "retries": 0,
-          "commented": false,
+          "commented": true,
           "commentPending": true,
-          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring.",
+          "commentId": "UgyBUtMi4OlQYHSDrxl4AaABAg",
+          "commentedAt": "2026-08-12T09:53:35.651Z"
         },
         "instagram": {
           "posted": false,
@@ -2116,9 +2129,11 @@
           "postedAt": "2026-08-08T01:30:42.000Z",
           "scheduledAt": "2026-08-12T19:00:00.000Z",
           "retries": 0,
-          "commented": false,
+          "commented": true,
           "commentPending": true,
-          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring."
+          "_reconciled_manually": "2026-08-08 — a REAL youtube-upload.js run succeeded (verified against YouTube's videos.list API, all 6 confirmed private + correctly scheduled), but the upload process and a concurrently-running comment-catchup.js both read-modify-wrote this file with no locking, and comment-catchup's own later save clobbered these 6 new entries before they were ever seen. Reconciled from the YouTube API directly, not from local state. This exact class of bug is why upload/reel-lock.js now exists — see that file's docstring.",
+          "commentId": "UgyffCzArAngOZQJ0yV4AaABAg",
+          "commentedAt": "2026-08-13T09:46:52.473Z"
         },
         "instagram": {
           "posted": false,
@@ -2316,9 +2331,11 @@
       "lastRendered": "2026-08-08T01:23:12.623Z",
       "platforms": {
         "youtube": {
-          "posted": false,
-          "url": "",
-          "postedAt": "",
+          "posted": true,
+          "url": "https://youtube.com/shorts/JiF4NP6bcZk",
+          "videoId": "JiF4NP6bcZk",
+          "postedAt": "2026-08-09T07:35:20.604Z",
+          "scheduledAt": "2026-08-09T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {
@@ -2354,9 +2371,51 @@
       "lastRendered": "2026-08-08T01:23:12.623Z",
       "platforms": {
         "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/3dTRE_eY7zc",
+          "videoId": "3dTRE_eY7zc",
+          "postedAt": "2026-08-09T07:36:45.829Z",
+          "scheduledAt": "2026-08-10T19:01:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
           "posted": false,
           "url": "",
           "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "legal_nursing-home-negligence-settlement-calculator",
+      "title": "Nursing Home Negligence Settlement Calculator",
+      "hub": "legal",
+      "language": "en",
+      "template": "ProofCase",
+      "themeIndex": 5,
+      "durationInFrames": 450,
+      "format": "short",
+      "hook": "Free tools that replaced $500/mo",
+      "audio": "audio/beat2.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_nursing-home-negligence-settlement-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_nursing-home-negligence-settlement-calculator.txt",
+      "youtubeTitle": "Nursing Home Negligence Settlement Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-08-09T07:37:09.876Z",
+      "lastRendered": "2026-08-09T07:37:09.877Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/1zXSz2w_6nc",
+          "videoId": "1zXSz2w_6nc",
+          "postedAt": "2026-08-09T07:37:19.601Z",
+          "scheduledAt": "2026-08-09T19:00:00.000Z",
           "retries": 0
         },
         "instagram": {

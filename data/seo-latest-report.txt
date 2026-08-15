@@ -1,18 +1,11 @@
-NIGHTLY BUILD REPORT — 2026-08-07 23:49
+NIGHTLY BUILD REPORT — 2026-08-15 01:20
 Status: ALERT
 Repo dirty at start: no
 New tools built: 0
-Total commits: 0
+Total commits: 18
 ---
 SCRIPT HEALTH:
-  Alerts (6):
-  - Nightly self-healed a leftover-tool-page deadlock (auto-committed 24 page(s)). Review the recovery commit.
-  - SEO health-check found a RED — a data source may be silently broken (see log top)
-  - Claude build failed (exit 1)
-  - JS syntax guard: an enhanced tool has inline JS that does not parse — the page renders but every control on it is dead. See nightly log.
-  - URL-hygiene guard found an indexability defect on an enhanced tool (canonical / og:url / //) — see data/url-hygiene-latest.json
-  - Data freshness sentinel failed (exit 1)
-  Skipped phases (1):
-  - git push (github.com unavailable)
+  Alerts (1):
+  - Nightly self-healed a leftover-tool-page deadlock (auto-committed 2 page(s)). Review the recovery commit.
 ---
 If script health is not OK, review logs/nightly-build.log before the next automated run.

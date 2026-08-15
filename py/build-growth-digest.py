@@ -794,7 +794,27 @@ def revenue_section():
         L.append(f"_Checked {ran} ({age_h:.0f}h ago). Recent = 7d ending D-2 vs the 3 weeks "
                  f"before it; GA4 per-page revenue needs ~48h to settle._")
 
-    for repo, r in (s.get("properties") or {}).items():
+    # A run that died BEFORE it reached any property writes no "properties" key at
+    # all — just a top-level {"state": "unreachable", "why": ...} (see the GA4-auth
+    # failure path in build-revenue-watchdog.py). Until 2026-08-16 this loop simply
+    # iterated zero times and the section rendered the "_Checked ..._" line and
+    # NOTHING else, so a night where revenue was never checked looked exactly like a
+    # night where revenue was fine. A monitor must never render "couldn't check" as
+    # silence; silence is what the owner reads as "all clear".
+    props = s.get("properties")
+    if not props:
+        L.append("")
+        top_state = s.get("state")
+        why = s.get("why") or "the watchdog wrote no per-property results"
+        if top_state and top_state != "ok":
+            L.append(f"⚠️ **couldn't check ANY property** — {why}. "
+                     f"Nothing is watching earnings for this run. This is NOT 'no drop'.")
+        else:
+            L.append(f"⚠️ **couldn't check** — status file has no `properties` block "
+                     f"(state={top_state!r}). This is NOT 'no drop'.")
+        return L
+
+    for repo, r in props.items():
         st = r.get("state")
         if st == "unreachable":
             L.append("")

@@ -375,6 +375,8 @@ track.
 
 ## 12.5 #BuildInPublic Content Engine + AI Prompt Library
 
+> **Superseded in part (2026-08-15):** read [`Shipaton_BuildInPublic_Core_Engine.md`](./Shipaton_BuildInPublic_Core_Engine.md) FIRST — it holds the verbatim judging criteria, the feedback loop, the data-spine pattern, multi-app allocation, and dated corrections to this section (winners were video-led, not screenshot-led; cadence floor is 3/week under time constraint). This section's voice rules, visual rules, and prompt library still apply.
+
 > **INSTRUCTION TO ANY AI READING THIS KNOWLEDGE BASE:** When Gk asks for build-in-public content, follow this section exactly. Generate posts for **X (primary — this is what the #BuildInPublic award judges)** and a **LinkedIn cross-post version** of the same content (secondary, adapted tone). Never invent fake progress, fake numbers, or fake struggles — only write from what Gk actually reports. Authenticity is the judged criterion; fabrication would destroy the entry.
 
 ### Posting rules (the AI must apply these)

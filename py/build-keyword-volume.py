@@ -53,7 +53,16 @@ BING_API_KEY_FILE = os.path.expanduser("~/.config/teamzlab/bing-webmaster-api-ke
 # 2840 = United States, 2050 = Bangladesh. 1000352 — which
 # build-distribution-drafts.py was passing for BD — is not a valid constant at
 # all and returns HTTP 400 INVALID_ARGUMENT.
-KW_GEO = os.getenv("TEAMZ_KW_GEO", "2840").strip() or "2840"
+#
+# Resolved through _teamz_geo so TEAMZ_KW_GEO can hold either a numeric constant
+# or a country name — this file originally accepted numbers only, which is what
+# broke build-keyword-volume-auto.py and build-keyword-candidates.py the moment
+# goalkit's env was set to a bare "2050": they expected a name in the same
+# variable and had no shared table to fall back on. See _teamz_geo.py.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _teamz_geo
+_geo_id, _geo_name_hint = _teamz_geo.resolve(os.getenv("TEAMZ_KW_GEO"))
+KW_GEO = _geo_id or "2840"
 KW_LANG = os.getenv("TEAMZ_KW_LANG", "1000").strip() or "1000"
 
 
@@ -899,9 +908,7 @@ def main():
             # Name the country in the banner. A volume number is meaningless without
             # it, and reading a US number as a Bangladeshi one is the exact mistake
             # this script made silently for months.
-            geo_name = {"2840": "United States", "2050": "Bangladesh", "2826": "United Kingdom",
-                        "2124": "Canada", "2036": "Australia", "2276": "Germany",
-                        "2250": "France", "2356": "India"}.get(KW_GEO, "UNKNOWN GEO")
+            geo_name = _teamz_geo.ID_TO_NAME.get(KW_GEO, "UNKNOWN GEO")
             print(f"  Google Ads Keyword Planner: ACTIVE (exact volumes) — "
                   f"measuring {geo_name} (geo {KW_GEO}; set TEAMZ_KW_GEO to change)")
         else:

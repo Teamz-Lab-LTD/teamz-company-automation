@@ -83,7 +83,15 @@ def geo_for(cfg):
     multi = os.getenv("TEAMZ_KW_MULTI", "0") == "1"
     explicit = os.getenv("TEAMZ_KW_GEO")
     if explicit:
-        return explicit, multi
+        # TEAMZ_KW_GEO may be a numeric geoTargetConstant (e.g. "2050") or a country
+        # name — resolve to the name for this human-facing marker file either way.
+        # See _teamz_geo.py: this used to return the raw value unresolved, so a
+        # numeric setting would have written "SET KEYWORD PLANNER LOCATION = 2050",
+        # which no human reading the file could act on.
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import _teamz_geo
+        _, name = _teamz_geo.resolve(explicit)
+        return name, multi
     cc = (os.getenv("TEAMZ_CONTENT_COUNTRY") or "").strip().lower()
     if cc in GEO_MAP:
         return GEO_MAP[cc], multi

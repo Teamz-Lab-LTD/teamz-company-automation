@@ -57,11 +57,13 @@ SEEDS_PER_CALL = 10
 # batches are not urgent — whatever is left is simply picked up tomorrow night.
 DEFAULT_MAX_CALLS = 25
 
-GEO = {  # Planner location name -> geoTargetConstant. Matches TEAMZ_KW_GEO in the env files.
-    "united states": "2840", "united kingdom": "2826", "canada": "2124",
-    "australia": "2036", "germany": "2276", "france": "2250", "bangladesh": "2050",
-    "india": "2356", "ireland": "2372", "new zealand": "2554", "singapore": "2702",
-}
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _teamz_geo  # noqa: E402  — resolves TEAMZ_KW_GEO whether it's a numeric
+                   # geoTargetConstant or a country name. See that file's docstring
+                   # for why this replaced a local name->id dict: TEAMZ_KW_GEO=2050
+                   # (set for goalkit 2026-08-14) silently killed this script's
+                   # keyword-batch resolution every night until it was shared.
 
 HEADER = ["Keyword", "Currency", "Segmentation", "Avg. monthly searches",
           "Three month change", "YoY change", "Competition",
@@ -178,12 +180,11 @@ def main():
         print(f"  no {pend_dir} — nothing to resolve.")
         return 0
 
-    geo_name = os.getenv("TEAMZ_KW_GEO", "United States")
-    geo_id = GEO.get(geo_name.strip().lower())
+    geo_id, geo_name = _teamz_geo.resolve(os.getenv("TEAMZ_KW_GEO"))
     if not geo_id:
         # Guessing a geo would silently price Bangladeshi demand at US volumes.
-        print(f"  TEAMZ_KW_GEO='{geo_name}' is not in the geo map — refusing to guess. "
-              f"Add its geoTargetConstant to GEO in this script.")
+        print(f"  TEAMZ_KW_GEO='{geo_name}' is not recognised — refusing to guess. "
+              f"Add it to ID_TO_NAME/NAME_TO_ID/CODE_TO_ID in _teamz_geo.py.")
         return 0
 
     batches = sorted(glob.glob(str(pend_dir / "batch-*.csv")))

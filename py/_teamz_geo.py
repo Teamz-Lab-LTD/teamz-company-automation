@@ -30,7 +30,7 @@ ID_TO_NAME = {
     "2840": "United States", "2050": "Bangladesh", "2826": "United Kingdom",
     "2124": "Canada", "2036": "Australia", "2276": "Germany", "2250": "France",
     "2356": "India", "2372": "Ireland", "2554": "New Zealand", "2702": "Singapore",
-    "2392": "Japan",
+    "2392": "Japan", "2528": "Netherlands",
 }
 NAME_TO_ID = {name.lower(): gid for gid, name in ID_TO_NAME.items()}
 # Short codes some callers already use (build-keyword-candidates.py's GEO_MAP).

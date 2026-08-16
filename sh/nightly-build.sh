@@ -780,10 +780,48 @@ fi
 # low cap (4/night), Trends-disabled for speed. Output feeds Pool 9 of the enhance
 # queue, which Phase 4's Claude reviews before applying. Output files are in the
 # dirty-guard ignore-list so they can never self-lock the nightly.
+#
+# WALL-CLOCK WATCHDOG (added 2026-08-17, after the SECOND hang).
+# This call has now frozen the whole tools nightly twice: 10h on 2026-06-11, and 35h on
+# 2026-08-15 -> 08-17 (found by /growth, not by any monitor). Both times it sat on a
+# Google API socket that never answered — 1m40s of CPU burned in 35 HOURS. launchd will
+# not start a second instance while one lives, so the hang silently ate three scheduled
+# runs on the property carrying ~90% of revenue.
+#
+# build-dead-revival.py already grew per-call timeouts after the June hang (see its
+# winnability guard). They were not enough: a per-call timeout cannot bound a call that
+# never returns from the socket layer. The limit has to be enforced from OUTSIDE the
+# process, which is what this does.
+#
+# NOT `timeout 900 ...`: this Mac has no coreutils, so `timeout`/`gtimeout` do not exist.
+# That form exits 127 and dead-revival would silently never run again — trading a loud
+# hang for an invisible skip, which is strictly worse. Hence the portable
+# background-pid + watchdog-subshell pattern below.
+#
+# `python3 -u`: stdout is redirected to a file, so Python would otherwise fully buffer and
+# the log would stay empty while it worked (the buffering that hid agent output for months).
 if [ -f "$PROJECT_DIR/data/.dead-revival-enabled" ] && [ "$REPO_DIRTY_AT_START" -eq 0 ]; then
     echo ""
     echo "=== Dead-tool revival: find demand re-targets ==="
-    python3 "$_SCRIPT_DIR/../py/build-dead-revival.py" --cap 20 2>&1 | sed 's/^/  /' || echo "  (dead-revival skipped — non-fatal)"
+    DR_DEADLINE=900
+    DR_LOG="$(mktemp -t dead-revival)"
+    python3 -u "$_SCRIPT_DIR/../py/build-dead-revival.py" --cap 20 >"$DR_LOG" 2>&1 &
+    DR_PID=$!
+    ( sleep "$DR_DEADLINE"; kill -TERM "$DR_PID" 2>/dev/null; sleep 5; kill -KILL "$DR_PID" 2>/dev/null ) &
+    DR_WATCHDOG=$!
+    wait "$DR_PID"; DR_RC=$?
+    kill "$DR_WATCHDOG" 2>/dev/null || true    # cancel the watchdog when we finish early
+    wait "$DR_WATCHDOG" 2>/dev/null || true
+    sed 's/^/  /' "$DR_LOG"; rm -f "$DR_LOG"
+    # 143 = SIGTERM, 137 = SIGKILL. The only thing that signals this child is the watchdog,
+    # so either code means "it blew the deadline", not "it failed".
+    if [ "$DR_RC" -eq 143 ] || [ "$DR_RC" -eq 137 ]; then
+        echo "  ✗ dead-revival exceeded ${DR_DEADLINE}s and was KILLED — the rest of the night continues."
+        echo "    This is the hang that froze the nightly for 35h on 2026-08-15. Check its network calls."
+        record_health_alert "dead-revival hit the ${DR_DEADLINE}s wall-clock watchdog and was killed — it hung again, investigate its API calls"
+    elif [ "$DR_RC" -ne 0 ]; then
+        echo "  ✗ dead-revival exited $DR_RC — non-fatal, the rest of the night continues."
+    fi
 fi
 
 # Phase 4: Run Claude to build tools (uses quota)

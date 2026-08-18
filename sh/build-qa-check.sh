@@ -166,7 +166,9 @@ while IFS= read -r f; do
   content_metrics=$(printf '%s' "$CONTENT" | python3 -c '
 import re, sys
 content = sys.stdin.read()
-match = re.search(r"<section class=\"(?:tool-content|tool-content-section)\">([\s\S]*?)</section>", content, re.I)
+# Class attr may carry extra classes (tz-web-only, wc-other-countries, ...). Requiring an
+# exact match reported 31 pages sitewide as 0 words no matter what they contained.
+match = re.search(r"<section class=\"(?:tool-content|tool-content-section)(?:\s[^\"]*)?\">([\s\S]*?)</section>", content, re.I)
 text = re.sub(r"<[^>]*>", " ", match.group(1)) if match else ""
 words = len(text.split())
 cjk = len(re.findall(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]", text))

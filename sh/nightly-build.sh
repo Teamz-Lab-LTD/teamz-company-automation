@@ -198,9 +198,71 @@ extract_health_issue() {
     printf '%s\n' "$1" | grep -m1 -E 'ERROR:|FAILED|Traceback|token refresh failed|No Search Console token|Could not get Search Console token|✗ ' || true
 }
 
+# Where the repeat-history for health alerts lives. One JSON object: fingerprint -> {runs,
+# first_seen, last_seen}. Kept next to the other status files so /growth can read it.
+ALERT_HISTORY_FILE="${TEAMZ_HOST_SITE_ROOT:-.}/data/health-alert-history.json"
+
 record_health_alert() {
-    HEALTH_ALERTS+=("$1")
-    echo "  ! Health alert: $1"
+    # Count how many nights this same alert has fired, and say so in the alert itself.
+    #
+    # Why: on 2026-08-18 the owner asked why the nightly "keeps going back and forth on the same
+    # issue again and again". He was right, and nothing in the system could answer him. Counted
+    # by hand across the 216 runs in logs/nightly-build.log (2026-06-05..08-18):
+    #
+    #     169x  Internal link health failed (exit 1)      <- ~78% of every run
+    #      95x  SEO health-check found a RED
+    #      35x  llms.txt exceeds spec target
+    #      30x  Clarity pull ERROR
+    #      24x  self-healed a leftover-tool-page deadlock
+    #      19x  GSC anomalies failed / Claude build failed
+    #      18x  Search Console pull failed
+    #      12x  Indexing request: token expired, re-auth needed
+    #
+    # Every one of those was reported identically the first night and the hundredth. A brand-new
+    # failure and a 169-night-old one printed the same sentence, so nothing could be triaged and
+    # everything blurred into noise. Recording the streak does not fix any of them — it makes an
+    # unfixed alert impossible to mistake for a fresh one, which is the part that was missing.
+    local msg="$1"
+    local n=""
+    n="$(TEAMZ_ALERT_MSG="$msg" TEAMZ_ALERT_FILE="$ALERT_HISTORY_FILE" python3 - <<'PYALERT' 2>/dev/null || true
+import hashlib, json, os, re, datetime
+msg = os.environ["TEAMZ_ALERT_MSG"]
+path = os.environ["TEAMZ_ALERT_FILE"]
+# Fingerprint on the SHAPE, not the text: numbers, paths and timestamps change nightly while
+# the underlying problem does not. Without this every run looks like a brand-new alert.
+shape = re.sub(r"\d+", "N", msg)
+shape = re.sub(r"\s+", " ", shape).strip()[:300]
+fp = hashlib.sha1(shape.encode()).hexdigest()[:12]
+try:
+    with open(path) as f:
+        hist = json.load(f)
+except Exception:
+    hist = {}
+today = datetime.date.today().isoformat()
+e = hist.get(fp) or {"runs": 0, "first_seen": today, "shape": shape}
+# Same calendar day = same run being re-reported; do not inflate the streak.
+if e.get("last_seen") != today:
+    e["runs"] = int(e.get("runs", 0)) + 1
+e["last_seen"] = today
+e["shape"] = shape
+hist[fp] = e
+try:
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(hist, f, indent=2, sort_keys=True)
+except Exception:
+    pass
+print("%s|%s" % (e["runs"], e["first_seen"]))
+PYALERT
+)"
+    local runs="${n%%|*}"
+    local first="${n##*|}"
+    case "$runs" in
+        ""|0|1) : ;;                       # first sighting, or history unavailable — say nothing
+        *) msg="$msg [night ${runs} of this same alert — first seen ${first}]" ;;
+    esac
+    HEALTH_ALERTS+=("$msg")
+    echo "  ! Health alert: $msg"
 }
 
 run_phase_cmd() {
@@ -388,6 +450,37 @@ if [ -n "$DIRTY_FILES" ]; then
         record_health_alert "Nightly BLOCKED at start: dirty source WIP ($(printf '%s' "$SOURCE_DIRTY" | grep -c . ) file(s)). Commit or stash to unblock — $(printf '%s' "$SOURCE_DIRTY" | head -3 | cut -c4- | tr '\n' ' ')"
         osascript -e 'display notification "Nightly build BLOCKED on dirty source files — see nightly log" with title "Teamz Build BLOCKED" sound name "Basso"' 2>/dev/null
     fi
+fi
+
+# --- Uncommitted work INSIDE submodules (never blocks; always tells) ---
+# The dirty-check above runs with --ignore-submodules on purpose: a drifting submodule POINTER
+# must never freeze the cron again (the 2026-06 deadlock). But that flag also made work inside a
+# submodule completely invisible. Proven 2026-08-17: the build agent fixed
+# /games/arrow-escape-3d/ — 7.4% of this property's revenue — then lost its API connection at
+# the moment it went to commit. The 43-line fix sat in the games/ submodule where neither this
+# guard nor its self-heal branch could see it, and the page kept serving the old version. Found
+# only because a human asked why an alert fired.
+#
+# So: report, do not block. Blocking re-creates the deadlock; staying silent re-creates the loss.
+# We deliberately do NOT auto-commit here — that would push to a DIFFERENT repo with its own
+# remote and review expectations, which is not this script's call to make.
+SUBMODULE_WIP=""
+SUBMODULE_WIP_N=0
+while IFS= read -r _sm; do
+    [ -n "$_sm" ] || continue
+    [ -d "$_sm/.git" ] || [ -f "$_sm/.git" ] || continue
+    _n="$(git -C "$_sm" status --porcelain 2>/dev/null | grep -c . || true)"
+    if [ "${_n:-0}" -gt 0 ]; then
+        SUBMODULE_WIP="${SUBMODULE_WIP}${_sm} (${_n} file(s)); "
+        SUBMODULE_WIP_N=$((SUBMODULE_WIP_N + _n))
+    fi
+done <<SUBEOF
+$(git config --file .gitmodules --get-regexp '^submodule\..*\.path$' 2>/dev/null | awk '{print $2}')
+SUBEOF
+if [ -n "$SUBMODULE_WIP" ]; then
+    echo "  ! Uncommitted work inside submodule(s): ${SUBMODULE_WIP%; }"
+    echo "    The parent dirty-guard cannot see these (--ignore-submodules) and will not self-heal them."
+    record_health_alert "Uncommitted work inside submodule(s): ${SUBMODULE_WIP%; } — ${SUBMODULE_WIP_N} file(s) the parent dirty-guard cannot see or self-heal. Commit them in the submodule or they ship never."
 fi
 
 # --- SEO toolchain health-check (non-blocking; catches silent data failures like
@@ -614,8 +707,27 @@ run_phase_cmd "Freshness validation" 10 "./scripts/build-validate-freshness.sh"
     run_phase_cmd "Hub link auto-heal" 5 "python3 scripts/build-fix-hub-unlinked.py --apply"
 }
 
-echo "  Checking internal link health..."
-run_phase_cmd "Internal link health" 5 "scripts/build-internal-links.sh --quick"
+# Internal link health, PRE-EDIT pass. Informational ONLY — deliberately not an alert.
+#
+# This used to be a run_phase_cmd, and it is the single loudest false alarm this system has
+# ever produced: 161 of the 216 runs in logs/nightly-build.log (2026-06-05..08-18) recorded
+# "Internal link health failed (exit 1)". Two separate bugs made that useless:
+#
+#   1. WRONG PHASE. This is Phase 1. The Phase-4 agent has not edited a single page yet, and
+#      Phase 5's auto-fixers (seo-audit --fix, build-fix-orphans fix, static-schema rebuild)
+#      have not run. So the number reported here describes a state the SAME NIGHT then goes on
+#      to change — it reports breakage the night is about to fix, and it cannot see breakage the
+#      night is about to create. Run by hand the morning after: 0 broken links, exit 0. The
+#      identical lesson is already written 300 lines above for the Mobile UX gate ("runs BEFORE
+#      the Phase-4 agent edits any tool, so --changed would see nothing"); it was never carried
+#      over to this check.
+#   2. WRONG WORD. build-internal-links.sh ends in `if broken_links or href_broken: sys.exit(1)`.
+#      Exit 1 is a FINDING, not a crash. "Internal link health failed (exit 1)" reads like the
+#      script died, so the one thing the alert never told you was how many links were broken.
+#
+# The authoritative check now runs post-edit in Phase 5, where it describes what actually ships.
+echo "  Checking internal link health (pre-edit baseline, informational)..."
+scripts/build-internal-links.sh --quick 2>&1 | tail -5 | sed 's/^/  /' || true
 # Marooned pages: linked, indexed, and still unreachable because every page linking to them is
 # itself dead. The orphan fix above cannot see these — it counts inbound links and they HAVE
 # inbound links. Measured 2026-08-14: three NFL pages each had 2 inbound links and 0 impressions
@@ -1158,6 +1270,25 @@ echo "  Running SEO auto-fixes..."
 python3 scripts/build-static-schema.py 2>/dev/null | tail -2
 ./scripts/build-search-index.sh 2>/dev/null | tail -3
 python3 scripts/build-fix-orphans.py fix 2>/dev/null | tail -2
+
+# Internal link health, POST-EDIT — the authoritative pass. Everything that edits pages tonight
+# has now run (Phase-4 agent, seo-audit --fix, schema rebuild, orphan fix), so this number is
+# the state that actually ships. Reports COUNTS, never "failed": exit 1 from this script means
+# broken links were found, which is a finding a human can act on, not a crash.
+echo "  Internal link health (post-edit, authoritative)..."
+ILH_OUT=$(scripts/build-internal-links.sh --quick 2>&1); ILH_EXIT=$?
+printf '%s\n' "$ILH_OUT" | tail -8 | sed 's/^/    /'
+if [ "$ILH_EXIT" -eq 0 ]; then
+    :
+elif [ "$ILH_EXIT" -eq 1 ]; then
+    ILH_SLUGS=$(printf '%s\n' "$ILH_OUT" | grep -oE 'Broken related slugs: +[0-9]+' | grep -oE '[0-9]+$' | tail -1)
+    ILH_HREF=$(printf '%s\n' "$ILH_OUT"  | grep -oE 'Broken href links: +[0-9]+'   | grep -oE '[0-9]+$' | tail -1)
+    record_health_alert "Internal links broken in what shipped tonight: ${ILH_SLUGS:-?} related-tool slug(s), ${ILH_HREF:-?} href(s). Run scripts/build-internal-links.sh --full to list them."
+else
+    # 127 = not found, 137 = SIGKILL/OOM. Both HAVE happened here and are real breakage of the
+    # check itself, which must never be reported in the same words as a link finding.
+    record_health_alert "Internal link health check itself did not complete (exit $ILH_EXIT — 127=missing, 137=killed). Link state for tonight is UNKNOWN, not clean."
+fi
 
 # Live league standings for the table predictors (tools only — guarded, see below).
 #

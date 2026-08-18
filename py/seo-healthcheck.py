@@ -79,42 +79,139 @@ def check_compile_all():
 
 
 # ---------------------------------------------------------------- 2. keyword signals (the Trends-class catcher)
+#
+# History of THIS check, so nobody re-breaks it:
+#   Written to catch the failure where Google Trends returned blank for months while every
+#   exit code stayed 0. It did that job. But it was written BEFORE Google Ads Keyword Planner
+#   access arrived (2026-08-08), and it was never updated afterwards. Result, verified
+#   2026-08-18: it fired RED on a night when Planner was ACTIVE with exact volumes, Bing
+#   returned 121,917/171,189 and Autocomplete returned 75 — because one free weight-4 signal
+#   was rate-limited for that minute. Re-probed by hand the next morning: Trends returned 77.
+#   Transient. That RED had fired 5x in one log and 32x historically, which is how a monitor
+#   trains its owner to ignore it — the exact failure this whole file exists to prevent.
+#
+# So the severity rules below are deliberate, and each clause is load-bearing:
+#   - Planner (weight 9) is now the PRIMARY volume source and was not checked AT ALL. It is
+#     checked first now: Planner dead is a real RED, blank or not.
+#   - A weight-4 signal blanking while the weight-9 source works is degraded, not broken.
+#   - Transient != chronic. One blank retries once, then counts. A signal that stays blank
+#     for CHRONIC_NIGHTS consecutive runs escalates back to RED — that is the original
+#     months-of-silence bug, and it must never hide behind WARN.
+CHRONIC_NIGHTS = 7
+STREAK_FILE = os.path.join(AUTO, "data", "seo-healthcheck-streaks.json")
+
+
+def _streaks_load():
+    try:
+        with open(STREAK_FILE) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _streaks_save(d):
+    try:
+        os.makedirs(os.path.dirname(STREAK_FILE), exist_ok=True)
+        with open(STREAK_FILE, "w") as f:
+            json.dump(d, f, indent=2, sort_keys=True)
+    except Exception:
+        pass          # a monitor must never fail the run it is monitoring
+
+
+def _parse_probe(out, probe):
+    """Pull the signal row + Planner state out of build-keyword-volume.py output."""
+    row = next((l for l in out.splitlines() if probe in l and "/100" in l), "")
+    nums, blanks = [], []
+    labels = ["Autocomplete", "Trends", "Bing-exact", "Bing-broad", "GSC-impr"]
+    if row:
+        nums = row.replace(",", "").split()[-5:]
+        blanks = [lab for lab, val in zip(labels, nums) if val == "---"]
+    # Planner is a separate section, not a column in that row.
+    planner_active = bool(re.search(r"Google Ads Keyword Planner:\s*ACTIVE", out))
+    exact_rows = 0
+    m = re.search(r"EXACT VOLUMES \(Google Ads Keyword Planner\):", out)
+    if m:
+        exact_rows = len(re.findall(r"^\s+\S.*?\s+[\d,]+\s+(?:LOW|MEDIUM|HIGH)\s",
+                                    out[m.end():], re.M))
+    return row, nums, blanks, planner_active, exact_rows
+
+
 def check_keyword_signals():
-    """Run build-keyword-volume on a known-popular term; assert EACH signal
-    returns data. A blank column = that source is silently dead (the Trends bug)."""
+    """Probe a known-popular term and assert the volume stack still returns data.
+
+    Severity is weight-aware: Planner (w9) dead is RED on its own; a free signal
+    (Trends w4 / Autocomplete w3) blanking while Planner works is WARN until it has
+    blanked CHRONIC_NIGHTS nights running, at which point it is RED again."""
     if FAST:
         add("keyword-volume signals", WARN, "skipped (--fast)")
         return
     probe = "mortgage calculator"   # always-popular; every signal should fire
-    rc, out = run(f'python3 scripts/build-keyword-volume.py "{probe}"', timeout=90)
-    # find the data row
-    row = next((l for l in out.splitlines() if probe in l and "/100" in l), "")
+    cmd = f'python3 scripts/build-keyword-volume.py "{probe}"'
+    rc, out = run(cmd, timeout=120)
+    row, nums, blanks, planner_active, exact_rows = _parse_probe(out, probe)
+
     if not row:
         add("keyword-volume signals", RED, "no data row produced — script failed to output")
         return
-    # columns: Keyword .. Score Tier AC Trends Bing/mo BingBrd Impr
-    cols = row.split()
-    blanks = []
-    # detect each signal by scanning for the known markers
-    ac = re.search(r"\b(\d{1,3})\b(?=\s+(?:\d{1,3}|---))", row)
-    # simpler: split tail tokens
-    tail = row.replace(",", "").split()
-    # Find 'HIGH/MEDIUM/LOW/VERY' tier index, signals follow it
-    nums = tail[-5:]   # AC Trends Bing BingBrd Impr (--- where blank)
-    labels = ["Autocomplete", "Trends", "Bing-exact", "Bing-broad", "GSC-impr"]
-    for lab, val in zip(labels, nums):
-        if val == "---":
-            blanks.append(lab)
-    # Trends + Autocomplete are the free Google signals we most rely on
+
     critical_dead = [b for b in blanks if b in ("Trends", "Autocomplete")]
+
+    # Retry ONCE before believing a free-signal blank. Google Trends rate-limits per-minute
+    # and returns an empty series rather than an error; one retry separates "rate-limited
+    # this minute" from "dead". Only pay the second 120s on an actual failure.
+    retried = False
     if critical_dead:
+        retried = True
+        rc2, out2 = run(cmd, timeout=120)
+        row2, nums2, blanks2, pa2, er2 = _parse_probe(out2, probe)
+        if row2:
+            row, nums, blanks, planner_active, exact_rows = row2, nums2, blanks2, pa2, er2
+            critical_dead = [b for b in blanks if b in ("Trends", "Autocomplete")]
+
+    # Track how many consecutive nights each free signal has come back blank.
+    streaks = _streaks_load()
+    for lab in ("Trends", "Autocomplete"):
+        key = f"kwsignal_{lab.lower()}_blank_nights"
+        streaks[key] = (streaks.get(key, 0) + 1) if lab in critical_dead else 0
+    _streaks_save(streaks)
+    chronic = [lab for lab in critical_dead
+               if streaks.get(f"kwsignal_{lab.lower()}_blank_nights", 0) >= CHRONIC_NIGHTS]
+
+    rowfmt = f"row=[{' '.join(nums)}]" + (" (after 1 retry)" if retried else "")
+    planner = (f"Planner ACTIVE ({exact_rows} exact volumes)" if planner_active and exact_rows
+               else "Planner ACTIVE but returned NO exact volumes" if planner_active
+               else "Planner NOT ACTIVE")
+
+    # 1. The weight-9 source itself. Nothing below matters if this is gone.
+    if not (planner_active and exact_rows):
         add("keyword-volume signals", RED,
-            f"DEAD signal(s): {', '.join(critical_dead)} returned '---' for '{probe}'. row=[{' '.join(nums)}]")
-    elif blanks:
+            f"PRIMARY volume source down: {planner}. "
+            f"Scoring falls back to free signals only. {rowfmt}")
+        return
+
+    # 2. A free signal blank for a week+ is the original silent-death bug, not a blip.
+    if chronic:
+        n = max(streaks.get(f"kwsignal_{c.lower()}_blank_nights", 0) for c in chronic)
+        add("keyword-volume signals", RED,
+            f"CHRONIC: {', '.join(chronic)} blank {n} nights running for '{probe}' — "
+            f"not a rate-limit any more. {planner}. {rowfmt}")
+        return
+
+    # 3. Transient free-signal blank while the primary source works. Degraded, not broken.
+    if critical_dead:
+        n = max(streaks.get(f"kwsignal_{c.lower()}_blank_nights", 0) for c in critical_dead)
         add("keyword-volume signals", WARN,
-            f"optional blank: {', '.join(blanks)} (Bing/GSC can be legitimately empty). row=[{' '.join(nums)}]")
-    else:
-        add("keyword-volume signals", GREEN, f"all 5 signals returned data. row=[{' '.join(nums)}]")
+            f"{', '.join(critical_dead)} blank (night {n}/{CHRONIC_NIGHTS} before this goes RED) "
+            f"— free signal rate-limited; {planner} is carrying the score. {rowfmt}")
+        return
+
+    if blanks:
+        add("keyword-volume signals", WARN,
+            f"optional blank: {', '.join(blanks)} (Bing/GSC can be legitimately empty). "
+            f"{planner}. {rowfmt}")
+        return
+
+    add("keyword-volume signals", GREEN, f"all 5 signals + {planner}. {rowfmt}")
 
 
 # ---------------------------------------------------------------- 3. GSC auth

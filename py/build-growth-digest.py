@@ -684,8 +684,20 @@ def apps_revenue_section():
         L.append("")
         L.append(f"**£{manual}/month**, owner-stated. Compare: tools ≈ £140/month.")
         L.append("")
-        L.append("_Per-app split unavailable (AdMob not connected), so which of the apps carry "
-                 "this is unknown. Run `python3 py/admob.py auth` when the split matters._")
+        # PARKED BY THE OWNER, 2026-08-18. He was asked to spend 2 minutes on the AdMob OAuth
+        # flow and said drop it. That is the correct call at this size: all ~20 apps together
+        # are £9/month against tools' ~£140, so a per-app split would cost more attention than
+        # the whole line item is worth, and knowing WHICH app earns £2 does not make it earn
+        # £20 — the constraint on apps is distribution, not measurement.
+        #
+        # Stated as a decision, not a pending task, so no future run re-nags him about it. The
+        # ONE condition that should reverse it is written below: if apps revenue ever gets big
+        # enough that the split changes what he would work on, the split becomes worth having.
+        L.append("_Per-app split not connected — **parked by owner 2026-08-18**, deliberately. "
+                 "At £9/month across ~20 apps the split would not change any decision. "
+                 "Revisit only if apps clear ~£40/month, or before spending real time on one "
+                 "specific app: then run `python3 py/admob.py auth` (2 min, browser) to see "
+                 "which app is actually carrying it._")
         return L
 
     if not tok_file.exists():

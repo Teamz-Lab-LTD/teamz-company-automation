@@ -162,7 +162,27 @@ def vol_to_tier(vol):
 
 
 # ----------------------------------------------------------------- find targets
+# Wall-clock budget for the network-bound part of find_targets().
+#
+# The nightly wraps this script in a 900s watchdog that SIGKILLs it (nightly-build.sh). A kill
+# is total loss: the process dies mid-loop and writes nothing, so a run that classified 60 pages
+# produces exactly the same output as a run that classified none. That is what "dead-revival
+# exceeded 900s and was KILLED" meant on 2026-08-17 and 08-18.
+#
+# The free-signal fallback below calls the Google Ads Keyword Planner once per candidate keyword
+# per page, serially. Measured 2026-08-18 with the new timeouts in place: roughly one page per
+# 90s, so 20 pages cannot fit in 900s and never could. Timeouts stopped the UNBOUNDED hang;
+# they do not make the loop fast.
+#
+# So stop on our own terms, under the watchdog, and keep the work: break out, write what we
+# have, and say plainly how many pages were left unclassified. Partial results are useful here
+# (the queue consumes the top of the list); a SIGKILL is not.
+FIND_BUDGET_S = int(os.environ.get("TEAMZ_DEAD_REVIVAL_BUDGET_S", "600"))
+
+
 def find_targets():
+    import time as _time
+    _deadline = _time.time() + FIND_BUDGET_S
     kv = load_kv()
     mv = load_manual_volume()
     slugs = read_dead_slugs()
@@ -172,7 +192,14 @@ def find_targets():
     print(f"  INDEXED_NO_DEMAND pages: {len(slugs)}  |  manual Google volume: "
           f"{len(mv)} keywords  |  processing {len(work)}")
     revive, prune = [], []
-    for slug in work:
+    _unprocessed = 0
+    for _i, slug in enumerate(work):
+        if _time.time() > _deadline:
+            _unprocessed = len(work) - _i
+            print(f"    ! wall-clock budget of {FIND_BUDGET_S}s reached — stopping cleanly with "
+                  f"{len(revive)} revive / {len(prune)} prune classified. {_unprocessed} page(s) "
+                  f"not reached this run; they stay in the pool for the next one.")
+            break
         core, current = topic_and_current(slug)
 
         # --- authoritative path: real Google volume for this topic ---

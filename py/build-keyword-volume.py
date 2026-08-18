@@ -392,7 +392,13 @@ def get_search_console_impressions(keyword):
         from datetime import timedelta
         start_date = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')
 
-        r = requests.post(api_url, headers=headers, json={
+        # timeout is NOT optional: requests defaults to waiting FOREVER. build-dead-revival
+        # calls estimate_volume() once per candidate page in a serial loop, so a single stalled
+        # socket here freezes the whole nightly. That is exactly what happened 2026-08-15 (35h
+        # hang, 3 scheduled runs eaten) and again 2026-08-17/18 (killed at the 900s watchdog).
+        # Stack captured 2026-08-18 via faulthandler: ssl.read <- http.client.getresponse <-
+        # requests.post at this file's line 469, called from build-dead-revival.py:211.
+        r = requests.post(api_url, headers=headers, timeout=60, json={
             'startDate': start_date,
             'endDate': end_date,
             'dimensions': ['query'],
@@ -466,7 +472,9 @@ def try_google_ads_volume(keywords):
         url = _ads.endpoint(config, headers)
         if not url:
             return None
-        r = requests.post(url, headers=headers, json={
+        # See the timeout note above — same failure mode, this is the call the 2026-08-18
+        # stack dump was actually sitting in.
+        r = requests.post(url, headers=headers, timeout=60, json={
             'keywordSeed': {'keywords': keywords[:10]},
             'language': f'languageConstants/{KW_LANG}',
             'geoTargetConstants': [f'geoTargetConstants/{KW_GEO}'],

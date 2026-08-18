@@ -206,8 +206,22 @@ def pick_next_business(registry, draft_log, forced_slug=None):
 
     now = datetime.now()
     candidates = []
+    unseeded = []
     for b in registry:
         if not b.get("enabled", True):
+            continue
+        # A business with no hub_keywords AND no article_angles cannot be briefed — there is
+        # nothing to expand into a keyword set. Skipping it here is the difference between
+        # "nothing to do tonight" and a nightly failure.
+        #
+        # Before 2026-08-18 the picker happily returned such a business and main() then exited
+        # 1, which the nightly recorded as "Distribution draft brief failed (exit 1)". 18 of the
+        # 36 enabled businesses (every svc-* service page) have empty seeds, so the rotation
+        # landed on one roughly every other night and reported a hard failure for a registry
+        # gap. The gap is real and worth filling; it is not a crash, and reporting it as one
+        # buried it among genuine failures for weeks.
+        if not ((b.get("hub_keywords") or []) + (b.get("article_angles") or [])):
+            unseeded.append(b["slug"])
             continue
         last = draft_log.get(b["slug"])
         if last:
@@ -220,6 +234,10 @@ def pick_next_business(registry, draft_log, forced_slug=None):
         staleness = float("inf") if not last else (now - datetime.fromisoformat(last)).days
         candidates.append((weight, staleness, b))
 
+    if unseeded:
+        # Named, every run, so the gap stays visible instead of silently shrinking the rotation.
+        print(f"skipped {len(unseeded)} business(es) with no hub_keywords/article_angles: "
+              f"{', '.join(sorted(unseeded))}")
     if not candidates:
         return None
     # Highest weight first, then most stale first.
@@ -345,6 +363,7 @@ def main():
         (business.get("hub_keywords") or []) + (business.get("article_angles") or [])
     ))
     if not seeds:
+        # Only reachable via --business <slug>; the round-robin picker filters these out now.
         print(f"!! {business['slug']} has no hub_keywords/article_angles — nothing to target. "
               f"Run the feature-miner for this business first.", file=sys.stderr)
         sys.exit(1)

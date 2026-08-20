@@ -45,6 +45,9 @@ permanently ineligible. Check this FIRST for any candidate app — it is unfixab
 
 ## 1. Verdict table — every category, and the test that decides it
 
+> **Read §1a before quoting any prize amount.** A `--refresh-rules` run on 2026-08-21 found the
+> landing page and the rules page disagreeing by +$5k on seven RevenueCat-funded rows.
+
 `OPEN IF` is a **test to run per app**, not a verdict copied from a previous app. A Kotlin app opens
 JetBrains; a game opens Best Game. Re-run the test, do not inherit the answer.
 
@@ -70,6 +73,74 @@ JetBrains; a game opens Best Game. Re-run the test, do not inherit the answer.
 
 **A single project may enter every category it qualifies for** (except: one influencer category max).
 Entering more costs a form field, not a build.
+
+---
+
+## 1a. Amendments — appended by `--refresh-rules` runs (never overwrite a §1 row)
+
+### 2026-08-21 — re-fetched by `/shipaton-check interview-boss-plus --refresh-rules`
+
+Sources fetched live this run: the landing page `https://revenuecat-shipaton-2026.devpost.com/`
+and the official rules `…/rules`. (`curl` is 403-blocked by Devpost; both reads went through the
+agent fetch tool, and every figure below was confirmed by a **second, independently-worded fetch**
+of the same page.)
+
+**Category set: UNCHANGED.** All 21 rows in §1 are still present under the same names and
+sponsors. **No new sponsor category has been added** since the 2026-08-03 build. The `[NEW]`
+badges the landing page now shows on **Catvertising** and **Next Gen** sit on rows that already
+existed in §1 — they flag the prize bump below, not a new category.
+
+**AMENDMENT 1 — prize amounts conflict between the two official pages. Unresolved by Devpost.**
+
+| Award | §1 / rules page says | Landing page says |
+|---|---|---|
+| HAMM | $15k / $10k / $5k | **$20,000** 1st |
+| RevenueCat Design Award | $15k / $10k / $5k | **$20,000** 1st |
+| RevenueCat Peace Prize | $15k / $10k / $5k | **$20,000** 1st |
+| Catvertising | $15k / $10k / $5k | **$20,000** 1st `[NEW]` |
+| Best Game | $15k / $10k / $5k | **$20,000** 1st |
+| Next Gen | $15k / $10k / $5k | **$20,000** 1st `[NEW]` |
+| Influencer awards ×5 | $15k / $10k / $5k | **$20,000** 1st |
+
+**The split is systematic, not noise, and that is the tell:** every award RevenueCat itself funds
+is $5k higher on the landing page, while every **sponsor**-funded award (OneSignal 25/15/5,
+Layers, Stripe, Noise, Replit, JetBrains, all 15/10/5) and **#BuildInPublic** (30/20/10) reads
+**identically on both pages**. Sponsors set their own purse; RevenueCat raised its own and the
+rules text was not re-issued. That makes the landing page the likely current truth and the rules
+text stale — but the rules page is the *legal* document, so **treat this as unresolved**.
+
+Landing page also now states the pool as **"$740,000+ in cash"** and **"over $1 million worth of
+prizes in total"**, which is only consistent with the higher figures.
+
+**What this changes in practice:** nothing about which categories to chase, and nothing about
+ordering — it is a uniform +$5k across seven rows. It only *widens* the gap that already made §2
+the best trade on the board: **Design and Peace are now plausibly $20k each for one paragraph.**
+Do not restate §1's amounts as fact in a report; cite the range and the conflict.
+**Owner action if a number ever needs to be quoted publicly:** ask in the Shipaton Discord which
+page governs.
+
+**AMENDMENT 2 — submission-material specs, quoted from the rules this run.** These are checklist
+items that fail silently at review time, not judging criteria:
+
+- app icon **1024×1024**
+- screenshot **1179px × 2556px**
+- demo video **under 2 minutes**, public YouTube/Vimeo
+- free trial **or** promo code for judges (every category except Next Gen)
+- *"Apps must be accessible from United States"* — a US-market store listing is mandatory even for
+  an app whose real audience is elsewhere
+- *"Entrants may submit multiple unique submissions"* — confirms one project may hold several
+  distinct submissions, separate from §1's "one influencer category per project" limit
+
+**AMENDMENT 3 — §1 row 15 (Replit / Idea to Income) carries an extra requirement** not recorded on
+2026-08-03: the submission must *"include three publicly visible social-media posts"* on top of
+being built with Replit. Does not reopen the row for any non-Replit app.
+
+**Unchanged and re-confirmed this run:** the publish gate (App Store **or** Google Play **or**
+Samsung Galaxy Store, fully published, first public release inside the window); Next Gen as the
+only store-exempt category; the ads-or-purchase eligibility clause (*"…at least one in-app or web
+purchase, **or that serves ads through RevenueCat Ads**"*, §4 trap 2); and every influencer
+audience definition, including Career Coaching = *"Help new managers practice difficult workplace
+conversations"*.
 
 ---
 

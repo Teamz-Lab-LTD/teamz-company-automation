@@ -250,6 +250,12 @@ def main() -> int:
         if not page.startswith(base):
             continue
         path = page[len(base):]
+        # GSC returns percent-encoded paths; _inventory() builds raw UTF-8 paths from the
+        # filesystem. Comparing them directly makes EVERY non-ASCII slug look like a 404.
+        # 2026-08-21: /kr/kr-severance-pay-2027-退職金-calculator/ was reported broken while
+        # returning 200 live and sitting in the sitemap. It landed in "unmatched" so no harm
+        # was done, but a fuzzy match would have written a 301 redirecting a WORKING page away.
+        path = urllib.parse.unquote(path)
         if not path.startswith("/"):
             path = "/" + path
         if not path.endswith("/"):

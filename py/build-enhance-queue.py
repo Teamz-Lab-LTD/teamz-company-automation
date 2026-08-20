@@ -179,8 +179,58 @@ def url_to_slug(url, site_url):
     return rel
 
 
+# Slugs dropped this run because they live inside a git submodule. Reported loudly at the
+# end — a silently shrunk queue reads as "nothing was available" when the truth is
+# "your highest-traffic page was offered and thrown away".
+SUBMODULE_SKIPS = []
+_SUBMODULE_PREFIXES = None
+
+
+def submodule_prefixes(host_root):
+    """Top-level paths that are git submodules, read from .gitmodules.
+
+    Read rather than hardcoded: this repo's submodule list has changed before
+    (games/, interview-coach-teamzlab/, roktolagbe/, branding/), and a stale constant
+    would silently stop filtering the day one is added.
+    """
+    global _SUBMODULE_PREFIXES
+    if _SUBMODULE_PREFIXES is None:
+        prefixes = []
+        gm = host_root / '.gitmodules'
+        try:
+            for line in gm.read_text().splitlines():
+                line = line.strip()
+                if line.startswith('path'):
+                    _, _, val = line.partition('=')
+                    val = val.strip().strip('/')
+                    if val:
+                        prefixes.append(val)
+        except (IOError, OSError):
+            pass
+        _SUBMODULE_PREFIXES = prefixes
+    return _SUBMODULE_PREFIXES
+
+
+def is_submodule_slug(slug, host_root):
+    """True when slug lives inside a submodule the nightly flow cannot commit through.
+
+    2026-08-20: the queue ranked /games/arrow-escape-3d/ at position 3 — 646 clicks, the
+    highest traffic in the whole queue — but games/ is a submodule, so the enhance agent
+    edits it, fails to commit it through this repo, and the slot is wasted. Every night,
+    because the page keeps re-earning its rank. Effective cap was 19, not 20.
+    """
+    if not slug:
+        return False
+    head = slug.strip('/').split('/', 1)[0]
+    return head in submodule_prefixes(host_root)
+
+
 def slug_exists(slug, host_root):
     if not slug:
+        return False
+    if is_submodule_slug(slug, host_root):
+        if slug not in SUBMODULE_SKIPS:
+            SUBMODULE_SKIPS.append(slug)
         return False
     return (host_root / slug.strip('/') / 'index.html').exists()
 
@@ -1058,6 +1108,17 @@ def main():
     else:
         out_path.write_text(json.dumps(queue, indent=2))
         print(f"[enhance-queue] wrote {len(final)} targets → {out_path}")
+
+    # OUTSIDE the dry-run branch on purpose: a warning that only fires on a real write is
+    # invisible exactly when someone is inspecting the queue by hand to find out why it looks
+    # short. Loud in both modes.
+    if SUBMODULE_SKIPS:
+        # These are real, high-signal pages this flow structurally cannot enhance — they need
+        # a session that commits inside the submodule and bumps the pointer. Saying nothing
+        # would let a shrunk queue read as a quiet night.
+        print(f"[enhance-queue] SKIPPED {len(SUBMODULE_SKIPS)} submodule page(s) the nightly "
+              f"cannot commit: {', '.join(SUBMODULE_SKIPS)} "
+              f"— enhance these from a session that commits inside the submodule.")
         # cold-start is one-shot per page: record the ones queued tonight
         picked_cold = [c['slug'] for c in final if c['source'] == 'cold-start']
         if picked_cold:

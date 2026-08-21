@@ -733,9 +733,9 @@ if [ -n "$DEPLOY_CMD" ]; then
     # Three outcomes, deliberately distinguishable. "could not check" must never render
     # the same as "all clear" — that equivalence is the bug this whole layer exists to
     # prevent.
-    if [ -f "$ROOT/py/verify-deploy-live.py" ]; then
+    if [ -f "$ROOT/teamz-company-automation/py/verify-deploy-live.py" ]; then
       echo "  --- verifying against the live site ---"
-      VERIFY_OUT="$(python3 "$ROOT/py/verify-deploy-live.py" 2>&1)"; VERIFY_RC=$?
+      VERIFY_OUT="$(python3 "$ROOT/teamz-company-automation/py/verify-deploy-live.py" 2>&1)"; VERIFY_RC=$?
       printf '%s\n' "$VERIFY_OUT" | sed 's/^/  /'
       case "$VERIFY_RC" in
         0) DEPLOY_STATUS="ok:verified-live" ;;
@@ -749,7 +749,7 @@ if [ -n "$DEPLOY_CMD" ]; then
       # Never silent. If the verifier goes missing, the status must say so rather than
       # inheriting a bare "ok" that now means less than it used to.
       DEPLOY_STATUS="ok:unverified"
-      echo "  ! verify-deploy-live.py not found at $ROOT/py — deploy is UNVERIFIED."
+      echo "  ! verify-deploy-live.py not found at $ROOT/teamz-company-automation/py — deploy is UNVERIFIED."
     fi
   else
     DEPLOY_STATUS="failed"

@@ -905,6 +905,36 @@ def kw_volume_freshness(repo):
     return ("fresh", age, len(results))
 
 
+def football_fortress():
+    """Position of the terms that actually carry football revenue.
+
+    Why this exists: build-football-fortress.py judges the money terms every night and writes
+    data/football-fortress.json — and until this section, nothing read it. A monitor whose only
+    output is a file nobody opens is the same as no monitor, which is the failure this whole
+    digest was built to stop. /football/premier-league-table-predictor/ alone is ~44% of the
+    AdSense account, so being pushed off its terms is the single most expensive thing that can
+    quietly happen to this business.
+
+    Returns (state, as_of, rows, problems). A missing or unreadable file is reported as
+    "couldn't check" — never as healthy.
+    """
+    fp = PROJECTS / "teamzlab-tools" / "data" / "football-fortress.json"
+    if not fp.exists():
+        return ("couldn't check", None, [], [])
+    try:
+        d = json.loads(fp.read_text())
+    except Exception:
+        return ("couldn't check", None, [], [])
+
+    as_of = d.get("as_of") or (d.get("window") or "").split("..")[-1]
+    verdicts = d.get("verdicts") or []
+    # Judged terms only. LOW_VOLUME and NO_DATA are deliberate states, not health signals.
+    judged = [v for v in verdicts if v.get("state") not in ("NO_DATA", "NOT_IN_TOP_QUERIES", "LOW_VOLUME")]
+    problems = [v for v in judged if v.get("state") != "OK"]
+    state = "holding" if judged and not problems else ("under threat" if problems else "couldn't check")
+    return (state, as_of, judged, problems)
+
+
 def external_feed_health():
     """Health of third-party data feeds the money pages depend on.
 
@@ -1276,6 +1306,35 @@ def main():
         for prop, state, age in triggers:
             L.append(f"- **{prop}** — {state}, {age} days old. Re-pull before you order stock or "
                      f"trust its SEO/GEO gating. This is the cross-project alert you asked for.")
+
+    # --- Football fortress: the terms that carry ~44% of the account ---
+    ffstate, ffas_of, ffrows, ffproblems = football_fortress()
+    L.append("")
+    L.append("## Football fortress — is anyone taking the top-earning terms?")
+    L.append("")
+    if ffstate == "couldn't check":
+        L.append("**COULD NOT CHECK** — no readable `data/football-fortress.json`. Positions are "
+                 "UNMONITORED, which is not the same as fine. Run "
+                 "`python3 scripts/build-football-fortress.py` in teamzlab-tools.")
+    else:
+        crown = sorted([v for v in ffrows if v.get("group") == "crown" and v.get("pos") is not None],
+                       key=lambda v: v["pos"])
+        L.append(f"_{len(ffrows)} money terms judged, as of {ffas_of}._")
+        if crown:
+            L.append("")
+            L.append("| term | position | best ever |")
+            L.append("|---|---|---|")
+            for v in crown[:6]:
+                L.append(f"| {v['keyword']} | {v['pos']} | {v.get('best')} |")
+        if ffproblems:
+            L.append("")
+            L.append("### 🔔 TRIGGER — a term that pays is slipping")
+            for v in ffproblems:
+                L.append(f"- **{v['keyword']}** — {v['state']}: {v.get('why','')} "
+                         f"(page {v.get('page') or 'n/a'}). This is revenue, not a vanity rank.")
+        else:
+            L.append("")
+            L.append("All judged terms holding — nobody has displaced us this week.")
 
     # --- External data feeds the money pages depend on ---
     feeds = external_feed_health()

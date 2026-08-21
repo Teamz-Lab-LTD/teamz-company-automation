@@ -1321,6 +1321,24 @@ if [ -f scripts/build-football-standings.py ]; then
     fi
 fi
 
+# Remaining-fixture feed for the table calculators.
+#
+# Deliberately a separate script from build-football-standings.py. That one feeds the "vs actual"
+# panel on the Premier League predictor — 44% of the AdSense account — and giving it a second
+# responsibility would put every future fixture bug one edit away from the page that pays for
+# everything. This shares nothing with it but the API key.
+#
+# It has the same never-regress rule: a failed fetch leaves the existing file alone rather than
+# writing an empty fixture list, which would blank the calculator on a live page.
+if [ -f scripts/build-football-fixtures.py ]; then
+    echo "  Refreshing remaining fixtures (table calculators)..."
+    FIX_OUT=$(python3 scripts/build-football-fixtures.py 2>&1); FIX_EXIT=$?
+    printf '%s\n' "$FIX_OUT" | sed 's/^/  /'
+    if [ "$FIX_EXIT" -ne 0 ]; then
+        record_health_alert "Fixture feed: could not refresh remaining fixtures for the table calculators. The existing files were kept, so the pages still work, but their fixture lists will drift as matches are played. See nightly log."
+    fi
+fi
+
 # NFL playoff predictor feed — same pattern as the football block above.
 # ESPN -> nflverse -> never-regress ladder lives inside the fetcher.
 if [ -f scripts/build-nfl-standings.py ]; then

@@ -134,6 +134,12 @@ def fetch_positions(terms):
 SLIP_TOLERANCE = 3.0      # positions worse than own best before it counts as slipping
 PAGE_ONE = 10.0           # worse than this is page two — revenue zero
 CONSECUTIVE_DAYS = 2      # a term must be bad this many recorded days running
+# Below this many impressions in the window, a position is not a measurement. GSC averages
+# position only over searches where you actually appeared, so a term drawing 1-4 impressions
+# swings between 14 and 26 on nothing. 'bundesliga tabellenrechner' fired SLIPPING on 6
+# impressions in 28 days; the daily series showed three days of data. Alerting on that is how a
+# whole alert section teaches its reader to ignore it.
+MIN_IMPRESSIONS = 30
 
 # The terms that carry money, grouped so the alert can say WHICH asset is under threat.
 # Crown terms are the ones the 44%-of-revenue page ranks for. Sibling and UCL terms are
@@ -168,6 +174,15 @@ FORTRESS = {
     # Shipped 2026-08-21. Tracked from day one so the build can be judged by effect rather than
     # by the fact that it shipped — the lesson recorded against status:"built" in
     # data/event-calendar.json.
+    # The calculator ships targeting queries the PREDICTOR already ranks 5.1-8.7 for. That is a
+    # deliberate, owner-approved cannibalisation risk on a page worth 44% of the account, so both
+    # sides are watched: these terms here, and the crown terms above. If the crown slips while
+    # these rise, the trade went bad and the calculator should be noindexed.
+    "calculator": [
+        "premier league table calculator",
+        "premier league calculator",
+        "table calculator premier league",
+    ],
     "championship": [
         "championship table predictor",
         "championship predictor",
@@ -253,6 +268,13 @@ def judge(keyword, series, seed_best):
     graded = [e["pos"] for e in recent if e.get("pos") is not None]
     steady = len(graded) >= CONSECUTIVE_DAYS
 
+    # Too little traffic to call anything. Reported, never alerted.
+    imps = sum(e.get("imps") or 0 for e in recent)
+    if imps < MIN_IMPRESSIONS:
+        return {"keyword": keyword, "state": "LOW_VOLUME", "pos": latest_pos, "best": best,
+                "page": latest_page, "date": latest_date,
+                "why": f"only {imps} impressions in the window — position is noise, not a signal"}
+
     if latest_pos > PAGE_ONE and best <= PAGE_ONE and steady and all(p > PAGE_ONE for p in graded):
         return {"keyword": keyword, "state": "OFF_PAGE_ONE", "pos": latest_pos, "best": best,
                 "page": latest_page, "date": latest_date,
@@ -309,7 +331,7 @@ def main():
             v = judge(kw, series_map.get(kw.lower(), []), seed_best)
             v["group"] = group
             verdicts.append(v)
-            if v["state"] not in ("OK", "NO_DATA"):
+            if v["state"] not in ("OK", "NO_DATA", "LOW_VOLUME"):
                 problems.append(v)
 
     gaps = []
@@ -319,7 +341,7 @@ def main():
                      "page": row["page"] if row else None,
                      "imps": row["imps"] if row else 0})
 
-    judged = [v for v in verdicts if v["state"] != "NO_DATA"]
+    judged = [v for v in verdicts if v["state"] not in ("NO_DATA", "LOW_VOLUME")]
     state.update({
         "checked_at": datetime.now(timezone.utc).isoformat(),
         "window": fetched["window"],

@@ -49,6 +49,7 @@ SITES = [
     ("goalkit-bd",                      "sc-domain:goalkit.teamzlab.com",  "com.teamzlab.goalkit-nightly"),
     ("teamz-lab-learning",              "https://learn.teamzlab.com/",    "com.teamzlab.learn-nightly"),
     ("teamzlab-website",                "https://teamzlab.com/",          "com.teamzlab.brand-nightly"),
+    ("tekko-bd",                        "https://tekko.teamzlab.com/",    "com.teamzlab.tekko-nightly"),
 ]
 
 # repo -> GA4 property ID, read from each repo's own .teamz-automation.env
@@ -61,6 +62,12 @@ GA4_PROPERTY = {
     "goalkit-bd":                      "537333788",
     "teamz-lab-learning":              "527372960",
     "teamzlab-website":                "469101682",
+    # tekko-bd has NO GA4 property and no gtag on the site (checked 2026-08-22).
+    # Mapped to None on purpose rather than omitted: an absent key and a known-
+    # missing one look identical in code, and the AI-channel table below used to
+    # `continue` past both without saying so. None makes it render as "not
+    # measured" instead of vanishing.
+    "tekko-bd":                        None,
 }
 
 
@@ -1121,9 +1128,14 @@ def main():
         L.append("| property | AI sessions | vs prev | AI revenue | $/1k sessions | organic $/1k |")
         L.append("|---|---|---|---|---|---|")
         ai_unreachable = []
+        ai_unmeasured = []
         for repo, prop, _ in SITES:
             pid = GA4_PROPERTY.get(repo)
             if not pid:
+                # No GA4 property at all. Record it so the table says so — silently
+                # skipping made "we never measured this" read as "this has no AI
+                # traffic", which is the failure mode this whole file exists to avoid.
+                ai_unmeasured.append(prop)
                 continue
             try:
                 cur = {ch: (s, r) for ch, s, r in ai_channel_totals(pid, gtok, start, end)}
@@ -1142,10 +1154,18 @@ def main():
                 # dropped, so the gap stays visible instead of looking like "0 AI traffic".
                 ai_unreachable.append((prop, type(e).__name__))
                 L.append(f"| {prop} | ⚠️ **UNREACHABLE** | — | {type(e).__name__} | — | — |")
+        for prop in ai_unmeasured:
+            L.append(f"| {prop} | — **NOT MEASURED** | — | no GA4 property | — | — |")
         if ai_unreachable:
             L.append("")
             for prop, why in ai_unreachable:
                 L.append(f"- `{prop}` AI channel → {why}.")
+        if ai_unmeasured:
+            L.append("")
+            for prop in ai_unmeasured:
+                L.append(f"- `{prop}` has **no GA4 property configured** — AI/organic session "
+                         f"numbers are unknown for it, not zero. Add a GA4 tag + property, then "
+                         f"map it in GA4_PROPERTY, before reading anything into its absence.")
 
         # Weekly trend for the property that actually carries this channel. Raw total, no
         # event filtering — trailing weeks here still carry the World Cup's decay (it ended

@@ -1329,6 +1329,37 @@ if [ -f scripts/build-nfl-standings.py ]; then
         || echo "  (NFL standings refresh failed — non-fatal)"
 fi
 
+# Daily rank recording + fortress displacement check.
+#
+# /football/premier-league-table-predictor/ is 44% of the entire AdSense account and had
+# ZERO rank monitoring: the watchlist held 64 care-home keywords and the last football row
+# in rank-history.json was 2026-06-25, three weeks before the page existed. A competitor
+# could have taken the top spot and the first anyone would know is a screenshot.
+#
+# Guarded on data/football/ — which exists ONLY in teamzlab-tools — because
+# rank-history.json and rank-watchlist.json live in the SHARED automation data dir.
+# build-rank-tracker.py is symlinked into all four properties, so an unguarded call would
+# have every property write the same date key and the last to finish would silently
+# replace tools' numbers with goalkit's. One writer per day is the point of the guard.
+#
+# Recording is a read-only Search Console query; it cannot fail the build.
+if [ -d data/football ] && [ -e scripts/build-rank-tracker.py ]; then
+    echo "  Recording keyword ranks (football fortress watchlist)..."
+    RANK_OUT=$(python3 scripts/build-rank-tracker.py record 2>&1); RANK_EXIT=$?
+    printf '%s\n' "$RANK_OUT" | sed 's/^/  /'
+    if [ "$RANK_EXIT" -ne 0 ]; then
+        record_health_alert "Rank tracker: could not record today's positions (Search Console token or API failure). The football fortress is UNMONITORED tonight — a competitor could displace the top-earning page unseen. See nightly log."
+    fi
+
+    if [ -f scripts/build-football-fortress.py ]; then
+        FORT_OUT=$(python3 scripts/build-football-fortress.py 2>&1); FORT_EXIT=$?
+        printf '%s\n' "$FORT_OUT" | sed 's/^/  /'
+        if [ "$FORT_EXIT" -ne 0 ]; then
+            record_health_alert "Football fortress: $(printf '%s' "$FORT_OUT" | grep -m1 '^ERROR:' | sed 's/^ERROR: //')"
+        fi
+    fi
+fi
+
 # Data-freshness sentinel — runs AFTER the feed refreshers so it judges
 # tonight's data, not yesterday's. Replaces the old inline football
 # staleness heredoc: the same kickoff-passed-but-empty rule now lives in

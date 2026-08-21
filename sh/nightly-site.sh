@@ -216,7 +216,13 @@ fi
 # 1. DIRTY-GUARD. Never run over uncommitted human work: a nightly that commits +
 #    deploys half-finished edits is worse than a nightly that skips a night. Only
 #    GENERATED artifacts are allowed to be dirty.
+# A file whose NAME says it is generated is never human WIP. Left out, these freeze the
+# night forever: src/data/ecommerce-page.generated.ts carries a gscKeywordsExportedAt
+# timestamp that a separate 01:52 cron rewrites, so the guard blocked apps.teamzlab.com
+# on a file that had regenerated itself since the last commit — the same self-sustaining
+# freeze the two tracked .pyc files caused on goalkit.
 ARTIFACT_RE='^.. (dist/|logs/|docs/|data/|node_modules/|robots\.txt|sitemap\.xml|llms(-full)?\.txt|public/robots\.txt|public/llms(-full)?\.txt|rank-history\.json)'
+ARTIFACT_RE="$ARTIFACT_RE|^.. .*\.generated\.(ts|tsx|js|json)$"
 [ -n "$EXTRA_ARTIFACTS" ] && ARTIFACT_RE="$ARTIFACT_RE|^.. ($EXTRA_ARTIFACTS)"
 DIRTY="$(git status --porcelain --ignore-submodules 2>/dev/null | grep -vE "$ARTIFACT_RE")"
 if [ -n "$DIRTY" ]; then

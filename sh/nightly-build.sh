@@ -1222,6 +1222,21 @@ sys.exit(0 if p.returncode==0 and p.stdout and g.first_error(p.stdout) is None e
     fi
 fi
 
+# JSON-LD validity guard — the cron commits --no-verify (bypassing the pre-commit hook),
+# so re-run it here on the agent's changed set, same pattern as the JS-syntax guard above.
+# 2026-08-12 the enhance agent broke a FAQPage this exact way and nothing caught it for nine
+# days because the guard that fixed it (2026-08-22) was wired ONLY into the interactive
+# pre-commit hook. WARN-only: can't block a --no-verify commit, but the alert is now real.
+if [ -f scripts/guard-jsonld.py ]; then
+    echo "  JSON-LD validity guard (post-edit, agent's changed tools)..."
+    JLD_OUT=$(python3 scripts/guard-jsonld.py --changed 2>&1); JLD_EXIT=$?
+    printf '%s\n' "$JLD_OUT" | tail -12
+    if [ "$JLD_EXIT" -ne 0 ]; then
+        record_health_alert "JSON-LD guard: tonight's enhance run broke structured data on a tool page — see nightly log. Google drops the whole block; the page keeps rendering, so nothing looks wrong to a visitor."
+        osascript -e 'display notification "Invalid JSON-LD on an enhanced tool — check nightly log" with title "Teamz JSON-LD Guard" sound name "Basso"' 2>/dev/null
+    fi
+fi
+
 # Tool-mount guard — catches the class the JS guard structurally CANNOT: JS that
 # parses fine but silently no-ops. UtilityEngine.init({mode:'converter',...}) is
 # valid JavaScript; the engine just has no dispatch branch for 'converter', so

@@ -165,11 +165,20 @@ FORTRESS = {
         "football inflation calculator",
         "penalty shootout simulator",
     ],
+    # Shipped 2026-08-21. Tracked from day one so the build can be judged by effect rather than
+    # by the fact that it shipped — the lesson recorded against status:"built" in
+    # data/event-calendar.json.
+    "championship": [
+        "championship table predictor",
+        "championship predictor",
+        "efl championship predictor",
+    ],
 }
+# Terms we have no page for. Tracked to baseline demand, never alerted on — a permanent alert
+# on a deliberate gap is how a whole alert section gets ignored.
 GAP_TERMS = [
     "europa league predictor",
     "ligue 1 table predictor",
-    "championship table predictor",
     "conference league predictor",
     "champions league league phase predictor",
 ]

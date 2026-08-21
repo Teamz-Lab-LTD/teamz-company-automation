@@ -1237,6 +1237,21 @@ if [ -f scripts/guard-jsonld.py ]; then
     fi
 fi
 
+# Concept-duplicate guard — re-baselined 2026-08-22 (192 known groups), and the SAME
+# --no-verify gap as the JSON-LD guard above: the pre-commit hook's copy of this check can
+# never see a duplicate the nightly enhance agent creates, because the nightly never asks it.
+# Whole-repo scan is ~0.3s (measured) — cheap enough to run unconditionally, no --changed
+# filtering needed. WARN-only, same reasoning as its neighbors.
+if [ -f scripts/build-detect-concept-dupes.py ]; then
+    echo "  Concept-duplicate guard (post-edit, whole-repo — cheap enough not to filter)..."
+    DUP_OUT=$(python3 scripts/build-detect-concept-dupes.py --strict 2>&1); DUP_EXIT=$?
+    printf '%s\n' "$DUP_OUT" | tail -20
+    if [ "$DUP_EXIT" -ne 0 ]; then
+        record_health_alert "Concept-duplicate guard: tonight's enhance run created a page that duplicates an existing one by word-order/concept — see nightly log. Consider --save-baseline only if this is a deliberate cross-country pair, never to silence a real dupe."
+        osascript -e 'display notification "Enhance run may have created a duplicate tool page — check nightly log" with title "Teamz Dupe Guard" sound name "Basso"' 2>/dev/null
+    fi
+fi
+
 # Tool-mount guard — catches the class the JS guard structurally CANNOT: JS that
 # parses fine but silently no-ops. UtilityEngine.init({mode:'converter',...}) is
 # valid JavaScript; the engine just has no dispatch branch for 'converter', so

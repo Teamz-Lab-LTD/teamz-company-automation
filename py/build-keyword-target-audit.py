@@ -93,7 +93,9 @@ def page_targets(host):
     being audited, and a page can rank for something its author never intended.
     """
     out = []
-    for d in ("src/content/apps", "src/content/blog"):
+    # Markdown collections. Add a directory here and it is audited on every property that has
+    # one; properties without it skip the loop, so this list is safe to extend.
+    for d in ("src/content/apps", "src/content/blog", "src/content/books"):
         root = host / d
         if not root.exists():
             continue
@@ -114,6 +116,48 @@ def page_targets(host):
             else:
                 # Undeclared is a finding, not a skip — it is how a page ends up aimed at nothing.
                 out.append((f.stem, None, str(f.relative_to(host))))
+
+    # HAND-WRITTEN .astro ROUTES — the blind spot this audit had for its whole life.
+    #
+    # On apps.teamzlab.com the entire agency service surface (/vibe-coding-agency/,
+    # /hire-app-developer-for-startup/, /ai-agent-development/, ...) is .astro under src/pages/,
+    # not markdown under src/content/. Those are the pages that actually convert visitors into
+    # clients, and every one of them was invisible here: 67 pages audited, zero service pages
+    # among them. An audit that silently omits the money pages reads as "the money pages are
+    # fine", which is the worst failure this file can have — the same class of bug as the
+    # 4000-char frontmatter cap above.
+    #
+    # They carry no `primaryKeyword` today (service copy lives in src/data/services.ts, which has
+    # seo.title and jsonLdService but no declared target), so they land in `no_target_declared`.
+    # That is the honest result, and it costs zero Keyword Planner calls: undeclared pages are
+    # filtered out before the volume batches are built. Declaring targets for them is a separate
+    # decision for whoever owns that file.
+    #
+    # Static routes only. Anything with a bracket in its path is a dynamic route whose real pages
+    # come from a collection already scanned above; auditing `[slug].astro` would report one
+    # fictional page instead of the many real ones.
+    # Utility routes that exist on every site and can never have a search target. Listing them
+    # as "no target declared" every run would bury the finding that actually matters — a service
+    # page with no target — under a dozen rows nobody can act on.
+    UTILITY = {
+        "404", "500", "privacy", "privacy-policy", "terms", "eula", "data-deletion",
+        "search", "animations", "sitemap", "robots", "offline", "thanks", "thank-you",
+    }
+    pages_root = host / "src" / "pages"
+    if pages_root.exists():
+        for f in sorted(pages_root.rglob("*.astro")):
+            rel = f.relative_to(pages_root)
+            if any("[" in part for part in rel.parts):
+                continue
+            if any(part.startswith("_") for part in rel.parts):
+                continue
+            slug = rel.parent.as_posix() if f.stem == "index" else (rel.parent / f.stem).as_posix()
+            slug = slug.strip("./") or "index"
+            if slug in UTILITY or slug.split("/")[-1] in UTILITY:
+                continue
+            txt = f.read_text(errors="ignore")
+            mk = re.search(r"^\s*(?:const\s+)?primaryKeyword\s*[:=]\s*['\"](.+?)['\"]", txt, re.M)
+            out.append((slug, mk.group(1).strip() if mk else None, str(f.relative_to(host))))
     return out
 
 

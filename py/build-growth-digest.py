@@ -942,6 +942,46 @@ def football_fortress():
     return (state, as_of, judged, problems)
 
 
+def kindle_books():
+    """Amazon KDP books sold from apps.teamzlab.com/books/.
+
+    Returns (state, generated_at, gsc, kdp, report_age_days).
+
+    Why this has a panel: the books are the one product line with NO automated feedback path.
+    KDP has no API and Amazon serves 503/500 to non-browser clients, so sales only enter this
+    system when a human exports an .xlsx by hand. A stale export looks exactly like a month with
+    no sales, and "no sales" is the answer that would make someone give up on the whole line. The
+    freshness of the input is therefore reported as loudly as the numbers themselves.
+
+    A missing or unreadable file is "couldn't check", never healthy — same contract as every
+    other panel here.
+    """
+    fp = PROJECTS / "teamz-lab-generic-landing-pages" / "data" / "books-metrics.json"
+    if not fp.exists():
+        return ("couldn't check", None, None, None, None)
+    try:
+        d = json.loads(fp.read_text())
+    except Exception:
+        return ("couldn't check", None, None, None, None)
+
+    gsc, kdp = d.get("search_console") or {}, d.get("kdp") or {}
+    report_age = None
+    rp = PROJECTS / "teamz-lab-generic-landing-pages" / "docs" / "books-report.md"
+    if rp.exists():
+        report_age = (datetime.now() - datetime.fromtimestamp(rp.stat().st_mtime)).days
+
+    # The KDP export is the only ground truth for sales. Judge the DATA, not the business:
+    # a stale spreadsheet is a monitoring failure, not a sales failure, and must not read as one.
+    state = "ok"
+    if kdp.get("status") != "ok":
+        state = "no sales data"
+    else:
+        months = kdp.get("months_covered") or []
+        if len(months) < 2:
+            state = "sales data thin"
+    return (state, d.get("generated_at"), gsc, kdp, report_age)
+
+
 def external_feed_health():
     """Health of third-party data feeds the money pages depend on.
 
@@ -1328,6 +1368,45 @@ def main():
                      f"trust its SEO/GEO gating. This is the cross-project alert you asked for.")
 
     # --- Football fortress: the terms that carry ~44% of the account ---
+    bkstate, bkgen, bkgsc, bkkdp, bkage = kindle_books()
+    L.append("")
+    L.append("## Kindle books — apps.teamzlab.com/books/")
+    L.append("")
+    if bkstate == "couldn't check":
+        L.append("**COULD NOT CHECK** — no readable `data/books-metrics.json` in "
+                 "teamz-lab-generic-landing-pages. Run `python3 scripts/build-books-data.py` there.")
+    else:
+        tot = (bkkdp or {}).get("totals") or {}
+        months = ", ".join((bkkdp or {}).get("months_covered") or []) or "none"
+        L.append(f"| signal | value |")
+        L.append("|---|---|")
+        if (bkgsc or {}).get("status") == "ok":
+            pages = bkgsc.get("pages") or {}
+            impr = sum(p.get("impressions", 0) for p in pages.values())
+            clicks = sum(p.get("clicks", 0) for p in pages.values())
+            w = bkgsc.get("window") or {}
+            L.append(f"| /books/ search impressions ({w.get('days', '?')}d) | {impr} |")
+            L.append(f"| /books/ clicks | {clicks} |")
+        else:
+            L.append(f"| /books/ search data | ⚠️ {(bkgsc or {}).get('reason', 'unavailable')} |")
+        if (bkkdp or {}).get("status") == "ok":
+            L.append(f"| paid units (KDP export) | {tot.get('paid_units', 0)} |")
+            L.append(f"| KENP pages read | {tot.get('kenp', 0)} |")
+            L.append(f"| royalty, USD rows only | ${tot.get('royalty_usd', 0)} |")
+            L.append(f"| months the export covers | {months} |")
+        else:
+            L.append(f"| KDP sales | ⚠️ {(bkkdp or {}).get('reason', 'unavailable')} |")
+        L.append("| Amazon rank / reviews | not collectable — Amazon blocks automated reads |")
+        if bkage is not None:
+            L.append(f"| monthly report age | {bkage}d (writes itself day 1, 06:10) |")
+        if bkstate != "ok":
+            L.append("")
+            L.append(f"### 🔔 TRIGGER — books: {bkstate}")
+            L.append("- Sales here have NO automated path. Export a fresh KDP Orders .xlsx "
+                     "(KDP → Reports → choose a date range covering the last 2 months) into "
+                     "~/Downloads; the collector finds the newest file automatically.")
+            L.append("- Until then, treat the numbers above as unknown, not as zero.")
+
     ffstate, ffas_of, ffrows, ffproblems = football_fortress()
     L.append("")
     L.append("## Football fortress — is anyone taking the top-earning terms?")

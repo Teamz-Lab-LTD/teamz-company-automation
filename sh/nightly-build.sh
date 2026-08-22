@@ -1253,6 +1253,18 @@ if [ -f scripts/guard-jsonld.py ]; then
     fi
 fi
 
+# Breadcrumb guard — same --no-verify gap as its neighbours, so it is re-run here rather than
+# trusted to the interactive hook. Whole-repo sweep over 2,353 pages that render breadcrumbs.
+# WARN-only: a wrong crumb is a copy mistake, not a reason to abort a night that shipped.
+if [ -f scripts/guard-breadcrumb.py ]; then
+    echo "  Breadcrumb guard (does any page's crumb name a DIFFERENT tool?)..."
+    BC_OUT=$(python3 scripts/guard-breadcrumb.py 2>&1); BC_EXIT=$?
+    printf '%s\n' "$BC_OUT" | tail -12
+    if [ "$BC_EXIT" -ne 0 ]; then
+        record_health_alert "Breadcrumb guard: a tool page's visible breadcrumb names a different tool — almost always a cloned page whose BREADCRUMBS was never retargeted. See nightly log."
+    fi
+fi
+
 # Concept-duplicate guard — re-baselined 2026-08-22 (192 known groups), and the SAME
 # --no-verify gap as the JSON-LD guard above: the pre-commit hook's copy of this check can
 # never see a duplicate the nightly enhance agent creates, because the nightly never asks it.

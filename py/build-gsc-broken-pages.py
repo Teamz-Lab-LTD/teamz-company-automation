@@ -16,7 +16,7 @@ Usage:
     python3 scripts/build-gsc-broken-pages.py --threshold 0.7  # match strictness
 
 Output:
-    .htaccess (appended) — only new rules added under AUTO-GSC-404 marker
+    .htaccess — AUTO-GSC-404 block, existing rules PRESERVED and unioned with new ones
     data/gsc-broken-pages-latest.json — full list of detected 404s + matches
 
 Requires: TEAMZ_SC_TOKEN_FILE, TEAMZ_SITE_PROPERTY, TEAMZ_GOOGLE_CLOUD_PROJECT
@@ -177,24 +177,72 @@ def _existing_redirects(htaccess: str) -> set:
     return covered
 
 
+def _parse_auto_block(content: str) -> List[Tuple[str, str]]:
+    """Recover (from, to) pairs already living inside the AUTO-GSC-404 block.
+
+    The block stores the source path regex-escaped; un-escaping it back to a plain path is what
+    lets the next run re-emit the identical rule instead of dropping it.
+    """
+    m = re.search(re.escape(AUTO_MARKER) + r"(.*?)" + re.escape(AUTO_END), content, re.DOTALL)
+    if not m:
+        return []
+    out = []
+    for line in m.group(1).splitlines():
+        r = re.match(r"^RedirectMatch\s+301\s+\^(\S+?)/\?\$\s+(\S+)\s*$", line.strip())
+        if r:
+            out.append((re.sub(r"\\(.)", r"\1", r.group(1)), r.group(2)))
+    return out
+
+
 def _update_htaccess(htaccess_path: Path, new_rules: List[Tuple[str, str]], dry_run: bool) -> int:
-    """Insert/replace AUTO-GSC-404 block in .htaccess. Returns count added."""
-    if not new_rules:
-        return 0
+    """Insert/replace AUTO-GSC-404 block in .htaccess. Returns the rule count written.
+
+    2026-08-22 — this used to write ONLY `new_rules` over the top of the old block, which meant
+    that the moment a run found a single new 404 it silently deleted every redirect it had ever
+    created. It fired on 2026-08-21: the 04:37 run left 4 rules, the 21:22 run found 2 new ones
+    and wrote a block containing just those 2, dropping the redirects for
+    /il/keren-hishtalmut-tax-exempt-calculator/ (61 GSC impressions in 90 days) and
+    /tax/intentionally-defective-grantor-trust-idgt-2026-installment-sale-calculator/.
+
+    It is worse in combination with _existing_redirects(), which excludes already-covered paths
+    from new_rules: a rule gets created, dropped on the next run that finds anything, re-created
+    once it is no longer "covered", and dropped again. A slow flap that never accumulates.
+
+    Existing rules are now PRESERVED and unioned with the new ones, keyed on source path so a
+    re-derived rule updates its target rather than duplicating. A preserved rule whose target no
+    longer exists on disk is dropped LOUDLY — a 301 into a 404 is worse than no 301.
+    """
     content = htaccess_path.read_text() if htaccess_path.exists() else ""
-    # Remove existing AUTO block if present (we always rewrite it idempotently)
+    kept = _parse_auto_block(content)
+    host_root = htaccess_path.parent
+
+    merged = {}
+    for path_from, path_to in kept:
+        target = host_root / path_to.strip("/") / "index.html"
+        if not target.exists():
+            print(f"[broken-pages] dropping stale redirect {path_from} -> {path_to} "
+                  f"(target no longer on disk)")
+            continue
+        merged[path_from.rstrip("/")] = path_to
+    for path_from, path_to in new_rules:
+        merged[path_from.rstrip("/")] = path_to
+
+    if not merged:
+        return 0
+
     block_re = re.compile(
         r"\n?" + re.escape(AUTO_MARKER) + r".*?" + re.escape(AUTO_END) + r"\n?",
         re.DOTALL,
     )
     content_without = block_re.sub("", content).rstrip() + "\n"
     block_lines = [AUTO_MARKER, f"# Generated {datetime.now().isoformat()}"]
-    for path_from, path_to in sorted(new_rules):
+    for path_from, path_to in sorted(merged.items()):
         # Escape regex metas in source path
-        path_from_re = re.escape(path_from.rstrip("/"))
+        path_from_re = re.escape(path_from)
         block_lines.append(f"RedirectMatch 301 ^{path_from_re}/?$ {path_to}")
     block_lines.append(AUTO_END)
     new_content = content_without + "\n" + "\n".join(block_lines) + "\n"
+    new_rules = list(merged.items())
     if dry_run:
         print(f"[dry-run] would write {len(new_rules)} rules between {AUTO_MARKER!r} markers")
         return len(new_rules)

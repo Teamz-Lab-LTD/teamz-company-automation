@@ -605,11 +605,18 @@ fi
 if [ -n "$BUILD_CMD" ]; then
   echo ""
   echo "=== build: $BUILD_CMD ==="
-  if eval "$BUILD_CMD" 2>&1 | tail -8; then
+  # `if cmd | tail -8; then` tests TAIL's exit status, and tail always succeeds — so this
+  # branch could never be taken and a failed build deployed anyway, which is the exact opposite
+  # of what the message below promises. Same trap as the tools pre-push gate (2026-08-21) and
+  # the concept-duplicate gate. Run it unpiped, capture the real status, then show the tail.
+  BUILD_LOG=$(eval "$BUILD_CMD" 2>&1)
+  BUILD_EXIT=$?
+  echo "$BUILD_LOG" | tail -8
+  if [ "$BUILD_EXIT" -eq 0 ]; then
     BUILD_STATUS="ok"
   else
     BUILD_STATUS="failed"
-    echo "BUILD FAILED — not deploying."
+    echo "BUILD FAILED (exit $BUILD_EXIT) — not deploying."
     exit 1   # the EXIT trap still writes nightly-status.json, so the digest sees this
   fi
 fi
@@ -638,6 +645,21 @@ if [ -f "$ROOT/sitemap.xml" ]; then
     echo "      The sitemap generator probably has a hardcoded list. Derive it from disk."
     osascript -e "display notification \"Orphan page not in sitemap on $LABEL\" with title \"Teamz Content\" sound name \"Basso\"" 2>/dev/null
   fi
+fi
+
+# 5.55 STARVED-HUB GATE (goalkit only — host-guarded on the script existing).
+#
+# The orphan gate above asks "is the page in the sitemap?". Being in the sitemap is not enough:
+# on 2026-08-22, five goalkit club collections were in a sitemap Google downloads every few days
+# and Google still reported them as "URL is unknown to Google" — never discovered. Each had
+# exactly ONE inbound internal link. The hubs that WERE indexed had 19-25.
+#
+# WARN-only, deliberately: the nightly commits --no-verify, and a link-graph regression should
+# be shouted about, not used to abort a night that otherwise shipped fine.
+if [ -f "$ROOT/scripts/guard-collection-links.py" ]; then
+  echo ""
+  echo "=== collection link-graph ==="
+  python3 "$ROOT/scripts/guard-collection-links.py" --warn 2>&1 | tail -20
 fi
 
 # 5.6 INTERNAL LINK HEALTH — was computed nowhere in this script until 2026-07-23. tools' own

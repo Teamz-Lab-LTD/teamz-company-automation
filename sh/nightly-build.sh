@@ -1121,7 +1121,17 @@ with open('$f','w') as fh: fh.write(c)
         python3 -c "
 import re
 with open('$f','r') as fh: c=fh.read()
-# Only fix colors in style blocks, not in meta/schema
+# 'Only fix colors in style blocks, not in meta/schema' was a LIE for months: the
+# code below did a blind whole-file re.sub with no notion of a style block. Measured
+# damage on 2026-08-22 — it had rewritten hex values inside JSON-LD FAQ answers and
+# code samples that visitors copy:
+#   fake-instagram-dm-generator: 'uses Instagram's palette: #000000 chat background'
+#                             -> '... var(--text) chat background'
+#   neubrutalism-generator:      'shadow-[4px_4px_0px_#000]'
+#                             -> 'shadow-[4px_4px_0px_var(--text)]'   (broken Tailwind)
+# plus an explanatory JS comment on the PL predictor that it inverted into nonsense,
+# which is what surfaced this whole chain. Now it genuinely only rewrites inside
+# <style>...</style>, so schema, comments, meta tags and copyable code are untouched.
 replacements = {
     '#ffffff': 'var(--bg)', '#fff': 'var(--bg)',
     '#000000': 'var(--text)', '#000': 'var(--text)',
@@ -1134,11 +1144,17 @@ replacements = {
     '#e74c3c': 'var(--heading)', '#e63946': 'var(--heading)',
     '#3498db': 'var(--heading)', '#2196f3': 'var(--heading)',
 }
-changed = False
-for old, new in replacements.items():
-    if old.lower() in c.lower():
-        c = re.sub(re.escape(old), new, c, flags=re.IGNORECASE)
-        changed = True
+def fix_style_block(m):
+    inner = m.group(2)
+    for o, n in replacements.items():
+        # Word-boundary-ish guard: '#fff' must not eat the '#fff' inside '#ffffff'.
+        inner = re.sub(re.escape(o) + r'(?![0-9a-fA-F])', n, inner, flags=re.IGNORECASE)
+    return m.group(1) + inner + m.group(3)
+
+before = c
+c = re.sub(r'(<style\b[^>]*>)(.*?)(</style>)', fix_style_block, c,
+           flags=re.DOTALL | re.IGNORECASE)
+changed = c != before
 if changed:
     with open('$f','w') as fh: fh.write(c)
     print('    Fixed: hardcoded colors in $f')
@@ -1424,18 +1440,41 @@ fi
 # new/changed page shipped without a sitemap update — reuse of the existing correct script.
 [ -f scripts/build-sitemap.sh ] && bash scripts/build-sitemap.sh 2>/dev/null | tail -2
 
-# Stage generated/site changes, but leave volatile logs and lock files out of the commit
+# Stage generated/site changes, but leave volatile logs and lock files out of the commit.
+#
+# 2026-08-22 — this block silently did NOTHING for months. It used to carry
+# ':(exclude)scripts/seo-logs/*.log', and scripts/seo-logs is a SYMLINK into the
+# automation repo, so git aborted the whole command with
+#   fatal: pathspec ':(exclude)scripts/seo-logs/*.log' is beyond a symbolic link
+# exit 128. `2>/dev/null` swallowed the fatal, nothing got staged, the next line's
+# `git diff --cached --quiet` was therefore true, and the run cheerfully printed
+# "No commit-worthy changes after exclusions" every single night.
+#
+# Everything produced after the agent's own commits — Phase 5 auto-fixes, SEO
+# auto-fixes, regenerated dateModified schema, Twitter tags, sitemap, standings
+# JSON — was left uncommitted. The NEXT run's dirty-guard then swept it up as
+# "leftover enhanced tool page(s)" and fired the leftover-page-deadlock health
+# alert. That alert has fired on 28 of 218 recorded runs (~13%); it was never a
+# deadlock, it was this. Measured after the fix: 37 files stage, exit 0.
+#
+# Dropped ':(exclude)logs/*.log' and ':(exclude).claude/scheduled_tasks.lock'
+# too — both live under already-gitignored directories, so the exclusions were
+# redundant AND made git exit 1 with "paths are ignored by .gitignore" advice.
+# Never re-add a pathspec that points through a symlink; git cannot honour it.
 git add -A -- . \
-    ':(exclude)logs/*.log' \
     ':(exclude)scripts/seo-latest-report.txt' \
-    ':(exclude)scripts/seo-logs/*.log' \
-    ':(exclude)seo-logs/*.log' \
-    ':(exclude).claude/scheduled_tasks.lock' 2>/dev/null
+    ':(exclude)seo-logs/*.log'
+GIT_ADD_EXIT=$?
+if [ "$GIT_ADD_EXIT" -ne 0 ]; then
+    # Loud, not silent. A staging failure means the night's output does not ship.
+    echo "  ✗ git add FAILED (exit $GIT_ADD_EXIT) — nothing staged, tonight's generated output will NOT be committed."
+    record_health_alert "git add failed (exit $GIT_ADD_EXIT) at the nightly's final staging step — tonight's generated output was NOT committed. This is the failure that hid behind 'No commit-worthy changes' for months; check the pathspecs for symlinks."
+fi
 
 if ! git diff --cached --quiet 2>/dev/null; then
     git commit -m "Auto-fix: Sonnet cleanup ($FIXES issues fixed)" --no-verify 2>/dev/null
     echo "  Committed auto-fixes."
-else
+elif [ "$GIT_ADD_EXIT" -eq 0 ]; then
     echo "  No commit-worthy changes after exclusions."
 fi
 

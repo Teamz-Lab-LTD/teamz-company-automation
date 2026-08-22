@@ -19,7 +19,11 @@ It does not decide pricing. It does not push anything.
 
 ## Pre-flight reads (do these BEFORE saying anything)
 
-1. `claude-config/knowledge/Shipaton_2026_Category_Registry.md` — §1 verdict table + §4 traps.
+1. `claude-config/knowledge/Shipaton_2026_Category_Registry.md` — §1 verdict table + **§1b
+   judging criteria** + §4 traps. **§1b is not optional.** §1 says only whether the app may
+   ENTER a category; §1b says how it is SCORED, and the two lead to different advice. Most
+   categories are judged on craft, not traction — so "wait until we have users" is usually
+   the wrong call and must never be given without checking §1b first.
    **§4 is mandatory.** Nine documented traps, every one of which a previous session got wrong.
 2. `<app>/docs/shipaton/CATEGORY-TRACKER.md` — current state. If absent, this run creates it.
 3. `claude-config/knowledge/Shipaton_2026_Knowledge_Base.md` — app allocation, #BuildInPublic engine.
@@ -94,6 +98,10 @@ Update `<app>/docs/shipaton/CATEGORY-TRACKER.md`. Columns:
 
 - Answering any "which categories / what prize / am I eligible" question **without reading the
   registry first**.
+- Advising on how to WIN or improve standing in a category **without quoting that category's
+  §1b judging criteria**. Entry requirements are not scoring criteria. Guessing at how a
+  category is judged — or assuming it rewards downloads/revenue when its criteria never
+  mention them — is the same class of error as re-deriving the category list.
 - Declaring a category closed **without quoting its `OPEN IF` test and the evidence that failed**.
   "Probably not a fit" is not a verdict.
 - Recommending a category that requires spending money **without stating the cost up front**.

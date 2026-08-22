@@ -45,6 +45,10 @@ permanently ineligible. Check this FIRST for any candidate app — it is unfixab
 
 ## 1. Verdict table — every category, and the test that decides it
 
+> **§1 is entry requirements only. For how a category is SCORED, read §1b** — added 2026-08-22
+> after it emerged that no judging criteria had ever been recorded here, and that most categories
+> are judged on craft rather than traction.
+>
 > **Read §1a before quoting any prize amount.** A `--refresh-rules` run on 2026-08-21 found the
 > landing page and the rules page disagreeing by +$5k on seven RevenueCat-funded rows.
 
@@ -141,6 +145,150 @@ only store-exempt category; the ads-or-purchase eligibility clause (*"…at leas
 purchase, **or that serves ads through RevenueCat Ads**"*, §4 trap 2); and every influencer
 audience definition, including Career Coaching = *"Help new managers practice difficult workplace
 conversations"*.
+
+---
+
+## 1b. Judging criteria — verbatim, per category (added 2026-08-22)
+
+**Why this section exists, and what it says about §1.** Until this date the registry recorded only
+each category's ENTRY requirement — the `OPEN IF` test — and never how a submission is actually
+SCORED. Sessions across multiple apps advised on strategy from entry requirements alone. That is a
+hole in the middle of the thing this file exists to be. Fetched live from
+https://revenuecat-shipaton-2026.devpost.com/rules on **2026-08-22**. Quote from here; do not
+paraphrase, and do not infer a criterion that is not written below.
+
+**The single most consequential finding: MOST CATEGORIES ARE NOT TRACTION-GATED.** Only four score
+on numbers at all. Every other category is judged on craft, articulation, and design quality —
+meaning the work is doable BEFORE launch, and a session that defers category work until after a
+store listing has misread the board.
+
+| Traction/metrics-gated (numbers decide) | Craft-gated (quality decides) |
+|---|---|
+| Grand Prize · Funnel Vision (Stripe) · Idea to Income (Replit) · Most Viral App (Noise) | HAMM · Design · Peace · Catvertising · Keep Them Coming Back · Growth Loop · Best Game · Next Gen · Galaxy · JetBrains · all 5 Influencer awards |
+
+---
+
+**Grand Prize** — *Early and Effective Release:* "Explain when you first put a live, usable version
+in front of real users, why you shipped at that moment, and how the initial build allowed you to
+test or achieve early traction." · *Growth by numbers:* "Share the product improvements,
+user-acquisition and retention efforts, marketing experiments, and iterations you ran after launch
+and link them to concrete results, such as installs, active users, paying customers, conversion,
+retention, waitlist growth, MRR/ARR, social reach, or community engagement."
+
+**HAMM** — (1) "Are the proposed revenue streams clearly articulated and integrated into the app's
+design? Is the monetization strategy realistic and achievable within the context of the target
+market and the app's functionality?" (2) "Does the app demonstrate an innovative or unique approach
+to monetization that goes beyond standard models?" (3) "Can the app articulate how their chosen
+monetization methods could generate revenue? How does their monetization strategy differentiate
+them from potential competitors?"
+> **Corrects a common misreading:** HAMM is scored on the *articulation and inventiveness of the
+> strategy*, NOT on revenue earned. Entry still needs ≥1 real IAP, but a pre-revenue app with a
+> genuinely unusual monetization model can score well. A goal-window/one-off pass instead of a
+> plain subscription is exactly what criterion 2 rewards.
+
+**RevenueCat Design Award** — *Innovative ideas:* "Does the app introduce any innovative technology
+or designs?" · *Aesthetics:* "Is the app simply delightful to look at and use? Does the design spark
+joy?"
+
+**RevenueCat Peace Prize** — *Impact:* "How impactful is the solution? Does the project clearly
+demonstrate how it will benefit individuals, specific communities, or society as a whole?" ·
+*Feasibility:* "Is the technology solution realistic and achievable for solving the problem?"
+
+**Catvertising** — (1) "How well are ads integrated into the app experience? Do they feel natural,
+useful, or additive rather than interruptive?" (2) "How well does the ad strategy fit the app's
+audience, use case, and broader revenue model?"
+> Note this is about ad *integration quality*, not ad revenue. §4 trap 3 still applies for
+> eligibility: it must be RevenueCat Ads, not AdMob.
+
+**Keep Them Coming Back (OneSignal)** — *Implementation:* "Did the Project successfully implement
+fundamental OneSignal features? Is the integration clean, stable, and well executed?" · *User
+value:* "Does the OneSignal integration improve the user experience or add significant value to the
+app?" · *Resourcefulness and creativity:* "How resourcefully did the Entrant use OneSignal to
+achieve the intended experience and outcome? Did the Entrant use OneSignal in a creative,
+unexpected, or clever way, or attempt to use less-common or advanced mobile-messaging features?"
+> Criterion 3 is where a basic init/consent/identify port scores ZERO. It rewards advanced features
+> — behaviour-based tags/segmentation, per-user local-time delivery, journeys, in-app messages.
+
+**Growth Loop (Layers)** — (1) "Did the Entrant identify a specific audience and a clear reason that
+audience might care about the Project?" (2) "Did the Entrant use Layers to define a focused growth
+loop, including the message, channel or product surface, experiment, and intended outcome?" (3) "Was
+the Layers SDK properly installed so the loop could be observed and measured?" (4) "Did the Entrant
+use the observed signal or response to explain what was learned and what the Entrant would try
+next?"
+
+**Best Game** — "Is the game fun and engaging to play?" · "Does it provide a unique gameplay
+experience, progression, or replayability?" · "How is the game monetized?"
+
+**Next Gen** — "Is the app idea clear, useful, interesting, or original? Does it solve a real problem
+or create a compelling experience for its intended users?" · "Does the submitted project demonstrate
+meaningful progress toward a working app? Is the core functionality clear from the video and code
+repository?" · "Does the project thoughtfully use RevenueCat to support subscriptions, in-app
+purchases, web purchases, ads, or another monetization flow?" · "Does the submission show thoughtful
+technical choices, product thinking, and care in how the app was built and presented?"
+
+**Best App for Galaxy (Samsung)** — *Galaxy optimization (**20%** — the only published weight on the
+board):* "Does the Project take advantage of Samsung-specific features such as foldable-device
+support, multi-window, or device-specific hardware?" · *Store quality:* "Is the Galaxy Store listing
+polished, with optimized metadata and assets?"
+
+**Funnel Vision (Stripe)** — *Web payment volume (**primary**):* "What total payment volume did the
+Project process through its web funnel via Stripe?" · *Funnel design and conversion:* "How well
+designed is the web-to-app experience, and how effectively does the funnel convert users from an ad
+click to web checkout and app download?"
+
+**Ship Kotlin Everywhere (JetBrains)** — *Cross-platform quality:* "How effectively does the Project
+use Kotlin Multiplatform and/or Compose Multiplatform across iOS and Android?" · *Community
+interaction (optional):* "Did the Entrant share the work in a useful, engaging way through a blog
+post, devlog, video, or social-media updates?" · *Contribution to the community (optional):* "Did
+the Entrant publish a library, contribute a pull request to a Kotlin Multiplatform library,
+open-source a reusable component, or improve relevant documentation?"
+
+**Most Viral App (Noise)** — *Virality:* "Did the Project's creative content and user-generated-content
+playbooks on Noise produce one or more viral or semi-viral posts about the app or brand?" ·
+*Scalability:* "Are the creative formats repeatable and suitable for distribution at significant
+scale?" · *Conversion relevance:* "Do the Project's creatives clearly convey the Project's value or
+novelty, address prospective users' needs or pain points, and present the product as a compelling
+solution?"
+
+**Idea to Income (Replit)** — *Growth momentum (**primary**):* "How fast and consistently did revenue
+and transaction volume grow week over week?" · *Traction:* "What supporting traction did the Project
+demonstrate, including gross revenue and number of paying users?" · *Craft:* "Is the user experience
+and visual design high quality? Does the app feel like a complete, real product?" · *Social pull:*
+"Did the Project generate meaningful community engagement or buzz?"
+
+### Influencer awards — the criteria are content specifications, not vibes
+
+Each names the exact experience being scored. Read the wording as a build spec: it says what the app
+must contain to score, which is far more actionable than §1's one-line audience description.
+
+**Productivity (Christopher Lawley)** — *Product focus and speed:* "Does the Project give Apple power
+users a fast, focused way to save and retrieve reusable content?" · *Organization and intelligent
+features:* "How effectively does the Project organize text, documents, files, and images, and do
+intelligent features make retrieval easier?" · *Design and polish:* "Is the overall experience
+polished, clear, and thoughtfully designed?"
+
+**Nutrition (Abbey's Kitchen)** — *Practical nutrition support:* "Does the Project help users make
+meals more satisfying in real-life situations?" · *Compassionate flexibility:* "Does the experience
+support healthy eating without calorie counting, macro tracking, or restrictive meal plans?" ·
+*Usefulness:* "Is the experience practical and helpful for the people it is designed to serve?"
+
+**Yoga & Fitness (Simone Sharice)** — *Personalization:* "How effectively does the Project respond to
+each user's movement, Pilates, recovery, and other wellness needs?" · *Daily clarity:* "Does it turn
+those needs into a clear and achievable plan for today?" · *Information restraint:* "Does the
+experience avoid overload and make the next action easy to understand?"
+
+**Career Coaching (Leadership Heather)** — *Realistic scenarios:* "Are the workplace conversations
+realistic and relevant to new managers?" · *Practice and feedback:* "Does the Project provide active
+practice and useful feedback for situations involving **feedback, boundaries, and saying no**?" ·
+*Confidence building:* "Does the experience help users feel better prepared before handling the real
+situation?"
+> The three named situation types are a content checklist. An app covering only "giving feedback"
+> addresses one of three. Boundaries and saying-no are separately named and separately scored.
+
+**Gaming (Mr Lewis Blogs)** — *Discovery and organization:* "Can users quickly save games when they
+discover them and organize their backlog?" · *Completion and sharing:* "How effectively can users
+complete, rate, and share games?" · *Enjoyment:* "Does managing the backlog feel enjoyable rather
+than like another chore?"
 
 ---
 

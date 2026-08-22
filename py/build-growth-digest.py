@@ -750,6 +750,82 @@ def apps_revenue_section():
     return L
 
 
+def _adsense_daily_block():
+    """Last complete AdSense days, with anything newer labelled the PARTIAL day it is.
+
+    Why this exists: on 2026-08-23 the owner asked why revenue had collapsed "today". It had
+    not. His clock read 2026-08-23 04:19 (+06); the AdSense account reports in Europe/London,
+    where it was still 2026-08-22 23:19 — "today" had not begun. What looked like a collapsed
+    today was a COMPLETE Aug 22 at GBP 13.88, second-best in sixteen days, against a pre-season
+    baseline of GBP 8-11. The day before, GBP 19.22, was Premier League opening night on one
+    page (PL predictor: 2,398 pageviews on Aug 20, 4,428 on Aug 21, 2,476 on Aug 22).
+
+    At a six-hour offset that misreading is available every single day, so the digest answers
+    it rather than leaving it to be asked. Every failure path says "couldn't check" in words —
+    never a number that could be mistaken for a real zero.
+    """
+    import ssl
+    import urllib.parse
+    import urllib.request
+    from datetime import date, timedelta
+
+    out = ["", "### AdSense daily — complete days only"]
+    tok_path = Path.home() / ".config" / "teamzlab" / "adsense-token.json"
+    if not tok_path.exists():
+        return out + ["", "WARNING **couldn't check** - no adsense-token.json; daily earnings unread."]
+    try:
+        ctx = ssl.create_default_context()
+        d = json.loads(tok_path.read_text())
+        body = urllib.parse.urlencode({
+            "client_id": d["client_id"], "client_secret": d["client_secret"],
+            "refresh_token": d["refresh_token"], "grant_type": "refresh_token"}).encode()
+        tok = json.loads(urllib.request.urlopen(urllib.request.Request(
+            "https://oauth2.googleapis.com/token", data=body, method="POST"),
+            context=ctx).read())["access_token"]
+        H = {"Authorization": "Bearer " + tok}
+        acc = json.loads(urllib.request.urlopen(urllib.request.Request(
+            "https://adsense.googleapis.com/v2/accounts", headers=H),
+            context=ctx).read())["accounts"][0]
+        tz = acc.get("timeZone", {}).get("id", "?")
+        end = date.today()
+        start = end - timedelta(days=8)
+        q = urllib.parse.urlencode([
+            ("dateRange", "CUSTOM"),
+            ("startDate.year", start.year), ("startDate.month", start.month),
+            ("startDate.day", start.day),
+            ("endDate.year", end.year), ("endDate.month", end.month), ("endDate.day", end.day),
+            ("dimensions", "DATE"), ("metrics", "ESTIMATED_EARNINGS"), ("metrics", "PAGE_VIEWS")])
+        rep = json.loads(urllib.request.urlopen(urllib.request.Request(
+            "https://adsense.googleapis.com/v2/" + acc["name"] + "/reports:generate?" + q,
+            headers=H), context=ctx).read())
+    except Exception as e:
+        return out + ["", "WARNING **couldn't check** - AdSense API unreachable (" +
+                      type(e).__name__ + "). This is NOT a zero-revenue reading."]
+
+    rows = [(c["cells"][0]["value"], c["cells"][1]["value"], c["cells"][2]["value"])
+            for c in rep.get("rows", [])]
+    if not rows:
+        return out + ["", "WARNING **couldn't check** - AdSense returned no rows for the window."]
+
+    cur = (rep.get("headers") or [{}, {}])[1].get("currencyCode", "")
+    newest = rows[-1][0]
+    out += ["", "Account reports in **" + tz + "**. Newest COMPLETE day on file: **" + newest + "**.",
+            "", "| date | earnings (" + cur + ") | pageviews |", "|---|---|---|"]
+    for dt, earn, pv in rows[-7:]:
+        out.append("| " + dt + " | " + earn + " | " + pv + " |")
+    prior = [float(r[1]) for r in rows[:-1]] or [0.0]
+    base = sum(prior) / len(prior)
+    last = float(rows[-1][1])
+    delta = ((last - base) / base * 100) if base else 0.0
+    out += ["", "Newest complete day is **%+.0f%%** vs the %d-day mean before it."
+            % (delta, len(prior)),
+            "", "**Anything dated after " + newest + " is a PARTIAL day and will read low.** "
+                "The account clock is " + tz + ", so a Bangladesh late evening or early morning "
+                "is still the PREVIOUS AdSense day — a fresh-looking 'today' is usually an hour "
+                "or two of data, not a drop."]
+    return out
+
+
 def revenue_section():
     """The money section: is revenue holding, and how concentrated is it?
 
@@ -770,6 +846,7 @@ def revenue_section():
     is in words.
     """
     L = ["", "## Money — is revenue holding?"]
+    L += _adsense_daily_block()
     path = PROJECTS / "teamz-company-automation" / "data" / "revenue-watchdog-status.json"
     if not path.exists():
         L.append("")

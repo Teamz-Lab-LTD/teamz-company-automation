@@ -278,8 +278,18 @@ print(f"{words}:{cjk}")
   fi
 
   # Broken Copy Image
+  #
+  # A page may implement this EITHER inline with ClipboardItem, OR — preferably —
+  # by delegating to window.safeClipboardImage in shared/js/common.js, which is
+  # where the ClipboardItem call and its Safari/permissions fallbacks actually
+  # live. This check used to grep the page's own HTML for 'ClipboardItem' only,
+  # so it flagged the delegating pages as BROKEN COPY IMAGE and blocked their
+  # pushes — punishing the exact central-helper pattern this script's own
+  # "CENTRAL PROTECTIONS IN PLACE: common.js: ... safeClipboard ..." banner tells
+  # authors to use. tools/business-card-maker was the live example: its Copy
+  # Image button works correctly and was blocked on 2026-08-22.
   has_copy_img=$(echo "$CONTENT" | grep -ci 'Copy Image' 2>/dev/null || true)
-  has_clipboard_item=$(echo "$CONTENT" | grep -c 'ClipboardItem' 2>/dev/null || true)
+  has_clipboard_item=$(echo "$CONTENT" | grep -cE 'ClipboardItem|safeClipboardImage' 2>/dev/null || true)
   if [ "$has_copy_img" -gt 0 ] && [ "$has_clipboard_item" -eq 0 ]; then
     NO_COPY_HANDLER=$((NO_COPY_HANDLER + 1))
     ISSUES_SEO="$ISSUES_SEO

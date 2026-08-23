@@ -767,7 +767,7 @@ def _adsense_daily_block():
     import ssl
     import urllib.parse
     import urllib.request
-    from datetime import date, timedelta
+    from datetime import date, datetime, timedelta
 
     out = ["", "### AdSense daily — complete days only"]
     tok_path = Path.home() / ".config" / "teamzlab" / "adsense-token.json"
@@ -788,7 +788,7 @@ def _adsense_daily_block():
             context=ctx).read())["accounts"][0]
         tz = acc.get("timeZone", {}).get("id", "?")
         end = date.today()
-        start = end - timedelta(days=8)
+        start = end - timedelta(days=9)
         q = urllib.parse.urlencode([
             ("dateRange", "CUSTOM"),
             ("startDate.year", start.year), ("startDate.month", start.month),
@@ -808,21 +808,50 @@ def _adsense_daily_block():
         return out + ["", "WARNING **couldn't check** - AdSense returned no rows for the window."]
 
     cur = (rep.get("headers") or [{}, {}])[1].get("currencyCode", "")
-    newest = rows[-1][0]
-    out += ["", "Account reports in **" + tz + "**. Newest COMPLETE day on file: **" + newest + "**.",
+
+    # The day still running in the ACCOUNT's timezone is partial and must never be
+    # compared against complete days. date.today() is the Dhaka date; at a six-hour
+    # offset it names a day London has barely started. Resolve the account clock.
+    acct_today, tz_note = None, ""
+    try:
+        from zoneinfo import ZoneInfo
+        acct_today = datetime.now(ZoneInfo(tz)).date().isoformat()
+    except Exception:
+        # Cannot resolve the account clock -> fail SAFE, not optimistic: treat both the
+        # local today and the day after as possibly-partial rather than call one complete.
+        acct_today = (date.today() + timedelta(days=1)).isoformat()
+        tz_note = (" (could not resolve the account timezone `%s`, so the cutoff is "
+                   "conservative — one extra day is withheld rather than risk "
+                   "reporting a partial day as complete)" % tz)
+
+    complete = [r for r in rows if r[0] < acct_today]
+    partial = [r for r in rows if r[0] >= acct_today]
+
+    if not complete:
+        return out + ["", "WARNING **couldn't check** - every row AdSense returned is still "
+                          "an in-progress day in " + tz + ". No complete day to report."]
+
+    newest = complete[-1][0]
+    out += ["", "Account reports in **" + tz + "**. Newest COMPLETE day on file: **" +
+            newest + "**." + tz_note,
             "", "| date | earnings (" + cur + ") | pageviews |", "|---|---|---|"]
-    for dt, earn, pv in rows[-7:]:
+    for dt, earn, pv in complete[-7:]:
         out.append("| " + dt + " | " + earn + " | " + pv + " |")
-    prior = [float(r[1]) for r in rows[:-1]] or [0.0]
+    prior = [float(r[1]) for r in complete[:-1]] or [0.0]
     base = sum(prior) / len(prior)
-    last = float(rows[-1][1])
+    last = float(complete[-1][1])
     delta = ((last - base) / base * 100) if base else 0.0
     out += ["", "Newest complete day is **%+.0f%%** vs the %d-day mean before it."
-            % (delta, len(prior)),
-            "", "**Anything dated after " + newest + " is a PARTIAL day and will read low.** "
-                "The account clock is " + tz + ", so a Bangladesh late evening or early morning "
-                "is still the PREVIOUS AdSense day — a fresh-looking 'today' is usually an hour "
-                "or two of data, not a drop."]
+            % (delta, len(prior))]
+
+    if partial:
+        out += ["", "**Still running (NOT counted above):** " + ", ".join(
+            "%s = %s %s (%s pageviews)" % (r[0], cur, r[1], r[2]) for r in partial) +
+            ". This is a part-day total and always reads low."]
+
+    out += ["", "The account clock is " + tz + ", so a Bangladesh late evening or early "
+                "morning is still the PREVIOUS AdSense day — a fresh-looking 'today' is "
+                "usually an hour or two of data, not a drop."]
     return out
 
 

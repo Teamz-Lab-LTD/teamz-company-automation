@@ -68,6 +68,16 @@ find "$BASE" -path "*/*/index.html" \
   if grep -q 'http-equiv="refresh"' "$BASE/$slug/index.html" 2>/dev/null; then
     continue
   fi
+  # Skip pages that canonicalise to a DIFFERENT URL. Listing a page in the sitemap
+  # while its canonical points elsewhere is the contradiction that produces GSC's
+  # "Duplicate, Google chose a different canonical than the user" — it asks Google
+  # to index a URL the page itself disowns. Added 2026-08-23 when the two passer-rating
+  # calculators were consolidated; applies to every future dedupe automatically.
+  canon=$(grep -o '<link rel="canonical" href="[^"]*"' "$BASE/$slug/index.html" 2>/dev/null \
+            | head -1 | sed 's|.*href="||; s|"$||')
+  if [ -n "$canon" ] && [ "$canon" != "https://tool.teamzlab.com/$slug/" ]; then
+    continue
+  fi
   mod=$(get_lastmod "$slug/index.html")
   echo "  <url>"
   echo "    <loc>https://tool.teamzlab.com/$slug/</loc>"
@@ -78,10 +88,32 @@ find "$BASE" -path "*/*/index.html" \
 done
 
 echo '</urlset>'
-} > "$BASE/sitemap.xml"
+} > "$BASE/sitemap.xml.tmp"
 
-count=$(grep -c '<url>' "$BASE/sitemap.xml")
-echo "Sitemap rebuilt: $count URLs in sitemap.xml"
+# NEVER overwrite a good sitemap with a gutted one.
+# On 2026-08-22 two concurrent runs of this script truncated sitemap.xml from 6,854
+# URLs to 1,238 and wrote it straight into place; it was caught by eye, not by code.
+# The same shape would appear if a future property enabled TEAMZ_NIGHTLY_SITEMAP=1
+# and inherited the hardcoded tool.teamzlab.com prefix, since every canonical would
+# then mismatch and every page would be skipped. Build to a temp file, and refuse to
+# publish a sudden collapse — an unreadable input must never become a smaller sitemap.
+count=$(grep -c '<url>' "$BASE/sitemap.xml.tmp")
+prev=0
+[ -f "$BASE/sitemap.xml" ] && prev=$(grep -c '<url>' "$BASE/sitemap.xml" 2>/dev/null || echo 0)
+if [ "$count" -eq 0 ]; then
+  rm -f "$BASE/sitemap.xml.tmp"
+  echo "FATAL: generated sitemap has 0 URLs — keeping the existing $prev-URL sitemap." >&2
+  exit 1
+fi
+if [ "$prev" -gt 100 ] && [ "$count" -lt $(( prev * 90 / 100 )) ]; then
+  mv "$BASE/sitemap.xml.tmp" "$BASE/sitemap.xml.rejected"
+  echo "FATAL: sitemap would drop $prev -> $count URLs (>10% loss). NOT published." >&2
+  echo "       Rejected build left at sitemap.xml.rejected for inspection." >&2
+  echo "       Most likely: two builds running at once, or a canonical/domain mismatch." >&2
+  exit 1
+fi
+mv "$BASE/sitemap.xml.tmp" "$BASE/sitemap.xml"
+echo "Sitemap rebuilt: $count URLs in sitemap.xml (previous: $prev)"
 
 # Ping search engines (free, no API key needed)
 echo "Pinging search engines..."

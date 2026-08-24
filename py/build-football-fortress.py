@@ -52,6 +52,7 @@ nightly-build.sh greps to raise a health alert.
 """
 import importlib.util
 import json
+import re
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -70,6 +71,11 @@ SITE_URL = _CFG["site_url"]
 LAG_DAYS = 3
 WINDOW_DAYS = 7
 
+# The series is re-fetched over the whole window every night rather than appended to once, so
+# Search Console's own revisions to a day's position land in the record instead of being frozen
+# at whatever the first read said.
+SERIES_KIND = "daily-v2"
+
 
 def _rank_tracker():
     """Import build-rank-tracker.py for its token refresh and query helpers.
@@ -84,8 +90,21 @@ def _rank_tracker():
     return mod
 
 
-def fetch_positions(terms):
-    """Exact position per fortress term, straight from Search Console.
+def _term_filter(terms):
+    """Restrict the query to the fortress's own terms.
+
+    The unfiltered version asked for the site's top 25,000 rows and picked its terms out of the
+    answer. That is survivable for one row per query; it is not survivable once `date` is a
+    dimension, because the row count multiplies by the window length and a fortress term can be
+    truncated off the end of the answer. A missing row reads as zero impressions, which reads as
+    VANISHED — an alert manufactured by a row limit. Ask only for what is judged.
+    """
+    pattern = "^(" + "|".join(re.escape(t.lower()) for t in sorted(set(terms))) + ")$"
+    return [{"dimension": "query", "operator": "includingRegex", "expression": pattern}]
+
+
+def fetch_positions(terms, window_days=None):
+    """Exact position per fortress term PER DAY, straight from Search Console.
 
     This does NOT reuse rank-history.json's snapshot. That snapshot is Search Console's top 500
     rows by clicks, so an off-season term falls out of it for lack of clicks and looks identical
@@ -104,10 +123,12 @@ def fetch_positions(terms):
     if not token:
         return None, "Search Console token missing or refresh failed"
 
+    span = WINDOW_DAYS if window_days is None else window_days
     end = (datetime.now() - timedelta(days=LAG_DAYS)).strftime("%Y-%m-%d")
-    start = (datetime.now() - timedelta(days=LAG_DAYS + WINDOW_DAYS)).strftime("%Y-%m-%d")
+    start = (datetime.now() - timedelta(days=LAG_DAYS + span)).strftime("%Y-%m-%d")
     try:
-        result = rt.sc_query(token, start, end, ["query", "page"], 25000)
+        result = rt.sc_query(token, start, end, ["date", "query", "page"], 25000,
+                             filters=_term_filter(terms))
     except Exception as e:  # noqa: BLE001
         return None, f"Search Console query failed: {e}"
     if result is None:
@@ -118,22 +139,34 @@ def fetch_positions(terms):
         return None, f"Search Console returned 0 rows for {start}..{end}"
 
     wanted = {t.lower() for t in terms}
-    found = {}
+    by_day = {}
     for row in rows:
-        kw = row["keys"][0].lower()
+        day, kw, page = row["keys"][0], row["keys"][1].lower(), row["keys"][2]
         if kw not in wanted:
             continue
         pos = round(row.get("position", 100), 1)
-        page = row["keys"][1].replace(SITE_URL, "/")
-        prev = found.get(kw)
+        per = by_day.setdefault(kw, {})
+        prev = per.get(day)
         if prev is None or pos < prev["pos"]:
-            found[kw] = {"pos": pos, "page": page,
-                         "clicks": row.get("clicks", 0), "imps": row.get("impressions", 0)}
-    return {"window": f"{start}..{end}", "rows": len(rows), "found": found}, None
+            per[day] = {"pos": pos, "page": page.replace(SITE_URL, "/"),
+                        "clicks": row.get("clicks", 0), "imps": row.get("impressions", 0)}
+
+    # Only days Search Console actually answered for. Filling the calendar instead would record a
+    # None for every term on a day GSC has not published yet, and CONSECUTIVE_DAYS of manufactured
+    # Nones is indistinguishable from the whole site being delisted. Absence must be observed,
+    # never assumed.
+    days = sorted({row["keys"][0] for row in rows})
+    return {"window": f"{start}..{end}", "rows": len(rows),
+            "by_day": by_day, "days": days}, None
 
 SLIP_TOLERANCE = 3.0      # positions worse than own best before it counts as slipping
 PAGE_ONE = 10.0           # worse than this is page two — revenue zero
-CONSECUTIVE_DAYS = 2      # a term must be bad this many recorded days running
+# Three REAL days. Until 2026-08-24 each recorded point was an 8-day Search Console mean taken
+# once a night, so "2 checks running" meant two heavily-overlapping averages and a short
+# displacement was smoothed below the alert threshold before it was ever judged: the crown term
+# 'premier league predictor' sat at pos 6.3/7.4/7.1 on 18-20 Aug against a 2.3 best and the
+# fortress reported OK, because the mean over the surrounding window was only 5.3 vs 3.9.
+CONSECUTIVE_DAYS = 3      # a term must be bad this many recorded DAYS running
 # Below this many impressions in the window, a position is not a measurement. GSC averages
 # position only over searches where you actually appeared, so a term drawing 1-4 impressions
 # swings between 14 and 26 on nothing. 'bundesliga tabellenrechner' fired SLIPPING on 6
@@ -230,9 +263,15 @@ def seed_best_from_rank_history():
     return out
 
 
-def judge(keyword, series, seed_best):
-    """Verdict for one term from the fortress's own recorded series (oldest first)."""
+def judge(keyword, series, seed_best, all_time_best=None):
+    """Verdict for one term from the fortress's own recorded series (oldest first).
+
+    `best` is floored by all_time_best, which only ever improves. Without that floor the yardstick
+    is whatever the retained window happens to contain, so a term that never recovers drags its
+    own "best" down with it and the alarm quietly agrees with the decline instead of reporting it.
+    """
     kw = keyword.lower()
+    all_time_best = all_time_best or {}
     if not series:
         return {"keyword": keyword, "state": "NO_DATA", "pos": None, "best": seed_best.get(kw),
                 "page": None, "date": None, "why": "never recorded by this check yet"}
@@ -248,9 +287,9 @@ def judge(keyword, series, seed_best):
                 "page": None, "date": latest_date, "why": "no impressions recorded yet"}
 
     best = min(e["pos"] for e in seen)
-    seed = seed_best.get(kw)
-    if seed is not None:
-        best = min(best, seed)
+    for floor in (seed_best.get(kw), all_time_best.get(kw)):
+        if floor is not None:
+            best = min(best, floor)
 
     first_idx = next(i for i, e in enumerate(series) if e.get("pos") is not None)
     judgeable = series[first_idx:]
@@ -292,6 +331,14 @@ def judge(keyword, series, seed_best):
 def main():
     argv = sys.argv[1:]
     report_only = "--report" in argv
+    # One-time history load. The nightly window is 8 days, so on the night the daily series is
+    # first built `best` can only be the best of those 8 days — and the yardstick a slip is
+    # measured against would silently start out worse than the position the term actually held.
+    # 'premier league predictor' sat at 2.3 on 11 Aug and 3.5 was the best inside the window.
+    backfill_days = None
+    if "--backfill" in argv:
+        i = argv.index("--backfill")
+        backfill_days = int(argv[i + 1]) if len(argv) > i + 1 else 90
 
     all_terms = [t for terms in FORTRESS.values() for t in terms] + GAP_TERMS
     state, state_err = load_state()
@@ -299,36 +346,65 @@ def main():
 
     if report_only:
         seed_best = seed_best_from_rank_history()
+        atb = state.get("all_time_best") or {}
         for group, terms in FORTRESS.items():
             for kw in terms:
-                v = judge(kw, series_map.get(kw.lower(), []), seed_best)
+                v = judge(kw, series_map.get(kw.lower(), []), seed_best, atb)
                 print(f"  {v['state']:18} {kw[:42]:42} pos={v['pos']} best={v['best']}")
         return 0
 
-    fetched, err = fetch_positions(all_terms)
+    fetched, err = fetch_positions(all_terms, window_days=backfill_days)
     if err:
         # Cannot check is not the same as nothing wrong. Say which one this is.
         print(f"ERROR: football fortress could not be checked — {err}. "
               f"Positions are UNMONITORED tonight, not confirmed healthy.")
         return 1
 
-    today = datetime.now().strftime("%Y-%m-%d")
-    found = fetched["found"]
+    all_time_best = dict(state.get("all_time_best") or {})
+    migrated = state.get("series_kind") != SERIES_KIND
+    if migrated:
+        # Every pre-existing entry is an 8-day Search Console mean stamped with the night it was
+        # taken, not a day's position. Mixing those with true daily rows would compute `best` from
+        # smoothed data and go on hiding the displacement this rewrite exists to catch, so the old
+        # series is retired. Its minimum is kept as a floor first: the upgrade must not be able to
+        # make any term look healthier than it already measured.
+        for key, entries in series_map.items():
+            got = [e["pos"] for e in entries if e.get("pos") is not None]
+            if got:
+                cur = min(got)
+                all_time_best[key] = min(cur, all_time_best[key]) if key in all_time_best else cur
+        series_map = {}
+        state["series"] = series_map
+        state["series_kind"] = SERIES_KIND
+
+    by_day, fetch_days = fetched["by_day"], set(fetched["days"])
     for kw in all_terms:
         key = kw.lower()
-        entries = [e for e in series_map.get(key, []) if e.get("date") != today]
-        row = found.get(key)
-        entries.append({"date": today, "pos": row["pos"] if row else None,
-                        "page": row["page"] if row else None,
-                        "clicks": row["clicks"] if row else 0,
-                        "imps": row["imps"] if row else 0})
-        series_map[key] = entries[-90:]
+        # Drop every day this fetch covers and re-lay them from the answer, so Search Console's
+        # later revisions to a day replace the first reading instead of being frozen beside it.
+        entries = [e for e in series_map.get(key, []) if e.get("date") not in fetch_days]
+        per = by_day.get(key, {})
+        for day in fetched["days"]:
+            r = per.get(day)
+            entries.append({"date": day, "pos": r["pos"] if r else None,
+                            "page": r["page"] if r else None,
+                            "clicks": r["clicks"] if r else 0,
+                            "imps": r["imps"] if r else 0})
+        entries.sort(key=lambda e: e["date"])
+        series_map[key] = entries[-120:]
+
+    for key, entries in series_map.items():
+        got = [e["pos"] for e in entries if e.get("pos") is not None]
+        if got:
+            cur = min(got)
+            all_time_best[key] = min(cur, all_time_best[key]) if key in all_time_best else cur
+    state["all_time_best"] = all_time_best
 
     seed_best = seed_best_from_rank_history()
     verdicts, problems = [], []
     for group, terms in FORTRESS.items():
         for kw in terms:
-            v = judge(kw, series_map.get(kw.lower(), []), seed_best)
+            v = judge(kw, series_map.get(kw.lower(), []), seed_best, all_time_best)
             v["group"] = group
             verdicts.append(v)
             if v["state"] not in ("OK", "NO_DATA", "LOW_VOLUME"):
@@ -336,16 +412,21 @@ def main():
 
     gaps = []
     for kw in GAP_TERMS:
-        row = found.get(kw.lower())
+        per = by_day.get(kw.lower(), {})
+        # A gap term is being baselined, so the question is "did it appear at all this window",
+        # not "where was it last night". Take its best day and the window's total impressions.
+        row = min(per.values(), key=lambda r: r["pos"]) if per else None
         gaps.append({"keyword": kw, "pos": row["pos"] if row else None,
                      "page": row["page"] if row else None,
-                     "imps": row["imps"] if row else 0})
+                     "imps": sum(r["imps"] for r in per.values())})
 
     judged = [v for v in verdicts if v["state"] not in ("NO_DATA", "LOW_VOLUME")]
     state.update({
         "checked_at": datetime.now(timezone.utc).isoformat(),
         "window": fetched["window"],
         "gsc_rows_scanned": fetched["rows"],
+        "series_kind": SERIES_KIND,
+        "days_in_window": len(fetched["days"]),
         "tracked": len(judged),
         "problems": len(problems),
         "verdicts": verdicts,
@@ -373,6 +454,19 @@ def main():
 
     if state_err:
         print(f"  (note: {state_err} — series restarted)")
+    if migrated:
+        print(f"  (fortress series rebuilt as true daily positions; the previous 8-day means "
+              f"were retired and their minima kept as the all-time-best floor. "
+              f"{len(fetched['days'])} day(s) recorded so far — SLIPPING needs "
+              f"{CONSECUTIVE_DAYS}.)")
+
+    if backfill_days:
+        # A backfill re-reads months of history in one go; judging it would grade today against a
+        # window that is mostly not today. Load the record, report the floors, alert on nothing.
+        print(f"  Backfilled {len(fetched['days'])} day(s) over {fetched['window']}. "
+              f"All-time-best floors now: " +
+              ", ".join(f"{k} {v}" for k, v in sorted(all_time_best.items())[:6]) + " ...")
+        return 0
 
     if not problems:
         print(f"  All {len(judged)} fortress terms holding.")

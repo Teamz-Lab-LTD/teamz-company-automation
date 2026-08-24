@@ -174,6 +174,25 @@ CONSECUTIVE_DAYS = 3      # a term must be bad this many recorded DAYS running
 # whole alert section teaches its reader to ignore it.
 MIN_IMPRESSIONS = 30
 
+# The same noise rule, applied to the OTHER side of the comparison. MIN_IMPRESSIONS guards the
+# position being judged; nothing guarded the position it is judged AGAINST, so a single-impression
+# day could install a permanent yardstick no real traffic would ever match again. Measured after
+# the daily rewrite: 'champions league simulator' best 4.0 set on 1 impression (best on a real day
+# is 6.8), 'champions league predictor' 2.0 on 1 impression (real 4.7), 'ucl predictor' 1.0 on 1
+# impression (real 3.3). The first of those was already firing SLIPPING against a number that
+# never happened. A day must carry this many impressions before it can define "best".
+BEST_MIN_IMPRESSIONS = 10
+# Bumped when the rule for what may set a best changes, so a stored map computed under the old
+# rule is recomputed rather than carried forward as a floor that can only ever get better.
+BEST_KIND = "impr-floor-v1"
+
+
+def best_from_series(entries):
+    """Lowest position from days that actually carried traffic. None if no day qualifies."""
+    got = [e["pos"] for e in entries
+           if e.get("pos") is not None and (e.get("imps") or 0) >= BEST_MIN_IMPRESSIONS]
+    return min(got) if got else None
+
 # The terms that carry money, grouped so the alert can say WHICH asset is under threat.
 # Crown terms are the ones the 44%-of-revenue page ranks for. Sibling and UCL terms are
 # real but smaller. Gap terms are tracked at zero on purpose and never alert (see docstring).
@@ -286,10 +305,16 @@ def judge(keyword, series, seed_best, all_time_best=None):
         return {"keyword": keyword, "state": "NO_DATA", "pos": None, "best": seed_best.get(kw),
                 "page": None, "date": latest_date, "why": "no impressions recorded yet"}
 
-    best = min(e["pos"] for e in seen)
+    best = best_from_series(series)
     for floor in (seed_best.get(kw), all_time_best.get(kw)):
         if floor is not None:
-            best = min(best, floor)
+            best = floor if best is None else min(best, floor)
+    if best is None:
+        # No day in the record carried enough traffic to define a yardstick. Report the position,
+        # judge nothing against it — the alternative is inventing a best out of noise.
+        return {"keyword": keyword, "state": "LOW_VOLUME", "pos": latest_pos, "best": None,
+                "page": latest_page, "date": latest_date,
+                "why": f"no day yet with {BEST_MIN_IMPRESSIONS}+ impressions to set a best from"}
 
     first_idx = next(i for i, e in enumerate(series) if e.get("pos") is not None)
     judgeable = series[first_idx:]
@@ -369,9 +394,8 @@ def main():
         # series is retired. Its minimum is kept as a floor first: the upgrade must not be able to
         # make any term look healthier than it already measured.
         for key, entries in series_map.items():
-            got = [e["pos"] for e in entries if e.get("pos") is not None]
-            if got:
-                cur = min(got)
+            cur = best_from_series(entries)
+            if cur is not None:
                 all_time_best[key] = min(cur, all_time_best[key]) if key in all_time_best else cur
         series_map = {}
         state["series"] = series_map
@@ -393,10 +417,16 @@ def main():
         entries.sort(key=lambda e: e["date"])
         series_map[key] = entries[-120:]
 
+    if state.get("best_kind") != BEST_KIND:
+        # A stored map is only ever lowered, so one computed under a looser rule can never repair
+        # itself. Recompute it from the daily record under the current rule instead of inheriting
+        # three UCL floors that were each set by a single impression.
+        all_time_best = {}
+        state["best_kind"] = BEST_KIND
+
     for key, entries in series_map.items():
-        got = [e["pos"] for e in entries if e.get("pos") is not None]
-        if got:
-            cur = min(got)
+        cur = best_from_series(entries)
+        if cur is not None:
             all_time_best[key] = min(cur, all_time_best[key]) if key in all_time_best else cur
     state["all_time_best"] = all_time_best
 
@@ -426,6 +456,7 @@ def main():
         "window": fetched["window"],
         "gsc_rows_scanned": fetched["rows"],
         "series_kind": SERIES_KIND,
+        "best_kind": BEST_KIND,
         "days_in_window": len(fetched["days"]),
         "tracked": len(judged),
         "problems": len(problems),

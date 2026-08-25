@@ -6384,6 +6384,21 @@
           "url": "scheduled:pid=67135:count=1",
           "posted_at": "2026-08-15T15:14:01.787069+00:00",
           "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/08/rrsp-2027-contribution-limit-calculator.html",
+          "posted_at": "2026-08-25T03:22:59.581856+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtuuwxts2n23",
+          "posted_at": "2026-08-25T03:30:36.415507+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-212647348",
+          "posted_at": "2026-08-25T03:38:33.932936+00:00",
+          "status": "published"
         }
       },
       "draft": {
@@ -6673,6 +6688,16 @@
           "url": "scheduled:pid=20744:shorts=1:tutorials=0",
           "posted_at": "2026-05-15T03:10:28.217320+00:00",
           "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/08/bsu-sparing-i-2026-gratis-kalkulator.html",
+          "posted_at": "2026-08-25T07:23:40.735865+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtvc53ew7u2t",
+          "posted_at": "2026-08-25T07:26:40.156588+00:00",
+          "status": "published"
         }
       },
       "draft": {
@@ -6783,6 +6808,11 @@
         "bluesky": {
           "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mlvlwl65bm2z",
           "posted_at": "2026-05-15T15:00:26.269859+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=12700:shorts=1:tutorials=0",
+          "posted_at": "2026-08-25T15:31:07.802865+00:00",
           "status": "published"
         }
       },
@@ -7737,7 +7767,18 @@
       "title": "Bengali Ghost Folklore Explained: Jinn, Petni, Shakchunni and the Nishi Daak",
       "hash": "adbee8da1b9f1aca",
       "created": "2026-08-23T15:39:33.245119+00:00",
-      "platforms": {},
+      "platforms": {
+        "telegraph": {
+          "url": "https://telegra.ph/Bengali-Ghost-Folklore-Explained-Jinn-Petni-Shakchunni-and-the-Nishi-Daak-08-24",
+          "posted_at": "2026-08-24T03:00:58.617057+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=95316:count=1",
+          "posted_at": "2026-08-24T03:07:24.942620+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-company-automation/distribute/articles/bengali-ghost-folklore-jinn-petni-shakchunni.md",
         "priority": "high",
@@ -7754,7 +7795,33 @@
       "title": "7 Real Signs an Android Phone Has Spyware (and the Ones That Mean Nothing)",
       "hash": "e62d531d941b1f04",
       "created": "2026-08-23T15:39:33.310156+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/08/7-real-signs-android-phone-has-spyware.html",
+          "posted_at": "2026-08-24T07:19:54.198629+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtsrhlrq3r23",
+          "posted_at": "2026-08-24T07:22:59.897517+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-212512051",
+          "posted_at": "2026-08-24T07:26:16.469229+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/7-Real-Signs-an-Android-Phone-Has-Spyware-and-the-Ones-That-Mean-Nothing-08-24",
+          "posted_at": "2026-08-24T07:32:48.961928+00:00",
+          "status": "published"
+        },
+        "tiktok": {
+          "url": "scheduled:pid=37971:count=1",
+          "posted_at": "2026-08-24T07:35:55.275852+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-company-automation/distribute/articles/signs-android-phone-hacked-spyware-check.md",
         "priority": "high",
@@ -7771,7 +7838,28 @@
       "title": "Why Your Upwork Proposals Get Ignored (and What Actually Books Calls in 2026)",
       "hash": "f8035ef9b5b0c9df",
       "created": "2026-08-23T15:39:33.374402+00:00",
-      "platforms": {},
+      "platforms": {
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/08/why-your-upwork-proposals-get-ignored.html",
+          "posted_at": "2026-08-24T11:23:03.916278+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtt77gwcaw24",
+          "posted_at": "2026-08-24T11:28:58.758509+00:00",
+          "status": "published"
+        },
+        "telegraph": {
+          "url": "https://telegra.ph/Why-Your-Upwork-Proposals-Get-Ignored-and-What-Actually-Books-Calls-in-2026-08-24",
+          "posted_at": "2026-08-24T11:36:42.972580+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=10297:shorts=1:tutorials=0",
+          "posted_at": "2026-08-24T11:39:03.836013+00:00",
+          "status": "published"
+        }
+      },
       "draft": {
         "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-company-automation/distribute/articles/freelancer-client-acquisition-upwork-linkedin-cold-email.md",
         "priority": "high",
@@ -7781,6 +7869,38 @@
         "competition": "",
         "drafted_at": "2026-08-23T15:39:33.374583+00:00",
         "updated_at": "2026-08-23T15:40:22.171273+00:00"
+      }
+    },
+    {
+      "slug": "mic-test-and-playback-android-microphone-not-working",
+      "title": "Mic Test and Playback on Android: Why People Can't Hear You",
+      "hash": "ed1dcbb02cdbe5a3",
+      "created": "2026-08-25T23:33:29.768856+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-company-automation/distribute/articles/mic-test-and-playback-android-microphone-not-working.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-08-25T23:33:29.769025+00:00"
+      }
+    },
+    {
+      "slug": "wifi-connected-but-no-internet-android",
+      "title": "Wi-Fi Connected but No Internet on Android: The Fix Order That Works",
+      "hash": "379a3a77400ee74e",
+      "created": "2026-08-25T23:33:29.842570+00:00",
+      "platforms": {},
+      "draft": {
+        "filepath": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-company-automation/distribute/articles/wifi-connected-but-no-internet-android.md",
+        "priority": "high",
+        "series": "",
+        "aso_keywords": [],
+        "seo_keywords": [],
+        "competition": "",
+        "drafted_at": "2026-08-25T23:33:29.842768+00:00"
       }
     }
   ]

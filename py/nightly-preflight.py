@@ -46,6 +46,7 @@ CONFIG (env; all optional except the root)
 """
 import json
 import os
+import socket
 import sys
 import traceback
 from datetime import datetime, timedelta
@@ -273,9 +274,68 @@ def check_shared_env_contracts(root):
 
 
 # --------------------------------------------------------------------------- runners
+def check_dns_was_available(root):
+    """Did name resolution work DURING the run?
+
+    2026-08-26: the router at 192.168.0.1 was the machine's only resolver, it stopped answering
+    for the whole 21:00-22:05 window, and every outbound call failed with
+    `[Errno 8] nodename nor servname provided`. That surfaced as THIRTEEN separate health alerts
+    — GSC token refresh, football-data.org credentials, the Sleeper NFL feed, git push, the
+    fortress, anomalies, broken pages, marooned pages, geo value, ideas brief, and more — each
+    reading like its own bug. Three nights were spent that way. One outage should report as one
+    outage, and a night that could not reach the network must read as UNKNOWN, never as healthy.
+
+    Checked after the run, not before: aborting the night on a blip at 21:00 would throw away a
+    build that DNS recovery two minutes later would have completed. So this looks for evidence in
+    what actually happened, and also probes now so a still-broken resolver is named as current.
+    """
+    marks = ("[Errno 8] nodename nor servname", "NameResolutionError",
+             "Failed to resolve", "Temporary failure in name resolution")
+    logs = sorted(Path(root).glob("logs/*nightly*.log"), key=lambda f: f.stat().st_mtime)
+    hits, scanned, scope = 0, None, "no nightly log found"
+    if logs:
+        try:
+            lines = logs[-1].read_text(errors="replace").splitlines()
+        except OSError as e:
+            raise CheckFail("dns-unreadable-log",
+                            f"could not read {logs[-1].name} ({e}) — cannot tell whether the "
+                            f"network worked tonight. Treat tonight's network results as UNKNOWN.")
+        # Only THIS run. Scanning the whole file would re-report every past outage forever, which
+        # is how an alert section teaches its reader to skip it.
+        start = 0
+        for i in range(len(lines) - 1, -1, -1):
+            if "NIGHTLY BUILD —" in lines[i] or "NIGHTLY:" in lines[i] or "=== Phase 1" in lines[i]:
+                start = i
+                break
+        scope = (f"{logs[-1].name} from its last run marker"
+                 if start else f"{logs[-1].name} (no run marker found — scanned whole file)")
+        window = lines[start:]
+        scanned = len(window)
+        hits = sum(1 for ln in window if any(m in ln for m in marks))
+
+    now_ok = True
+    try:
+        socket.getaddrinfo("oauth2.googleapis.com", 443)
+    except OSError:
+        now_ok = False
+
+    if not now_ok:
+        raise CheckFail("dns-down-now",
+                        "name resolution is failing RIGHT NOW (oauth2.googleapis.com). Every "
+                        "network-dependent result in this run is UNKNOWN, not healthy — the "
+                        "tokens, feeds and push did not fail one by one, they all failed for "
+                        "this one reason. Check the router/DNS before reading any other alert.")
+    if hits:
+        raise CheckFail("dns-failed-during-run",
+                        f"{hits} name-resolution failure(s) in {scope} ({scanned} lines). DNS "
+                        f"works again now, so the other network alerts from this run are "
+                        f"symptoms of that outage, not {hits} separate faults. Anything fetched "
+                        f"over the network tonight is UNKNOWN, not confirmed healthy.")
+
+
 PRE = [check_root_is_real, check_manual_volume_coverage, check_min_html, check_tokens_present,
        check_shared_env_contracts]
-POST = [check_content_queue_parses, check_status_freshness]
+POST = [check_content_queue_parses, check_status_freshness, check_dns_was_available]
 
 
 def _run(mode, checks, abort_code):

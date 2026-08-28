@@ -146,6 +146,92 @@ purchase, **or that serves ads through RevenueCat Ads**"*, §4 trap 2); and ever
 audience definition, including Career Coaching = *"Help new managers practice difficult workplace
 conversations"*.
 
+### 2026-08-24 — re-fetched by `/shipaton-check interview-boss-plus` (Samsung challenge)
+
+Triggered by the owner asking whether the Samsung award had been missed and whether other prizes
+were being left on the board. Landing page and `/rules` both re-read (`curl` still 403; agent fetch
+tool used), and the Samsung and prize-amount answers were each confirmed from the *other* page.
+
+**Category set: UNCHANGED, third refresh running.** Still exactly 21 rows, same names, same
+sponsors. Asked `/rules` directly to name any category outside the known 21 — answer: *"No other
+award categories appear on this page beyond the 21 you listed."* **No sponsor category has been
+added at any point since the 2026-08-03 build.**
+
+**AMENDMENT 4 — §1 row 11 and §4 trap 7 UNDERSTATE the Samsung prize. Correct the framing, not
+the verdict.** Both currently read as "featured placement only", which led a session to describe
+Samsung as an afterthought. The prize text, verbatim from `/rules`:
+
+> *"3 weeks of featured placement on the Galaxy Store (Apps Tab and Discover Tab editorial
+> feature) • Invitation to RevenueCat's App Growth Annual conference in New York City (travel and
+> accommodation not included) • Your app featured on a giant billboard in Times Square • Shippy
+> trophy • Blog post featuring winning submissions • Media Spotlight on 9to5Mac & 9to5Google"*
+
+So trap 7's core claim survives — **there is still no cash** — but "featured placement only" is
+wrong. It also carries a Times Square billboard and a 9to5Mac/9to5Google media spotlight, which
+for an unknown app is real distribution, not a consolation prize.
+
+**Note the landing/rules divergence here too:** the landing page lists Samsung's prize alongside
+the cash awards' "trip to NYC", which reads as travel included. The rules text says
+**"travel and accommodation not included"** — an *invitation* only. The rules page is the legal
+document; do not repeat the landing page's framing.
+
+**The strategic point both §1 and trap 7 miss entirely:** Galaxy Store is one of the three stores
+that satisfy §0's publish gate. That makes publishing there **$0 insurance on the whole
+submission** — if Play review bounces or drags past the deadline, Galaxy alone still unlocks every
+category except Next Gen. That value has nothing to do with winning Samsung's row and should not
+be weighed against its (absent) cash.
+
+**AMENDMENT 5 — the §1a amendment-1 prize conflict is STILL UNRESOLVED, now across two refreshes
+three days apart.** Re-read on 2026-08-24: `/rules` still says **"$15,000 in USD"** first place for
+HAMM, Design, Peace, Catvertising, Best Game, Next Gen and every influencer award, while the
+landing page still says **$20,000** for the same rows. Sponsor-funded rows still agree on both
+pages (OneSignal $25k, Layers $15k — both re-confirmed this run). The split still falls exactly
+along who funds the award.
+
+That it has persisted unchanged for three days makes a transient publishing error less likely and
+strengthens amendment 1's owner action: **ask in the Shipaton Discord which page governs** before
+quoting a figure publicly. Continue to cite the range, never a single number.
+
+### 2026-08-29 — Layers looked up for the first time, by `/shipaton-check goldmend`
+
+Triggered by the owner asking, plainly, "layer sdk? what is this?" — a question this registry
+could not answer. Every Layers row here records the CATEGORY (sponsor, prize, "install the SDK",
+judging criteria) and **nothing about the product**: no website, no package name, no platform
+list, no pricing. A session had already ranked Layers as the best unclaimed prize-per-hour on a
+board without knowing whether a mobile SDK existed. Fetched live this run from the Devpost
+resources page, layers.com, layers.com/pricing and github.com/layers.
+
+**AMENDMENT 6 — what Layers actually is.** Not an analytics SDK. From the Devpost resources
+page, verbatim: Layers *"provides full-stack marketing automation for apps - it generates
+content, runs paid ads, manages social, and optimizes your App Store listing so you can focus
+on shipping."* The SDK's job is **attribution**: layers.com says *"One SDK drop ties every post
+to the installs, trials, and revenue it actually produced."*
+
+**Mobile SDKs DO exist** — `github.com/layers` is the real org (profile links to layers.com,
+"Marketing for Developers") and publishes **Layers SDK for iOS/macOS, for Android, and for
+Flutter**, plus a Unity analytics SDK, a CLI and an MCP server. So the category is genuinely
+open to a Flutter app. The layers.com homepage only shows `npm i @layers/sdk`, which is what
+made this look npm-only at first glance.
+
+**AMENDMENT 7 — §3's "Layers SDK | $0 (sponsor)" is WRONG. Correct the cost, not the verdict.**
+layers.com/pricing, read this run: a **3-day trial with 100 credits, "$0 today, card required"**,
+which **auto-converts to a paid plan unless cancelled**. After that, **Pro $39/month** (5,000
+credits) or **Ultra $159/month**. No plan forces ad spend — paid media is opt-in — but the
+platform itself is not free, and §3 lists it under the $0-budget path. Under the standing $0
+budget assumption, Layers now costs either a cancelled trial or $39.
+
+**What this changes in practice:** it demotes Layers, it does not close it. Growth Loop's §1b
+criteria are still craft-worded and still say the winner *"will not necessarily have the most
+downloads, revenue, or traction."* But the work is no longer "install an SDK and write a
+paragraph": an attribution SDK measures installs that came from posts, so it needs a PUBLISHED
+app and real social content before it can observe anything. **OneSignal is the better
+prize-per-hour claim** — $25k, free tier, and the SDK is usually already in the build.
+
+**Not a conflict, recorded so nobody re-opens it:** the Devpost resources page calls Growth Loop
+"a $30,000 prize category" while §1 says $15k/$10k/$5k. That is the same thing — 15 + 10 + 5 =
+30 — the total pool, not a per-place figure. This is NOT another instance of the amendment-1
+landing/rules split.
+
 ---
 
 ## 1b. Judging criteria — verbatim, per category (added 2026-08-22)

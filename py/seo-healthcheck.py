@@ -249,6 +249,18 @@ def check_bing_key():
 # ---------------------------------------------------------------- 5. DataForSEO balance
 def check_dataforseo():
     f = os.path.join(CFG, "dataforseo-credentials.json")
+    # Paid APIs are OFF by the owner's explicit instruction (2026-08-28): the creds
+    # live in CFG/disabled-paid/ and nothing may call them. Report that as a settled
+    # decision, not as a missing dependency — a WARN that reads like breakage is how
+    # a deliberate choice gets "helpfully" undone months later.
+    off = os.path.join(CFG, "disabled-paid", "dataforseo-credentials.json")
+    fc_off = os.path.join(CFG, "disabled-paid", "firecrawl-api-key.txt")
+    if not os.path.exists(f) and os.path.exists(off):
+        add("Paid SEO APIs", GREEN,
+            "DataForSEO + Firecrawl OFF by owner — creds parked in disabled-paid/. "
+            "GSC, Keyword Planner, Bing, GA4 and AdSense all still run. "
+            "See disabled-paid/README.txt to re-enable.")
+        return
     if not os.path.exists(f):
         add("DataForSEO balance", WARN, "no creds — exact Google volume unavailable (free sources still work)")
         return

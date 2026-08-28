@@ -1048,6 +1048,34 @@ def football_fortress():
     return (state, as_of, judged, problems)
 
 
+def bleeding_pages():
+    """Pages losing clicks at HELD impressions — i.e. something took them, demand did not move.
+
+    Reads build-gsc-anomalies.py's ranking. That check has always found this; what it lacked was
+    an order and a reader. On 2026-08-28 'premier league predictor' (CTR 21% -> 12%) was the
+    first row in a 455-row file and the owner still had to ask.
+
+    Impression drops are deliberately NOT here: a page whose demand halves in September is a
+    season ending, not a problem, and mixing the two is how a panel gets skipped.
+
+    Returns (state, rows, total_day, threshold). Missing file is "couldn't check", never "fine".
+    """
+    fp = PROJECTS / "teamz-company-automation" / "data" / "gsc-anomalies-latest.json"
+    if not fp.exists():
+        return ("couldn't check", [], 0.0, 0.0)
+    try:
+        d = json.loads(fp.read_text())
+    except Exception:
+        return ("couldn't check", [], 0.0, 0.0)
+    if "bleeding_pages" not in d:
+        # Written by an older build of the anomalies check, before the ranking existed.
+        return ("couldn't check", [], 0.0, 0.0)
+    thr = float(d.get("bleed_alert_threshold_day") or 10.0)
+    rows = d.get("bleeding_pages") or []
+    over = [r for r in rows if r.get("lost_day", 0) >= thr]
+    return ("bleeding" if over else "holding", rows, float(d.get("bleeding_total_day") or 0.0), thr)
+
+
 def kindle_books():
     """Amazon KDP books sold from apps.teamzlab.com/books/.
 
@@ -1540,6 +1568,31 @@ def main():
         else:
             L.append("")
             L.append("All judged terms holding — nobody has displaced us this week.")
+
+    bstate, brows, btotal, bthr = bleeding_pages()
+    L.append("")
+    L.append("## Pages losing clicks while Google still shows them")
+    L.append("")
+    if bstate == "couldn't check":
+        L.append("**COULD NOT CHECK** — no ranked bleed in `data/gsc-anomalies-latest.json`. "
+                 "Run `python3 scripts/build-gsc-anomalies.py` in teamzlab-tools. Unmonitored "
+                 "is not the same as fine.")
+    else:
+        L.append(f"_Impressions held, clicks did not — so the searches are still there and "
+                 f"something else is taking them. Seasonal impression drops are excluded on "
+                 f"purpose. Alerting at {bthr:.0f} clicks/day per page._")
+        L.append("")
+        L.append("| page | clicks/day lost | worst query |")
+        L.append("|---|---|---|")
+        for r in brows[:6]:
+            w = r.get("worst") or {}
+            path = r["page"].split("teamzlab.com")[-1]
+            mark = " 🔔" if r.get("lost_day", 0) >= bthr else ""
+            L.append(f"| {path}{mark} | **{r.get('lost_day', 0):.0f}** | "
+                     f"{w.get('query','—')} — CTR {w.get('prior_ctr',0):.0f}% → "
+                     f"{w.get('recent_ctr',0):.0f}% |")
+        L.append("")
+        L.append(f"Site total: **~{btotal:.0f} clicks/day** against these pages' own recent CTR.")
 
     # --- External data feeds the money pages depend on ---
     feeds = external_feed_health()

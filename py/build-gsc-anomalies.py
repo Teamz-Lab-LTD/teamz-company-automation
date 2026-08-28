@@ -133,6 +133,8 @@ def main() -> int:
     ap.add_argument("--ctr-drop-ratio", type=float, default=0.65, help="Flag CTR if recent < prior * this (default 0.65)")
     ap.add_argument("--impr-drop-ratio", type=float, default=0.45, help="Flag if recent impr < prior * this")
     ap.add_argument("--impr-spike-ratio", type=float, default=2.0, help="Flag if recent impr > prior * this")
+    ap.add_argument("--bleed-alert", type=float, default=10.0,
+                    help="Alert when a PAGE loses this many clicks/day to CTR decline (default 10)")
     ap.add_argument("--json-only", action="store_true", help="Minimal console output")
     args = ap.parse_args()
 
@@ -265,6 +267,61 @@ def main() -> int:
         "alerts": {"ctr_drop": ctr_alerts[:200], "impression_drop": impr_drop[:200], "impression_spike": impr_spike[:200]},
     }
 
+    # ---------------------------------------------------------------------
+    # RANK THE BLEED BY WHAT IT COSTS, AND SAY SO OUT LOUD.
+    #
+    # This check was already right and already running. On 2026-08-28 the row
+    # for 'premier league predictor' — the biggest money term on the site, CTR
+    # 21% -> 12% — was literally the FIRST entry in gsc-anomalies-latest.json,
+    # and the owner still found out by asking a question, because the file also
+    # held 454 other rows and the nightly runs this with --json-only. 455
+    # undifferentiated rows is a database, not a monitor. Nothing ranked them,
+    # so nothing could be delivered.
+    #
+    # Aggregating to the PAGE and sorting by estimated clicks lost per day turns
+    # those 455 rows into 2 worth waking anyone for.
+    #
+    # Only CTR drops are alerted, never impression drops. An impression drop is
+    # usually demand moving — the Premier League predictor's own August peak
+    # halves on its own every September — and alerting on seasonality is how an
+    # alert section teaches its reader to skip it. A CTR drop at held
+    # impressions is the opposite: the searches are still there and something
+    # else is now taking them. Impression rows stay in the JSON for diagnosis.
+    by_page: Dict[str, dict] = {}
+    for row in ctr_alerts:                      # full list, not the capped copy
+        lost = row["recent_impressions"] * (row["prior_ctr"] - row["recent_ctr"]) / 100.0 / days
+        if lost <= 0:
+            continue
+        e = by_page.setdefault(row["page"], {"page": row["page"], "lost_day": 0.0,
+                                             "queries": 0, "worst": None})
+        e["lost_day"] += lost
+        e["queries"] += 1
+        if e["worst"] is None or lost > e["worst"]["lost_day"]:
+            e["worst"] = {"query": row["query"], "lost_day": round(lost, 1),
+                          "prior_ctr": row["prior_ctr"], "recent_ctr": row["recent_ctr"]}
+    bleeding = sorted(by_page.values(), key=lambda e: -e["lost_day"])
+    for e in bleeding:
+        e["lost_day"] = round(e["lost_day"], 1)
+    report["bleeding_pages"] = bleeding[:25]
+    report["bleeding_total_day"] = round(sum(e["lost_day"] for e in bleeding), 1)
+    report["bleed_alert_threshold_day"] = args.bleed_alert
+
+    over = [e for e in bleeding if e["lost_day"] >= args.bleed_alert]
+    if over:
+        # This line is what reaches the owner. nightly-build.sh's
+        # extract_health_issue() greps the first /ERROR:/ out of a phase's
+        # output and records it as a health alert, which growth-watchdog then
+        # sends to email/WhatsApp at 23:55. It has to carry the number and the
+        # page, because a count on its own ("3 anomalies") sent him into a
+        # 49k-line log last time.
+        head = "; ".join(
+            f"{e['page'].rstrip('/').rsplit('/', 1)[-1] or '/'} ~{e['lost_day']:.0f} clicks/day"
+            f" (worst: '{e['worst']['query']}' CTR {e['worst']['prior_ctr']:.0f}%"
+            f"->{e['worst']['recent_ctr']:.0f}%)"
+            for e in over[:3])
+        print(f"ERROR: {len(over)} page(s) bleeding clicks at held impressions — {head}"
+              + (f" (+{len(over) - 3} more)" if len(over) > 3 else ""))
+
     latest = data_dir / "gsc-anomalies-latest.json"
     dated = data_dir / f"gsc-anomalies-{datetime.now().strftime('%Y-%m-%d')}.json"
     for path in (latest, dated):
@@ -302,6 +359,17 @@ def main() -> int:
             impr_spike,
             ["query", "prior_impressions", "recent_impressions", "page"],
         )
+        print()
+        print(f"  BLEEDING PAGES — clicks/day lost to CTR decline at held impressions")
+        print("  " + "-" * 68)
+        if not bleeding:
+            print("  (none)")
+        for e in bleeding[:15]:
+            mark = "  <== ALERT" if e["lost_day"] >= args.bleed_alert else ""
+            print(f"  {e['page'].replace(site_url.rstrip('/'), '')[:46]:46} "
+                  f"{e['lost_day']:8.1f}/day  {e['queries']:3d}q{mark}")
+        print(f"\n  Site total: ~{report['bleeding_total_day']:.0f} clicks/day "
+              f"(alerts at {args.bleed_alert:.0f}/page/day)")
         print("\n  Tip: tighten noise with --min-impr 50 or shorter --days 7 windows.\n")
 
     return 0

@@ -133,6 +133,9 @@ def main() -> int:
     ap.add_argument("--ctr-drop-ratio", type=float, default=0.65, help="Flag CTR if recent < prior * this (default 0.65)")
     ap.add_argument("--impr-drop-ratio", type=float, default=0.45, help="Flag if recent impr < prior * this")
     ap.add_argument("--impr-spike-ratio", type=float, default=2.0, help="Flag if recent impr > prior * this")
+    ap.add_argument("--baseline-days", type=int, default=28,
+                    help="Days of history the bleed ranking compares against (default 28). "
+                         "Never shorten to one week: a single spike would set an unreachable bar.")
     ap.add_argument("--bleed-alert", type=float, default=10.0,
                     help="Alert when a PAGE loses this many clicks/day to CTR decline (default 10)")
     ap.add_argument("--json-only", action="store_true", help="Minimal console output")
@@ -179,6 +182,27 @@ def main() -> int:
     recent_map = _fetch_all_page_query(token, site_url, project, rs, re)
     if not args.json_only:
         print(f"  Rows: {len(recent_map)}")
+
+    # A LONG baseline, used only by the bleed ranking below — never by the 7v7
+    # anomaly rows, which have other readers.
+    #
+    # Why: on 2026-08-28 this check reported /games/arrow-escape-3d/ "bleeding ~15
+    # clicks/day". It was not. The page had a traffic spike 11-18 Aug (CTR 2.59%
+    # against a normal 1.72%), the 7-day prior window landed exactly on that spike,
+    # and coming back down to normal was scored as a loss. Measured against 28 days
+    # its CTR is 2.06% versus a 2.03% baseline — slightly ABOVE normal.
+    #
+    # A one-week baseline is one event wide. Any spike installs a bar the page can
+    # never clear again, and the alert that follows is guaranteed and meaningless —
+    # which is precisely how an alert section trains its reader to skip it. The
+    # crown page still reports ~813 clicks/day against the longer baseline, so the
+    # real signal does not need the short window to be visible.
+    bstart = (end_prior - timedelta(days=max(days, args.baseline_days) - 1)).strftime("%Y-%m-%d")
+    if not args.json_only:
+        print(f"  Fetching {args.baseline_days}d baseline for bleed ranking ({bstart} .. {pe})...")
+    baseline_map = _fetch_all_page_query(token, site_url, project, bstart, pe)
+    if not args.json_only:
+        print(f"  Rows: {len(baseline_map)}")
 
     keys = set(prior_map) | set(recent_map)
     ctr_alerts = []
@@ -289,7 +313,11 @@ def main() -> int:
     # else is now taking them. Impression rows stay in the JSON for diagnosis.
     by_page: Dict[str, dict] = {}
     for row in ctr_alerts:                      # full list, not the capped copy
-        lost = row["recent_impressions"] * (row["prior_ctr"] - row["recent_ctr"]) / 100.0 / days
+        base = baseline_map.get((row["page"], row["query"]))
+        if not base or base["impressions"] < min_prior:
+            continue                            # no baseline -> no claim, never a zero
+        base_ctr = base["clicks"] / base["impressions"] * 100.0
+        lost = row["recent_impressions"] * (base_ctr - row["recent_ctr"]) / 100.0 / days
         if lost <= 0:
             continue
         e = by_page.setdefault(row["page"], {"page": row["page"], "lost_day": 0.0,
@@ -298,13 +326,14 @@ def main() -> int:
         e["queries"] += 1
         if e["worst"] is None or lost > e["worst"]["lost_day"]:
             e["worst"] = {"query": row["query"], "lost_day": round(lost, 1),
-                          "prior_ctr": row["prior_ctr"], "recent_ctr": row["recent_ctr"]}
+                          "prior_ctr": round(base_ctr, 2), "recent_ctr": row["recent_ctr"]}
     bleeding = sorted(by_page.values(), key=lambda e: -e["lost_day"])
     for e in bleeding:
         e["lost_day"] = round(e["lost_day"], 1)
     report["bleeding_pages"] = bleeding[:25]
     report["bleeding_total_day"] = round(sum(e["lost_day"] for e in bleeding), 1)
     report["bleed_alert_threshold_day"] = args.bleed_alert
+    report["bleed_baseline_days"] = args.baseline_days
 
     over = [e for e in bleeding if e["lost_day"] >= args.bleed_alert]
     if over:

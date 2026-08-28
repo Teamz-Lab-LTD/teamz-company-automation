@@ -252,7 +252,21 @@ def estimate_click_loss(entries):
              for i in range(len(hist) - CTR_BASE_WINDOW + 1)]
     if not rolls:
         return None
-    base = max(rolls)
+    # 75th percentile of the rolling medians, NOT the maximum.
+    #
+    # The max is one good week wide. Measured 2026-08-28 on the sibling page-level
+    # check, /games/arrow-escape-3d/ was reported "bleeding ~15 clicks/day" purely
+    # because a spike (CTR 2.59% against a normal 1.72%) had set the bar; against a
+    # longer baseline its CTR was slightly ABOVE normal. A bar a page can never
+    # clear again produces a guaranteed nightly alert, which is worse than no alert.
+    #
+    # Same effect inside this file: 'football inflation calculator' had a max-roll
+    # of 16.9% against a median of 3.7%, and 'premier league table calculator' 3.2%
+    # against 0.0%. P75 keeps a genuinely good-but-normal week as the yardstick while
+    # discarding the one-off. The real losses are untouched by the change —
+    # 'premier league predictor' 156 -> 134 clicks/day, still enormous.
+    base = (statistics.quantiles(rolls, n=4)[2] if len(rolls) > 3
+            else statistics.median(rolls))
     now = statistics.median([ctr(e) for e in recent])
     imps = statistics.median([e["imps"] for e in recent])
     return {"base_ctr": round(base, 4), "now_ctr": round(now, 4),

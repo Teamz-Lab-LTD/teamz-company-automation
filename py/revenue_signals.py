@@ -52,6 +52,7 @@ different question. It has no business in revenue weighting.
 --------------------------------------------------------------------------------------
 """
 import json
+import statistics
 from pathlib import Path
 
 
@@ -427,6 +428,44 @@ def rpm_for(slug, measured, fallback_rpm, niche=None, niche_rpm=None):
     return fallback_rpm, "niche-benchmark"
 
 
-def weight_from_rpm(rpm):
-    """RPM -> rev_weight, same 0.5..3.0 clamp the queue already used."""
-    return max(0.5, min(3.0, rpm / RPM_AT_WEIGHT_1))
+def median_rpm(measured):
+    """This property's own median measured page RPM, or None if it cannot be known.
+
+    None, never a default. A guessed anchor silently rescales every priority in the
+    queue, which is the failure this function exists to end.
+    """
+    if not measured:
+        return None
+    vals = sorted(v for v in measured.values() if v and v > 0)
+    if len(vals) < 5:
+        return None
+    return statistics.median(vals)
+
+
+def weight_from_rpm(rpm, anchor=None):
+    """RPM -> rev_weight, same 0.5..3.0 clamp the queue already used.
+
+    ANCHOR TO THIS PROPERTY'S OWN MEDIAN, exactly as value_weight() above does, and for
+    exactly the reason written there: no constant in this file can be right for two
+    different properties.
+
+    RPM_AT_WEIGHT_1 was 10.0 — a fine anchor for a site that earns $10 RPM.
+    tool.teamzlab.com earns $1.16 (measured 2026-08-28, $342.79 over 294,537 views), so
+    the clamp floor swallowed the entire site:
+
+        RPM 0.15 -> 0.50      RPM 1.16 -> 0.50      RPM 3.92 -> 0.50      RPM 5.00 -> 0.50
+
+    Every page below $5 got an IDENTICAL weight. /bd/electricity-bill-calculator/ at
+    $0.15 RPM was ranked the same as /games/arrow-escape-3d/ at $3.92 and
+    /ar/ar-measure-tape/ at $3.58. The revenue weighting had been running for months
+    doing nothing, because a clamp that everything hits is not a weighting.
+
+    Against the site's own $1.16 median the same pages spread over the full range:
+
+        RPM 0.15 -> 0.50      RPM 1.16 -> 1.00      RPM 3.92 -> 3.00      RPM 10.20 -> 3.00
+
+    Falls back to the constant when the median is unknown, so a GA4 outage degrades to
+    the old behaviour instead of inventing an anchor.
+    """
+    base = anchor if (anchor and anchor > 0) else RPM_AT_WEIGHT_1
+    return max(0.5, min(3.0, rpm / base))

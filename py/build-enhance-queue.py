@@ -964,6 +964,15 @@ def main():
                   f"site's own earnings: "
                   + ", ".join(f"{n} ${v}" for n, v in sorted(_niche_rpm.items())))
 
+        _median_rpm = _rs.median_rpm(_measured)
+        if _median_rpm:
+            print(f"[enhance-queue] revenue: anchoring rev_weight to this site's own median "
+                  f"page RPM ${_median_rpm:.2f} (1.0x); a hardcoded $10 anchor put ~every "
+                  f"page on the 0.5 clamp floor")
+        else:
+            print("[enhance-queue] revenue: no measured median available — rev_weight falls "
+                  "back to the $10 benchmark anchor (weighting will be weak; not silent)")
+
         _src_counts = {}
         for c in by_slug.values():
             hub = _rp.hub_for(c['slug'], host_root)
@@ -976,7 +985,12 @@ def main():
             _src_counts[rpm_src] = _src_counts.get(rpm_src, 0) + 1
             c['rpm_mid'] = rpm
             c['rpm_source'] = rpm_src
-            rw = max(0.5, min(3.0, rpm / 10.0))  # $10 RPM = 1.0x
+            # Anchored to this site's OWN median RPM, not a hardcoded $10. With the
+            # constant, every page under $5 RPM collapsed onto the 0.5 clamp floor —
+            # which on a $1.16-RPM site is ~99% of the catalogue — so the revenue
+            # weighting ranked a $0.15 page identically to a $3.92 one. See
+            # revenue_signals.weight_from_rpm() for the measured numbers.
+            rw = _rs.weight_from_rpm(rpm, anchor=_median_rpm)
             # Position-proximity boost: a page in the 11-15 "one nudge from page 1" zone
             # converts to clicks THIS month; an equal-RPM page at pos 25+ needs a quarter.
             # Lead the striking sweet-spot over deeper pages. Pos parsed from the candidate's

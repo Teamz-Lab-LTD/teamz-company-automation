@@ -855,6 +855,24 @@ def main():
     cfg = load_runtime(__file__)
     host_root = cfg['host_site_root']
 
+    # RANK_V2 — opt-in per property via .teamz-automation.env (TEAMZ_ENHANCE_RANK_V2=1).
+    # OFF by default so apps/goalkit/learn/tekko keep the exact ranking they have today;
+    # tools opted in 2026-08-30 after a measurement showed the queue was burying its own
+    # best-earning page. Three defects, all of which only bite once several pools compete:
+    #   A. pool scores were on incompatible scales (min(80,..) vs min(150.,..) vs uncapped,
+    #      which reached 872) — so a page's rank was set by WHICH POOL FOUND IT, not by
+    #      what it is worth. /pest/bug-bite-identifier/ (measured $9.38 RPM, 8x site median)
+    #      arrived via a pool ceilinged at 80 and could never outrank a saturated 150.
+    #   B. the niche-benchmark fallback was used at face value. Measured on tools the same
+    #      night: /us/ benchmark $35.00 vs GA4-measured $0.75 (47x), /finance/ $31.50 vs
+    #      $1.68 (19x). Invented numbers outranked counted ones.
+    #   C. revival_floor filled slots BEFORE the sort, so pages scoring 0.40 pre-empted
+    #      live earners.
+    rank_v2 = os.getenv("TEAMZ_ENHANCE_RANK_V2", "").strip().lower() in ("1", "true", "yes", "on")
+    if rank_v2:
+        print("[enhance-queue] RANK_V2 ON — pool scores normalised, benchmark RPM capped at "
+              "the site's own measured median, revival takes leftovers only")
+
     print(f"[enhance-queue] cap={args.cap}, cooldown={args.cooldown}d, host={host_root}")
     print(f"[enhance-queue] Calling existing Teamz scripts (Rule 1: no fabricated data)")
 
@@ -990,6 +1008,20 @@ def main():
             # which on a $1.16-RPM site is ~99% of the catalogue — so the revenue
             # weighting ranked a $0.15 page identically to a $3.92 one. See
             # revenue_signals.weight_from_rpm() for the measured numbers.
+            # RANK_V2/B: a page with NO measurement must not be priced above what the
+            # best-measured pages actually earn. The benchmark table is built from CONTENT
+            # sites and overrates tool pages 2-5x (see calibrated_niche_rpm's docstring);
+            # unclamped it handed /us/ pages $35.00 RPM against a measured $0.75. Cap at 2x
+            # this site's own median so an unmeasured page can still lead a measured one,
+            # but only within touching distance of reality. Left as-is when the median is
+            # unknown — a guess about a guess is not an improvement.
+            if rank_v2 and rpm_src == "niche-benchmark" and _median_rpm:
+                capped = min(rpm, _median_rpm * 2.0)
+                if capped < rpm:
+                    c['rpm_benchmark_raw'] = rpm
+                    rpm = capped
+                    c['rpm_mid'] = rpm
+                    c['rpm_source'] = "niche-benchmark-capped"
             rw = _rs.weight_from_rpm(rpm, anchor=_median_rpm)
             # Position-proximity boost: a page in the 11-15 "one nudge from page 1" zone
             # converts to clicks THIS month; an equal-RPM page at pos 25+ needs a quarter.
@@ -1009,8 +1041,42 @@ def main():
         for c in by_slug.values():
             c['rev_weight'] = 1.0
 
+    # RANK_V2/A: put every pool on ONE scale before sorting. Each pool keeps its own
+    # internal order (best of that pool = 100, worst = 10, linear on rank), so what
+    # crosses pools is "how good is this FOR ITS POOL" times what the page is worth —
+    # never the arbitrary ceiling its scorer happened to use. Raw signal_score is kept
+    # untouched: the source quotas below and every consumer of the JSON still read it.
+    # Two pools are SPECULATIVE by construction: cold-start pages have no traffic yet and
+    # dead-revival pages have no demand. Their own scorers deliberately hand out 0.5 and 0.4
+    # so they "can only ever use LEFTOVER capacity, never displaces a proven target" (their
+    # comments, above). Normalising them would hand each pool's best member a 100 and break
+    # exactly that guarantee — measured on the first run of this patch, cold-start jumped
+    # from 0 slots to 5 of 26. They keep their raw floor scores and stay at the bottom.
+    _SPECULATIVE = ('cold-start', 'dead-revival')
+    if rank_v2:
+        from collections import defaultdict as _dd
+        _by_src = _dd(list)
+        for c in by_slug.values():
+            _by_src[c.get('source', '')].append(c)
+        for _src, _members in _by_src.items():
+            if _src in _SPECULATIVE:
+                for c in _members:
+                    c['pool_score'] = c['signal_score']
+                continue
+            _members.sort(key=lambda x: -x['signal_score'])
+            n = len(_members)
+            for i, c in enumerate(_members):
+                # single-member pool -> 100.0; it IS the best of its pool, and rev_weight
+                # then decides whether it deserves a slot at all.
+                c['pool_score'] = 100.0 if n == 1 else round(100.0 - (i / (n - 1)) * 90.0, 2)
+        print("[enhance-queue] RANK_V2 normalised "
+              + ", ".join(f"{k or '(none)'}={len(v)}" for k, v in sorted(_by_src.items())))
+    else:
+        for c in by_slug.values():
+            c['pool_score'] = c['signal_score']
+
     ranked = sorted(by_slug.values(),
-                    key=lambda x: x['signal_score'] * x.get('rev_weight', 1.0), reverse=True)
+                    key=lambda x: x['pool_score'] * x.get('rev_weight', 1.0), reverse=True)
 
     # Cap with mode mix: target 4 Mode A google + 2 Mode B google + 1 bing
     final = []
@@ -1029,6 +1095,11 @@ def main():
     # thin-faq fill the cap — they got 0 slots. The user's rule is "don't skip dead", so reserve a
     # floor for revival FIRST (highest-scored revival candidates), then greedy-fill the remainder.
     revival_floor = max(2, args.cap // 6)    # ~3 at cap 20 — never skip dead entirely
+    # RANK_V2/C: dead-revival still gets revival_quota in the greedy loop below, so dead
+    # pages are never skipped entirely — the user's rule holds. What stops is the floor
+    # PRE-PASS, which seated candidates scoring 0.40 ahead of everything measured.
+    if rank_v2:
+        revival_floor = 0
     for c in ranked:
         if counts['revival'] >= revival_floor:
             break
@@ -1036,8 +1107,15 @@ def main():
             final.append(c); counts['revival'] += 1
     picked = {c['slug'] for c in final}
 
+    # RANK_V2/C part 2: with the pre-pass gone, dead-revival scored 0.4 and the greedy fill
+    # never reached it — 3 slots became 0, which breaks the user's "don't skip dead" rule in
+    # the other direction. So reserve the TAIL, not the head: greedy-fill stops short and the
+    # speculative pools take the last seats. Proven earners are never displaced, and the dead
+    # pool is never zeroed.
+    spec_tail = (max(1, args.cap // 13) if rank_v2 else 0)     # 2 at cap 26, 1 at cap 7
+    greedy_cap = args.cap - spec_tail
     for c in ranked:
-        if len(final) >= args.cap:
+        if len(final) >= greedy_cap:
             break
         if c['slug'] in picked:                  # already taken by the revival floor pass
             continue
@@ -1072,6 +1150,24 @@ def main():
             final.append(c); counts['B_google'] += 1
         else:
             final.append(c); counts['other'] += 1
+
+    if spec_tail:
+        picked = {c['slug'] for c in final}
+        for _src, _key in (('dead-revival', 'revival'), ('cold-start', 'cold')):
+            for c in ranked:
+                if len(final) >= args.cap:
+                    break
+                if c['slug'] in picked or c['source'] != _src:
+                    continue
+                final.append(c); counts[_key] += 1; picked.add(c['slug'])
+        # Anything the speculative pools could not fill goes back to proven candidates —
+        # an unfilled reservation must not shrink the night's work.
+        for c in ranked:
+            if len(final) >= args.cap:
+                break
+            if c['slug'] in picked:
+                continue
+            final.append(c); counts['other'] += 1; picked.add(c['slug'])
 
     queue = {
         'generated_at': datetime.now().isoformat(),

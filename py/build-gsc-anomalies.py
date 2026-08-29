@@ -22,6 +22,8 @@ Requires: TEAMZ_SC_TOKEN_FILE, TEAMZ_SITE_PROPERTY, TEAMZ_GOOGLE_CLOUD_PROJECT
 import argparse
 import json
 import ssl
+import time
+import socket
 import sys
 import urllib.error
 import urllib.parse
@@ -81,12 +83,45 @@ def _sc_query(
     req.add_header("Authorization", f"Bearer {token}")
     req.add_header("Content-Type", "application/json")
     req.add_header("x-goog-user-project", project)
-    try:
-        resp = urllib.request.urlopen(req, context=_CTX)
-        return json.loads(resp.read()).get("rows", [])
-    except urllib.error.HTTPError as e:
-        print(f"ERROR: Search Console API {e.code}: {e.read().decode()[:400]}", file=sys.stderr)
-        return []
+    # RETRY, AND NEVER RETURN [] ON FAILURE.
+    #
+    # Two defects, both hit in production on 2026-08-29. This check died with
+    # `TimeoutError: [Errno 60] Operation timed out` for the third night running and
+    # took the crown-page bleed alert down with it, so the owner's only warning that
+    # ~493 clicks/day were leaving the site simply did not fire. Nothing retried a
+    # transient blip on a home Wi-Fi connection that is known to drop mid-run.
+    #
+    # Worse, the HTTPError branch returned an EMPTY LIST. _fetch_all_page_query breaks
+    # its pagination loop on empty rows, so an API error produced a partial or empty
+    # map, and an empty map has no anomalies in it. A failed fetch could therefore
+    # print a clean bill of health. "Could not check" and "nothing wrong" must never
+    # look alike — that confusion is the reason this whole monitoring layer exists.
+    #
+    # So: retry transient failures with backoff, and raise on real ones. main() already
+    # exits non-zero, which nightly-build.sh records as a health alert. Loud beats wrong.
+    last = None
+    for attempt in range(4):
+        try:
+            resp = urllib.request.urlopen(req, context=_CTX, timeout=120)
+            return json.loads(resp.read()).get("rows", [])
+        except urllib.error.HTTPError as e:
+            body = e.read().decode()[:400]
+            if e.code in (429, 500, 502, 503, 504) and attempt < 3:
+                last = f"HTTP {e.code}"
+                time.sleep(5 * (attempt + 1))
+                continue
+            raise RuntimeError(f"Search Console API {e.code}: {body}") from e
+        except (urllib.error.URLError, TimeoutError, socket.timeout, OSError) as e:
+            # The exact class that killed this check three nights running.
+            last = f"{type(e).__name__}: {e}"
+            if attempt < 3:
+                print(f"  (Search Console {last} — retry {attempt + 1}/3)", file=sys.stderr)
+                time.sleep(5 * (attempt + 1))
+                continue
+            raise RuntimeError(
+                f"Search Console unreachable after 4 attempts ({last}). Anomalies are "
+                f"UNCHECKED tonight, not clean.") from e
+    raise RuntimeError(f"Search Console unreachable ({last})")
 
 
 def _fetch_all_page_query(

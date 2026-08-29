@@ -868,7 +868,18 @@ def main():
     #      $1.68 (19x). Invented numbers outranked counted ones.
     #   C. revival_floor filled slots BEFORE the sort, so pages scoring 0.40 pre-empted
     #      live earners.
-    rank_v2 = os.getenv("TEAMZ_ENHANCE_RANK_V2", "").strip().lower() in ("1", "true", "yes", "on")
+    # Default ON for tools, OFF everywhere else, overridable by the env var either way.
+    # The default lives HERE, in tracked code, and not in .teamz-automation.env — that file
+    # is gitignored, so an env-only opt-in would survive exactly as long as this laptop's
+    # filesystem and would then revert with no error and no log line.
+    _RANK_V2_DEFAULT_HOSTS = ("tool.teamzlab.com",)
+    _rv = os.getenv("TEAMZ_ENHANCE_RANK_V2", "").strip().lower()
+    if _rv in ("1", "true", "yes", "on"):
+        rank_v2 = True
+    elif _rv in ("0", "false", "no", "off"):
+        rank_v2 = False
+    else:
+        rank_v2 = any(h in cfg.get("site_url", "") for h in _RANK_V2_DEFAULT_HOSTS)
     if rank_v2:
         print("[enhance-queue] RANK_V2 ON — pool scores normalised, benchmark RPM capped at "
               "the site's own measured median, revival takes leftovers only")

@@ -62,12 +62,16 @@ GA4_PROPERTY = {
     "goalkit-bd":                      "537333788",
     "teamz-lab-learning":              "527372960",
     "teamzlab-website":                "469101682",
-    # tekko-bd has NO GA4 property and no gtag on the site (checked 2026-08-22).
-    # Mapped to None on purpose rather than omitted: an absent key and a known-
-    # missing one look identical in code, and the AI-channel table below used to
-    # `continue` past both without saying so. None makes it render as "not
-    # measured" instead of vanishing.
-    "tekko-bd":                        None,
+    # tekko-bd was mapped to None here on the strength of "no gtag on the site
+    # (checked 2026-08-22)". That check was the wrong test. There is no gtag tag
+    # in the HTML because firebase-init.js calls getAnalytics(app) with a
+    # measurementId and the Firebase SDK injects gtag at runtime — Firebase also
+    # creates the linked GA4 property for you. So the site had analytics the
+    # whole time and this digest reported it as not-measured for weeks.
+    # Property confirmed 2026-08-30 via
+    #   firebase.googleapis.com/v1beta1/projects/tekkobd-80008/analyticsDetails
+    # and against the Data API: 129 page_view in the previous 7 days.
+    "tekko-bd":                        "551108857",
 }
 
 

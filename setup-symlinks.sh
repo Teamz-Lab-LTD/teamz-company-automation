@@ -17,6 +17,22 @@ SUBMOD_REL="teamz-company-automation"
 # plus .claude/ get written one level too high, outside any repo. Happened on 2026-07-28.
 if [ -e "$PWD/$SUBMOD_REL" ]; then
   HOST_ROOT="$PWD"
+elif [ -e "$PWD/pubspec.yaml" ] || [ -e "$PWD/package.json" ] || [ -e "$PWD/.git" ]; then
+  # Invoked by absolute path from the canonical clone, inside a project that has never
+  # been wired up — notetube_ai, top_3_picks and zoyiai were all in this state, with
+  # hand-written scripts/ and no link to the toolkit at all. Refusing here is what kept
+  # them unwired: the only documented invocation assumes the link already exists, so a
+  # NEW project could never get one without someone knowing to make it by hand.
+  #
+  # Adopt $PWD and create the link the rest of this script expects. The guard below
+  # still refuses a directory that is not a project, which is what stops this from
+  # littering the shared parent.
+  HOST_ROOT="$PWD"
+  if [ ! -e "$HOST_ROOT/$SUBMOD_REL" ]; then
+    rel="$(python3 -c 'import os,sys; print(os.path.relpath(sys.argv[1], sys.argv[2]))' "$SCRIPT_DIR" "$HOST_ROOT")"
+    ln -s "$rel" "$HOST_ROOT/$SUBMOD_REL"
+    echo "wired up: $SUBMOD_REL -> $rel"
+  fi
 else
   HOST_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 fi

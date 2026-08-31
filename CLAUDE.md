@@ -65,6 +65,25 @@ Output: `data/youtube-keywords-latest.json`. Use the winning YT SERP title patte
 
 **Never write YT copy without running the script first — applies to every project (ride-share, food delivery, DeviceGPT, No Trace Chat, NoteTube AI, Top3Picks, Toss, and every upcoming app / service launch).**
 
+**Rule 7 — DNS is `sh/cf-dns.sh`, never the dashboard, and run `doctor` before promising anything.** Every Teamz Lab domain is on Cloudflare (`teamzlab.com`, `hazirakhata.xyz`, …). Any record — a Firebase Auth sending domain, a site-verification TXT, a VPS A record, SPF/DKIM/DMARC — goes through the script so it is repeatable and reviewable:
+
+```bash
+bash scripts/cf-dns.sh doctor                     # which token can ACTUALLY write
+bash scripts/cf-dns.sh list   teamzlab.com
+bash scripts/cf-dns.sh set    teamzlab.com CNAME auth.teamzlab.com target.web.app
+bash scripts/cf-dns.sh delete teamzlab.com auth.teamzlab.com CNAME
+```
+
+Credentials live at `~/.config/teamzlab/`, shared by every project, and `setup-symlinks.sh` links the script into `scripts/` automatically — so a new project needs no setup at all.
+
+**Why `doctor` first, always.** `cloudflare-api-token.txt` is the `teamzlab-purge-cache` token: valid, active, lists zones, purges cache — and refused on every `/dns_records` call. "The Cloudflare token works" and "I can add a DNS record" are different claims, and checking only the first is how an agent promises a record it cannot write and discovers it at the last step. `doctor` fires a real DNS call per token and prints the answer. The write token is `cloudflare-dns-token.txt` (`Zone·DNS·Edit`, all zones).
+
+`set` is idempotent — it updates a matching record instead of adding a second, so re-running a setup script cannot create duplicates.
+
+**Never proxy** (orange cloud) anything used for certificate issuance or domain verification: Firebase Auth sending domains, Firebase Hosting custom domains, ACME challenges. Proxied, they hang forever with no error that explains why. `set` is DNS-only unless `--proxied` is passed.
+
+**Always use a subdomain** for service domains (`auth.`, `mail.`). `teamzlab.com`'s root SPF points at Zoho for real company mail; a subdomain leaves it untouched. Full write-up incl. the Firebase Auth sending-domain flow end to end: `docs/cloudflare-setup.md`.
+
 ## Before ANY ASO/Store Listing Task
 
 **Use the orchestrator — one command does everything:**

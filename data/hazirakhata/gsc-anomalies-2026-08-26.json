@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-08-26T23:15:04",
+  "site": "sc-domain:hazirakhata.xyz",
+  "recent_start": "2026-08-17",
+  "recent_end": "2026-08-23",
+  "prior_start": "2026-08-10",
+  "prior_end": "2026-08-16",
+  "window_days": 7,
+  "thresholds": {
+    "min_prior_impressions": 25,
+    "min_recent_impressions": 8,
+    "ctr_drop_ratio": 0.65,
+    "impression_drop_ratio": 0.45,
+    "impression_spike_ratio": 2.0
+  },
+  "counts": {
+    "prior_keys": 30,
+    "recent_keys": 27,
+    "ctr_drop": 2,
+    "impression_drop": 0,
+    "impression_spike": 0
+  },
+  "alerts": {
+    "ctr_drop": [
+      {
+        "page": "https://hazirakhata.xyz/bn/",
+        "query": "\u09b9\u09be\u099c\u09bf\u09b0\u09be \u0996\u09be\u09a4\u09be",
+        "prior_clicks": 4,
+        "prior_impressions": 72,
+        "prior_ctr": 5.556,
+        "recent_clicks": 1,
+        "recent_impressions": 71,
+        "recent_ctr": 1.408,
+        "kind": "ctr_drop"
+      },
+      {
+        "page": "https://hazirakhata.xyz/bn/",
+        "query": "\u09b9\u09be\u099c\u09bf\u09b0\u09be \u0996\u09be\u09a4\u09be \u0985\u09cd\u09af\u09be\u09aa",
+        "prior_clicks": 2,
+        "prior_impressions": 26,
+        "prior_ctr": 7.692,
+        "recent_clicks": 1,
+        "recent_impressions": 28,
+        "recent_ctr": 3.571,
+        "kind": "ctr_drop"
+      }
+    ],
+    "impression_drop": [],
+    "impression_spike": []
+  }
+}

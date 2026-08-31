@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-31T10:30:08",
+  "generated_at": "2026-08-29T10:30:07",
   "site": "sc-domain:hazirakhata.xyz",
-  "recent_start": "2026-08-22",
-  "recent_end": "2026-08-28",
-  "prior_start": "2026-08-15",
-  "prior_end": "2026-08-21",
+  "recent_start": "2026-08-20",
+  "recent_end": "2026-08-26",
+  "prior_start": "2026-08-13",
+  "prior_end": "2026-08-19",
   "window_days": 7,
   "thresholds": {
     "min_prior_impressions": 25,
@@ -15,7 +15,7 @@
   },
   "counts": {
     "prior_keys": 27,
-    "recent_keys": 30,
+    "recent_keys": 26,
     "ctr_drop": 1,
     "impression_drop": 0,
     "impression_spike": 0
@@ -26,8 +26,8 @@
         "page": "https://hazirakhata.xyz/",
         "query": "hajira khata",
         "prior_clicks": 1,
-        "prior_impressions": 25,
-        "prior_ctr": 4.0,
+        "prior_impressions": 28,
+        "prior_ctr": 3.571,
         "recent_clicks": 0,
         "recent_impressions": 14,
         "recent_ctr": 0.0,
@@ -45,7 +45,7 @@
       "worst": {
         "query": "hajira khata",
         "lost_day": 0.1,
-        "prior_ctr": 2.86,
+        "prior_ctr": 2.83,
         "recent_ctr": 0.0
       }
     }

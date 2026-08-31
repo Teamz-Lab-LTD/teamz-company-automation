@@ -1,5 +1,5 @@
 {
-  "ran_at": "2026-08-14T23:55:17",
+  "ran_at": "2026-08-30T23:55:16",
   "window": {
     "recent": "7d ending D-2",
     "baseline": "28d ending D-9"
@@ -13,155 +13,67 @@
   "properties": {
     "teamzlab-tools": {
       "state": "ok",
-      "site_daily_baseline": 8.11,
-      "site_daily_recent": 10.92,
-      "site_drop_pct": -34.8,
+      "site_daily_baseline": 12.35,
+      "site_daily_recent": 13.1,
+      "site_drop_pct": -6.0,
       "site_alert": false,
-      "pages_watched": 15,
-      "pages_below_min_daily": 10,
-      "watched_revenue_share_pct": 93.4,
+      "pages_watched": 16,
+      "pages_below_min_daily": 9,
+      "watched_revenue_share_pct": 101.1,
       "top_pages": [
         {
           "page": "/football/premier-league-table-predictor/",
-          "daily": 6.01,
-          "share_pct": 55.0
+          "daily": 4.44,
+          "share_pct": 33.9
         },
         {
           "page": "/games/arrow-escape-3d/",
-          "daily": 0.66,
-          "share_pct": 6.0
+          "daily": 1.03,
+          "share_pct": 7.9
         },
         {
           "page": "/ar/ar-measure-tape/",
-          "daily": 0.41,
-          "share_pct": 3.8
+          "daily": 0.57,
+          "share_pct": 4.3
         },
         {
-          "page": "/football/penalty-shootout-simulator/",
-          "daily": 0.25,
-          "share_pct": 2.3
+          "page": "/football/ucl-group-stage-simulator/",
+          "daily": 0.33,
+          "share_pct": 2.5
         },
-        {
-          "page": "/tools/ai-emotion-detector/",
-          "daily": 0.2,
-          "share_pct": 1.9
-        }
-      ],
-      "cliffs": [],
-      "fades": [
-        {
-          "page": "/football/how-to-watch-fifa-world-cup-2026-in-germany/",
-          "was_daily": 0.55,
-          "now_daily": 0.0,
-          "drop_pct": 100.0,
-          "monthly_at_risk": 16.37,
-          "weekly_daily": [
-            1.64,
-            0.0,
-            0.0,
-            0.0
-          ],
-          "prior_decline_pct": 100.0
-        },
-        {
-          "page": "/football/penalty-shootout-simulator/",
-          "was_daily": 0.43,
-          "now_daily": 0.25,
-          "drop_pct": 42.8,
-          "monthly_at_risk": 5.57,
-          "weekly_daily": [
-            0.5,
-            0.48,
-            0.31,
-            0.25
-          ],
-          "prior_decline_pct": 37.6
-        },
-        {
-          "page": "/grooming/attractiveness-quiz/",
-          "was_daily": 0.17,
-          "now_daily": 0.09,
-          "drop_pct": 43.8,
-          "monthly_at_risk": 2.19,
-          "weekly_daily": [
-            0.2,
-            0.17,
-            0.13,
-            0.09
-          ],
-          "prior_decline_pct": 35.4
-        },
-        {
-          "page": "/football/how-to-watch-fifa-world-cup-2026-in-france/",
-          "was_daily": 0.15,
-          "now_daily": 0.0,
-          "drop_pct": 100.0,
-          "monthly_at_risk": 4.38,
-          "weekly_daily": [
-            0.44,
-            0.0,
-            0.0,
-            0.0
-          ],
-          "prior_decline_pct": 100.0
-        }
-      ],
-      "minor": [
         {
           "page": "/pest/bug-bite-identifier/",
-          "was_daily": 0.31,
-          "now_daily": 0.08,
-          "drop_pct": 72.8,
-          "monthly_at_risk": 6.73,
-          "weekly_daily": [
-            0.2,
-            0.21,
-            0.31,
-            0.08
-          ],
-          "prior_decline_pct": -54.2
-        },
-        {
-          "page": "/me/",
-          "was_daily": 0.2,
-          "now_daily": 0.09,
-          "drop_pct": 54.6,
-          "monthly_at_risk": 3.24,
-          "weekly_daily": [
-            0.15,
-            0.09,
-            0.2,
-            0.09
-          ],
-          "prior_decline_pct": -29.5
-        },
-        {
-          "page": "/football/fifa-world-cup-2026-panini-sticker-tracker/",
-          "was_daily": 0.12,
-          "now_daily": 0.05,
-          "drop_pct": 61.1,
-          "monthly_at_risk": 2.22,
-          "weekly_daily": [
-            0.1,
-            0.15,
-            0.11,
-            0.05
-          ],
-          "prior_decline_pct": -13.6
+          "daily": 0.3,
+          "share_pct": 2.3
         }
-      ]
+      ],
+      "cliffs": [
+        {
+          "page": "/football/premier-league-table-predictor/",
+          "was_daily": 8.25,
+          "now_daily": 4.44,
+          "drop_pct": 46.2,
+          "monthly_at_risk": 114.52,
+          "weekly_daily": [
+            4.65,
+            6.7,
+            8.25,
+            4.44
+          ],
+          "prior_decline_pct": -77.6
+        }
+      ],
+      "fades": [],
+      "minor": []
     },
     "teamz-lab-generic-landing-pages": {
       "state": "no-ad-revenue",
       "why": "GA4 reports no ad revenue on this property in the last 29 days"
     }
   },
-  "alert_count": 0,
-  "alerts": [],
-  "notes_fading": [
-    "teamzlab-tools: /football/how-to-watch-fifa-world-cup-2026-in-germany/ fading \u2014 weekly $/day 1.64 -> 0.0 -> 0.0 -> 0.0 (~$16.37/mo below its old rate)",
-    "teamzlab-tools: /football/penalty-shootout-simulator/ fading \u2014 weekly $/day 0.5 -> 0.48 -> 0.31 -> 0.25 (~$5.57/mo below its old rate)",
-    "teamzlab-tools: /grooming/attractiveness-quiz/ fading \u2014 weekly $/day 0.2 -> 0.17 -> 0.13 -> 0.09 (~$2.19/mo below its old rate)",
-    "teamzlab-tools: /football/how-to-watch-fifa-world-cup-2026-in-france/ fading \u2014 weekly $/day 0.44 -> 0.0 -> 0.0 -> 0.0 (~$4.38/mo below its old rate)"
-  ]
+  "alert_count": 1,
+  "alerts": [
+    "teamzlab-tools: /football/premier-league-table-predictor/ down 46.2% ($8.25/day -> $4.44/day, ~$114.52/mo at risk)"
+  ],
+  "notes_fading": []
 }

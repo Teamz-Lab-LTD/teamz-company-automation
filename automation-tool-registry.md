@@ -110,6 +110,7 @@
 | **Schema validation (static)** | `py/build-schema-validate.py` |
 | **URL indexation + rich-results status via GSC API** (REQUIRED after any schema/canonical/sitemap change — replaces manual Rich Results Test clicks) | `py/inspect-urls.py` |
 | **Cloudflare cache purge after deploy** | `py/cloudflare-purge.py` |
+| **Cloudflare DNS read/write for any Teamz domain** (Firebase Auth sending domains, site-verification TXT, VPS A records, SPF/DKIM/DMARC) — run `doctor` first, it proves which token can actually write instead of failing at the API | `sh/cf-dns.sh doctor` |
 | **Search Console anomalies** | `py/build-gsc-anomalies.py` |
 | **Topic cluster report** | `py/build-topic-cluster-report.py` |
 | **Request indexing** | `py/build-request-indexing.py` |

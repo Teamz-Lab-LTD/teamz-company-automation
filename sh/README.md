@@ -26,6 +26,7 @@ All scripts source [`lib/config.sh`](./lib/config.sh) for paths/env. From a host
 | [`build-static-header.sh`](./build-static-header.sh) | Injects the shared pre-rendered header HTML into every page to stop layout shift (CLS). | `bash scripts/build-static-header.sh --check` |
 | [`build-validate-freshness.sh`](./build-validate-freshness.sh) | Finds stale content: old years in titles, wrong tool counts, outdated data. | `bash scripts/build-validate-freshness.sh` |
 | [`build.sh`](./build.sh) | Master website build: rebuilds index, sitemap, counts, then validates everything; run after any change. | `bash scripts/build.sh` |
+| [`cf-dns.sh`](./cf-dns.sh) | Reads and writes Cloudflare DNS for any Teamz Lab domain; `doctor` proves which token can actually write. | `bash scripts/cf-dns.sh doctor` |
 | [`claude-sessions.sh`](./claude-sessions.sh) | Lists running Claude processes and can kill sessions older than 24 hours. | `bash scripts/claude-sessions.sh --kill-old` |
 | [`continuous-build.sh`](./continuous-build.sh) | Runs timed unattended build sessions (Claude builds tools plus maintenance) while you are away. | `bash scripts/continuous-build.sh 3h` |
 | [`iap-smoke-test.sh`](./iap-smoke-test.sh) | Dry-runs the whole in-app-purchase setup pipeline (discovery, preflight, store verify) without writing anything. | `bash scripts/iap-smoke-test.sh --sku <sku>` |

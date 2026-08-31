@@ -90,9 +90,59 @@ def _play_client():
     return build("playdeveloperreporting", "v1beta1", credentials=creds, cache_discovery=False)
 
 
+def _bulk_report_rows(pkg: str, days: int) -> list | None:
+    """Daily install rows from the Play Console bulk-reports bucket.
+
+    Delegates the GCS pull to build-play-console.py bulk-reports, which is the one code
+    path that demonstrably works, then reads back the installs.overview series. Returns
+    None (never []) on failure so the caller can tell "could not measure" from "measured
+    zero" — collapsing those two is how a dead monitor passes for a quiet one.
+    """
+    import json as _json
+    import subprocess
+    import tempfile
+
+    months = max(1, (days // 30) + 1)
+    here = Path(__file__).resolve().parent.parent          # py/
+    script = here / "build-play-console.py"
+    if not script.exists():
+        print(f"[WARN] {script} not found — cannot pull Play installs", file=sys.stderr)
+        return None
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bulk.json"
+        cmd = [sys.executable, str(script), "bulk-reports",
+               "--package", pkg, "--months", str(months), "--out", str(out)]
+        try:
+            p = subprocess.run(cmd, capture_output=True, text=True, timeout=900)
+        except subprocess.TimeoutExpired:
+            print("[WARN] build-play-console.py bulk-reports timed out after 900s",
+                  file=sys.stderr)
+            return None
+        if p.returncode != 0 or not out.exists():
+            tail = (p.stderr or p.stdout or "").strip().splitlines()[-3:]
+            print(f"[WARN] bulk-reports failed (exit {p.returncode}): {' / '.join(tail)}",
+                  file=sys.stderr)
+            return None
+        try:
+            data = _json.loads(out.read_text())
+        except ValueError as e:
+            print(f"[WARN] bulk-reports wrote unparseable JSON: {e}", file=sys.stderr)
+            return None
+    rows = (data.get("installs") or {}).get("overview")
+    if not isinstance(rows, list):
+        print("[WARN] bulk-reports JSON has no installs.overview list", file=sys.stderr)
+        return None
+    return rows
+
+
 def _play_velocity(days: int) -> dict | None:
-    client = _play_client()
-    if not client:
+    # No _play_client() here any more: installs come from the bulk-reports bucket, not
+    # the Reporting API, so building an unused discovery client would only add a way to
+    # fail. Still check the credential the bulk pull needs.
+    sa_path = os.environ.get("TEAMZ_PLAY_SERVICE_ACCOUNT_JSON", "")
+    if not sa_path or not Path(os.path.expanduser(sa_path)).exists():
+        print("[WARN] TEAMZ_PLAY_SERVICE_ACCOUNT_JSON missing or unreadable — "
+              "Play velocity skipped", file=sys.stderr)
         return None
     pkg = os.environ.get("TEAMZ_PLAY_PACKAGE_NAME", "")
     if not pkg:
@@ -102,37 +152,42 @@ def _play_velocity(days: int) -> dict | None:
     end = datetime.now(timezone.utc).date() - timedelta(days=2)  # 2-day reporting lag
     start = end - timedelta(days=days)
 
-    metric_set = f"apps/{pkg}/installsMetricSet"
-    body = {
-        "timelineSpec": {
-            "aggregationPeriod": "DAILY",
-            "startTime": {"year": start.year, "month": start.month, "day": start.day,
-                          "timeZone": {"id": "UTC"}},
-            "endTime": {"year": end.year, "month": end.month, "day": end.day,
-                        "timeZone": {"id": "UTC"}},
-        },
-        "metrics": ["activeDevices", "installsUniqueDevice", "uninstallsUniqueDevice"],
-        "dimensions": [],
-    }
-    try:
-        resp = client.vitals().installs().query(name=metric_set, body=body).execute()
-    except Exception as e:
-        print(f"[WARN] Play Reporting API error: {e}", file=sys.stderr)
-        return None
-
-    rows = resp.get("rows", [])
+    # This used to call client.vitals().installs(). That resource does not exist and never
+    # has: playdeveloperreporting v1beta1 exposes only anrrate, crashrate, errors,
+    # excessivewakeuprate, lmkrate, slowrenderingrate, slowstartrate and
+    # stuckbackgroundwakelockrate under vitals — no installs anywhere in the API. Every
+    # Play run therefore died on `'Resource' object has no attribute 'installs'`, which
+    # the caller printed as a WARN and moved past, so it read as "no data today" rather
+    # than "this code path has never worked". Proof it never ran: after months of nightly
+    # invocations aso-velocity-history.csv held exactly one row, and that row was iOS.
+    #
+    # Install counts live in the Play Console bulk-reports GCS bucket, which
+    # build-play-console.py already pulls correctly. Reuse it rather than reinvent it.
     installs_series, active_series, uninstall_series = [], [], []
+    rows = _bulk_report_rows(pkg, days)
+    if rows is None:
+        return None
     for r in rows:
-        interval = r.get("startTime", {})
-        d = f"{interval.get('year')}-{interval.get('month'):02d}-{interval.get('day'):02d}"
-        metrics = {m["metric"]: m.get("decimalValue", {}).get("value") or
-                   m.get("int64Value") or 0 for m in r.get("metrics", [])}
+        d = (r.get("Date") or "").strip()
+        if not d or d < start.isoformat() or d > end.isoformat():
+            continue
         try:
-            installs_series.append((d, int(float(metrics.get("installsUniqueDevice", 0)))))
-            active_series.append((d, int(float(metrics.get("activeDevices", 0)))))
-            uninstall_series.append((d, int(float(metrics.get("uninstallsUniqueDevice", 0)))))
+            installs_series.append((d, int(float(r.get("Daily Device Installs") or 0))))
+            active_series.append((d, int(float(r.get("Active Device Installs") or 0))))
+            # Bulk reports expose uninstall EVENTS; "Daily Device Uninstalls" is present
+            # but frequently 0 while events are not, so prefer the populated column.
+            uninstall_series.append((d, int(float(r.get("Uninstall events")
+                                                  or r.get("Daily Device Uninstalls") or 0))))
         except (ValueError, TypeError):
             continue
+    installs_series.sort()
+    active_series.sort()
+    uninstall_series.sort()
+    if not installs_series:
+        print(f"[WARN] Play bulk reports returned no rows inside {start} → {end}. "
+              f"Play publishes these monthly with a lag, so a recent window can be empty; "
+              f"widen --days.", file=sys.stderr)
+        return None
 
     total_inst = sum(v for _, v in installs_series)
     total_unin = sum(v for _, v in uninstall_series)

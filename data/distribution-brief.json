@@ -1,75 +1,21 @@
 {
-  "generated_at": "2026-08-14T21:52:30",
+  "generated_at": "2026-08-30T15:44:32",
   "business": {
-    "slug": "toss",
-    "name": "Paycheck & Freelance Calc",
+    "slug": "voltline",
+    "name": "Voltline",
     "type": "app",
-    "landing_url": "https://apps.teamzlab.com/toss/",
-    "play_url": "https://play.google.com/store/apps/details?id=com.teamz.toss.toss",
-    "app_store_url": "https://apps.apple.com/us/app/id6739454718",
+    "landing_url": "https://apps.teamzlab.com/voltline/",
+    "play_url": "https://play.google.com/store/apps/details?id=com.teamzlab.voltline",
+    "app_store_url": "https://apps.apple.com/us/app/voltline-buzz-wire-arcade/id6779659581",
     "geo": "global"
   },
   "target_keyword": {
-    "keyword": "colour picker image",
-    "volume": 49500,
+    "keyword": "buzz wire game",
+    "volume": 390,
     "competition": "LOW"
   },
-  "mined_features": [
-    {
-      "name": "Offline-cached search across 2,000+ tools",
-      "description": "The full tool catalog ships inside the app, so search and browse work instantly on install, before any network call succeeds — with typo-tolerant, synonym-aware search.",
-      "evidence": "common/tools_registry.dart:345-394, common/tool_search.dart:12-291",
-      "differentiator": "strong — most wrapper apps just point a WebView at a homepage"
-    },
-    {
-      "name": "Honest per-tool offline tracking (not a fake blanket claim)",
-      "description": "The app tracks which tools you've actually opened before and visibly dims + blocks ones never cached when you're offline, instead of pretending everything works without internet.",
-      "evidence": "common/cache/tool_cache.dart:11-70, screens/tools/teamzlab_tools_screen.dart:727-801",
-      "differentiator": "strong — the honest, correct version of an 'offline' claim"
-    },
-    {
-      "name": "Two-way favorites sync between app and web",
-      "description": "Favorite a tool in the app or on its web page and both stay in sync via an injected JS bridge — no server account needed.",
-      "evidence": "screens/tools/tool_webview_screen.dart:61-186, common/favorites_manager.dart:1-77",
-      "differentiator": "strong — real, non-trivial hybrid-app engineering"
-    },
-    {
-      "name": "Native offline Date Calculator",
-      "description": "Computes date differences and add/subtract entirely on-device, zero network — genuinely useful for working out a due date or deadline offline.",
-      "evidence": "screens/tools/date_calculator_screen.dart:707-740",
-      "differentiator": "table stakes but genuinely native, zero network"
-    },
-    {
-      "name": "Native offline Unit Converter (length/weight/temp/volume)",
-      "description": "Converts common units entirely on-device. Explicitly does NOT include currency conversion.",
-      "evidence": "screens/tools/unit_converter_screen.dart:36-68,477-540",
-      "differentiator": "table stakes — and no currency conversion exists, don't imply otherwise"
-    },
-    {
-      "name": "Password generator that never shares the password itself",
-      "description": "Generates cryptographically secure passwords (Random.secure()) and deliberately blocks the Share button from leaking the actual password text — even analytics only logs the length.",
-      "evidence": "screens/tools/password_generator_screen.dart:495-499,571-584",
-      "differentiator": "strong privacy-by-design detail"
-    },
-    {
-      "name": "Photo-based color picker / eyedropper",
-      "description": "Pick the exact HEX/RGB/HSL/HSV color from any pixel of a camera photo or gallery image, with a live drag-magnifier, entirely on-device.",
-      "evidence": "screens/tools/color_picker_screen.dart:433-577,770-791",
-      "differentiator": "strongest hidden-gem feature in the app — a real design/dev tool buried in a calculator-branded app"
-    },
-    {
-      "name": "Full coin-toss decision game — the app's original identity",
-      "description": "Shake or fling to flip a coin (up to 6 at once), name what you're deciding, and unlock 11 achievements with day-streak tracking. This was the app before it became a calculator-branded utility.",
-      "evidence": "screens/single_coin_toss_widget.dart:40-358, common/statistics_manager.dart:87-293",
-      "differentiator": "strong content hook — 'your calculator app is secretly a full coin-flip game' — true, non-obvious, poor fit for financial branding, which is itself the story"
-    }
-  ],
-  "article_angles": [
-    "color picker from photo app",
-    "coin flip decision app",
-    "freelance rate calculator app",
-    "secure password generator app free"
-  ],
+  "mined_features": [],
+  "article_angles": [],
   "self_cannibalization_check": {
     "excluded_query_count": 0,
     "error": null
@@ -86,7 +32,7 @@
       "identical H2 skeleton to the last 3 briefs for this business",
       "claiming any feature not in mined_features/article_angles with file:line evidence"
     ],
-    "canonical_target": "https://apps.teamzlab.com/toss/",
+    "canonical_target": "https://apps.teamzlab.com/voltline/",
     "one_contextual_link_max": true
   },
   "REVIEW_GATE": {

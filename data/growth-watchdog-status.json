@@ -1,12 +1,21 @@
 {
-  "ran_at": "2026-08-14T23:55:06",
+  "ran_at": "2026-08-30T23:55:04",
   "properties": {
     "apps": [
       "build=skipped:dirty-tree"
     ],
-    "goalkit": [],
-    "learn": [],
-    "tools": []
+    "goalkit": [
+      "preflight FAILED: [{'name': 'dns-failed-during-run', 'detail': '3 name-resolution failure(s) in com.teamzlab.goalkit-nightly.log from its last run marker (224 lines). DNS works again now, so the other network alerts from this run are symptoms of that outage, not 3 separate faults. Anything fetched over the network tonight is UNKNOWN, not confirmed healthy.'}]"
+    ],
+    "learn": [
+      "preflight FAILED: [{'name': 'dns-down-now', 'detail': 'name resolution is failing RIGHT NOW (oauth2.googleapis.com). Every network-dependent result in this run is UNKNOWN, not healthy \u2014 the tokens, feeds and push did not fail one by one, they all failed for this one reason. Check the router/DNS before reading any other alert.'}]",
+      "deploy=failed",
+      "push=failed"
+    ],
+    "tools": [
+      "preflight FAILED: [{'name': 'dns-down-now', 'detail': 'name resolution is failing RIGHT NOW (oauth2.googleapis.com). Every network-dependent result in this run is UNKNOWN, not healthy \u2014 the tokens, feeds and push did not fail one by one, they all failed for this one reason. Check the router/DNS before reading any other alert.'}]",
+      "build=ok:8-health-alerts -> Uncommitted work inside submodule(s): games (2 file(s)) \u2014 2 file(s) the parent dirty-guard cannot see or self-heal. Comm | GSC anomalies: ERROR: 2 page(s) bleeding clicks at held impressions \u2014 ucl-group-stage-simulator ~74 clicks/day (worst: ' | Enhance outcome vs control failed (exit 1) [night 5 of this same alert \u2014 first seen 2026-08-20] (+5 more)"
+    ]
   },
-  "alert_count": 1
+  "alert_count": 4
 }

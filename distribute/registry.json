@@ -18,9 +18,9 @@
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/alignflow.md",
       "article_angles": [],
       "_disabled_at": "2026-08-08",
-      "enabled": false,
+      "features": [],
       "_disabled_reason": "Stealth/secret project per owner instruction 2026-08-08 — exclude from distribution entirely, do not target for content or keyword expansion. EDITABLE field, survives registry regen.",
-      "features": []
+      "enabled": false
     },
     {
       "slug": "always-ready-care",
@@ -38,8 +38,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/always-ready-care.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "arrow-jam-3d",
@@ -57,8 +57,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/arrow-jam-3d.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "brimful",
@@ -76,8 +76,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/brimful.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "chopstick-landing-games",
@@ -95,8 +95,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/chopstick-landing-games.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "devicegpt",
@@ -120,7 +120,6 @@
         "best android phones ranking",
         "phone health check app free"
       ],
-      "enabled": true,
       "features": [
         {
           "name": "AI Bridge — laptop AI reads live phone data via a local server",
@@ -158,7 +157,8 @@
           "evidence": "restore/RestoreCredentialManager.kt:49-391",
           "differentiator": "novel mechanism, modest scope — do NOT call this 'passkey', it's Google Sign-In via Credential Manager, not FIDO2"
         }
-      ]
+      ],
+      "enabled": true
     },
     {
       "slug": "forty-thieves-solitaire",
@@ -176,8 +176,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/forty-thieves-solitaire.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "golf-solitaire",
@@ -195,8 +195,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/golf-solitaire.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "hazira-khata-bn",
@@ -221,7 +221,6 @@
         "teacher attendance qr code app",
         "school fee management software"
       ],
-      "enabled": true,
       "features": [
         {
           "name": "Guest-mode child tracker, no account needed",
@@ -271,7 +270,8 @@
           "evidence": "staff_id_card/StaffCardPerson.kt:10-37,88-120",
           "differentiator": "solid"
         }
-      ]
+      ],
+      "enabled": true
     },
     {
       "slug": "hazira-khata",
@@ -296,7 +296,6 @@
         "teacher attendance qr code app",
         "school fee management software"
       ],
-      "enabled": true,
       "features": [
         {
           "name": "Guest-mode child tracker, no account needed",
@@ -346,7 +345,8 @@
           "evidence": "staff_id_card/StaffCardPerson.kt:10-37,88-120",
           "differentiator": "solid"
         }
-      ]
+      ],
+      "enabled": true
     },
     {
       "slug": "no-trace-chat",
@@ -364,8 +364,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/no-trace-chat.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "notetube-ai",
@@ -383,8 +383,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/notetube-ai.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "scorpion-solitaire",
@@ -402,8 +402,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/scorpion-solitaire.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "teamz-lab-tools",
@@ -421,8 +421,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/teamz-lab-tools.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "top3picks",
@@ -440,8 +440,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/top3picks.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "toss",
@@ -464,7 +464,6 @@
         "freelance rate calculator app",
         "secure password generator app free"
       ],
-      "enabled": true,
       "features": [
         {
           "name": "Offline-cached search across 2,000+ tools",
@@ -514,7 +513,8 @@
           "evidence": "screens/single_coin_toss_widget.dart:40-358, common/statistics_manager.dart:87-293",
           "differentiator": "strong content hook — 'your calculator app is secretly a full coin-flip game' — true, non-obvious, poor fit for financial branding, which is itself the story"
         }
-      ]
+      ],
+      "enabled": true
     },
     {
       "slug": "voltline",
@@ -532,8 +532,8 @@
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/voltline.md",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-vibe-coding-service",
@@ -546,8 +546,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-ai-agent-development",
@@ -560,8 +560,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-web-design",
@@ -574,8 +574,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-ecommerce-development",
@@ -588,8 +588,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-ui-ux-design",
@@ -602,8 +602,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-ai-integration",
@@ -616,8 +616,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-vibe-coding-agency",
@@ -630,8 +630,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-vibe-coding-consultants",
@@ -644,8 +644,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-vibe-coding-repair",
@@ -658,8 +658,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-add-ai-to-my-app",
@@ -672,8 +672,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-hire-app-developer-for-startup",
@@ -686,8 +686,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-ride-share-app-development",
@@ -700,8 +700,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-cursor-development-agency",
@@ -714,8 +714,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-claude-code-development-service",
@@ -728,8 +728,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-rag-development-company",
@@ -742,8 +742,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-ai-chatbot-development-company",
@@ -756,8 +756,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-mvp-app-development-for-non-technical-founders",
@@ -770,8 +770,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "svc-shopify-development-agency",
@@ -784,8 +784,8 @@
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "tools-football",
@@ -799,8 +799,8 @@
       ],
       "geo": "global",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     },
     {
       "slug": "tools-bd",
@@ -813,8 +813,8 @@
       ],
       "geo": "BD",
       "article_angles": [],
-      "enabled": true,
-      "features": []
+      "features": [],
+      "enabled": true
     }
   ],
   "no_landing_page_gap": [

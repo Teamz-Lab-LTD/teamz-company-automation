@@ -4873,6 +4873,22 @@
       "origin": "distribution"
     },
     {
+      "source": "scheduled:pid=75574:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-22T11:09:00.096889+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=92529:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-22T11:15:16.837274+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://dev.to/teamzlab/how-to-know-if-someone-is-monitoring-your-phone-8-signs-free-detection-app-android-1g4h",
       "platform": "devto",
       "type": "DoFollow",
@@ -5521,6 +5537,22 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/free-csrd-carbon-reporting-tools-for-eu.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-22T15:12:16.803730+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtokwlzbjp2k",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-22T15:15:28.301833+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/2027-Tax-Bracket-Sunset-How-TCJA-Expiring-Hits-Your-Paycheck-Free-Calculator-04-30",
       "platform": "telegraph",
       "type": "DoFollow",
@@ -5533,6 +5565,14 @@
       "platform": "substack",
       "type": "DoFollow",
       "date": "2026-05-24T21:02:44.622949+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=55547:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-23T03:05:45.949678+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -6105,6 +6145,30 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/what-is-monorepo.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-23T07:02:42.659915+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtqa34nuaf27",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-23T07:06:28.242227+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-212375932",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-23T07:13:11.625680+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://dev.to/teamzlab/why-nestjs-1ahj",
       "platform": "devto",
       "type": "DoFollow",
@@ -6409,10 +6473,66 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/enk-skattekalkulator-2025-beregn.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-08T03:13:16.867265+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3msk4fpzdiq2e",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-08T03:19:39.058774+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=98153:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-08T03:29:33.423347+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=13323:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-08T03:35:02.387443+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://substack.com/home/post/p-196684728",
       "platform": "substack",
       "type": "DoFollow",
       "date": "2026-05-06T17:17:29.633997+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/uk-inheritance-tax-calculator-202526.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-08T07:18:05.746029+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mskk2ux7ie2x",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-08T07:24:07.550763+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/UK-Inheritance-Tax-Calculator-202526--Free-IHT-Estimator-with-Gift-Taper-08-08",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-08-08T07:27:55.881960+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -6537,6 +6657,22 @@
       "origin": "distribution"
     },
     {
+      "source": "https://substack.com/home/post/p-210334367",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-08T11:10:00.539124+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=80314:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-08T11:13:13.344022+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://substack.com/home/post/p-196809159",
       "platform": "substack",
       "type": "DoFollow",
@@ -6545,10 +6681,74 @@
       "origin": "distribution"
     },
     {
+      "source": "https://telegra.ph/Free-Home-Equity-Loan-Calculator--Compare-HEL-vs-HELOC-in-2026-08-08",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-08-08T15:22:10.073808+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/free-home-equity-loan-calculator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-23T11:24:21.929411+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=33362:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-23T11:32:26.708022+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=42250:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-23T11:35:31.182181+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "scheduled:pid=18398:shorts=1:tutorials=0",
       "platform": "youtube",
       "type": "DoFollow",
       "date": "2026-05-08T03:03:35.215339+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/installment-loan-calculator-payments.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-09T03:03:04.547155+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3msmmazhxic2x",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-09T03:08:40.500579+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-210422498",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-09T03:11:32.977171+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=81979:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-09T03:19:58.641507+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -6657,10 +6857,74 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/mortgage-refinance-savings-calculator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-09T07:23:58.418466+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3msn2vaphmq2r",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-09T07:30:33.262278+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=33716:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-09T07:35:10.540718+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=37593:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-09T07:37:58.058670+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "scheduled:pid=1575:shorts=1:tutorials=0",
       "platform": "youtube",
       "type": "DoFollow",
       "date": "2026-05-09T03:03:03.295008+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/term-vs-whole-life-insurance-free-side.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-10T03:09:31.195667+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3msp53ln2fq2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-10T03:15:11.289060+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-210549994",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-10T03:21:25.246020+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=31288:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-10T03:33:07.252065+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -6753,10 +7017,58 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/how-much-disability-insurance-do-you.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-10T07:22:17.261292+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3msplbitvmg2r",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-10T07:29:02.213313+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=82952:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-10T07:36:04.399483+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "scheduled:pid=99457:shorts=1:tutorials=0",
       "platform": "youtube",
       "type": "DoFollow",
       "date": "2026-05-10T03:03:00.860926+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/capital-gains-vs-ordinary-income-tax.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-11T03:09:06.657348+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3msrnhw3x632x",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-11T03:13:44.257058+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-210699697",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-11T03:16:13.468115+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -6849,10 +7161,58 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/barista-fire-when-can-you-quit-your.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-11T07:14:45.776195+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mss36xwmju2u",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-11T07:19:16.592628+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=59749:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-11T07:23:00.017117+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://substack.com/home/post/p-197189354",
       "platform": "substack",
       "type": "DoFollow",
       "date": "2026-05-11T08:42:53.165359+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/usda-loan-eligibility-2026-free.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-12T03:07:10.498328+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3msu5tqogh72e",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-12T03:12:00.556947+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=31405:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-12T03:25:32.973955+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -6865,10 +7225,42 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/obbb-2026-tax-changes-free-calculator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-12T07:08:59.307322+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3msulfayaoc22",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-12T07:14:26.629440+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/High-vs-Low-Deductible-Health-Insurance--Free-Comparison-Tool-Finds-Your-Cheapest-Plan-05-12",
       "platform": "telegraph",
       "type": "DoFollow",
       "date": "2026-05-12T03:00:02.555323+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-210883837",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-12T11:04:32.365019+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtr2xvdjkq23",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-23T15:07:50.998723+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -6881,6 +7273,22 @@
       "origin": "distribution"
     },
     {
+      "source": "scheduled:pid=30533:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-15T07:32:47.132837+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=40131:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-15T07:39:34.081900+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/Home-Improvement-Loan-Calculator-Compare-3-Financing-Options-Free-05-12",
       "platform": "telegraph",
       "type": "DoFollow",
@@ -6889,10 +7297,58 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/home-improvement-loan-calculator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-15T11:14:17.539687+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mt4ke3into2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-15T11:17:11.035548+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/RRSP-2027-Contribution-Limit-Calculator--New-35390-Cap-05-13",
       "platform": "telegraph",
       "type": "DoFollow",
       "date": "2026-05-13T03:00:06.028788+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=67135:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-15T15:14:01.787069+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/rrsp-2027-contribution-limit-calculator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-25T03:22:59.581856+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtuuwxts2n23",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-25T03:30:36.415507+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-212647348",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-25T03:38:33.932936+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -6993,6 +7449,30 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/selling-your-home-calculate-your-actual.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-16T03:15:13.832475+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mt6a7rv4ga23",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-16T03:21:09.350427+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-211376881",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-16T03:27:02.128562+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://teamzlab.blogspot.com/2026/05/down-payment-calculator-compare-35-vs.html",
       "platform": "blogger",
       "type": "DoFollow",
@@ -7065,6 +7545,30 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/do-you-really-need-renters-insurance.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-16T07:00:52.143644+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mt6mquzptb24",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-16T07:05:27.966503+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=40681:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-16T07:07:47.209438+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://teamzlab.blogspot.com/2026/05/mtd-for-income-tax-starts-april-2026.html",
       "platform": "blogger",
       "type": "DoFollow",
@@ -7117,6 +7621,22 @@
       "platform": "youtube",
       "type": "DoFollow",
       "date": "2026-05-15T03:10:28.217320+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/bsu-sparing-i-2026-gratis-kalkulator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-25T07:23:40.735865+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtvc53ew7u2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-25T07:26:40.156588+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -7177,6 +7697,22 @@
       "origin": "distribution"
     },
     {
+      "source": "scheduled:pid=33997:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-16T11:12:26.909595+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=57662:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-16T11:18:14.664723+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://teamzlab.blogspot.com/2026/05/kiwisaver-fees-1-difference-could-cost.html",
       "platform": "blogger",
       "type": "DoFollow",
@@ -7201,10 +7737,42 @@
       "origin": "distribution"
     },
     {
+      "source": "scheduled:pid=12700:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-25T15:31:07.802865+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/Inherited-IRA-10-Year-Rule-Calculator-Your-Complete-2026-Distribution-Schedule-05-16",
       "platform": "telegraph",
       "type": "DoFollow",
       "date": "2026-05-16T03:00:08.829323+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/inherited-ira-10-year-rule-calculator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-17T03:20:35.434472+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtar3naljg2t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-17T03:28:23.366579+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-211505971",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-17T03:31:56.453997+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -7221,6 +7789,22 @@
       "platform": "youtube",
       "type": "DoFollow",
       "date": "2026-05-16T07:15:03.882522+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/singapore-budget-2026-cpf-top-ups-mrss.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-26T03:12:55.873260+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtxema5cbz24",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-26T03:16:15.468089+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -7393,10 +7977,50 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/australia-new-zealand-tax-updates-for.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-17T07:02:18.931944+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtb5fs2gcb23",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-17T07:08:48.834990+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=84432:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-17T07:16:23.329640+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/Free-PITI-Mortgage-Calculator--Principal-Interest-Taxes--Insurance-in-One-Click-05-18",
       "platform": "telegraph",
       "type": "DoFollow",
       "date": "2026-05-18T15:00:04.027282+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=42982:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-17T11:14:05.700180+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-212811348",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-26T07:00:08.633476+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -7409,10 +8033,50 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/gratis-mva-kalkulator-for-norge-2026.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-18T03:01:00.598473+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtdaervkfv2a",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-18T03:07:15.866018+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-211656590",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-18T03:14:34.674285+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/Alternative-Minimum-Tax-AMT-Calculator-2026--Check-If-You-Owe-Extra-Before-Filing-05-19",
       "platform": "telegraph",
       "type": "DoFollow",
       "date": "2026-05-19T07:00:05.430607+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/alternative-minimum-tax-amt-calculator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-18T07:04:37.825073+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtdntfpyln2h",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-18T07:08:04.980985+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -7425,6 +8089,30 @@
       "origin": "distribution"
     },
     {
+      "source": "scheduled:pid=8689:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-18T11:11:35.235879+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/uk-employment-rights-calculators-202526.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-26T11:22:47.587570+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtya6di2he23",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-26T11:29:34.052088+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/16-New-Free-2026-Calculators--Mortgage-Insurance-Tax-Multi-Country-05-20",
       "platform": "telegraph",
       "type": "DoFollow",
@@ -7433,10 +8121,58 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/16-new-free-2026-calculators-mortgage.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-19T03:06:06.167702+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtfqxftolf2h",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-19T03:09:20.235225+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-211804197",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-19T03:14:07.714698+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/15-New-Free-2026-Calculators--Debt-Mortgage-UK-SMP-AU-Super-SG-CPF-LIFE-05-20",
       "platform": "telegraph",
       "type": "DoFollow",
       "date": "2026-05-20T07:00:11.050392+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/15-new-free-2026-calculators-debt.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-19T07:17:47.165552+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtg6xk6dla2h",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-19T07:19:59.063135+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=90042:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-19T07:22:31.261672+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -7521,6 +8257,14 @@
       "origin": "distribution"
     },
     {
+      "source": "scheduled:pid=294:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-26T15:25:33.299363+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://teamzlab.blogspot.com/2026/05/usda-guarantee-fee-calculator-2026-100.html",
       "platform": "blogger",
       "type": "DoFollow",
@@ -7585,6 +8329,30 @@
       "origin": "distribution"
     },
     {
+      "source": "https://teamzlab.blogspot.com/2026/08/form-8962-ptc-reconciliation-calculator.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-20T03:21:06.352649+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtic7kvkck2y",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-20T03:23:26.955883+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-211951018",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-20T03:30:45.299731+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://telegra.ph/457b-vs-403b-vs-401k-2026--Public-Sector-Retirement-Comparison-05-21",
       "platform": "telegraph",
       "type": "DoFollow",
@@ -7597,6 +8365,22 @@
       "platform": "tiktok",
       "type": "DoFollow",
       "date": "2026-05-21T11:00:05.841469+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/457b-vs-403b-vs-401k-2026-public-sector.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-27T03:24:11.907440+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtzvvzwod62t",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-27T03:31:17.607618+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -7621,6 +8405,22 @@
       "platform": "bluesky",
       "type": "NoFollow",
       "date": "2026-05-21T15:00:42.660866+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-212960892",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-27T07:08:17.381494+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/5-New-OBBB-and-SECURE-Act-20-Tax-Calculators-for-2026-08-27",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-08-27T07:12:04.927915+00:00",
       "status": "active",
       "origin": "distribution"
     },
@@ -7801,6 +8601,94 @@
       "origin": "distribution"
     },
     {
+      "source": "https://telegra.ph/Bengali-Ghost-Folklore-Explained-Jinn-Petni-Shakchunni-and-the-Nishi-Daak-08-24",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-08-24T03:00:58.617057+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=95316:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-24T03:07:24.942620+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/7-real-signs-android-phone-has-spyware.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-24T07:19:54.198629+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtsrhlrq3r23",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-24T07:22:59.897517+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://substack.com/home/post/p-212512051",
+      "platform": "substack",
+      "type": "DoFollow",
+      "date": "2026-08-24T07:26:16.469229+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/7-Real-Signs-an-Android-Phone-Has-Spyware-and-the-Ones-That-Mean-Nothing-08-24",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-08-24T07:32:48.961928+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=37971:count=1",
+      "platform": "tiktok",
+      "type": "DoFollow",
+      "date": "2026-08-24T07:35:55.275852+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://teamzlab.blogspot.com/2026/08/why-your-upwork-proposals-get-ignored.html",
+      "platform": "blogger",
+      "type": "DoFollow",
+      "date": "2026-08-24T11:23:03.916278+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://bsky.app/profile/teamzlab.bsky.social/post/3mtt77gwcaw24",
+      "platform": "bluesky",
+      "type": "NoFollow",
+      "date": "2026-08-24T11:28:58.758509+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "https://telegra.ph/Why-Your-Upwork-Proposals-Get-Ignored-and-What-Actually-Books-Calls-in-2026-08-24",
+      "platform": "telegraph",
+      "type": "DoFollow",
+      "date": "2026-08-24T11:36:42.972580+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
+      "source": "scheduled:pid=10297:shorts=1:tutorials=0",
+      "platform": "youtube",
+      "type": "DoFollow",
+      "date": "2026-08-24T11:39:03.836013+00:00",
+      "status": "active",
+      "origin": "distribution"
+    },
+    {
       "source": "https://api.indexnow.org/indexnow",
       "platform": "ping_indexnow",
       "type": "DoFollow",
@@ -7809,515 +8697,515 @@
       "origin": "directory"
     }
   ],
-  "scanned_at": "2026-08-08T05:27:39.771949",
+  "scanned_at": "2026-08-29T05:28:27.284522",
   "linking_sites": [],
   "top_pages": [
     {
       "page": "/football/premier-league-table-predictor/",
-      "clicks": 11918,
-      "impressions": 50452
+      "clicks": 39988,
+      "impressions": 201421
     },
     {
       "page": "/football/penalty-shootout-simulator/",
-      "clicks": 3039,
-      "impressions": 8931
+      "clicks": 4450,
+      "impressions": 17683
+    },
+    {
+      "page": "/football/ucl-group-stage-simulator/",
+      "clicks": 3138,
+      "impressions": 34187
+    },
+    {
+      "page": "/games/arrow-escape-3d/",
+      "clicks": 2995,
+      "impressions": 146349
     },
     {
       "page": "/bd/electricity-bill-calculator/",
-      "clicks": 1850,
-      "impressions": 146578
+      "clicks": 2269,
+      "impressions": 195809
+    },
+    {
+      "page": "/football/ucl-bracket-predictor/",
+      "clicks": 2203,
+      "impressions": 12670
     },
     {
       "page": "/bd/govt-salary-calculator/",
-      "clicks": 1767,
-      "impressions": 90891
+      "clicks": 2051,
+      "impressions": 118540
+    },
+    {
+      "page": "/military/promotion-point-calculator/",
+      "clicks": 1928,
+      "impressions": 66941
     },
     {
       "page": "/football/fifa-world-cup-2026-best-third-place-calculator/",
       "clicks": 1692,
-      "impressions": 109245
-    },
-    {
-      "page": "/games/arrow-escape-3d/",
-      "clicks": 1691,
-      "impressions": 88318
-    },
-    {
-      "page": "/football/ucl-bracket-predictor/",
-      "clicks": 1536,
-      "impressions": 9044
-    },
-    {
-      "page": "/football/ucl-group-stage-simulator/",
-      "clicks": 1522,
-      "impressions": 13346
-    },
-    {
-      "page": "/grooming/attractiveness-quiz/",
-      "clicks": 1023,
-      "impressions": 25530
-    },
-    {
-      "page": "/military/promotion-point-calculator/",
-      "clicks": 1005,
-      "impressions": 37777
-    },
-    {
-      "page": "/jp/tsuukin-hi-keisan/",
-      "clicks": 1000,
-      "impressions": 12254
-    },
-    {
-      "page": "/work/probation-period-calculator/",
-      "clicks": 774,
-      "impressions": 20300
-    },
-    {
-      "page": "/football/fifa-world-cup-2026-bracket-maker/",
-      "clicks": 751,
-      "impressions": 12898
-    },
-    {
-      "page": "/bd/hsc-gpa-calculator/",
-      "clicks": 750,
-      "impressions": 38325
-    },
-    {
-      "page": "/football/football-salary-calculator/",
-      "clicks": 701,
-      "impressions": 45565
+      "impressions": 109563
     },
     {
       "page": "/tools/wifi-password-generator/",
-      "clicks": 637,
-      "impressions": 7418
+      "clicks": 1391,
+      "impressions": 14633
     },
     {
-      "page": "/tools/fake-messenger-chat-generator/",
-      "clicks": 601,
-      "impressions": 9139
-    },
-    {
-      "page": "/tools/birthday-countdown/",
-      "clicks": 597,
-      "impressions": 37118
-    },
-    {
-      "page": "/football/fifa-world-cup-2026-team-path-simulator/",
-      "clicks": 549,
-      "impressions": 20542
+      "page": "/jp/tsuukin-hi-keisan/",
+      "clicks": 1377,
+      "impressions": 18975
     },
     {
       "page": "/tools/signature-analyzer/",
-      "clicks": 543,
-      "impressions": 3296
+      "clicks": 1351,
+      "impressions": 7834
     },
     {
-      "page": "/football/fifa-world-cup-2026-panini-sticker-tracker/",
-      "clicks": 528,
-      "impressions": 8611
-    },
-    {
-      "page": "/tools/ai-emotion-detector/",
-      "clicks": 523,
-      "impressions": 5684
-    },
-    {
-      "page": "/football/transfer-fee-calculator/",
-      "clicks": 466,
-      "impressions": 18581
-    },
-    {
-      "page": "/bd/ssc-gpa-calculator/",
-      "clicks": 401,
-      "impressions": 29717
-    },
-    {
-      "page": "/military/ppm-move-calculator/",
-      "clicks": 375,
-      "impressions": 20347
-    },
-    {
-      "page": "/football/how-to-watch-fifa-world-cup-2026-in-pakistan/",
-      "clicks": 300,
-      "impressions": 10088
-    },
-    {
-      "page": "/ar/ar-measure-tape/",
-      "clicks": 296,
-      "impressions": 1667
-    },
-    {
-      "page": "/math/coordinate-plane-plotter/",
-      "clicks": 274,
-      "impressions": 6137
-    },
-    {
-      "page": "/football/how-to-watch-fifa-world-cup-2026-in-germany/",
-      "clicks": 255,
-      "impressions": 117748
-    },
-    {
-      "page": "/3d/print-time-estimator/",
-      "clicks": 248,
-      "impressions": 6693
-    },
-    {
-      "page": "/student/reading-time-estimator/",
-      "clicks": 240,
-      "impressions": 76037
-    },
-    {
-      "page": "/work/night-shift-differential-calculator/",
-      "clicks": 235,
-      "impressions": 41021
-    },
-    {
-      "page": "/gaming/kd-ratio-calculator/",
-      "clicks": 213,
-      "impressions": 73962
+      "page": "/grooming/attractiveness-quiz/",
+      "clicks": 1317,
+      "impressions": 32611
     },
     {
       "page": "/football/serie-a-table-predictor/",
-      "clicks": 207,
-      "impressions": 2101
+      "clicks": 1197,
+      "impressions": 10884
     },
     {
-      "page": "/football/fifa-world-cup-2026-office-pool-generator/",
-      "clicks": 198,
-      "impressions": 3715
+      "page": "/ar/ar-measure-tape/",
+      "clicks": 1134,
+      "impressions": 6632
     },
     {
-      "page": "/tools/fake-instagram-dm-generator/",
-      "clicks": 167,
-      "impressions": 4412
-    },
-    {
-      "page": "/work/salary-per-day-calculator/",
-      "clicks": 166,
-      "impressions": 31211
-    },
-    {
-      "page": "/shopping/watch-affordability-calculator/",
-      "clicks": 161,
-      "impressions": 7578
-    },
-    {
-      "page": "/pest/bug-bite-identifier/",
-      "clicks": 160,
-      "impressions": 5970
-    },
-    {
-      "page": "/gaming/steam-account-value-calculator/",
-      "clicks": 158,
-      "impressions": 17588
-    },
-    {
-      "page": "/work/business-day-calculator/",
-      "clicks": 143,
-      "impressions": 111743
-    },
-    {
-      "page": "/football/how-to-watch-fifa-world-cup-2026-in-france/",
-      "clicks": 131,
-      "impressions": 88240
-    },
-    {
-      "page": "/football/fifa-world-cup-2026-countdown/",
-      "clicks": 122,
-      "impressions": 27298
-    },
-    {
-      "page": "/football/ucl-prize-money-calculator/",
-      "clicks": 122,
-      "impressions": 9635
+      "page": "/tools/fake-messenger-chat-generator/",
+      "clicks": 979,
+      "impressions": 13966
     },
     {
       "page": "/football/la-liga-table-predictor/",
-      "clicks": 116,
-      "impressions": 998
+      "clicks": 911,
+      "impressions": 6119
     },
     {
-      "page": "/ie/working-family-payment-estimator/",
-      "clicks": 115,
-      "impressions": 8188
+      "page": "/bd/hsc-gpa-calculator/",
+      "clicks": 898,
+      "impressions": 49708
     },
     {
-      "page": "/student/attendance-percentage-calculator/",
-      "clicks": 108,
-      "impressions": 46890
+      "page": "/football/football-salary-calculator/",
+      "clicks": 861,
+      "impressions": 76504
     },
     {
-      "page": "/tools/ai-audio-classifier/",
-      "clicks": 94,
-      "impressions": 631
+      "page": "/tools/birthday-countdown/",
+      "clicks": 848,
+      "impressions": 52490
     },
     {
-      "page": "/bd/bangla-date-converter/",
-      "clicks": 87,
-      "impressions": 17102
+      "page": "/tools/ai-emotion-detector/",
+      "clicks": 825,
+      "impressions": 8318
     },
     {
-      "page": "/evergreen/days-in-a-year/",
-      "clicks": 84,
-      "impressions": 64962
+      "page": "/football/fifa-world-cup-2026-bracket-maker/",
+      "clicks": 819,
+      "impressions": 13575
     },
     {
-      "page": "/apple/apple-trade-in-estimator/",
-      "clicks": 82,
-      "impressions": 6044
+      "page": "/work/probation-period-calculator/",
+      "clicks": 819,
+      "impressions": 26774
     },
     {
-      "page": "/lu/conge-paye-calculateur/",
-      "clicks": 81,
-      "impressions": 1998
+      "page": "/math/coordinate-plane-plotter/",
+      "clicks": 791,
+      "impressions": 12186
     },
     {
-      "page": "/bd/cgpa-calculator/",
-      "clicks": 78,
-      "impressions": 6187
+      "page": "/bd/ssc-gpa-calculator/",
+      "clicks": 722,
+      "impressions": 62859
     },
     {
-      "page": "/cricket/ipl-playoff-calculator/",
-      "clicks": 75,
-      "impressions": 3946
+      "page": "/football/transfer-fee-calculator/",
+      "clicks": 631,
+      "impressions": 28659
+    },
+    {
+      "page": "/football/fifa-world-cup-2026-team-path-simulator/",
+      "clicks": 555,
+      "impressions": 20882
+    },
+    {
+      "page": "/football/fifa-world-cup-2026-panini-sticker-tracker/",
+      "clicks": 536,
+      "impressions": 9430
+    },
+    {
+      "page": "/military/ppm-move-calculator/",
+      "clicks": 520,
+      "impressions": 29474
     },
     {
       "page": "/us/fantasy-football-calculator/",
-      "clicks": 75,
-      "impressions": 3186
+      "clicks": 329,
+      "impressions": 13134
+    },
+    {
+      "page": "/pest/bug-bite-identifier/",
+      "clicks": 325,
+      "impressions": 6359
+    },
+    {
+      "page": "/work/night-shift-differential-calculator/",
+      "clicks": 314,
+      "impressions": 52604
     },
     {
       "page": "/",
-      "clicks": 73,
-      "impressions": 1435
+      "clicks": 310,
+      "impressions": 2050
     },
     {
-      "page": "/work/last-working-day-calculator/",
-      "clicks": 73,
-      "impressions": 11765
+      "page": "/football/how-to-watch-fifa-world-cup-2026-in-pakistan/",
+      "clicks": 301,
+      "impressions": 10268
     },
     {
-      "page": "/tea/tea-to-water-ratio-calculator/",
-      "clicks": 72,
-      "impressions": 7908
+      "page": "/3d/print-time-estimator/",
+      "clicks": 295,
+      "impressions": 7386
     },
     {
-      "page": "/football/ucl-countdown/",
-      "clicks": 71,
-      "impressions": 7795
+      "page": "/gaming/kd-ratio-calculator/",
+      "clicks": 290,
+      "impressions": 108456
     },
     {
-      "page": "/work/notice-period-calculator/",
-      "clicks": 67,
-      "impressions": 16797
+      "page": "/student/reading-time-estimator/",
+      "clicks": 288,
+      "impressions": 105720
     },
     {
-      "page": "/gaming/fps-calculator/",
-      "clicks": 66,
-      "impressions": 3483
+      "page": "/tools/fake-instagram-dm-generator/",
+      "clicks": 254,
+      "impressions": 6625
     },
     {
-      "page": "/football/how-to-watch-fifa-world-cup-2026-in-south-korea/",
-      "clicks": 61,
-      "impressions": 9541
-    },
-    {
-      "page": "/gaming/scroll-speed-test/",
-      "clicks": 61,
-      "impressions": 4994
-    },
-    {
-      "page": "/football/player-comparison/",
-      "clicks": 57,
-      "impressions": 1518
-    },
-    {
-      "page": "/student/exam-countdown-planner/",
-      "clicks": 57,
-      "impressions": 5387
-    },
-    {
-      "page": "/student/study-hours-estimator/",
-      "clicks": 57,
-      "impressions": 6559
-    },
-    {
-      "page": "/image/ai-image-noise-remover/",
-      "clicks": 55,
-      "impressions": 2246
+      "page": "/football/how-to-watch-fifa-world-cup-2026-in-germany/",
+      "clicks": 250,
+      "impressions": 118643
     },
     {
       "page": "/football/bundesliga-table-predictor/",
-      "clicks": 54,
-      "impressions": 1148
+      "clicks": 243,
+      "impressions": 5502
     },
     {
-      "page": "/freelance/invoice-due-date-calculator/",
-      "clicks": 51,
-      "impressions": 15905
+      "page": "/football/ucl-countdown/",
+      "clicks": 236,
+      "impressions": 19218
     },
     {
-      "page": "/amazon/a-plus-content-image-guide/",
-      "clicks": 49,
-      "impressions": 11211
+      "page": "/work/salary-per-day-calculator/",
+      "clicks": 226,
+      "impressions": 42625
+    },
+    {
+      "page": "/football/fifa-world-cup-2026-office-pool-generator/",
+      "clicks": 223,
+      "impressions": 4376
+    },
+    {
+      "page": "/shopping/watch-affordability-calculator/",
+      "clicks": 218,
+      "impressions": 10121
+    },
+    {
+      "page": "/student/attendance-percentage-calculator/",
+      "clicks": 211,
+      "impressions": 84700
+    },
+    {
+      "page": "/gaming/steam-account-value-calculator/",
+      "clicks": 174,
+      "impressions": 20856
+    },
+    {
+      "page": "/work/business-day-calculator/",
+      "clicks": 174,
+      "impressions": 130037
+    },
+    {
+      "page": "/football/ucl-prize-money-calculator/",
+      "clicks": 173,
+      "impressions": 19429
+    },
+    {
+      "page": "/tools/ai-audio-classifier/",
+      "clicks": 170,
+      "impressions": 928
+    },
+    {
+      "page": "/bd/bangla-date-converter/",
+      "clicks": 165,
+      "impressions": 29869
+    },
+    {
+      "page": "/ie/working-family-payment-estimator/",
+      "clicks": 151,
+      "impressions": 13321
+    },
+    {
+      "page": "/apple/apple-trade-in-estimator/",
+      "clicks": 148,
+      "impressions": 11810
+    },
+    {
+      "page": "/bd/cgpa-calculator/",
+      "clicks": 145,
+      "impressions": 10501
     },
     {
       "page": "/bd/salary-tax-calculator/",
-      "clicks": 46,
-      "impressions": 2158
+      "clicks": 143,
+      "impressions": 5306
     },
     {
-      "page": "/safety/crash-force-calculator/",
-      "clicks": 46,
-      "impressions": 5476
-    },
-    {
-      "page": "/my/cukai-pintu-property-assessment-calculator/",
-      "clicks": 41,
-      "impressions": 747
-    },
-    {
-      "page": "/bd/gold-price-calculator/",
-      "clicks": 40,
-      "impressions": 12442
-    },
-    {
-      "page": "/dev/github-profile-analyzer/",
-      "clicks": 40,
-      "impressions": 438
-    },
-    {
-      "page": "/diagnostic/battery-status-checker/",
-      "clicks": 40,
-      "impressions": 613
-    },
-    {
-      "page": "/football/",
-      "clicks": 39,
-      "impressions": 872
-    },
-    {
-      "page": "/housing/salary-needed-for-rent-calculator/",
-      "clicks": 39,
-      "impressions": 9706
-    },
-    {
-      "page": "/tools/ai-image-segmentation/",
-      "clicks": 39,
-      "impressions": 387
-    },
-    {
-      "page": "/video/playlist-duration-calculator/",
-      "clicks": 39,
-      "impressions": 5819
-    },
-    {
-      "page": "/work/receipt-generator/",
-      "clicks": 39,
-      "impressions": 1241
-    },
-    {
-      "page": "/apple/battery-drain-estimator/",
-      "clicks": 38,
-      "impressions": 531
+      "page": "/football/how-to-watch-fifa-world-cup-2026-in-france/",
+      "clicks": 129,
+      "impressions": 89564
     },
     {
       "page": "/es/irpf-rentas-trabajo-2027-calculadora/",
-      "clicks": 38,
-      "impressions": 466
+      "clicks": 126,
+      "impressions": 1468
     },
     {
-      "page": "/grooming/glow-up-quiz/",
-      "clicks": 37,
-      "impressions": 533
+      "page": "/football/fifa-world-cup-2026-countdown/",
+      "clicks": 124,
+      "impressions": 28602
     },
     {
-      "page": "/creator/sponsorship-rate-calculator/",
-      "clicks": 36,
-      "impressions": 5345
+      "page": "/evergreen/days-in-a-year/",
+      "clicks": 121,
+      "impressions": 132631
     },
     {
-      "page": "/football/world-cup-2026-cost-to-watch-by-country/",
-      "clicks": 36,
-      "impressions": 3820
+      "page": "/image/ai-image-noise-remover/",
+      "clicks": 119,
+      "impressions": 3303
     },
     {
-      "page": "/ar/",
-      "clicks": 35,
-      "impressions": 392
+      "page": "/gaming/fps-calculator/",
+      "clicks": 112,
+      "impressions": 5887
     },
     {
-      "page": "/lu/lu-allocation-vie-chere-2027-luxembourg-calculator/",
-      "clicks": 35,
-      "impressions": 2582
+      "page": "/outdoor/compass-online/",
+      "clicks": 111,
+      "impressions": 12427
     },
     {
-      "page": "/cricket/ipl-auction-budget-calculator/",
-      "clicks": 34,
-      "impressions": 1679
+      "page": "/lu/conge-paye-calculateur/",
+      "clicks": 104,
+      "impressions": 2475
     },
     {
-      "page": "/sg/shared-parental-leave-planner/",
-      "clicks": 34,
-      "impressions": 1205
+      "page": "/football/bundesliga-tabellenrechner/",
+      "clicks": 103,
+      "impressions": 1047
     },
     {
-      "page": "/de/grundsteuer-rechner-schleswig-holstein/",
-      "clicks": 33,
-      "impressions": 2101
+      "page": "/student/exam-countdown-planner/",
+      "clicks": 102,
+      "impressions": 8466
     },
     {
-      "page": "/diagnostic/wifi-range-calculator/",
-      "clicks": 32,
-      "impressions": 755
+      "page": "/gaming/scroll-speed-test/",
+      "clicks": 97,
+      "impressions": 7677
     },
     {
-      "page": "/jp/nisa-tsumitate-simulator-english/",
-      "clicks": 32,
-      "impressions": 4614
+      "page": "/safety/crash-force-calculator/",
+      "clicks": 96,
+      "impressions": 12510
     },
     {
-      "page": "/lu/gehaltsrechner/",
-      "clicks": 31,
-      "impressions": 2075
+      "page": "/tea/tea-to-water-ratio-calculator/",
+      "clicks": 95,
+      "impressions": 11707
     },
     {
-      "page": "/pets/hot-pavement-calculator/",
-      "clicks": 31,
-      "impressions": 599
+      "page": "/bd/gold-price-calculator/",
+      "clicks": 79,
+      "impressions": 16855
     },
     {
-      "page": "/gaming/gaming-resolution-calculator/",
-      "clicks": 30,
-      "impressions": 1391
-    },
-    {
-      "page": "/housing/roommate-split-calculator/",
-      "clicks": 29,
-      "impressions": 3304
+      "page": "/football/player-comparison/",
+      "clicks": 79,
+      "impressions": 2249
     },
     {
       "page": "/tools/name-meaning-generator/",
-      "clicks": 29,
-      "impressions": 441
+      "clicks": 79,
+      "impressions": 1305
+    },
+    {
+      "page": "/dev/github-profile-analyzer/",
+      "clicks": 76,
+      "impressions": 1017
+    },
+    {
+      "page": "/amazon/a-plus-content-image-guide/",
+      "clicks": 74,
+      "impressions": 13867
+    },
+    {
+      "page": "/freelance/invoice-due-date-calculator/",
+      "clicks": 74,
+      "impressions": 21591
+    },
+    {
+      "page": "/tools/ai-depth-map/",
+      "clicks": 74,
+      "impressions": 1015
+    },
+    {
+      "page": "/video/playlist-duration-calculator/",
+      "clicks": 73,
+      "impressions": 11308
+    },
+    {
+      "page": "/work/notice-period-calculator/",
+      "clicks": 73,
+      "impressions": 19481
+    },
+    {
+      "page": "/diagnostic/battery-status-checker/",
+      "clicks": 72,
+      "impressions": 1202
+    },
+    {
+      "page": "/work/last-working-day-calculator/",
+      "clicks": 71,
+      "impressions": 14492
+    },
+    {
+      "page": "/student/study-hours-estimator/",
+      "clicks": 70,
+      "impressions": 9680
+    },
+    {
+      "page": "/tools/book-search/",
+      "clicks": 67,
+      "impressions": 5128
+    },
+    {
+      "page": "/evergreen/pmi-removal-calculator/",
+      "clicks": 65,
+      "impressions": 1129
+    },
+    {
+      "page": "/football/",
+      "clicks": 63,
+      "impressions": 1304
+    },
+    {
+      "page": "/grooming/glow-up-quiz/",
+      "clicks": 63,
+      "impressions": 824
+    },
+    {
+      "page": "/evergreen/time-calculator/",
+      "clicks": 60,
+      "impressions": 102984
+    },
+    {
+      "page": "/grooming/what-haircut-should-i-get/",
+      "clicks": 59,
+      "impressions": 1365
+    },
+    {
+      "page": "/ar/",
+      "clicks": 58,
+      "impressions": 540
     },
     {
       "page": "/coffee/caffeine-half-life-calculator/",
-      "clicks": 28,
-      "impressions": 8782
+      "clicks": 58,
+      "impressions": 15650
     },
     {
-      "page": "/apps/always-ready-care/de/md-pruefung-checkliste/",
-      "clicks": 27,
-      "impressions": 637
+      "page": "/student/hsc-ssc-gpa-calculator/",
+      "clicks": 57,
+      "impressions": 4214
+    },
+    {
+      "page": "/apple/battery-drain-estimator/",
+      "clicks": 55,
+      "impressions": 954
+    },
+    {
+      "page": "/tools/ai-image-segmentation/",
+      "clicks": 55,
+      "impressions": 642
+    },
+    {
+      "page": "/lu/lu-allocation-vie-chere-2027-luxembourg-calculator/",
+      "clicks": 54,
+      "impressions": 4308
+    },
+    {
+      "page": "/3d/fluid-simulation/",
+      "clicks": 53,
+      "impressions": 1063
+    },
+    {
+      "page": "/football/how-to-watch-fifa-world-cup-2026-in-south-korea/",
+      "clicks": 53,
+      "impressions": 8244
+    },
+    {
+      "page": "/housing/salary-needed-for-rent-calculator/",
+      "clicks": 53,
+      "impressions": 14372
+    },
+    {
+      "page": "/at/familienbonus-plus-2027-rechner/",
+      "clicks": 52,
+      "impressions": 630
+    },
+    {
+      "page": "/jp/nisa-tsumitate-simulator-english/",
+      "clicks": 51,
+      "impressions": 8341
+    },
+    {
+      "page": "/work/receipt-generator/",
+      "clicks": 51,
+      "impressions": 1676
+    },
+    {
+      "page": "/military/pcs-travel-days-calculator/",
+      "clicks": 50,
+      "impressions": 2480
+    },
+    {
+      "page": "/de/grundsteuer-rechner-brandenburg/",
+      "clicks": 48,
+      "impressions": 2459
+    },
+    {
+      "page": "/apps/always-ready-care/de/sis-formulierungshilfen/",
+      "clicks": 47,
+      "impressions": 841
     }
   ],
   "summary": {
-    "total": 976,
-    "dofollow": 754,
-    "nofollow": 222,
-    "distribution": 975,
+    "total": 1087,
+    "dofollow": 835,
+    "nofollow": 252,
+    "distribution": 1086,
     "directory": 1
   }
 }

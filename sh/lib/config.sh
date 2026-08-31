@@ -88,6 +88,14 @@ teamz_load_config() {
   export TEAMZ_INDEXNOW_KEY="${TEAMZ_INDEXNOW_KEY:-teamzlab-indexnow-key}"
   export TEAMZ_CLARITY_TOKEN_FILE="${TEAMZ_CLARITY_TOKEN_FILE:-$TEAMZ_CONFIG_DIR/clarity-token.txt}"
 
+  # Cloudflare DNS. TWO files on purpose, because conflating them cost a whole round
+  # trip once: `cloudflare-api-token.txt` is Zone:Read only — it can list zones and
+  # nothing else, and every /dns_records call with it returns "Authentication error".
+  # DNS writes need their own token with Zone -> DNS -> Edit, kept separately so a
+  # script can tell which capability it actually has instead of assuming.
+  export TEAMZ_CF_READ_TOKEN_FILE="${TEAMZ_CF_READ_TOKEN_FILE:-$TEAMZ_CONFIG_DIR/cloudflare-api-token.txt}"
+  export TEAMZ_CF_DNS_TOKEN_FILE="${TEAMZ_CF_DNS_TOKEN_FILE:-$TEAMZ_CONFIG_DIR/cloudflare-dns-token.txt}"
+
   export TEAMZ_DATA_DIR="${TEAMZ_DATA_DIR:-$TEAMZ_AUTOMATION_ROOT/data}"
   export TEAMZ_REPORT_DIR="${TEAMZ_REPORT_DIR:-$TEAMZ_HOST_SITE_ROOT/docs}"
 }

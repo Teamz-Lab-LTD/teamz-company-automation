@@ -1045,9 +1045,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7674522200049469456",
+          "postedAt": "2026-08-16T07:07:56.807Z",
           "retries": 0
         }
       }
@@ -1085,9 +1086,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7674586924195072016",
+          "postedAt": "2026-08-16T11:18:35.568Z",
           "retries": 0
         }
       }
@@ -1125,9 +1127,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7674895663536179216",
+          "postedAt": "2026-08-17T07:16:34.920Z",
           "retries": 0
         }
       }
@@ -1165,9 +1168,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7676812674335918097",
+          "postedAt": "2026-08-22T11:15:23.580Z",
           "retries": 0
         }
       }
@@ -1205,9 +1209,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7677057528630888449",
+          "postedAt": "2026-08-23T03:05:52.987Z",
           "retries": 0
         }
       }
@@ -1245,9 +1250,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7677188725046069256",
+          "postedAt": "2026-08-23T11:35:42.969Z",
           "retries": 0
         }
       }
@@ -1285,9 +1291,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7677429381074143240",
+          "postedAt": "2026-08-24T03:07:35.215Z",
           "retries": 0
         }
       }
@@ -1325,9 +1332,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7677497911189833729",
+          "postedAt": "2026-08-24T07:36:02.963Z",
           "retries": 0
         }
       }
@@ -1365,9 +1373,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7679476267019700244",
+          "postedAt": "2026-08-29T15:32:23.117Z",
           "retries": 0
         }
       }
@@ -1405,9 +1414,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7679779625601370132",
+          "postedAt": "2026-08-30T11:08:08.150Z",
           "retries": 0
         }
       }
@@ -1445,9 +1455,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7679843975990986772",
+          "postedAt": "2026-08-30T15:20:08.062Z",
           "retries": 0
         }
       }
@@ -1487,9 +1498,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7680088273825450001",
+          "postedAt": "2026-08-31T07:06:38.504Z",
           "retries": 0
         }
       }
@@ -1529,9 +1541,10 @@
           "retries": 0
         },
         "tiktok": {
-          "posted": false,
+          "posted": true,
           "url": "",
-          "postedAt": "",
+          "publishId": "v_inbox_file~v2.7680153842639308801",
+          "postedAt": "2026-08-31T11:20:59.659Z",
           "retries": 0
         }
       }
@@ -2416,6 +2429,86 @@
           "videoId": "1zXSz2w_6nc",
           "postedAt": "2026-08-09T07:37:19.601Z",
           "scheduledAt": "2026-08-09T19:00:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "legal_rideshare-uber-lyft-injury-settlement-calculator",
+      "title": "Rideshare Injury Settlement Calculator (Uber & Lyft)",
+      "hub": "legal",
+      "language": "en",
+      "template": "ProofCase",
+      "themeIndex": 7,
+      "durationInFrames": 450,
+      "format": "short",
+      "hook": "Free tools that replaced $500/mo",
+      "audio": "audio/beat9.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_rideshare-uber-lyft-injury-settlement-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/legal_rideshare-uber-lyft-injury-settlement-calculator.txt",
+      "youtubeTitle": "Rideshare Injury Settlement Calculator (Uber & Lyft) — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-08-16T11:14:25.468Z",
+      "lastRendered": "2026-08-16T11:14:25.470Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/9KSF1adPa-I",
+          "videoId": "9KSF1adPa-I",
+          "postedAt": "2026-08-31T08:00:08.954Z",
+          "scheduledAt": "2026-08-31T19:05:00.000Z",
+          "retries": 0
+        },
+        "instagram": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        },
+        "tiktok": {
+          "posted": false,
+          "url": "",
+          "postedAt": "",
+          "retries": 0
+        }
+      }
+    },
+    {
+      "slug": "tax_professional-corporation-pc-double-tax-2026-physician-calculator",
+      "title": "Physician Professional Corporation (PC) Double Tax 2026 Calculator",
+      "hub": "tax",
+      "language": "en",
+      "template": "InstantFix",
+      "themeIndex": 3,
+      "durationInFrames": 390,
+      "format": "short",
+      "hook": "Stop paying for this",
+      "audio": "audio/beat4.mp3",
+      "video": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tax_professional-corporation-pc-double-tax-2026-physician-calculator.mp4",
+      "caption": "/Users/mdgolamkibriaemon/Videos/teamzlab-reels/tax_professional-corporation-pc-double-tax-2026-physician-calculator.txt",
+      "youtubeTitle": "Physician Professional Corporation (PC) Double Tax 2026 Calculator — Free, No Signup",
+      "backlinks": null,
+      "rendered": "2026-08-22T11:10:04.231Z",
+      "lastRendered": "2026-08-22T11:10:04.233Z",
+      "platforms": {
+        "youtube": {
+          "posted": true,
+          "url": "https://youtube.com/shorts/E6LXFwe9p3A",
+          "videoId": "E6LXFwe9p3A",
+          "postedAt": "2026-08-31T08:01:13.044Z",
+          "scheduledAt": "2026-09-01T19:05:00.000Z",
           "retries": 0
         },
         "instagram": {

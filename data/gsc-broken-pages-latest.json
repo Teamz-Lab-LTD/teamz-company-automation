@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-08-14T21:21:02.598154",
+  "generated_at": "2026-08-31T21:25:13.127795",
   "site": "https://tool.teamzlab.com/",
   "window_days": 28,
   "row_limit": 2000,
   "threshold": 0.78,
   "counts": {
     "gsc_pages": 2000,
-    "live_inventory": 7129,
+    "live_inventory": 7134,
     "existing_redirects": 396,
-    "broken_404s": 2,
-    "auto_matched": 2,
+    "broken_404s": 1,
+    "auto_matched": 1,
     "unmatched": 0,
     "garbage_skipped": 0
   },
@@ -17,10 +17,6 @@
     {
       "from": "/ca/canada-cpp-contribution-calculator/",
       "to": "/ca/ca-2028-cpp-contribution-calculator/"
-    },
-    {
-      "from": "/finance/401k-contribution-calculator/",
-      "to": "/finance/us-2028-401k-contribution-limit-calculator/"
     }
   ],
   "unmatched": []

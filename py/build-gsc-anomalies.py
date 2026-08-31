@@ -153,6 +153,10 @@ def _fetch_all_page_query(
     return out
 
 
+# A bleed row must have roughly the impressions it had before. Above this multiple
+# the page is riding a demand surge, and CTR dilution there is not a loss.
+HELD_IMPRESSIONS_MAX = 1.5
+
 def _ctr(clicks: int, impressions: int) -> float:
     if impressions <= 0:
         return 0.0
@@ -346,13 +350,52 @@ def main() -> int:
     # alert section teaches its reader to skip it. A CTR drop at held
     # impressions is the opposite: the searches are still there and something
     # else is now taking them. Impression rows stay in the JSON for diagnosis.
+    baseline_days = max(days, args.baseline_days)
     by_page: Dict[str, dict] = {}
     for row in ctr_alerts:                      # full list, not the capped copy
         base = baseline_map.get((row["page"], row["query"]))
         if not base or base["impressions"] < min_prior:
             continue                            # no baseline -> no claim, never a zero
         base_ctr = base["clicks"] / base["impressions"] * 100.0
+
+        # "AT HELD IMPRESSIONS" HAS TO BE TESTED, NOT JUST ASSERTED.
+        #
+        # 2026-08-31: this alerted that /football/ucl-group-stage-simulator/ was
+        # "bleeding ~75 clicks/day (ucl simulator CTR 14%->4%)". Measured, that term
+        # went 315 impressions / 34 clicks -> 5,405 impressions / 207 clicks. The UCL
+        # draw landed on 28 Aug; impressions rose 17x and CLICKS ROSE 6x. CTR fell only
+        # because the denominator exploded.
+        #
+        # The estimate below multiplies the CTR delta by RECENT impressions, so a
+        # demand surge inflates a phantom loss in direct proportion to how well the
+        # page is doing. The headline already promised "at held impressions" — it was
+        # simply never checked. Two guards, in the order that makes the reasoning
+        # obvious:
+        #
+        #   1. Clicks. A page cannot be bleeding clicks while receiving more of them.
+        #      This is per-row and unarguable: compare like for like, per day.
+        #   2. Held impressions. A large surge is a different event — new demand
+        #      arriving at diluted CTR — and belongs in the impression-spike block,
+        #      not in a bleed alert.
+        #
+        # Deliberately NOT widened into a "significance" heuristic. The Premier League
+        # predictor's real loss the same night (impressions flat at 12,154 -> 12,312,
+        # clicks 3,569 -> 1,948) passes both guards and still alerts, which is the
+        # test that matters. See feedback_judge_rank_loss_in_clicks_not_positions.
+        base_days = max(days, baseline_days)
+        base_clicks_day = base["clicks"] / base_days
+        recent_clicks_day = row["recent_clicks"] / days
+        if recent_clicks_day >= base_clicks_day:
+            continue                            # more clicks than baseline: not a bleed
+
+        base_impr_day = base["impressions"] / base_days
+        recent_impr_day = row["recent_impressions"] / days
+        if base_impr_day > 0 and recent_impr_day > base_impr_day * HELD_IMPRESSIONS_MAX:
+            continue                            # demand surged; not "held impressions"
+
         lost = row["recent_impressions"] * (base_ctr - row["recent_ctr"]) / 100.0 / days
+        # Never claim more than the clicks actually lost against baseline.
+        lost = min(lost, base_clicks_day - recent_clicks_day)
         if lost <= 0:
             continue
         e = by_page.setdefault(row["page"], {"page": row["page"], "lost_day": 0.0,

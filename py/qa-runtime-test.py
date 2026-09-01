@@ -177,6 +177,17 @@ def run_tests(tools, quick_mode=False):
                         'firebase', 'googleapis.com', 'gstatic.com',
                         'the server responded with a status of 404',
                         'manifest.json',
+                        # Third-party affiliate script. Same class as the adsense /
+                        # googletagmanager entries above: it is CORS-blocked when the
+                        # page is served from http://localhost by qa-server, and loads
+                        # normally on the real origin. Without this, 7 games/* pages
+                        # fail every run and the pre-push gate can never go green — an
+                        # always-red gate is one nobody can act on.
+                        'skimresources',
+                        # Chrome policy notice, not an error: headless has no user tap,
+                        # so any vibrate() call is refused. Never fires for a real user
+                        # who has interacted with the page.
+                        'navigator.vibrate',
                     ]):
                         return
                     console_errors.append(text)

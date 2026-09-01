@@ -71,6 +71,15 @@ PROPERTIES = {
         ("app_slug", "App Slug"),
         ("source", "Source"),
         ("action", "Action"),
+        # web -> app install funnel on the /games/ pages (install_bar_* / install_modal_*).
+        # Without these five the events still count, but "which surface sent the installs"
+        # and "which store did they pick" are discarded — the same class of loss that made
+        # apps.teamzlab.com's 194 cta_click events unreadable for months.
+        ("store", "Store"),                  # app_store | play_store | both
+        ("surface", "Install Surface"),      # install_bar | win_modal | desktop_modal
+        ("game", "Game Slug"),
+        ("reason", "Offer Trigger"),         # after_win | qr_scan
+        ("how", "Dismiss Method"),           # x | later | backdrop | escape
     ]),
     "goalkit.teamzlab.com": ("537333788", [
         ("channel", "Order Channel"),        # whatsapp | messenger

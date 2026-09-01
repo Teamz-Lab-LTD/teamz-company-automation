@@ -94,13 +94,30 @@ record() { STEPS+=("$1=$2"); }
 # Run a step, never let one failure kill the night. A store API that is briefly
 # unreachable must not cost the other five signals; the status file records
 # which ones failed so the digest and a human can see it.
+# A step that fails must leave EVIDENCE. This used to run every command with
+# `>/dev/null 2>&1`, so a failure printed one rc and threw the reason away — five
+# steps on hazira-khata failed every night for weeks (listing x2, vitals,
+# ledger-integrity, bulk-reports) and no log anywhere said why. Running the same
+# command by hand, and under launchd's exact environment, both exited 0, so the
+# swallowed output WAS the whole investigation.
+#
+# Output now goes to logs/steps/<name>.log, and on failure the last few lines are
+# echoed inline so the nightly log itself carries the reason. Still never fatal: a
+# store API that is briefly unreachable must not cost the other signals.
 step() {
   local name="$1"; shift
+  local safe="${name//[^A-Za-z0-9._-]/_}"
+  local step_log="$LOG_DIR/steps/$safe.log"
+  mkdir -p "$LOG_DIR/steps"
   echo "--> $name"
-  if "$@" >/dev/null 2>&1; then
+  local rc=0
+  "$@" >"$step_log" 2>&1 || rc=$?
+  if [ "$rc" -eq 0 ]; then
     echo "    ok"; record "$name" "ok"
   else
-    echo "    FAILED (rc=$?) — continuing"; record "$name" "failed"
+    echo "    FAILED (rc=$rc) — continuing; last lines of $step_log:"
+    tail -n 12 "$step_log" 2>/dev/null | sed 's/^/      | /'
+    record "$name" "failed"
   fi
 }
 
@@ -283,8 +300,13 @@ else
   skip "youtube-keywords" "TEAMZ_APP_SEED_KEYWORD unset"
 fi
 
+# A COUNT, not a flag. This was `FAILED=1` — a boolean — printed under a label
+# that reads as a number, so a night with FIVE broken steps reported
+# "done (failures: 1)" and looked like a single blip. Every consumer only tests
+# `exit_code != 0`, so a real count keeps working for them and stops the summary
+# understating the damage to the human reading it.
 FAILED=0
-for s in "${STEPS[@]:-}"; do case "$s" in *=failed) FAILED=1;; esac; done
+for s in "${STEPS[@]:-}"; do case "$s" in *=failed) FAILED=$((FAILED + 1));; esac; done
 write_status "$FAILED"
 echo "=== done (failures: $FAILED) ==="
 exit 0

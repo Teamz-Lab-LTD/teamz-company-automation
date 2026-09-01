@@ -188,6 +188,15 @@ def run_tests(tools, quick_mode=False):
                         # so any vibrate() call is refused. Never fires for a real user
                         # who has interacted with the page.
                         'navigator.vibrate',
+                        # Third-party public APIs a handful of tools fetch live. They send
+                        # Access-Control-Allow-Origin for the real origin but not for
+                        # http://localhost:9091, so the gate sees CORS errors that a visitor
+                        # never gets. Listed by HOST on purpose — skipping the generic
+                        # "blocked by CORS policy" string instead would also hide a genuine
+                        # same-origin fetch we broke ourselves.
+                        'api.spacexdata.com',
+                        'api.qrserver.com',
+                        'openlibrary.org',
                     ]):
                         return
                     console_errors.append(text)

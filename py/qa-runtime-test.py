@@ -324,6 +324,23 @@ def run_tests(tools, quick_mode=False):
 
             tool_path, errors, warnings, console_errors, page_errors = test_tool(tool, i)
 
+            # RETRY ONCE BEFORE FAILING. This gate is a pre-push blocker, and pages that
+            # pull an external SDK or API (firebase, api.spacexdata.com, ...) fail
+            # intermittently when that host is slow or refuses the localhost origin —
+            # not because the page is broken.
+            #
+            # Measured 2026-09-01: a full 6,846-page sweep passed clean, and a run 20
+            # minutes later on an UNCHANGED tree failed bd/gorur-dam-check with
+            # "firebase is not defined" and tools/spacex-launch-tracker on CORS. Re-running
+            # the bd hub immediately after passed all 38. Same code, opposite verdicts.
+            #
+            # A retry is the right shape rather than a wider skip list: a genuinely broken
+            # page fails deterministically and still fails the second time, so nothing real
+            # is muted. A gate that blocks at random teaches everyone to reach for
+            # --no-verify, which is the same failure as a gate that is always red.
+            if errors + page_errors + console_errors:
+                tool_path, errors, warnings, console_errors, page_errors = test_tool(tool, i)
+
             all_errors = errors + page_errors + console_errors
             if all_errors:
                 results['fail'].append({

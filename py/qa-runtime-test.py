@@ -19,7 +19,7 @@ Runs a local server on port 9091, opens each page in headless Chromium,
 and reports failures. Exit code 1 if any tool has errors.
 """
 
-import os, sys, re, json, time, signal, subprocess, argparse
+import os, sys, re, json, time, signal, subprocess, argparse, threading
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from _teamz_config import load_runtime
@@ -32,6 +32,21 @@ MAX_WORKERS = int(os.environ.get('QA_RUNTIME_MAX_WORKERS', '5'))  # parallel bro
 PAGE_TIMEOUT = int(os.environ.get('QA_RUNTIME_PAGE_TIMEOUT', '12000'))  # ms per page
 
 # ── Collect tool pages ──────────────────────────────────────────────
+
+def _is_internal(rel_path):
+    """True for pages that are not tools and must not be judged as tools.
+
+    An underscore prefix on any path segment marks an internal page. games/_modellab is a
+    3D asset previewer for hyper-toad: it deliberately loads no site chrome, so the gate's
+    "common.js failed to load" is the right answer to the wrong question — and it blocked
+    a push for it. It is the ONLY such page across 6,847 walked today.
+
+    Lives here rather than inline because three entry points build tool lists
+    (get_all_tools, get_changed_tools, get_hub_tools) and a rule written into one of them
+    is a rule the other two silently disagree with.
+    """
+    return any(seg.startswith('_') for seg in rel_path.replace('\\', '/').split('/'))
+
 
 def get_all_tools():
     """Find all tool index.html files (not hub pages)."""
@@ -48,6 +63,8 @@ def get_all_tools():
         rel = os.path.relpath(dirpath, ROOT)
         parts = rel.replace('\\', '/').split('/')
         if len(parts) < 2:  # hub page or root
+            continue
+        if _is_internal(rel):
             continue
         tools.append(rel.replace('\\', '/'))
     return sorted(tools)
@@ -84,7 +101,9 @@ def get_changed_tools():
                 continue
             parts = f.split('/')
             if len(parts) >= 3:  # hub/tool/index.html
-                tools.add('/'.join(parts[:-1]))
+                cand = '/'.join(parts[:-1])
+                if not _is_internal(cand):
+                    tools.add(cand)
 
         # Only test ALL tools if actual shared CODE changed (not build artifacts)
         BUILD_ARTIFACTS = {'shared/js/search-index.js', 'sitemap.xml', 'llms.txt', 'llms-full.txt'}
@@ -113,7 +132,7 @@ def get_hub_tools(hub):
         return []
     tools = []
     for d in sorted(hub_path.iterdir()):
-        if d.is_dir() and (d / 'index.html').exists():
+        if d.is_dir() and (d / 'index.html').exists() and not _is_internal(f"{hub}/{d.name}"):
             tools.append(f"{hub}/{d.name}")
     return tools
 
@@ -142,8 +161,13 @@ def stop_server(proc):
 
 # ── Browser testing with Playwright ────────────────────────────────
 
-def run_tests(tools, quick_mode=False):
-    """Run all tools through headless browser and collect results."""
+def _run_chunk(tools, quick_mode, on_done):
+    """Test one slice of the list in this thread, with a browser of its own.
+
+    Playwright's sync API is NOT safe to share across threads — a Browser belongs to the
+    thread that created it — so parallelism comes from N threads each running their own
+    sync_playwright(), never from N threads sharing one browser.
+    """
     from playwright.sync_api import sync_playwright
 
     results = {'pass': [], 'fail': [], 'warn': []}
@@ -325,12 +349,9 @@ def run_tests(tools, quick_mode=False):
 
             return tool_path, errors, warnings, console_errors, page_errors
 
-        # Run tests sequentially (Playwright sync API)
+        # Sequential WITHIN a worker — the browser is this thread's, so it stays in order.
         for i, tool in enumerate(tools):
-            progress = f"[{i+1}/{total}]"
-            sys.stdout.write(f"\r  {progress} Testing {tool}...{' '*20}")
-            sys.stdout.flush()
-
+            on_done(tool)
             tool_path, errors, warnings, console_errors, page_errors = test_tool(tool, i)
 
             # RETRY ONCE BEFORE FAILING. This gate is a pre-push blocker, and pages that
@@ -367,6 +388,55 @@ def run_tests(tools, quick_mode=False):
                 results['pass'].append(tool_path)
 
         browser.close()
+
+    return results
+
+
+def run_tests(tools, quick_mode=False, workers=None):
+    """Same contract as before — a dict of pass/fail/warn — but run in parallel.
+
+    WHY. A push that touches shared/ or branding/ makes this gate test every page, and at
+    roughly 1.2s each that was 6,846 pages in one sequential loop: about two and a half
+    hours per push, on a machine with idle cores. A gate that costs an afternoon is a gate
+    people learn to skip with --no-verify, which is the same outcome as no gate at all.
+
+    Work is dealt round-robin (tools[i::workers]) rather than in contiguous blocks, so one
+    slow hub cannot land entirely in one worker and leave the rest idle at the end.
+
+    Verdicts are per-page and independent, so splitting them changes nothing about the
+    result — only how long it takes to get it. MAX_WORKERS (env QA_RUNTIME_MAX_WORKERS)
+    sets the count; 1 restores exactly the old sequential behaviour. That constant has sat
+    in this file unused since it was written, commented "parallel browser tabs" — the
+    intent was always here, only the implementation was missing.
+    """
+    total = len(tools)
+    if workers is None:
+        workers = max(1, min(MAX_WORKERS, os.cpu_count() or 4))
+    # Each worker pays a browser launch (~1s), so a short list is faster in one thread.
+    if total < 12:
+        workers = 1
+    workers = max(1, min(workers, total or 1))
+
+    done = {'n': 0}
+    lock = threading.Lock()
+
+    def on_done(tool):
+        with lock:
+            done['n'] += 1
+            n = done['n']
+        sys.stdout.write(f"\r  [{n}/{total}] Testing {tool}...{' ' * 20}")
+        sys.stdout.flush()
+
+    if workers == 1:
+        results = _run_chunk(tools, quick_mode, on_done)
+    else:
+        chunks = [tools[i::workers] for i in range(workers)]
+        merged = {'pass': [], 'fail': [], 'warn': []}
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            for part in ex.map(lambda c: _run_chunk(c, quick_mode, on_done), chunks):
+                for k in merged:
+                    merged[k].extend(part[k])
+        results = merged
 
     sys.stdout.write('\r' + ' ' * 80 + '\r')
     return results

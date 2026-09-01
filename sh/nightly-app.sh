@@ -211,6 +211,44 @@ if [ "$PLATFORM" = "android" ] || [ "$PLATFORM" = "both" ]; then
   #    hurting users before the reviews do.
   step "vitals" python3 "$PY_DIR/build-play-console.py" report --package "$PACKAGE"
 
+  # 2b) LIVE MONEY DATA integrity. Read-only, and the only thing in this project that checks
+  #     production DATA rather than production CODE.
+  #
+  #     Added 2026-08-23, the day a money bug was found by accident. Deleting a paid salary wrote
+  #     its reversal with txnDate=0, so it fell outside every month `observeTxns` queries and
+  #     cancelled nothing: দারুণ নাজাত হাবিবীয়া ছিদ্দিকীয়া মাদরাসা showed ৳21,000 of expense that
+  #     should have been ৳0, every month from January to August, and 10 schools were affected. Every
+  #     document involved looked perfectly correct on its own — the damage lived only in the
+  #     RELATIONSHIP between two documents, which is exactly what no unit test and no source-scanning
+  #     guard can see. 3400+ tests were green throughout.
+  #
+  #     The code guard now stops that bug shipping again. It can do nothing about data already
+  #     written, and nothing about the next invariant somebody breaks. This is that safety net, and a
+  #     day is the longest anything like it should now go unnoticed.
+  #
+  #     Only runs for hazira-khata: it is the only app with this ledger.
+  if [ "$SLUG" = "hazira-khata" ] && [ -f "$ROOT/scripts/audit_finance_ledger_integrity.py" ]; then
+    step "ledger-integrity" python3 "$ROOT/scripts/audit_finance_ledger_integrity.py" \
+      --json "$TEAMZ_DATA_DIR/finance-ledger-integrity.json"
+  fi
+
+  # 2b) Remote Config drift — a version floor is not an audience, and it expires by itself.
+  #
+  #     "Internal testers only" is expressed here as `app.version >= 3.2.NNN`, which means exactly
+  #     that until NNN promotes, and then means EVERYONE — with no notification and no diff. Found
+  #     2026-08-30 on machine_lan_pull_internal_199_plus, live fleet-wide for days while its own
+  #     description still called it internal-only. Re-checked 2026-09-01 at production 3.2.238: the
+  #     class had THREE live instances, two of them plain `default: true` params whose safety
+  #     argument was a SENTENCE about production that had quietly become false, one of which
+  #     ("set false before promoting 161+") was an order to a human that nothing ever enforced.
+  #
+  #     Runs nightly because the trigger is a PROMOTION, not a commit — no code review can catch it,
+  #     and the gap between "we promoted" and "someone re-reads the config" is otherwise unbounded.
+  #     It never writes: a non-zero exit is a claim to re-check, never a value to change.
+  if [ "$SLUG" = "hazira-khata" ] && [ -f "$ROOT/scripts/check-remote-config-drift.py" ]; then
+    step "remote-config-drift" python3 "$ROOT/scripts/check-remote-config-drift.py"
+  fi
+
   # 3) Installs / store performance / reviews CSVs from the bulk-reports bucket.
   step "bulk-reports" python3 "$PY_DIR/build-play-console.py" \
     bulk-reports --package "$PACKAGE"

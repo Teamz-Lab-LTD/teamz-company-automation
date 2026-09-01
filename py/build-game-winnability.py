@@ -176,7 +176,16 @@ def _median(xs):
 
 
 def verdict(row):
-    """BUILD / CONTESTED / SKIP, plus the one sentence that says why.
+    """BUILD / CONTESTED / SKIP for the STORE APP, plus the one sentence that says why.
+
+    ONE VERDICT IS NOT ENOUGH, AND PRETENDING OTHERWISE COST A PICK. Every concept here ships
+    as two products — a web page on tool.teamzlab.com and a store app — and they are judged by
+    different evidence. This function reads Play results, so it answers the store question
+    only. `web_verdict()` below answers the other one.
+
+    Which channel matters is not a close call: arrow-escape-3d draws 78,748 web impressions a
+    month and its store app has 46 installs. A SKIP here means do not build the app; it does
+    NOT mean do not build the page.
 
     Every BUILD still requires a manual SERP check before any code is written. This function
     cannot see who owns the web result, and that is the signal that killed the solitaires.
@@ -213,6 +222,27 @@ def verdict(row):
                          f"real demand behind a decent field; needs a SERP check")
 
 
+def web_verdict(row):
+    """The other half: is the WEB PAGE worth building for this term?
+
+    Deliberately not a copy of the store rule. A store field can be locked by five apps with
+    a hundred million installs each while the web SERP for the same words is held by small
+    single-purpose sites that a good page can sit beside — that is exactly the split measured
+    for brick breaker on 2026-09-01.
+
+    What the store field still tells us is demand: people looking for an app are people
+    looking for the thing. What it cannot tell us is who ranks on the web, so this returns
+    CHECK_SERP rather than BUILD whenever demand is real. Nothing here is allowed to say
+    "winnable" without a human having looked at the live results.
+    """
+    rev_vol = sum(row["vol"].get(g, 0) for g in REVENUE_GEOS)
+    if rev_vol < MIN_REVENUE_VOL:
+        return "SKIP", f"only {rev_vol:,}/mo in US+GB — no page is worth this"
+    return "CHECK_SERP", (f"{rev_vol:,}/mo in US+GB is real demand. Read the live SERP before "
+                          f"building: if small single-purpose sites hold page one the page is "
+                          f"worth a try, if it is portals and giants it is not")
+
+
 # ---------------------------------------------------------------- report
 
 def write_markdown(path, rows, meta):
@@ -222,18 +252,22 @@ def write_markdown(path, rows, meta):
     L.append("# Retro game winnability — Phase 0 research gate\n")
     L.append(f"Generated {meta['generated']} · {meta['n_terms']} terms · "
              f"Planner geos {'/'.join(GEOS)} · Play field = top {PLAY_TOP_N} results (US store)\n")
+    L.append("Two columns because there are two products. **store** judges the Play app from the "
+             "field below; **web** judges a page on tool.teamzlab.com, which is the channel that "
+             "actually earns — arrow-escape-3d draws 78,748 web impressions a month against 46 "
+             "store installs. A SKIP on store does not mean skip the page.\n")
     L.append("**A BUILD verdict is a shortlist entry, not a decision.** It means demand is real "
              "and the store field looks soft. Before any code is written, the live web SERP for "
              "the term has to be looked at by hand: if the first page belongs to a giant portal, "
              "the term is dead regardless of what the store looks like. That check is what the "
              "solitaire pages skipped, and they sit at position 59.\n")
-    L.append("| verdict | term | US/mo | GB/mo | BD/mo | med ★ | best installs | top incumbent | why |")
-    L.append("|---|---|---|---|---|---|---|---|---|")
+    L.append("| store | web | term | US/mo | GB/mo | BD/mo | med ★ | best installs | top incumbent | why (store) |")
+    L.append("|---|---|---|---|---|---|---|---|---|---|")
     for r in rows:
         top = (r.get("play") or [{}])[0]
         med = r["median_rating"] if r["median_rating"] is not None else "—"
-        L.append("| {v} | {t} | {us:,} | {gb:,} | {bd:,} | {m} | {inst} | {top} | {why} |".format(
-            v=r["verdict"], t=r["term"],
+        L.append("| {v} | {wv} | {t} | {us:,} | {gb:,} | {bd:,} | {m} | {inst} | {top} | {why} |".format(
+            v=r["verdict"], wv=r.get("web_verdict", "—"), t=r["term"],
             us=r["vol"].get("US", 0), gb=r["vol"].get("GB", 0), bd=r["vol"].get("BD", 0),
             m=med,
             inst=f"{r['top_installs']:,}" if r["top_installs"] else "—",
@@ -305,7 +339,8 @@ def main():
             r["play"] = play_field(r["term"])
 
     for r in rows:
-        r["verdict"], r["why"] = verdict(r)
+        r["verdict"], r["why"] = verdict(r)              # store app
+        r["web_verdict"], r["web_why"] = web_verdict(r)  # web page
 
     meta = {"generated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             "n_terms": len(rows), "geos": GEOS, "play_top_n": PLAY_TOP_N}

@@ -56,6 +56,7 @@ Requires: TEAMZ_SC_TOKEN_FILE, TEAMZ_SITE_PROPERTY, TEAMZ_GOOGLE_CLOUD_PROJECT
 
 import argparse
 import json
+import time
 import os
 import re
 import ssl
@@ -112,17 +113,36 @@ def pages_in_window(tok, start, end):
     out = {}
     url = ("https://www.googleapis.com/webmasters/v3/sites/"
            + urllib.parse.quote(PROP, safe="") + "/searchAnalytics/query")
-    for offset in range(0, 100000, 25000):
+    # PAGE SIZE, not the timeout, was the problem. Asking GSC for 25,000 page rows at a
+    # time stopped fitting inside 180s as the site grew past ~7,000 pages, and this phase
+    # had failed every night since 2026-08-20 with "The read operation timed out" — eight
+    # nights with no proof that any enhancement worked. GSC answers a 5,000-row request in
+    # a small fraction of the time, so five smaller calls beat one that never lands.
+    PAGE = 5000
+    for offset in range(0, 100000, PAGE):
         body = json.dumps({"startDate": str(start), "endDate": str(end),
-                           "dimensions": ["page"], "rowLimit": 25000,
+                           "dimensions": ["page"], "rowLimit": PAGE,
                            "startRow": offset, "dataState": "all"}).encode()
-        req = urllib.request.Request(url, data=body, method="POST", headers={
-            "Authorization": f"Bearer {tok}", "Content-Type": "application/json",
-            "x-goog-user-project": PROJECT})
-        rows = json.loads(urllib.request.urlopen(req, context=CTX, timeout=180).read()).get("rows", [])
+        rows = None
+        for attempt in range(3):
+            req = urllib.request.Request(url, data=body, method="POST", headers={
+                "Authorization": f"Bearer {tok}", "Content-Type": "application/json",
+                "x-goog-user-project": PROJECT})
+            try:
+                rows = json.loads(
+                    urllib.request.urlopen(req, context=CTX, timeout=180).read()
+                ).get("rows", [])
+                break
+            except (TimeoutError, urllib.error.URLError, OSError):
+                # Retry a slow or dropped call rather than failing the whole phase. The
+                # raise on the last attempt is deliberate and matches this function's
+                # contract above: an empty result must never be mistaken for "no clicks".
+                if attempt == 2:
+                    raise
+                time.sleep(5 * (attempt + 1))
         for r in rows:
             out[r["keys"][0].rstrip("/") + "/"] = (r["clicks"], r["impressions"])
-        if len(rows) < 25000:
+        if len(rows) < PAGE:
             break
     return out
 

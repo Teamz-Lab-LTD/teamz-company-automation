@@ -165,3 +165,85 @@ Any axis at 0 caps the whole entry. A judge cannot score what they cannot see.
 **Written 2026-09-02** from the published criterion. Re-read the criterion each
 season before trusting this file — the wording moves, and the wording is the
 rubric.
+
+---
+
+## The mechanical gap scan — run this BEFORE scoring anything
+
+Added **2026-09-03**, after auditing Resume Coach and Sleep Switch on the same day.
+
+**Why this section exists.** The first Resume Coach audit scored Beautiful design **1**
+and wrote "the system is real, a judge just cannot see it" — which was wrong, and lazily
+wrong. The design genuinely was not a 2, for a reason that had nothing to do with
+screenshots and that no amount of looking would have surfaced: the app was drawing from
+**three Material icon families at once**. One `grep` found it in four seconds.
+
+Every defect found that day was like that — **systematic, mechanical, invisible to a
+passing test suite, and invisible to the eye**:
+
+| Found | How | Consequence |
+|---|---|---|
+| 3 icon families in one app (47 rounded / 42 outlined / 56 filled) | one grep | the rubric's named amateur tell |
+| Interface typeface downloaded at runtime | a golden test failing in a sandbox | cold start on bad wifi renders the whole app in Roboto, silently |
+| A weight requested that was never bundled | the same failure, read properly | the app's bold ALWAYS came off the network |
+| A `Row` overflowing 59px at 360dp | the first golden ever written | striped overflow banner on every card, on every narrow phone |
+
+None of these were taste. All of them capped a score. **Run the scan before forming an
+opinion — an eye that has already decided the app looks fine will not find any of them.**
+
+```bash
+# 1 — How many icon families? More than one is the rubric's "One voice" failure.
+grep -rhoE "Icons\.[a-z0-9_]+" lib/ | sed -E 's/.*_(rounded|outlined|sharp)$/\1/' \
+  | sort | uniq -c
+# Anything without one of those suffixes is the filled/legacy set: a third family.
+
+# 2 — Are fonts fetched at runtime? If GoogleFonts is used and this prints nothing,
+#     the typeface is a network dependency and the app renders wrong offline.
+grep -rn "allowRuntimeFetching" lib/ || echo "NEVER DISABLED -> fonts come off the network"
+
+# 3 — Is every requested weight actually bundled? A weight with no asset is fetched
+#     or silently falls back.
+grep -rhoE "FontWeight\.w[0-9]+" lib/ | sort -u
+sed -n '/^  fonts:/,/^[a-z]/p' pubspec.yaml
+
+# 4 — Emoji standing in for icons. Instant cap.
+grep -rnP "Text\('[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}]" lib/
+
+# 5 — Stock Material identity left in place.
+grep -rn "Colors.deepPurple\|0xFF6200EE\|Colors.purple\|#D9FE06" lib/
+
+# 6 — Raster art mixed into a painted UI (or the reverse). Pick one voice.
+echo "image call sites: $(grep -rn 'Image.asset\|SvgPicture' lib/ | wc -l)"
+echo "CustomPainters  : $(grep -rl 'extends CustomPainter' lib/ | wc -l)"
+
+# 7 — Does a signature moment exist, and can it be named in five words?
+#     Not greppable. If the answer needs a paragraph, the answer is no.
+
+# 8 — Is reduced motion handled in ONE place, or at forty call sites?
+grep -rn "disableAnimations\|reducedMotion" lib/ | head
+
+# 9 — The two axes nobody can fake.
+ls fastlane/screenshots/**/*.png store/*.png 2>/dev/null | wc -l   # screenshots
+find . -name '*.mp4' -o -name '*.mov' | grep -v build | head       # video
+```
+
+### The narrow-phone check has to be a test, not a look
+
+Overflow does not show on a 6.7" simulator. Write one golden at **320–360dp** for every
+component carrying a `Row` of two or more labelled controls. That single test found a
+59px overflow that had shipped through 886 passing tests and two device passes.
+
+Labels are translated. A row that fits in English at 360dp may not fit in German or
+Bengali — check the longest locale, not the one you wrote.
+
+### Report the GAP, not the score
+
+A score is a number somebody nods at. **A gap is a task.** Every audit ends with one
+sentence, in this shape:
+
+> **Lowest axis is `<axis>` at `<n>`. The specific thing blocking it is `<finding>`.
+> Fixing it is `<estimate>`, and it moves the total to `<n>`.**
+
+If the lowest axis is Screenshots or Video, say so plainly and stop recommending app
+work — no code change moves those, and every hour spent polishing instead is an hour
+spent on an axis that is already at ceiling.

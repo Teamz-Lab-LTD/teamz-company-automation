@@ -102,6 +102,15 @@ Two things to hold on to while scoring:
   (onboarding, a completion, a morning screen, the product's own gesture) and
   make that exceptional.
 
+**Run the rubric's mechanical gap scan FIRST, before looking at anything.** It is
+the block of greps at the end of `design-award-audit.md`, it takes under a minute,
+and it exists because the defects that cap a design score are systematic and
+invisible to the eye: mixed icon families, a typeface fetched at runtime, a weight
+that was never bundled, a Row that overflows only on a narrow phone. An eye that
+has already decided the app looks fine will not find any of them, and a session
+that scores before scanning writes "the design is real, a judge just cannot see
+it" — which was said about Resume Coach on 2026-09-03 and was simply wrong.
+
 Never inherit a score from another app, and never score from the README. Open
 the screenshots.
 
@@ -117,17 +126,38 @@ Update `<app>/docs/shipaton/CATEGORY-TRACKER.md`. Columns:
 ### Step 5 — Report
 
 1. **Eligibility verdict** (Step 2) — first, always.
-2. **Gap list:** every category where `Reachable = yes` AND `Status = NOT STARTED`, sorted by
+2. **The design gap — one sentence, always, even when nobody asked about design.**
+   Report it in this exact shape:
+
+   > **Lowest axis is `<axis>` at `<n>`/2. Blocking it: `<the specific finding>`.
+   > Cost to fix: `<estimate>`. Moves the total to `<n>`/12.**
+
+   A score is a number somebody nods at; a gap is a task. And say plainly which of
+   the two situations the app is in, because the advice is opposite:
+
+   * **Lowest axis is craft** (idea / design / animation / craft-made-visible) →
+     there is buildable work, name it.
+   * **Lowest axis is Screenshots or Video** → **no code change moves it.** Say so,
+     and stop recommending app work: every hour of polish is spent on axes already at
+     ceiling. This is the common case, and it is the one sessions get wrong.
+
+3. **Gap list:** every category where `Reachable = yes` AND `Status = NOT STARTED`, sorted by
    prize ÷ estimated hours. This is the point of the command.
-3. **Free-after-ship reminder:** registry §2's four description-only categories, if unclaimed.
-4. **Owner-only actions**, separated out — the things no agent can do.
-5. **Ship Kit milestones** not yet unlocked (registry §3).
-6. **Citations:** registry version/date + the tracker path + anything re-fetched.
+4. **Free-after-ship reminder:** registry §2's four description-only categories, if unclaimed.
+5. **Owner-only actions**, separated out — the things no agent can do.
+6. **Ship Kit milestones** not yet unlocked (registry §3).
+7. **Citations:** registry version/date + the tracker path + anything re-fetched.
 
 ## Refusal conditions
 
 - Answering any "which categories / what prize / am I eligible" question **without reading the
   registry first**.
+- **Reporting a Design Award score without the mechanical gap scan having been run**, or
+  reporting a score without the one-sentence gap. A number with no next action is the
+  failure this command exists to prevent.
+- **Recommending app or design work when the lowest axis is Screenshots or Video.** Those
+  are capture, not craft; no commit moves them, and the recommendation sends the owner to
+  polish an axis that is already at 2.
 - Advising on how to WIN or improve standing in a category **without quoting that category's
   §1b judging criteria**. Entry requirements are not scoring criteria. Guessing at how a
   category is judged — or assuming it rewards downloads/revenue when its criteria never

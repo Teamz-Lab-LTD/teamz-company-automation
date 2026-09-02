@@ -156,6 +156,10 @@ def _fetch_all_page_query(
 # A bleed row must have roughly the impressions it had before. Above this multiple
 # the page is riding a demand surge, and CTR dilution there is not a loss.
 HELD_IMPRESSIONS_MAX = 1.5
+# ...and below this fraction the demand has simply gone away. That is an impression
+# drop, which has its own alert block; counting it as a CTR bleed is how the headline
+# came to claim "at held impressions" about a page whose impressions had fallen 73%.
+HELD_IMPRESSIONS_MIN = 1 / HELD_IMPRESSIONS_MAX
 
 def _ctr(clicks: int, impressions: int) -> float:
     if impressions <= 0:
@@ -392,6 +396,8 @@ def main() -> int:
         recent_impr_day = row["recent_impressions"] / days
         if base_impr_day > 0 and recent_impr_day > base_impr_day * HELD_IMPRESSIONS_MAX:
             continue                            # demand surged; not "held impressions"
+        if base_impr_day > 0 and recent_impr_day < base_impr_day * HELD_IMPRESSIONS_MIN:
+            continue                            # demand collapsed; also not "held"
 
         lost = row["recent_impressions"] * (base_ctr - row["recent_ctr"]) / 100.0 / days
         # Never claim more than the clicks actually lost against baseline.

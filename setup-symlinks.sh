@@ -50,6 +50,21 @@ mkdir -p scripts
 
 created=0
 skipped=0
+clobber_refused=0
+
+# Replacing a file that git TRACKS with a symlink silently swaps committed content
+# for a link, and leaves a type change (`T` in git status) that nothing can ignore
+# — .git/info/exclude does not apply to tracked paths, so it blocks the nightly
+# dirty guard forever. Two of these already exist: teamzlab-tools
+# scripts/build-static-schema.py and the landing pages' scripts/build-internal-links.sh,
+# whose repo copy and submodule copy had diverged by 393 lines before anyone noticed.
+# Refuse, and say so. Whether the shared copy should win is a human call.
+refuse_if_tracked() {
+  git -C "$HOST_ROOT" ls-files --error-unmatch "$1" >/dev/null 2>&1 || return 1
+  echo "  REFUSED $1 — git tracks a real file here; not replacing it with a symlink"
+  clobber_refused=$((clobber_refused + 1))
+  return 0
+}
 
 for f in "$SCRIPT_DIR"/py/*.py; do
   [ -f "$f" ] || continue
@@ -58,6 +73,8 @@ for f in "$SCRIPT_DIR"/py/*.py; do
   target="../$SUBMOD_REL/py/$base"
   if [ -L "scripts/$base" ]; then
     skipped=$((skipped + 1))
+  elif refuse_if_tracked "scripts/$base"; then
+    :
   else
     rm -f "scripts/$base"
     ln -sf "$target" "scripts/$base"
@@ -71,6 +88,8 @@ for f in "$SCRIPT_DIR"/sh/*.sh; do
   target="../$SUBMOD_REL/sh/$base"
   if [ -L "scripts/$base" ]; then
     skipped=$((skipped + 1))
+  elif refuse_if_tracked "scripts/$base"; then
+    :
   else
     rm -f "scripts/$base"
     ln -sf "$target" "scripts/$base"
@@ -220,7 +239,57 @@ if [ -d "$SCRIPT_DIR/claude-config" ]; then
   echo "        Register manually: see claude-config/CLAUDE-md-additions.md hooks section"
 fi
 
+# ── Keep this machine's symlinks out of `git status` ────────────────────────
+# Every link above is untracked, and the nightly dirty guard reads
+# `git status --porcelain`. On 2026-09-03 that meant 127 links in goalkit-bd, 60
+# in teamzlab-tools, 46 in teamz-lab-learning and 38 in the landing pages — four
+# properties reporting `skipped:dirty-tree` and tools reporting
+# "BLOCKED at start: dirty source WIP" for a second night. Nothing shipped
+# anywhere. The links were the entire blockage.
+#
+# .git/info/exclude, NOT .gitignore: which links exist is a property of THIS
+# clone, so committing the list would push one machine's layout to everyone.
+# Regenerated on every run, so a newly added shared script is covered the moment
+# it is linked rather than blocking that night's run.
+write_git_exclude() {
+  git -C "$HOST_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  gitdir="$(git -C "$HOST_ROOT" rev-parse --git-dir 2>/dev/null)" || return 0
+  case "$gitdir" in /*) ;; *) gitdir="$HOST_ROOT/$gitdir" ;; esac
+  mkdir -p "$gitdir/info"
+  exclude="$gitdir/info/exclude"
+  begin="# >>> teamz setup-symlinks (generated, do not edit by hand) >>>"
+  end="# <<< teamz setup-symlinks <<<"
+
+  # A tracked path must NOT be listed: info/exclude does not apply to tracked
+  # files, so listing one hides nothing while implying it does.
+  links=""
+  while IFS= read -r l; do
+    [ -n "$l" ] || continue
+    git -C "$HOST_ROOT" ls-files --error-unmatch "$l" >/dev/null 2>&1 && continue
+    links="$links$l
+"
+  done <<EOF
+$(cd "$HOST_ROOT" && find scripts .claude/skills -maxdepth 1 -type l 2>/dev/null | sed 's|^\./||' | sort)
+EOF
+
+  tmp="$(mktemp)"
+  [ -f "$exclude" ] && awk -v b="$begin" -v e="$end" \
+    '$0==b{skip=1} !skip{print} $0==e{skip=0}' "$exclude" > "$tmp"
+  {
+    printf '%s\n' "$begin"
+    printf '# Symlinks into %s, rewritten by setup-symlinks.sh.\n' "$SUBMOD_REL"
+    printf '# Delete this block and re-run the script to regenerate it.\n'
+    printf '%s' "$links"
+    printf '%s\n' "$end"
+  } >> "$tmp"
+  mv "$tmp" "$exclude"
+  n="$(printf '%s' "$links" | grep -c . || true)"
+  echo "git-exclude: $n symlink(s) hidden from git status (.git/info/exclude)"
+}
+write_git_exclude
+
 echo "setup-symlinks: created $created, skipped $skipped (already exist)"
+[ "$clobber_refused" -gt 0 ] && echo "  ^ $clobber_refused tracked file(s) left alone — decide by hand whether the shared copy should replace them"
 echo "Run scripts via: python3 scripts/<name>.py  or  ./scripts/<name>.sh"
 if [ -d "$SCRIPT_DIR/skills" ]; then
   echo "Claude Code skills linked under .claude/skills/ — reload your editor or re-open Claude to pick them up."

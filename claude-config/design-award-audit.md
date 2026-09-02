@@ -236,6 +236,31 @@ component carrying a `Row` of two or more labelled controls. That single test fo
 Labels are translated. A row that fits in English at 360dp may not fit in German or
 Bengali — check the longest locale, not the one you wrote.
 
+### New assets and new animation: conditional, never a blanket yes or no
+
+The scan decides this, not taste, and not a house style. Both blanket answers are wrong
+and each has burned a session:
+
+| Scan finding | Verdict |
+|---|---|
+| Animation 0–1 **and** no nameable signature moment | **Build one** — on the single surface where motion is already legitimate for this product |
+| Empty / first-run / paywall surfaces bare enough to read as unfinished | **Build** |
+| App already ships raster or vector art | **Safe** — new art joins an existing voice |
+| UI is code-drawn (many `CustomPainter`, ~0 `Image.asset`) | **Do not** — a second voice, and raster loses theming, animation and scale |
+| Axis already at 2 | **Do not** — there is no score above 2 |
+| Screenshots or video is the lowest axis | **Do not** — art moves neither |
+
+Sleep Switch is the case for building: Animation 1, no signature moment, and the fix was
+`SwitchOnDawn` — the handle travelling back to *on* as the sky comes up, once, only after
+a night that ran. 1 → 2.
+
+Resume Coach is the case against: zero `Image.asset` call sites, fifteen `CustomPainter`s,
+and a `pubspec.yaml` note recording an earlier ~8MB generated-art bundle that nothing in
+`lib/` ever loaded and that broke every fresh clone. One of those files was a drawing of
+the app's own mascot **with a body**, which the app's hygiene rule forbids.
+
+**Never generate a product screenshot.** Brand and marketing surfaces only.
+
 ### Report the GAP, not the score
 
 A score is a number somebody nods at. **A gap is a task.** Every audit ends with one

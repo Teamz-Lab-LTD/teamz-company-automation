@@ -292,12 +292,22 @@ def cmd_report(cfg: dict, package: str, days: int, out: Optional[Path]) -> int:
         "response": resp,
     }
     text = json.dumps(payload, indent=2)
-    if out:
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(text)
-        print(f"Wrote {out}")
-    else:
-        print(text)
+    # DEFAULTS ITS OUTPUT, like `bulk` above already does.
+    #
+    # It used not to, and the consequence was invisible for months: nightly-app.sh calls this as
+    # `report --package X` with no --out, so the crash-rate report was printed to stdout and thrown
+    # away. The step exited 0 every night, the nightly reported success, and automation_data/vitals.json
+    # sat at a June snapshot — release monitoring was blind while looking exactly like it was working.
+    #
+    # That is the failure mode this repo keeps meeting from different directions: a command that
+    # "refuses to work" is easy to spot, and a command that SUCCEEDS at doing nothing is not. A report
+    # generator whose whole purpose is a file on disk should not have "print it and forget it" as its
+    # default; --out still overrides, so any caller that wanted stdout can ask for it.
+    if out is None:
+        out = cfg["data_dir"] / "vitals.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text, encoding="utf-8")
+    print(f"Wrote {out}")
     return 0
 
 

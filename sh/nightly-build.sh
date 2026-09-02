@@ -347,8 +347,13 @@ write_nightly_status() {
   [ "${_TEAMZ_STATUS_WRITTEN:-0}" = "1" ] && return 0
   _TEAMZ_STATUS_WRITTEN=1
   local deploy="unknown"
-  if [ "${PUSH_EXIT:-1}" -eq 0 ] || [ "${RETRY_EXIT:-1}" -eq 0 ]; then
+  if [ "${DEPLOY_NOT_LIVE:-0}" = "1" ]; then
+    # Checked FIRST and it outranks a green push on purpose: the whole point is that
+    # the push exit code is not evidence the pages are being served.
+    deploy="failed:built-but-not-live"
+  elif [ "${PUSH_EXIT:-1}" -eq 0 ] || [ "${RETRY_EXIT:-1}" -eq 0 ]; then
     deploy="ok"
+    [ "${DEPLOY_UNVERIFIED:-0}" = "1" ] && deploy="ok:unverified"
   elif [ -n "${PUSH_EXIT:-}" ] || [ -n "${RETRY_EXIT:-}" ]; then
     deploy="failed"
   fi
@@ -1538,10 +1543,20 @@ if host_up_within github.com; then
         DEPLOY_VERIFY_RC=$?
         printf '%s\n' "$DEPLOY_VERIFY_OUT" | sed 's/^/    /'
         if [ "$DEPLOY_VERIFY_RC" -eq 1 ]; then
+            # The alert alone was not enough. `deploy` is derived from PUSH_EXIT below,
+            # so a push that succeeded while the live site was missing pages still wrote
+            # deploy="ok" and /growth printed a green deploy for the money property. The
+            # digest already has a loud branch for exactly this state — it just never
+            # fired here because tools never set the value nightly-site.sh has always set.
+            DEPLOY_NOT_LIVE=1
             record_health_alert "Push succeeded but the LIVE site is missing pages we built — deploy did not land. $(printf '%s' "$DEPLOY_VERIFY_OUT" | grep -c 'https://') URL(s) affected."
         elif [ "$DEPLOY_VERIFY_RC" -ne 0 ]; then
+            DEPLOY_UNVERIFIED=1
             record_health_alert "Deploy could NOT be verified against the live site (see log). Not proof it failed; not proof it worked."
         fi
+    else
+        # "No verifier present" is not "verified". Say so, or the absence reads as a pass.
+        DEPLOY_UNVERIFIED=1
     fi
 else
     # Record the skip, don't just print it. This branch fired silently for six nights in Aug 2026

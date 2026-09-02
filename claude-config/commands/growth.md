@@ -96,6 +96,15 @@ healthy." Then a compact table, most-broken first:
 | tools | … | … | … |
 | tekko | … | … | … |
 
+**The "ran last night?" column MUST carry the BLOCKED ratio, never just last night.**
+`nightly-status.json` holds ONE run. For months this command read only that, so it could answer
+"did it run last night?" and nothing else — and the owner asked repeatedly whether the nightly
+was working while **20 of the landing pages' 53 logged runs had refused to start**, tekko 5 of
+12, tools 17 of 247. Every one of those answers was technically true and completely useless.
+`build-growth-digest.py` now appends `BLOCKED n of m runs (p%)` from the nightly log itself.
+Print it verbatim. A green last night next to a 38% block rate is the single most important
+thing on the screen, and one night alone can never show it.
+
 **Health column MUST also check `nightly-status.json`'s `build` field and `health_alerts` count,
 not just preflight.** On 2026-07-23, tools' `nightly-status.json` had sat at `"build":
 "ok:4-health-alerts"` for months — a real, growing internal-link problem (3499 pages not linked

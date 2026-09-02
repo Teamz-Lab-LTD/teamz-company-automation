@@ -201,7 +201,67 @@ def log_from_plist(plist):
     return Path(m.group(1)) if m else None
 
 
+def blocked_nights(repo, label):
+    """How many of the logged runs never got past the dirty guard.
+
+    nightly-status.json holds ONE run — the last one. For months this file read only
+    that, so /growth could answer "did it run last night?" and nothing else, and the
+    owner asked repeatedly whether the nightly was working while 20 of the landing
+    pages' 53 logged runs had been refusing to start. The history was in the log the
+    whole time; nothing opened it.
+
+    The runner prints "Commit or stash, then the next run proceeds." on every blocked
+    start, and a "mode   :" banner on every run, so the ratio is countable.
+    Returns (blocked, total) or None when there is no log to read.
+    """
+    # Same resolution order the verdict above uses: the plist declares the real path
+    # for some runners (tools does), and only the others follow the logs/ convention.
+    # Globbing logs/ alone returned None for tools, which is the property that matters
+    # most — a silent None reads as "no history" and hides the count all over again.
+    plist = Path.home() / "Library" / "LaunchAgents" / f"{label}.plist"
+    cands = []
+    declared = log_from_plist(plist) if plist.exists() else None
+    if declared and declared.exists():
+        cands = [declared]
+    else:
+        logs = PROJECTS / repo / "logs"
+        cands = list(logs.glob(f"{label}.log")) if logs.is_dir() else []
+    if not cands:
+        return None
+    try:
+        text = cands[0].read_text(errors="replace")
+    except Exception:
+        return None
+    # Two runners, two banner styles. nightly-site.sh prints "mode   :", tools'
+    # nightly-build.sh prints "NIGHTLY BUILD — <date>". Counting only the first
+    # returned total=0 for TOOLS — the property that earns the money — and a zero
+    # total returns None, which reads as "no history" and hides the count exactly
+    # the way it was hidden before. Take whichever marker this log actually uses.
+    total = max(text.count("mode   :"), text.count("NIGHTLY BUILD —"))
+    blocked = max(text.count("Commit or stash, then the next run proceeds"),
+                  text.count("BLOCKED at start"))
+    return (blocked, total) if total else None
+
+
 def nightly_health(repo, label):
+    """Last night's verdict, followed by how often this engine has been blocked.
+
+    A single green night says nothing about an engine that has refused to start on
+    two nights in five. Both numbers, always, in the same cell.
+    """
+    verdict = _nightly_health_last_run(repo, label)
+    hist = blocked_nights(repo, label)
+    if not hist:
+        return verdict
+    blocked, total = hist
+    if blocked == 0:
+        return f"{verdict} · 0 blocked in {total} runs"
+    pct = 100.0 * blocked / total
+    mark = "🔴" if pct >= 25 else "⚠️"
+    return f"{verdict} · {mark} BLOCKED {blocked} of {total} runs ({pct:.0f}%)"
+
+
+def _nightly_health_last_run(repo, label):
     """Did the nightly actually WORK? Not: did a file get touched.
 
     The states must stay distinguishable — a monitor that cries wolf gets ignored as fast as one

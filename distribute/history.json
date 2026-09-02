@@ -4998,6 +4998,11 @@
           "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mmodxkyml225",
           "posted_at": "2026-05-25T11:14:23.085601+00:00",
           "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-213668990",
+          "posted_at": "2026-09-01T07:23:09.867243+00:00",
+          "status": "published"
         }
       },
       "draft": {
@@ -5081,6 +5086,11 @@
         "bluesky": {
           "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mmts2rc2aj2b",
           "posted_at": "2026-05-27T15:10:01.995346+00:00",
+          "status": "published"
+        },
+        "youtube": {
+          "url": "scheduled:pid=27397:shorts=1:tutorials=0",
+          "posted_at": "2026-09-02T03:21:50.439769+00:00",
           "status": "published"
         }
       },
@@ -5701,6 +5711,16 @@
           "url": "scheduled:pid=80314:count=1",
           "posted_at": "2026-08-08T11:13:13.344022+00:00",
           "status": "published"
+        },
+        "blogger": {
+          "url": "https://teamzlab.blogspot.com/2026/09/calculadora-inss-2025-aliquotas.html",
+          "posted_at": "2026-09-02T07:19:19.489230+00:00",
+          "status": "published"
+        },
+        "bluesky": {
+          "url": "https://bsky.app/profile/teamzlab.bsky.social/post/3mujfs3vgxt2c",
+          "posted_at": "2026-09-02T07:25:21.370510+00:00",
+          "status": "published"
         }
       },
       "draft": {
@@ -5878,6 +5898,11 @@
         "telegraph": {
           "url": "https://telegra.ph/Israeli-Rental-Income-Tax-Calculator--Compare-All-3-Tax-Tracks-05-08",
           "posted_at": "2026-05-08T11:00:17.176234+00:00",
+          "status": "published"
+        },
+        "substack": {
+          "url": "https://substack.com/home/post/p-213843357",
+          "posted_at": "2026-09-02T11:24:09.178084+00:00",
           "status": "published"
         }
       },

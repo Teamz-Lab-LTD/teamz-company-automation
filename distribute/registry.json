@@ -16,11 +16,11 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/alignflow.md",
-      "article_angles": [],
-      "_disabled_at": "2026-08-08",
-      "features": [],
+      "enabled": false,
       "_disabled_reason": "Stealth/secret project per owner instruction 2026-08-08 — exclude from distribution entirely, do not target for content or keyword expansion. EDITABLE field, survives registry regen.",
-      "enabled": false
+      "_disabled_at": "2026-08-08",
+      "article_angles": [],
+      "features": []
     },
     {
       "slug": "always-ready-care",
@@ -37,9 +37,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/always-ready-care.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "arrow-jam-3d",
@@ -56,9 +56,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/arrow-jam-3d.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "brimful",
@@ -75,9 +75,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/brimful.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "chopstick-landing-games",
@@ -94,9 +94,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/chopstick-landing-games.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "devicegpt",
@@ -113,6 +113,7 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/devicegpt.md",
+      "enabled": true,
       "article_angles": [
         "ai bridge phone diagnostics",
         "let chatgpt read phone data",
@@ -157,8 +158,7 @@
           "evidence": "restore/RestoreCredentialManager.kt:49-391",
           "differentiator": "novel mechanism, modest scope — do NOT call this 'passkey', it's Google Sign-In via Credential Manager, not FIDO2"
         }
-      ],
-      "enabled": true
+      ]
     },
     {
       "slug": "forty-thieves-solitaire",
@@ -175,9 +175,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/forty-thieves-solitaire.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "golf-solitaire",
@@ -194,9 +194,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/golf-solitaire.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "hazira-khata-bn",
@@ -213,6 +213,7 @@
       "geo": "BD",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/hazira-khata-bn.md",
+      "enabled": true,
       "article_angles": [
         "free child tracker app no signup",
         "vaccine reminder app bangladesh",
@@ -270,8 +271,7 @@
           "evidence": "staff_id_card/StaffCardPerson.kt:10-37,88-120",
           "differentiator": "solid"
         }
-      ],
-      "enabled": true
+      ]
     },
     {
       "slug": "hazira-khata",
@@ -288,6 +288,7 @@
       "geo": "BD",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/hazira-khata.md",
+      "enabled": true,
       "article_angles": [
         "free child tracker app no signup",
         "vaccine reminder app bangladesh",
@@ -345,8 +346,7 @@
           "evidence": "staff_id_card/StaffCardPerson.kt:10-37,88-120",
           "differentiator": "solid"
         }
-      ],
-      "enabled": true
+      ]
     },
     {
       "slug": "no-trace-chat",
@@ -363,9 +363,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/no-trace-chat.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "notetube-ai",
@@ -382,9 +382,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/notetube-ai.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "scorpion-solitaire",
@@ -401,9 +401,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/scorpion-solitaire.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "teamz-lab-tools",
@@ -420,9 +420,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/teamz-lab-tools.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "top3picks",
@@ -439,9 +439,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/top3picks.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "toss",
@@ -458,6 +458,7 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/toss.md",
+      "enabled": true,
       "article_angles": [
         "color picker from photo app",
         "coin flip decision app",
@@ -513,8 +514,7 @@
           "evidence": "screens/single_coin_toss_widget.dart:40-358, common/statistics_manager.dart:87-293",
           "differentiator": "strong content hook — 'your calculator app is secretly a full coin-flip game' — true, non-obvious, poor fit for financial branding, which is itself the story"
         }
-      ],
-      "enabled": true
+      ]
     },
     {
       "slug": "voltline",
@@ -531,9 +531,9 @@
       "geo": "global",
       "has_store_link": true,
       "source_file": "teamz-lab-generic-landing-pages/src/content/apps/voltline.md",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-vibe-coding-service",
@@ -545,9 +545,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-ai-agent-development",
@@ -559,9 +559,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-web-design",
@@ -573,9 +573,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-ecommerce-development",
@@ -587,9 +587,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-ui-ux-design",
@@ -601,9 +601,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-ai-integration",
@@ -615,9 +615,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-vibe-coding-agency",
@@ -629,9 +629,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-vibe-coding-consultants",
@@ -643,9 +643,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-vibe-coding-repair",
@@ -657,9 +657,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-add-ai-to-my-app",
@@ -671,9 +671,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-hire-app-developer-for-startup",
@@ -685,9 +685,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-ride-share-app-development",
@@ -699,9 +699,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-cursor-development-agency",
@@ -713,9 +713,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-claude-code-development-service",
@@ -727,9 +727,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-rag-development-company",
@@ -741,9 +741,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-ai-chatbot-development-company",
@@ -755,9 +755,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-mvp-app-development-for-non-technical-founders",
@@ -769,9 +769,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "svc-shopify-development-agency",
@@ -783,9 +783,9 @@
       "geo": "global",
       "has_store_link": false,
       "source_file": "teamz-lab-generic-landing-pages/src/data/services.ts",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "tools-football",
@@ -798,9 +798,9 @@
         "champions league bracket predictor"
       ],
       "geo": "global",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     },
     {
       "slug": "tools-bd",
@@ -812,9 +812,9 @@
         "electricity bill calculator bd"
       ],
       "geo": "BD",
+      "enabled": true,
       "article_angles": [],
-      "features": [],
-      "enabled": true
+      "features": []
     }
   ],
   "no_landing_page_gap": [

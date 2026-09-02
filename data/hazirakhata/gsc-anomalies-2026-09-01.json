@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-09-01T23:15:04",
+  "site": "sc-domain:hazirakhata.xyz",
+  "recent_start": "2026-08-23",
+  "recent_end": "2026-08-29",
+  "prior_start": "2026-08-16",
+  "prior_end": "2026-08-22",
+  "window_days": 7,
+  "thresholds": {
+    "min_prior_impressions": 25,
+    "min_recent_impressions": 8,
+    "ctr_drop_ratio": 0.65,
+    "impression_drop_ratio": 0.45,
+    "impression_spike_ratio": 2.0
+  },
+  "counts": {
+    "prior_keys": 28,
+    "recent_keys": 32,
+    "ctr_drop": 0,
+    "impression_drop": 0,
+    "impression_spike": 0
+  },
+  "alerts": {
+    "ctr_drop": [],
+    "impression_drop": [],
+    "impression_spike": []
+  },
+  "bleeding_pages": [],
+  "bleeding_total_day": 0,
+  "bleed_alert_threshold_day": 10.0,
+  "bleed_baseline_days": 28
+}

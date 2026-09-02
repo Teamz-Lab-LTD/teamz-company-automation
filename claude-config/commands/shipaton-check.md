@@ -19,6 +19,11 @@ It does not decide pricing. It does not push anything.
 
 ## Pre-flight reads (do these BEFORE saying anything)
 
+0. `claude-config/design-award-audit.md` — the Design Award rubric, run in Step 3b
+   for every app. The criterion is "craft of app development ... innovative ideas
+   and/or beautiful app design and animations", and the failure mode is craft
+   that a 60-second judging pass cannot see.
+
 1. `claude-config/knowledge/Shipaton_2026_Category_Registry.md` — §1 verdict table + **§1b
    judging criteria** + §4 traps. **§1b is not optional.** §1 says only whether the app may
    ENTER a category; §1b says how it is SCORED, and the two lead to different advice. Most
@@ -74,6 +79,31 @@ verdict from another app. Evidence, not assertion:
 | Stripe operable | which country's entity, and can it take **live** charges (not test mode) |
 | Social-good angle | must be credible and already true of the product — never invent one |
 | Influencer fit | read that influencer's stated audience in the rules; near-miss = closed |
+
+### Step 3b — Score the Design Award, every time
+
+The Design Award is the one category whose test is not "is a thing wired up" but
+"is the craft visible", and it was the only one this command had no test for at
+all. Every app runs it.
+
+Read `claude-config/design-award-audit.md` and score all six axes for **this**
+app. Write the table into the tracker's Evidence column, and report the lowest
+axis as the single next action.
+
+Two things to hold on to while scoring:
+
+- **A judge sees 30-90 seconds and never installs.** Score the *screenshots and
+  the video*, not the app. An app whose craft only exists in its architecture
+  scores 0 on visibility, and 0 on any axis caps the entry.
+- **Calm products fail Axis 3 (animation) by being correct.** Sleep, journaling,
+  meditation and focus apps are right to move slowly, and that is invisible to a
+  criterion that names animation explicitly. Do not recommend adding motion
+  everywhere — find the one surface where motion is already legitimate
+  (onboarding, a completion, a morning screen, the product's own gesture) and
+  make that exceptional.
+
+Never inherit a score from another app, and never score from the README. Open
+the screenshots.
 
 ### Step 4 — Diff against the tracker, write it back
 

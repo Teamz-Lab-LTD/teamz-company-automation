@@ -51,6 +51,16 @@ echo "============================================================"
 # Escape the header HTML for sed (handle & and / characters)
 ESCAPED_HEADER=$(echo "$HEADER_HTML" | sed 's/[&/\]/\\&/g' | tr -d '\n')
 
+# /games/ is its own sub-brand: same header, GAMES lockup instead of TOOLS.
+# Only the logo src and alt differ, so derive it rather than keeping a second copy
+# of the whole header in sync by hand.
+GAMES_HEADER_HTML=$(echo "$HEADER_HTML" \
+  | sed 's|/icons/teamz-lab-tools-logo\.svg|/icons/teamz-lab-games-logo.svg|' \
+  | sed 's|alt="Teamz Lab Tools"|alt="Teamz Lab Games"|' \
+  | sed 's|aria-label="Teamz Lab Tools Home"|aria-label="Teamz Lab Games Home"|' \
+  | sed 's|width="138" height="32"|width="146" height="32"|')
+ESCAPED_GAMES_HEADER=$(echo "$GAMES_HEADER_HTML" | sed 's/[&/\]/\\&/g' | tr -d '\n')
+
 count=0
 total=0
 
@@ -59,7 +69,11 @@ total=0
 while IFS= read -r f; do
   total=$((total + 1))
   if grep -qE '<header id="site-header" class="site-header[^"]*">' "$f" 2>/dev/null; then
-    sed -i '' -E "s|<header id=\"site-header\" class=\"(site-header[^\"]*)\">.*</header>|<header id=\"site-header\" class=\"\1\">${ESCAPED_HEADER}</header>|" "$f"
+    case "$f" in
+      ./games/*) _HDR="$ESCAPED_GAMES_HEADER" ;;
+      *)         _HDR="$ESCAPED_HEADER" ;;
+    esac
+    sed -i '' -E "s|<header id=\"site-header\" class=\"(site-header[^\"]*)\">.*</header>|<header id=\"site-header\" class=\"\1\">${_HDR}</header>|" "$f"
     count=$((count + 1))
   fi
 done < <(find . -name "index.html" -not -path "./branding/*" -not -path "./.git/*" -not -path "./node_modules/*")

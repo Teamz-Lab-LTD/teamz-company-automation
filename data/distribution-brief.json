@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-08-30T15:44:32",
+  "generated_at": "2026-09-02T15:56:36",
   "business": {
-    "slug": "voltline",
-    "name": "Voltline",
-    "type": "app",
-    "landing_url": "https://apps.teamzlab.com/voltline/",
-    "play_url": "https://play.google.com/store/apps/details?id=com.teamzlab.voltline",
-    "app_store_url": "https://apps.apple.com/us/app/voltline-buzz-wire-arcade/id6779659581",
-    "geo": "global"
+    "slug": "tools-bd",
+    "name": "Teamz Lab Tools — Bangladesh calculators",
+    "type": "tool",
+    "landing_url": "https://tool.teamzlab.com/bd/",
+    "play_url": null,
+    "app_store_url": null,
+    "geo": "BD"
   },
   "target_keyword": {
-    "keyword": "buzz wire game",
-    "volume": 390,
+    "keyword": "electricity bill calculator bd",
+    "volume": 170,
     "competition": "LOW"
   },
   "mined_features": [],
   "article_angles": [],
   "self_cannibalization_check": {
-    "excluded_query_count": 0,
+    "excluded_query_count": 196,
     "error": null
   },
   "content_rules": {
@@ -32,7 +32,7 @@
       "identical H2 skeleton to the last 3 briefs for this business",
       "claiming any feature not in mined_features/article_angles with file:line evidence"
     ],
-    "canonical_target": "https://apps.teamzlab.com/voltline/",
+    "canonical_target": "https://tool.teamzlab.com/bd/",
     "one_contextual_link_max": true
   },
   "REVIEW_GATE": {

@@ -1,5 +1,5 @@
 {
-  "ran_at": "2026-08-30T23:55:16",
+  "ran_at": "2026-09-01T23:55:16",
   "window": {
     "recent": "7d ending D-2",
     "baseline": "28d ending D-9"
@@ -13,58 +13,101 @@
   "properties": {
     "teamzlab-tools": {
       "state": "ok",
-      "site_daily_baseline": 12.35,
-      "site_daily_recent": 13.1,
-      "site_drop_pct": -6.0,
+      "site_daily_baseline": 13.36,
+      "site_daily_recent": 10.29,
+      "site_drop_pct": 23.0,
       "site_alert": false,
-      "pages_watched": 16,
-      "pages_below_min_daily": 9,
-      "watched_revenue_share_pct": 101.1,
+      "pages_watched": 19,
+      "pages_below_min_daily": 6,
+      "watched_revenue_share_pct": 102.7,
       "top_pages": [
         {
           "page": "/football/premier-league-table-predictor/",
-          "daily": 4.44,
-          "share_pct": 33.9
+          "daily": 1.92,
+          "share_pct": 18.7
         },
         {
           "page": "/games/arrow-escape-3d/",
-          "daily": 1.03,
-          "share_pct": 7.9
+          "daily": 0.94,
+          "share_pct": 9.1
         },
         {
           "page": "/ar/ar-measure-tape/",
-          "daily": 0.57,
-          "share_pct": 4.3
+          "daily": 0.58,
+          "share_pct": 5.7
         },
         {
           "page": "/football/ucl-group-stage-simulator/",
-          "daily": 0.33,
-          "share_pct": 2.5
+          "daily": 0.36,
+          "share_pct": 3.5
         },
         {
-          "page": "/pest/bug-bite-identifier/",
-          "daily": 0.3,
-          "share_pct": 2.3
+          "page": "/tools/signature-analyzer/",
+          "daily": 0.29,
+          "share_pct": 2.8
         }
       ],
       "cliffs": [
         {
           "page": "/football/premier-league-table-predictor/",
-          "was_daily": 8.25,
-          "now_daily": 4.44,
-          "drop_pct": 46.2,
-          "monthly_at_risk": 114.52,
+          "was_daily": 9.02,
+          "now_daily": 1.92,
+          "drop_pct": 78.7,
+          "monthly_at_risk": 213.0,
           "weekly_daily": [
-            4.65,
-            6.7,
-            8.25,
-            4.44
+            5.47,
+            7.01,
+            9.02,
+            1.92
           ],
-          "prior_decline_pct": -77.6
+          "prior_decline_pct": -65.0
         }
       ],
       "fades": [],
-      "minor": []
+      "minor": [
+        {
+          "page": "/football/serie-a-table-predictor/",
+          "was_daily": 0.16,
+          "now_daily": 0.06,
+          "drop_pct": 66.3,
+          "monthly_at_risk": 3.26,
+          "weekly_daily": [
+            0.06,
+            0.07,
+            0.16,
+            0.06
+          ],
+          "prior_decline_pct": -191.0
+        },
+        {
+          "page": "/tools/fake-whatsapp-chat-generator/",
+          "was_daily": 0.1,
+          "now_daily": 0.06,
+          "drop_pct": 44.4,
+          "monthly_at_risk": 1.39,
+          "weekly_daily": [
+            0.09,
+            0.05,
+            0.1,
+            0.06
+          ],
+          "prior_decline_pct": -20.2
+        },
+        {
+          "page": "/health/iq-test/",
+          "was_daily": 0.1,
+          "now_daily": 0.05,
+          "drop_pct": 53.9,
+          "monthly_at_risk": 1.66,
+          "weekly_daily": [
+            0.03,
+            0.01,
+            0.1,
+            0.05
+          ],
+          "prior_decline_pct": -212.1
+        }
+      ]
     },
     "teamz-lab-generic-landing-pages": {
       "state": "no-ad-revenue",
@@ -73,7 +116,7 @@
   },
   "alert_count": 1,
   "alerts": [
-    "teamzlab-tools: /football/premier-league-table-predictor/ down 46.2% ($8.25/day -> $4.44/day, ~$114.52/mo at risk)"
+    "teamzlab-tools: /football/premier-league-table-predictor/ down 78.7% ($9.02/day -> $1.92/day, ~$213.0/mo at risk)"
   ],
   "notes_fading": []
 }

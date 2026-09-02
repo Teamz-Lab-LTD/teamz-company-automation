@@ -1,15 +1,18 @@
-NIGHTLY BUILD REPORT — 2026-08-31 16:45
+NIGHTLY BUILD REPORT — 2026-09-02 16:02
 Status: ALERT
-Repo dirty at start: no
+Repo dirty at start: yes
 New tools built: 0
-Total commits: 22
+Total commits: 0
 ---
 SCRIPT HEALTH:
-  Alerts (5):
-  - Uncommitted work inside submodule(s): games (2 file(s)) — 2 file(s) the parent dirty-guard cannot see or self-heal. Commit them in the submodule or they ship never. [night 3 of this same alert — first seen 2026-08-29]
-  - SEO health-check found a RED — a data source may be silently broken (see log top) [night 5 of this same alert — first seen 2026-08-19]
-  - GSC anomalies: ERROR: 2 page(s) bleeding clicks at held impressions — ucl-group-stage-simulator ~75 clicks/day (worst: 'ucl simulator' CTR 14%->4%); premier-league-table-predictor ~50 clicks/day (worst: 'premier league predictions' CTR 18%->9%)
-  - Enhance outcome vs control failed (exit 1) [night 6 of this same alert — first seen 2026-08-20]
-  - Football fortress: ~196 clicks/day off the crown page — 5 fortress term(s) under threat — 'premier league predictor' BLEEDING (losing ~103 clicks/day: CTR 30% -> 8% on 485 impressions/day (pos 7.4, best 2.0)); 'premier league table predictor' BLEEDING (losing ~38 clicks/day: CTR 44% -> 20% on 159 impressions/day (pos 6.9, best 2.0)); 'prem predictor' BLEEDING (losing ~26 clicks/day: CTR 34% -> 4% on 90 impressions/day (pos 7.0, best 2.0)) [night 3 of this same alert — first seen 2026-08-28]
+  Alerts (4):
+  - Nightly BLOCKED at start: dirty source WIP (60 file(s)). Commit or stash to unblock — scripts/_teamz_geo.py scripts/admob.py scripts/aso-claims-lint.py  [night 2 of this same alert — first seen 2026-09-01]
+  - Uncommitted work inside submodule(s): games (3 file(s)) — 3 file(s) the parent dirty-guard cannot see or self-heal. Commit them in the submodule or they ship never. [night 5 of this same alert — first seen 2026-08-29]
+  - GSC anomalies: ERROR: 1 page(s) bleeding clicks at held impressions — premier-league-table-predictor ~62 clicks/day (worst: 'prem predictor' CTR 25%->10%)
+  - Enhance outcome vs control failed (exit 1) [night 8 of this same alert — first seen 2026-08-20]
+  Skipped phases (3):
+  - git pull (repo dirty at start or github.com unavailable)
+  - Claude build (repo dirty at start)
+  - auto-fix commit and push (protecting existing local work)
 ---
 If script health is not OK, review logs/nightly-build.log before the next automated run.

@@ -303,6 +303,51 @@ def fix_twitter_tags(content):
     return content
 
 
+def carry_forward_unregenerated(content, regenerated_types):
+    """Rescue schema blocks the rebuild below would otherwise destroy.
+
+    process_file() deletes the whole marker block and rebuilds it from ONLY
+    what it could extract from JS this run. That is silent data loss for any
+    @type whose source is not a JS inject call — nightly tool builders write
+    some ld+json tags directly into the marker block, and those have no JS to
+    re-extract from.
+
+    Verified live 2026-08-04 on 3d/ai-3d-prompt-generator: the page carried
+    BreadcrumbList + FAQPage + WebApplication and ZERO inject calls. One run
+    reduced it to FAQPage alone — the only type still reachable, via the
+    renderFAQs() gate added earlier the same day.
+
+    That earlier gate is what turned this from dormant to active: before it,
+    extract_faqs() also returned None here, schema_blocks came back empty, and
+    the early-return above protected the page by never deleting anything. This
+    is the same data-loss class as the injector-stripping bug fixed the same
+    day, reached from the opposite direction.
+
+    Returns raw JSON strings to append verbatim to the rebuilt block.
+    """
+    marker_match = re.search(
+        rf"{re.escape(MARKER)}(.*?){re.escape(MARKER)}", content, re.DOTALL
+    )
+    if not marker_match:
+        return []
+
+    carried = []
+    for tag in re.finditer(
+        r'<script\s+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        marker_match.group(1),
+        flags=re.DOTALL | re.IGNORECASE,
+    ):
+        try:
+            parsed = json.loads(tag.group(1).strip())
+        except json.JSONDecodeError:
+            continue  # never carry forward a block we cannot even parse
+        if not isinstance(parsed, dict):
+            continue
+        stype = parsed.get("@type")
+        if stype and stype not in regenerated_types:
+            carried.append(json.dumps(parsed, ensure_ascii=False))
+    return carried
+
 def process_file(filepath):
     """Process a single HTML file: extract schemas, inject static JSON-LD, fix twitter tags."""
     global count, skip
@@ -347,6 +392,17 @@ def process_file(filepath):
                 return
         skip += 1
         return
+
+    # Rescue types the rebuild cannot regenerate BEFORE the marker block that
+    # holds them is deleted a few lines down. Order matters: read, then delete.
+    regenerated_types = set()
+    if bc:
+        regenerated_types.add("BreadcrumbList")
+    if faq:
+        regenerated_types.add("FAQPage")
+    if webapp:
+        regenerated_types.add("WebApplication")
+    schema_blocks.extend(carry_forward_unregenerated(content, regenerated_types))
 
     # Remove old static schema blocks before injecting new ones
     if MARKER in content:

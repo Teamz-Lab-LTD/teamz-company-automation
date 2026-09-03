@@ -51,6 +51,62 @@ A fade is still printed and still lands in the JSON, because "this page is
 quietly dying" is worth knowing at the weekly review even though it is not
 worth a 2am message.
 
+    SEASONAL — the page earns in bursts, so no $/month run rate exists to be
+            "at risk". Reported, never alerted, and NEVER given a $/month
+            figure.
+
+WHY SEASONAL EXISTS (added 2026-09-04, from a false alarm I relayed)
+On 2026-09-04 this watchdog reported `/football/premier-league-table-predictor/`
+down 84.7%, "~$192.46/month at risk", and /growth led with it. The number was
+fiction. That page LAUNCHED 2026-07-12 and its entire lifetime earnings are
+$197: $22.62 in July, $173.35 in August, $0.96 in September. It has never had
+a normal month. The alert took the kickoff week's $/day and multiplied by 30.
+
+The bug is structural, not a threshold: every window this file reads is inside
+29 days, so it cannot tell a year-round earner from a page that launched into
+one event. FADE could not catch it either — a fade needs the slide to have
+started before the newest week, and this page was still climbing (W3 $5.72 ->
+W1 $7.57) right up to the cliff.
+
+This is [[feedback_a_spike_must_not_set_the_baseline]] one layer up. That
+lesson was applied to the CLICK detectors (build-gsc-anomalies.py got a 28-day
+baseline, build-football-fortress.py got a 75th-percentile base CTR). Nobody
+applied it here. Fixing one consumer of a pattern does not fix the others.
+
+THE TEST, AND WHY 70%
+One extra GA4 pull gives each candidate page its trailing-180d weekly revenue.
+If its best 4 CONSECUTIVE weeks hold >= TEAMZ_REV_SEASONAL_PCT of that 180 days,
+a x30 extrapolation is unsound and we refuse to print one. Measured across the
+top 25 earners on 2026-09-04 (peak-4-week share of 180d revenue):
+
+    96.9  /football/fifa-world-cup-2026-best-third-place-calculator/
+    86.3  /football/how-to-watch-fifa-world-cup-2026-in-bangladesh/
+    86.0  /football/premier-league-table-predictor/
+    84.8  /football/how-to-watch-fifa-world-cup-2026-in-germany/
+    72.6  /tools/signature-analyzer/
+    71.9  /football/fifa-world-cup-2026-bracket-maker/
+    70.3  /ar/ar-measure-tape/
+    ----- 70% cut -----
+    65.4  /football/how-to-watch-fifa-world-cup-2026-in-france/
+    63.6  /grooming/attractiveness-quiz/
+    ...
+    54.5  /football/ucl-bracket-predictor/
+    49.6  /games/arrow-escape-3d/
+    46.0  /tools/ai-emotion-detector/
+    35.3  /work/probation-period-calculator/
+
+Everything above the line is an event page; nothing genuinely year-round comes
+close. A count of earning weeks was tried as a second condition and REJECTED —
+ANDing it dropped the World Cup pages (13 and 16 earning weeks) that the
+tournament calendar makes unambiguously seasonal. Concentration alone separates.
+
+A brand-new page needs no special case: with only a few weeks of history its
+peak-4-week share is ~100%, so "too young to price" falls out of the same test.
+
+IF THE HISTORY PULL FAILS the page stays a CLIFF and the alert says the
+concentration could not be checked. Failing into silence would turn a broken
+API call into a muted revenue alarm, which is strictly worse than a noisy one.
+
 WHAT IT WILL NOT DO
     - It will not fire on a page earning pennies. A $0.20/day page halving is
       $3/month and not worth waking anyone. MIN_DAILY_USD is the floor.
@@ -101,6 +157,8 @@ Env overrides:
     TEAMZ_REV_MIN_DAILY   default 0.10 min baseline $/day for a page to count
     TEAMZ_REV_MIN_IMPACT  default 10   min $/month at risk before it notifies
     TEAMZ_REV_TOP_N       default 25   how many top earners to watch
+    TEAMZ_REV_SEASONAL_PCT default 70  peak-4-week share of 180d revenue above
+                                       which a page gets no $/month figure
 """
 import importlib.util
 import json
@@ -125,6 +183,7 @@ SITE_PCT = float(os.getenv("TEAMZ_REV_SITE_PCT", "25"))
 MIN_DAILY = float(os.getenv("TEAMZ_REV_MIN_DAILY", "0.10"))
 MIN_IMPACT = float(os.getenv("TEAMZ_REV_MIN_IMPACT", "10"))
 TOP_N = int(os.getenv("TEAMZ_REV_TOP_N", "25"))
+SEASONAL_PCT = float(os.getenv("TEAMZ_REV_SEASONAL_PCT", "70"))
 
 # Scope: the properties that earn ad revenue. tools is ~90% of the business;
 # the others are here so a future shift shows up rather than being invisible
@@ -170,6 +229,64 @@ def pull(mod, tok, prop_id, start, end):
     for row in res.get("rows", []) or []:
         path = row["dimensionValues"][0]["value"]
         out[path] = out.get(path, 0.0) + float(row["metricValues"][0]["value"])
+    return out
+
+
+def concentration(mod, tok, prop_id, paths):
+    """-> {path: {"peak4wk_share_pct", "earning_weeks", "total_180d"}} or None.
+
+    None means GA4 did not answer and the caller MUST keep alerting rather than
+    assume the pages are seasonal — see the docstring at the top of this file.
+    Only the candidate pages are requested (an inListFilter), so a clean night
+    never pays for this call at all.
+    """
+    if not paths:
+        return {}
+    body = {
+        "dateRanges": [{"startDate": "180daysAgo", "endDate": "2daysAgo"}],
+        "dimensions": [{"name": "pagePath"}, {"name": "yearWeek"}],
+        "metrics": [{"name": "totalAdRevenue"}],
+        "dimensionFilter": {"filter": {"fieldName": "pagePath",
+                                       "inListFilter": {"values": list(paths)}}},
+        "limit": 100000,
+    }
+    try:
+        res = mod._ga4_report(prop_id, tok, body)
+    except Exception as e:  # noqa: BLE001
+        print(f"  WARN: 180d concentration pull failed: {type(e).__name__}: {e}",
+              file=sys.stderr)
+        return None
+    if res is None:
+        return None
+
+    by_page = {}
+    weeks_seen = set()
+    for row in res.get("rows", []) or []:
+        path = row["dimensionValues"][0]["value"]
+        week = row["dimensionValues"][1]["value"]
+        val = float(row["metricValues"][0]["value"])
+        if val <= 0:
+            continue
+        weeks_seen.add(week)
+        by_page.setdefault(path, {})[week] = by_page.setdefault(path, {}).get(week, 0.0) + val
+
+    # One shared week axis so a page's gap weeks count as zero rather than
+    # closing up — four ADJACENT weeks is the whole point of the measure.
+    axis = sorted(weeks_seen)
+    out = {}
+    for path, wk in by_page.items():
+        total = sum(wk.values())
+        if total <= 0:
+            continue
+        series = [wk.get(w, 0.0) for w in axis]
+        window = 4 if len(series) >= 4 else len(series)
+        peak = max(sum(series[i:i + window])
+                   for i in range(max(1, len(series) - window + 1)))
+        out[path] = {
+            "peak4wk_share_pct": round(100.0 * peak / total, 1),
+            "earning_weeks": len(wk),
+            "total_180d": round(total, 2),
+        }
     return out
 
 
@@ -241,7 +358,8 @@ def check_property(mod, tok, repo):
     watch = [(p, d) for p, d in ranked if d >= MIN_DAILY]
     covered = sum(d for _, d in watch)
 
-    cliffs, fades, minor = [], [], []
+    cliffs, fades, minor, seasonal = [], [], [], []
+    candidates = []
     for path, was in watch:
         now = w0.get(path, 0.0)
         pct = 100.0 * (was - now) / was if was else 0.0
@@ -259,8 +377,40 @@ def check_property(mod, tok, repo):
             "prior_decline_pct": round(prior_pct, 1),
         }
         if prior_pct >= FADE_PRIOR_PCT:
-            fades.append(row)
-        elif row["monthly_at_risk"] < MIN_IMPACT:
+            fades.append(row)          # already declining before the newest week
+        else:
+            candidates.append(row)
+
+    # The 180-day pull happens only for pages that would otherwise become a
+    # cliff or a minor, so a night where nothing dropped costs one fewer GA4
+    # call than before this check existed.
+    conc = concentration(mod, tok, prop_id, [r["page"] for r in candidates])
+    conc_state = "not-needed" if not candidates else ("unreachable" if conc is None else "ok")
+
+    for row in candidates:
+        c = (conc or {}).get(row["page"])
+        if c is None:
+            # Either GA4 refused, or the page has no 180-day history at all.
+            # Both mean "unknown", and unknown keeps the LOUD path: a broken
+            # pull must never mute a revenue alarm.
+            row["run_rate_reliable"] = None
+            row["run_rate_note"] = ("concentration could not be checked — "
+                                    + ("GA4 did not answer" if conc is None
+                                       else "no 180d revenue history for this page"))
+        else:
+            row.update(c)
+            row["run_rate_reliable"] = c["peak4wk_share_pct"] < SEASONAL_PCT
+            if not row["run_rate_reliable"]:
+                # A x30 extrapolation of a burst is fiction. Refuse to invent
+                # one rather than print a smaller lie.
+                row["monthly_at_risk"] = None
+                row["run_rate_note"] = (
+                    f"seasonal — {c['peak4wk_share_pct']}% of this page's last 180 days "
+                    f"of revenue (${c['total_180d']}) landed in its best 4 weeks, so it "
+                    f"has no monthly run rate to be 'at risk'")
+                seasonal.append(row)
+                continue
+        if row["monthly_at_risk"] is not None and row["monthly_at_risk"] < MIN_IMPACT:
             minor.append(row)
         else:
             cliffs.append(row)
@@ -289,6 +439,9 @@ def check_property(mod, tok, repo):
         "cliffs": cliffs,
         "fades": fades,
         "minor": minor,
+        "seasonal": seasonal,
+        # Distinguishes "checked, nothing seasonal" from "could not check".
+        "concentration_state": conc_state,
     }
 
 
@@ -310,7 +463,7 @@ def main():
 
     report = {repo: check_property(mod, tok, repo) for repo in PROPERTIES}
 
-    alerts, notes = [], []
+    alerts, notes, seasonal_notes = [], [], []
     for repo, r in report.items():
         if r["state"] == "unreachable":
             alerts.append(f"{repo}: COULD NOT CHECK REVENUE — {r['why']}")
@@ -322,10 +475,19 @@ def main():
                 f"{repo}: whole site down {r['site_drop_pct']}% "
                 f"(${r['site_daily_baseline']}/day -> ${r['site_daily_recent']}/day)")
         for d in r["cliffs"]:
+            # An unchecked concentration still alerts, but it must not present
+            # its $/month as verified when nothing verified it.
+            caveat = ("" if d.get("run_rate_reliable")
+                      else f" [{d.get('run_rate_note', 'run rate unverified')}]")
             alerts.append(
                 f"{repo}: {d['page']} down {d['drop_pct']}% "
                 f"(${d['was_daily']}/day -> ${d['now_daily']}/day, "
-                f"~${d['monthly_at_risk']}/mo at risk)")
+                f"~${d['monthly_at_risk']}/mo at risk){caveat}")
+        for d in r.get("seasonal", []):
+            seasonal_notes.append(
+                f"{repo}: {d['page']} down {d['drop_pct']}% "
+                f"(${d['was_daily']}/day -> ${d['now_daily']}/day) — "
+                f"{d['run_rate_note']}")
         for d in r["fades"]:
             notes.append(
                 f"{repo}: {d['page']} fading — weekly $/day "
@@ -337,11 +499,13 @@ def main():
         "ran_at": datetime.now().isoformat(timespec="seconds"),
         "window": {"recent": "7d ending D-2", "baseline": "28d ending D-9"},
         "thresholds": {"page_drop_pct": DROP_PCT, "site_drop_pct": SITE_PCT,
-                       "min_daily_usd": MIN_DAILY, "top_n": TOP_N},
+                       "min_daily_usd": MIN_DAILY, "top_n": TOP_N,
+                       "seasonal_peak4wk_pct": SEASONAL_PCT},
         "properties": report,
         "alert_count": len(alerts),
         "alerts": alerts,
         "notes_fading": notes,
+        "notes_seasonal": seasonal_notes,
     }, indent=2))
 
     for repo, r in report.items():
@@ -362,6 +526,13 @@ def main():
     # weekly review, not an alarm.
     for n in notes:
         print(f"  fading (no alert): {n}")
+    for n in seasonal_notes:
+        print(f"  seasonal (no alert): {n}")
+    for repo, r in report.items():
+        if r.get("concentration_state") == "unreachable":
+            print(f"  ⚠️  {repo}: 180d concentration pull FAILED — every drop below is "
+                  f"reported at full volume with an unverified run rate. This is NOT "
+                  f"'nothing seasonal'.")
     for repo, r in report.items():
         for d in r.get("minor", []):
             print(f"  minor (no alert): {repo}: {d['page']} down {d['drop_pct']}% "

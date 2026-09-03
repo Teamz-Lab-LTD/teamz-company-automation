@@ -1028,10 +1028,34 @@ def revenue_section():
 
         for d in r.get("cliffs", []):
             L.append("")
+            risk = (f"~${d['monthly_at_risk']}/month at risk"
+                    if d.get("monthly_at_risk") is not None else "impact unknown")
+            if d.get("run_rate_reliable") is None:
+                risk += f" ⚠️ ({d.get('run_rate_note', 'run rate unverified')})"
             L.append(f"🔔 **DROP: `{d['page']}` down {d['drop_pct']}%** — "
                      f"${d['was_daily']}/day → ${d['now_daily']}/day, "
-                     f"~${d['monthly_at_risk']}/month at risk. Weekly $/day: "
+                     f"{risk}. Weekly $/day: "
                      f"{' → '.join(str(x) for x in d['weekly_daily'])}.")
+
+        # Seasonal pages are reported but never priced. A x30 run rate on a page
+        # that earns in bursts is the exact number that made /growth lead with
+        # "£192/month at risk" on a page whose LIFETIME earnings were $197.
+        seasonal = r.get("seasonal") or []
+        if seasonal:
+            L.append("")
+            L.append("**Seasonal — the burst ended, there is no monthly run rate "
+                     "to lose (reported, not an alarm):**")
+            for d in seasonal:
+                L.append(f"- `{d['page']}` — ${d['was_daily']}/day → "
+                         f"${d['now_daily']}/day ({d['drop_pct']}% down). "
+                         f"{d['peak4wk_share_pct']}% of its last 180 days "
+                         f"(${d['total_180d']}) landed in its best 4 weeks.")
+
+        if r.get("concentration_state") == "unreachable":
+            L.append("")
+            L.append("⚠️ **couldn't check seasonality** — the 180-day concentration "
+                     "pull failed, so every $/month above is unverified. This is NOT "
+                     "'nothing seasonal'.")
 
         fades = r.get("fades") or []
         if fades:

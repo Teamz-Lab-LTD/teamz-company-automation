@@ -1,5 +1,5 @@
 {
-  "ran_at": "2026-09-01T23:55:16",
+  "ran_at": "2026-09-04T05:37:37",
   "window": {
     "recent": "7d ending D-2",
     "baseline": "28d ending D-9"
@@ -8,106 +8,163 @@
     "page_drop_pct": 40.0,
     "site_drop_pct": 25.0,
     "min_daily_usd": 0.1,
-    "top_n": 25
+    "top_n": 25,
+    "seasonal_peak4wk_pct": 70.0
   },
   "properties": {
     "teamzlab-tools": {
       "state": "ok",
-      "site_daily_baseline": 13.36,
-      "site_daily_recent": 10.29,
-      "site_drop_pct": 23.0,
-      "site_alert": false,
-      "pages_watched": 19,
-      "pages_below_min_daily": 6,
-      "watched_revenue_share_pct": 102.7,
+      "site_daily_baseline": 13.34,
+      "site_daily_recent": 9.26,
+      "site_drop_pct": 30.6,
+      "site_alert": true,
+      "pages_watched": 18,
+      "pages_below_min_daily": 7,
+      "watched_revenue_share_pct": 87.5,
       "top_pages": [
         {
-          "page": "/football/premier-league-table-predictor/",
-          "daily": 1.92,
-          "share_pct": 18.7
+          "page": "/games/arrow-escape-3d/",
+          "daily": 0.87,
+          "share_pct": 9.4
         },
         {
-          "page": "/games/arrow-escape-3d/",
-          "daily": 0.94,
-          "share_pct": 9.1
+          "page": "/football/premier-league-table-predictor/",
+          "daily": 0.87,
+          "share_pct": 9.4
         },
         {
           "page": "/ar/ar-measure-tape/",
-          "daily": 0.58,
-          "share_pct": 5.7
+          "daily": 0.7,
+          "share_pct": 7.6
         },
         {
           "page": "/football/ucl-group-stage-simulator/",
-          "daily": 0.36,
-          "share_pct": 3.5
+          "daily": 0.35,
+          "share_pct": 3.8
         },
         {
-          "page": "/tools/signature-analyzer/",
+          "page": "/pest/bug-bite-identifier/",
           "daily": 0.29,
-          "share_pct": 2.8
+          "share_pct": 3.1
         }
       ],
-      "cliffs": [
-        {
-          "page": "/football/premier-league-table-predictor/",
-          "was_daily": 9.02,
-          "now_daily": 1.92,
-          "drop_pct": 78.7,
-          "monthly_at_risk": 213.0,
-          "weekly_daily": [
-            5.47,
-            7.01,
-            9.02,
-            1.92
-          ],
-          "prior_decline_pct": -65.0
-        }
-      ],
+      "cliffs": [],
       "fades": [],
       "minor": [
         {
-          "page": "/football/serie-a-table-predictor/",
-          "was_daily": 0.16,
-          "now_daily": 0.06,
-          "drop_pct": 66.3,
-          "monthly_at_risk": 3.26,
+          "page": "/military/promotion-point-calculator/",
+          "was_daily": 0.23,
+          "now_daily": 0.13,
+          "drop_pct": 41.9,
+          "monthly_at_risk": 2.84,
           "weekly_daily": [
-            0.06,
-            0.07,
-            0.16,
-            0.06
+            0.19,
+            0.28,
+            0.21,
+            0.13
           ],
-          "prior_decline_pct": -191.0
+          "prior_decline_pct": -10.1,
+          "peak4wk_share_pct": 51.2,
+          "earning_weeks": 19,
+          "total_180d": 11.48,
+          "run_rate_reliable": true
         },
         {
-          "page": "/tools/fake-whatsapp-chat-generator/",
-          "was_daily": 0.1,
-          "now_daily": 0.06,
-          "drop_pct": 44.4,
-          "monthly_at_risk": 1.39,
+          "page": "/me/",
+          "was_daily": 0.19,
+          "now_daily": 0.08,
+          "drop_pct": 58.9,
+          "monthly_at_risk": 3.37,
           "weekly_daily": [
             0.09,
-            0.05,
-            0.1,
-            0.06
+            0.14,
+            0.19,
+            0.08
           ],
-          "prior_decline_pct": -20.2
+          "prior_decline_pct": -107.6,
+          "peak4wk_share_pct": 55.9,
+          "earning_weeks": 14,
+          "total_180d": 7.32,
+          "run_rate_reliable": true
         },
         {
-          "page": "/health/iq-test/",
+          "page": "/tools/birthday-countdown/",
+          "was_daily": 0.11,
+          "now_daily": 0.03,
+          "drop_pct": 70.2,
+          "monthly_at_risk": 2.23,
+          "weekly_daily": [
+            0.07,
+            0.07,
+            0.11,
+            0.03
+          ],
+          "prior_decline_pct": -50.7,
+          "peak4wk_share_pct": 49.7,
+          "earning_weeks": 18,
+          "total_180d": 5.45,
+          "run_rate_reliable": true
+        },
+        {
+          "page": "/jp/tsuukin-hi-keisan/",
           "was_daily": 0.1,
           "now_daily": 0.05,
-          "drop_pct": 53.9,
-          "monthly_at_risk": 1.66,
+          "drop_pct": 50.5,
+          "monthly_at_risk": 1.57,
           "weekly_daily": [
             0.03,
-            0.01,
+            0.05,
             0.1,
             0.05
           ],
-          "prior_decline_pct": -212.1
+          "prior_decline_pct": -265.7,
+          "peak4wk_share_pct": 40.4,
+          "earning_weeks": 21,
+          "total_180d": 5.13,
+          "run_rate_reliable": true
         }
-      ]
+      ],
+      "seasonal": [
+        {
+          "page": "/football/premier-league-table-predictor/",
+          "was_daily": 7.25,
+          "now_daily": 0.87,
+          "drop_pct": 88.0,
+          "monthly_at_risk": null,
+          "weekly_daily": [
+            6.17,
+            7.17,
+            7.25,
+            0.87
+          ],
+          "prior_decline_pct": -17.6,
+          "peak4wk_share_pct": 86.0,
+          "earning_weeks": 8,
+          "total_180d": 193.55,
+          "run_rate_reliable": false,
+          "run_rate_note": "seasonal \u2014 86.0% of this page's last 180 days of revenue ($193.55) landed in its best 4 weeks, so it has no monthly run rate to be 'at risk'"
+        },
+        {
+          "page": "/football/serie-a-table-predictor/",
+          "was_daily": 0.14,
+          "now_daily": 0.06,
+          "drop_pct": 57.7,
+          "monthly_at_risk": null,
+          "weekly_daily": [
+            0.05,
+            0.09,
+            0.14,
+            0.06
+          ],
+          "prior_decline_pct": -181.7,
+          "peak4wk_share_pct": 87.4,
+          "earning_weeks": 6,
+          "total_180d": 2.74,
+          "run_rate_reliable": false,
+          "run_rate_note": "seasonal \u2014 87.4% of this page's last 180 days of revenue ($2.74) landed in its best 4 weeks, so it has no monthly run rate to be 'at risk'"
+        }
+      ],
+      "concentration_state": "ok"
     },
     "teamz-lab-generic-landing-pages": {
       "state": "no-ad-revenue",
@@ -116,7 +173,11 @@
   },
   "alert_count": 1,
   "alerts": [
-    "teamzlab-tools: /football/premier-league-table-predictor/ down 78.7% ($9.02/day -> $1.92/day, ~$213.0/mo at risk)"
+    "teamzlab-tools: whole site down 30.6% ($13.34/day -> $9.26/day)"
   ],
-  "notes_fading": []
+  "notes_fading": [],
+  "notes_seasonal": [
+    "teamzlab-tools: /football/premier-league-table-predictor/ down 88.0% ($7.25/day -> $0.87/day) \u2014 seasonal \u2014 86.0% of this page's last 180 days of revenue ($193.55) landed in its best 4 weeks, so it has no monthly run rate to be 'at risk'",
+    "teamzlab-tools: /football/serie-a-table-predictor/ down 57.7% ($0.14/day -> $0.06/day) \u2014 seasonal \u2014 87.4% of this page's last 180 days of revenue ($2.74) landed in its best 4 weeks, so it has no monthly run rate to be 'at risk'"
+  ]
 }

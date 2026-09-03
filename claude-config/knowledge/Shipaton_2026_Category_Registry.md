@@ -462,3 +462,44 @@ Creating the RC project is both a submission requirement AND a perk trigger. Cla
 Every app repo carries `docs/shipaton/CATEGORY-TRACKER.md`, seeded from §1 by running
 `/shipaton-check <app-slug>`. The tracker is the state; this registry is the rulebook. When they
 disagree, re-fetch the official rules — sponsors get added mid-event.
+
+---
+
+## AMENDMENT 3 — rules re-fetched 2026-09-03 (`/shipaton-check --refresh-rules`)
+
+Fetched live from https://revenuecat-shipaton-2026.devpost.com/rules. **§1 rows above are NOT
+overwritten** — the amounts below supersede them where they differ, same discipline as the
+decisions log.
+
+**Seven categories raised their 1st prize from $15k to $20k** since the 2026-08-03 build:
+
+| Category | §1 said | Live 2026-09-03 |
+|---|---|---|
+| HAMM | $15k / $10k / $5k | **$20k** / $10k / $5k |
+| Catvertising | $15k / $10k / $5k | **$20k** / $10k / $5k |
+| RevenueCat Design Award | $15k / $10k / $5k | **$20k** / $10k / $5k |
+| RevenueCat Peace Prize | $15k / $10k / $5k | **$20k** / $10k / $5k |
+| Next Gen | $15k / $10k / $5k | **$20k** / $10k / $5k |
+| Best Game | $15k / $10k / $5k | **$20k** / $10k / $5k |
+| Influencer Awards (each of 5) | $15k / $10k / $5k | **$20k** / $10k / $5k |
+
+**Unchanged:** Grand Prize $100k · #BuildInPublic $30k/$20k/$10k · Keep Them Coming Back
+(OneSignal) $25k/$15k/$5k · JetBrains, Replit, Noise, Layers, Stripe all $15k/$10k/$5k ·
+Best App for Galaxy = featured placement, 1st only.
+
+**Changed in kind:** Conflict of Interest Award is listed as a **billboard feature** (1st only),
+not merely "no cash".
+
+**No new sponsor categories** appeared between 2026-08-03 and 2026-09-03.
+
+### Demo video — quoted, because §1 never recorded these
+
+- Length: *"should be less than two (2) minutes. Judges are not required to watch beyond two minutes"*
+- Hosting: *"must be uploaded to and made publicly visible on YouTube or Vimeo"*
+- Device footage: *"should include footage that shows the Project functioning on the device for
+  which it was built"* — note **"should"**, not "must", and the test is the device the project was
+  built FOR. An Android game therefore wants Android device footage.
+- Content: *"must not include third party trademarks, or copyrighted music or other material unless
+  the Entrant has permission"* — an app whose audio is synthesised in-app is clean here.
+
+**Deadline confirmed:** *"Wednesday, September 30, 2026 at 11:45pm PDT"*.

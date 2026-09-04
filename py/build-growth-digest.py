@@ -1702,6 +1702,42 @@ def main():
                          f"last good snapshot, so nothing looks broken to visitors — that is "
                          f"exactly why this needs a human.")
 
+    # --- App fleet: the store side of the engine (2026-09-05) ---
+    # Until this section existed the digest could only see apps through their web pages.
+    # build-app-fleet-digest.py judges every store app nightly; this renders its verdicts
+    # so /growth shows "which apps are leaking" beside "which pages are ranking".
+    L.append("")
+    L.append("## 📱 App fleet (store signals → one verdict per app)")
+    fleet_fp = PROJECTS / "teamz-company-automation" / "data" / "app-fleet-verdicts.json"
+    try:
+        fleet = json.loads(fleet_fp.read_text())
+    except FileNotFoundError:
+        fleet = None
+        L.append("- ⚠️ **couldn't check** — no `data/app-fleet-verdicts.json`. The app fleet job "
+                 "(`com.teamzlab.app-fleet-nightly`, 10:30) has not run, or crashed before writing. NOT 'all clear'.")
+    except Exception as e:  # noqa: BLE001
+        fleet = None
+        L.append(f"- ⚠️ **couldn't check** — `app-fleet-verdicts.json` unreadable ({type(e).__name__}). NOT 'all clear'.")
+    if fleet:
+        counts = fleet.get("counts") or {}
+        gen = fleet.get("generated_at", "?")
+        L.append(f"- built {gen} · " + " · ".join(f"**{k}** {v}" for k, v in counts.items() if v))
+        blocked = [a for a in fleet.get("apps", []) if a.get("verdict") in ("RETENTION-BLOCKED", "CRASH-BLOCKED")]
+        starved = [a for a in fleet.get("apps", []) if a.get("verdict") == "RATINGS-STARVED"]
+        grow = [a for a in fleet.get("apps", []) if a.get("verdict") == "GROW"]
+        unmeasured = [a for a in fleet.get("apps", []) if a.get("verdict") == "UNMEASURED"]
+        if blocked:
+            L.append("- 🔴 **BLOCKED — traffic to these is wasted until fixed:** " +
+                     "; ".join(f"`{a['slug']}` ({a['reason'][:70]})" for a in blocked[:6]))
+        if starved:
+            L.append("- 🟠 **ratings-starved:** " + ", ".join(f"`{a['slug']}`" for a in starved[:10]))
+        if grow:
+            L.append("- 🟢 **GROW (healthy — send the web slots here):** " + ", ".join(f"`{a['slug']}`" for a in grow[:10]))
+        if unmeasured:
+            L.append(f"- ⚠️ **{len(unmeasured)} UNMEASURED (unknown, not zero):** " +
+                     ", ".join(f"`{a['slug']}`" for a in unmeasured[:10]))
+        L.append("- full table: `teamz-company-automation/docs/app-fleet-digest.md` · briefs: `docs/app-fleet/<slug>.md`")
+
     # --- Deadlines the owner would otherwise have to remember ---
     # Deliberately LAST so it is the final thing read, and deliberately loud: the
     # owner's words were "I am super busy so I might forget them". The sentinel

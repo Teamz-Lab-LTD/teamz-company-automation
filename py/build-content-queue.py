@@ -1229,10 +1229,48 @@ def family_key(path):
     return _re.sub(r"[^a-z]+", "-", p).strip("-")
 
 
+def html_root(host):
+    """Where the BUILT pages live. Astro sites build into dist/ (TEAMZ_CONTENT_HTML_ROOT=dist);
+    static sites have index.html at the repo root. Cold-start and title_of read built HTML, and
+    both used the repo root unconditionally — so on every Astro property cold-start matched
+    nothing and title_of returned '' for every page, silently (found 2026-09-05)."""
+    return host / os.getenv("TEAMZ_CONTENT_HTML_ROOT", "")
+
+
+def fleet_verdicts():
+    """landing_path -> (verdict, weight) from the app fleet's nightly judgement.
+
+    build-app-fleet-digest.py (teamz-company-automation/data/app-fleet-verdicts.json) reads
+    every store app's installs, uninstalls, ratings, crash rate and ASO sentinels and says
+    GROW / ASO-DUE / RATINGS-STARVED / RETENTION-BLOCKED / CRASH-BLOCKED / UNMEASURED. This
+    queue used to be blind to all of it: it would polish the landing page of an app whose
+    users were uninstalling it that week. Bounded weights (x0.3..x1.5), never zero — a leaky
+    app still needs its page correct — and OFF, announced, when the file is older than 7 days
+    so a dead fleet job cannot freeze yesterday's opinion into every night after it.
+    """
+    fp = Path(__file__).resolve().parent.parent / "data" / "app-fleet-verdicts.json"
+    try:
+        d = json.loads(fp.read_text())
+        gen = datetime.strptime(d["generated_at"], "%Y-%m-%dT%H:%M:%SZ")
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as e:
+        print(f"  fleet verdicts: unavailable ({type(e).__name__}) — app pages ranked without them")
+        return {}
+    age_d = (datetime.utcnow() - gen).days
+    if age_d > 7:
+        print(f"  fleet verdicts: {age_d}d old — weighting OFF until the fleet job runs again")
+        return {}
+    out = {}
+    for a in d.get("apps", []):
+        lp = a.get("landing_path")
+        if lp:
+            out[lp] = (a.get("verdict", "UNMEASURED"), float(a.get("queue_multiplier", 1.0)))
+    return out
+
+
 def title_of(host, path):
     """The <title> a page currently ships, or '' — read from the built HTML on disk."""
     import re as _re
-    f = host / path.strip("/") / "index.html"
+    f = html_root(host) / path.strip("/") / "index.html"
     if not f.exists():
         return ""
     try:
@@ -1262,11 +1300,27 @@ def pool_coldstart(host, site_url, seen_paths, cooldown, deny_paths, max_out=3):
     and graduates into the normal pools, or it does not. Pushing it forever would just be a
     slower way of ignoring the signal.
     """
-    sm = host / "sitemap.xml"
-    if not sm.exists():
-        return []
     import re as _re
-    urls = _re.findall(r"<loc>([^<]+)</loc>", sm.read_text())
+    # The sitemap lives beside the built HTML. Astro writes sitemap-index.xml + sitemap-N.xml
+    # into dist/, so follow the index into its children; a static site has sitemap.xml at root.
+    root = html_root(host)
+    urls = []
+    for cand in (root / "sitemap.xml", host / "sitemap.xml", root / "sitemap-index.xml"):
+        if not cand.exists():
+            continue
+        text = cand.read_text(errors="ignore")
+        locs = _re.findall(r"<loc>([^<]+)</loc>", text)
+        if "<sitemapindex" in text:
+            for child in locs:
+                cf = root / child.rsplit("/", 1)[-1]
+                if cf.exists():
+                    urls.extend(_re.findall(r"<loc>([^<]+)</loc>", cf.read_text(errors="ignore")))
+        else:
+            urls.extend(locs)
+        break
+    if not urls:
+        print(f"  cold-start: no sitemap under {root} — pool empty (this is a finding, not a clean state)")
+        return []
 
     ledger = host / "data" / "coldstart-done.txt"
     done = set(ledger.read_text().split()) if ledger.exists() else set()
@@ -1302,7 +1356,7 @@ def pool_coldstart(host, site_url, seen_paths, cooldown, deny_paths, max_out=3):
             continue
         if path.startswith("/bn/"):
             continue                       # Bangla-script search demand is ~zero; do not spend here
-        if not (host / path.strip("/") / "index.html").exists():
+        if not (html_root(host) / path.strip("/") / "index.html").exists():
             continue                       # in the sitemap but not on disk — a different problem
         twins = [{"path": s, "title": title_of(host, s)}
                  for s in family.get(family_key(path), []) if s != path]
@@ -1790,6 +1844,24 @@ def main():
               f"(median {_med:.2f} per 1k sessions; {len(_sect)} section(s) calibrated) — "
               + ", ".join(f"{k}={v}" for k, v in sorted(_srcs.items())))
 
+    # APP FLEET VERDICTS -> the app's landing page moves up or down the ENHANCE list.
+    _fleet = fleet_verdicts()
+    if _fleet:
+        _hits = []
+        for t in enhance:
+            v = _fleet.get(t["path"])
+            if not v:
+                continue
+            verdict, w = v
+            t["fleet_verdict"] = verdict
+            t["fleet_weight"] = w
+            t["score"] = round(t["score"] * w, 1)
+            t["why"] = t.get("why", "") + f" [app fleet: {verdict} x{w}]"
+            _hits.append(f"{t['path']}={verdict}x{w}")
+        if _hits:
+            enhance.sort(key=lambda x: -x["score"])
+            print("  fleet verdicts applied to ENHANCE: " + ", ".join(_hits))
+
     existing = {e["path"] for e in enhance}
     # every page the property has ANY impression for — so NEW never duplicates a real page
     click_by_path = {}
@@ -1957,6 +2029,40 @@ def main():
             # Restore the pool's own ranking; the sort above was only to test containment
             # shortest-first, and must not become the order work is done in.
             new = [t for t in new if t in kept]
+        # NEW-ONLY deny list. TEAMZ_CONTENT_DENY_TOPICS also strips ENHANCE queries, so it
+        # cannot express "polish the service pages we have, but write no new service post
+        # here" — and that is the owner's rule (2026-08-26): blog posts about the agency
+        # belong on teamzlab.com. Substring match on the topic, like the main deny list.
+        deny_new = deny_list("TEAMZ_CONTENT_DENY_NEW_TOPICS")
+        if new and deny_new:
+            _kept = []
+            for t in new:
+                topic = str(t.get("topic", "")).lower()
+                hit = next((d for d in deny_new if d and d in topic), None)
+                if hit:
+                    print(f"  NEW refused: '{t.get('topic')}' matches DENY_NEW_TOPICS '{hit}' — "
+                          f"that content belongs on another property.")
+                    continue
+                _kept.append(t)
+            new = _kept
+
+        # APP FLEET VERDICTS -> a post that must link an app inherits the app's weight.
+        if new:
+            _fleet = _fleet if "_fleet" in dir() else fleet_verdicts()
+            touched = False
+            for t in new:
+                v = _fleet.get(t.get("must_link") or "")
+                if not v:
+                    continue
+                verdict, w = v
+                t["fleet_verdict"] = verdict
+                t["fleet_weight"] = w
+                t["score"] = round(float(t.get("score") or 0) * w, 1)
+                t["why"] = t.get("why", "") + f" [app fleet: {verdict} x{w}]"
+                touched = True
+                print(f"  fleet verdict on NEW '{t.get('topic')}' -> {t['must_link']} is {verdict} (x{w})")
+            if touched:
+                new.sort(key=lambda x: -float(x.get("score") or 0))
         new = new[:new_budget]
     else:
         new = []

@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import os
 import sys
 from datetime import date, timedelta
@@ -169,12 +170,14 @@ def cmd_bulk_reports(
         "missing_files": [],
     }
 
-    # Start at the first day of the LAST COMPLETED month — Play generates
-    # monthly bulk CSVs after the month closes, so the current month is not
-    # available until day 1 of next month.
-    cursor = (today.replace(day=1) - timedelta(days=1)).replace(day=1)
+    # The comment here used to say Play only writes a month's CSV after the month
+    # closes. Wrong: hazira's 202608 file existed on 2026-09-04 with rows through
+    # 08-21 — Play appends to the CURRENT month's file with a ~2-week lag. So try the
+    # current month too (a missing blob costs one 404 and lands in missing_files),
+    # then the ``months`` completed months before it.
+    cursor = today.replace(day=1)
     yyyymm_list: list[str] = []
-    for _ in range(months):
+    for _ in range(months + 1):
         yyyymm_list.append(cursor.strftime("%Y%m"))
         prev = (cursor - timedelta(days=1)).replace(day=1)
         cursor = prev
@@ -221,11 +224,64 @@ def cmd_bulk_reports(
             payload.setdefault("summary", {})["total_install_events"] = sum(
                 int(r.get("Install events", 0) or 0) for r in install_overview
             )
+            # Rows are appended newest-month-first, so install_overview[-1] is the
+            # OLDEST month's last day. Sort by date before reading "latest".
+            dated = sorted((r for r in install_overview if (r.get("Date") or "").strip()),
+                           key=lambda r: r["Date"])
+            latest = dated[-1] if dated else install_overview[-1]
             payload["summary"]["active_devices_latest"] = int(
-                install_overview[-1].get("Active Device Installs", 0) or 0
+                latest.get("Active Device Installs", 0) or 0
             )
+            payload["summary"]["data_through"] = latest.get("Date")
         except Exception:
             pass
+
+        # 28-day install/UNINSTALL roll-up for the fleet verdict. Added 2026-09-05:
+        # the uninstall columns were in every row already and no summary surfaced
+        # them, so the one number that explains a flat active-device count was
+        # invisible. "Daily User Uninstalls" is the per-user figure; the "events"
+        # columns count devices/re-installs and are the fallback when it is blank.
+        try:
+            def _i(r, *keys):
+                for k in keys:
+                    v = (r.get(k) or "").strip()
+                    if v not in ("", "0") or k == keys[-1]:
+                        try:
+                            return int(float(v or 0))
+                        except ValueError:
+                            return 0
+                return 0
+            through = payload["summary"].get("data_through")
+            if through:
+                import datetime as _dt
+                end = _dt.date.fromisoformat(through)
+                start = end - _dt.timedelta(days=27)
+                win = [r for r in dated if start.isoformat() <= r["Date"] <= end.isoformat()]
+                payload["summary"]["window_28d"] = {
+                    "start": start.isoformat(), "end": end.isoformat(), "days": len(win),
+                    "user_installs": sum(_i(r, "Daily User Installs", "Install events") for r in win),
+                    "user_uninstalls": sum(_i(r, "Daily User Uninstalls", "Uninstall events") for r in win),
+                    "install_events": sum(_i(r, "Install events") for r in win),
+                    "uninstall_events": sum(_i(r, "Uninstall events") for r in win),
+                }
+        except Exception as e:  # noqa: BLE001 — a roll-up bug must not lose the raw pull
+            payload["summary"]["window_28d_error"] = f"{type(e).__name__}: {e}"
+
+    reviews = payload.get("reviews") or []
+    if reviews:
+        try:
+            stars = []
+            for r in reviews:
+                try:
+                    stars.append(int(float((r.get("Star Rating") or "").strip() or 0)))
+                except ValueError:
+                    continue
+            stars = [x for x in stars if 1 <= x <= 5]
+            payload.setdefault("summary", {})["reviews_total"] = len(stars)
+            payload["summary"]["reviews_avg_star"] = round(sum(stars) / len(stars), 2) if stars else None
+            payload["summary"]["reviews_with_text"] = sum(1 for r in reviews if (r.get("Review Text") or "").strip())
+        except Exception as e:  # noqa: BLE001
+            payload["summary"]["reviews_error"] = f"{type(e).__name__}: {e}"
 
     if out is None:
         out = cfg["data_dir"] / f"play-bulk-reports-{package.replace('.', '-')}.json"
@@ -278,8 +334,28 @@ def cmd_report(cfg: dict, package: str, days: int, out: Optional[Path]) -> int:
         "pageSize": 100,
     }
     name = f"apps/{package}/crashRateMetricSet"
+
+    def _query(b):
+        return reporting.vitals().crashrate().query(name=name, body=b).execute()
+
     try:
-        resp = reporting.vitals().crashrate().query(name=name, body=body).execute()
+        try:
+            resp = _query(body)
+        except HttpError as e:
+            # The API names its own freshness in the 400 — "should be at most the current
+            # freshness 2026-09-02 00:00". A fixed 2-day lag is wrong whenever the run
+            # happens after local midnight or Play is slow; take the date it gives us and
+            # retry once instead of failing every app in the fleet (2026-09-05).
+            err = e.content.decode() if e.content else str(e)
+            m = re.search(r"current freshness (\d{4}-\d{2}-\d{2})", err) if e.resp.status == 400 else None
+            if not m:
+                raise
+            fresh = date.fromisoformat(m.group(1))
+            print(f"note: API freshness is {fresh}; retrying with that end date", file=sys.stderr)
+            new_start = fresh - timedelta(days=max(1, days) - 1)
+            body["timelineSpec"]["endTime"].update({"year": fresh.year, "month": fresh.month, "day": fresh.day})
+            body["timelineSpec"]["startTime"].update({"year": new_start.year, "month": new_start.month, "day": new_start.day})
+            resp = _query(body)
     except HttpError as e:
         err = e.content.decode() if e.content else str(e)
         print(f"ERROR: Play Developer Reporting API: {e.resp.status} {err[:800]}", file=sys.stderr)

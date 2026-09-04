@@ -42,6 +42,12 @@ PROPERTIES = {
     "tools": "teamzlab-tools",
 }
 
+# The APP side of the engine (2026-09-05). sh/app-fleet-nightly.sh pulls every store
+# app's signals at 10:30 and build-app-fleet-digest.py writes one verdict per app.
+# A fleet that stops running must alert exactly like a site nightly that stops —
+# before this, 17 of 18 apps had no monitor at all, so "silent" was the default.
+APP_FLEET_VERDICTS = ROOT / "teamz-company-automation" / "data" / "app-fleet-verdicts.json"
+
 
 def load(path):
     try:
@@ -97,10 +103,43 @@ def check_property(name, repo):
     return issues
 
 
+def check_app_fleet():
+    issues = []
+    fleet, err = load(APP_FLEET_VERDICTS)
+    if err:
+        return [f"app-fleet-verdicts.json {err} — the app fleet has never run or crashed before writing"]
+    ts = fleet.get("generated_at", "")
+    try:
+        gen = datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ")
+        age = datetime.utcnow() - gen
+        if age > timedelta(hours=STALE_HOURS):
+            issues.append(f"app fleet stale — verdicts built {int(age.total_seconds() // 3600)}h ago")
+    except ValueError:
+        issues.append(f"app fleet generated_at unparseable: {ts}")
+    counts = fleet.get("counts") or {}
+    apps = fleet.get("apps") or []
+    unmeasured = [a["slug"] for a in apps if a.get("verdict") == "UNMEASURED"]
+    if apps and len(unmeasured) == len(apps):
+        issues.append(f"ALL {len(apps)} apps UNMEASURED — a credential or the Play bucket is dead, not the apps")
+    elif len(unmeasured) > 3:
+        issues.append(f"{len(unmeasured)} apps UNMEASURED: {', '.join(unmeasured[:6])}")
+    stale = fleet.get("stale_pulls") or []
+    if len(stale) > 3:
+        issues.append(f"{len(stale)} apps not pulled in {STALE_HOURS}h: {', '.join(stale[:6])}")
+    blocked = counts.get("RETENTION-BLOCKED", 0) + counts.get("CRASH-BLOCKED", 0)
+    if blocked:
+        # Not a monitor failure — a business finding. Surface it once a night so the
+        # briefs in docs/app-fleet/ are read, not just written.
+        names = [a["slug"] for a in apps if a.get("verdict") in ("RETENTION-BLOCKED", "CRASH-BLOCKED")]
+        issues.append(f"{blocked} app(s) BLOCKED (retention/crash): {', '.join(names[:6])} — briefs in docs/app-fleet/")
+    return issues
+
+
 def main():
     report = {}
     for name, repo in PROPERTIES.items():
         report[name] = check_property(name, repo)
+    report["app-fleet"] = check_app_fleet()
 
     alerting = {k: v for k, v in report.items() if v}
 
@@ -158,7 +197,7 @@ def main():
             print(f"      {notify.WHATSAPP_ENV}")
             print(f"      or {notify.SMTP_ENV}  (both ship as .example)")
     else:
-        print("clean — all 4 properties healthy, no notification sent")
+        print(f"clean — {len(report)} checks healthy (4 properties + app fleet), no notification sent")
 
 
 if __name__ == "__main__":

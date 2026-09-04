@@ -1,0 +1,335 @@
+{
+  "_doc": "Fleet manifest for sh/app-fleet-nightly.sh + py/build-app-fleet-digest.py. One row per store app. play_package null = iOS-only. own_nightly=true means another launchd job already pulls this app's signals into data_dir (hazira: com.teamzlab.hazira-nightly) and the fleet only READS. crashlytics_slugs = names build-crashlytics-monitor.py uses for this app. hyper-toad package is a guess (no landing page, no env) \u2014 a bulk-reports 404 will mark it UNMEASURED, which is the honest state.",
+  "apps": [
+    {
+      "slug": "devicegpt",
+      "name": "DeviceGPT",
+      "play_package": "com.teamz.lab.debugger",
+      "asc_app_id": null,
+      "platforms": "android",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/debugger",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/debugger/automation_data",
+      "ga4_property_id": "481224245",
+      "landing_path": "/devicegpt/",
+      "crashlytics_slugs": [
+        "devicegpt"
+      ],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present (Play review-ktx, ReviewPromptManager.kt)",
+        "push": "OneSignal + WorkManager"
+      }
+    },
+    {
+      "slug": "hazira-khata",
+      "name": "Hazira Khata",
+      "play_package": "com.Teachers.HaziraKhataByGk",
+      "asc_app_id": null,
+      "platforms": "android",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/hazira-khata-attendance-sheet-android",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/hazira-khata-attendance-sheet-android/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/hazira-khata/",
+      "crashlytics_slugs": [
+        "hazira",
+        "hazira-khata"
+      ],
+      "own_nightly": true,
+      "hooks": {
+        "review_prompt": "present (InAppReviewManager.kt, gated)",
+        "push": "FCM + WorkManager"
+      }
+    },
+    {
+      "slug": "no-trace-chat",
+      "name": "No Trace Chat",
+      "play_package": "com.teamzlab.no_trace_code_chat",
+      "asc_app_id": "6758867181",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/no-trace-code-chat",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/no-trace-code-chat/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/no-trace-chat/",
+      "crashlytics_slugs": [
+        "no-trace-chat"
+      ],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present (in_app_review via kit)",
+        "push": "flutter_local_notifications only \u2014 no remote push"
+      }
+    },
+    {
+      "slug": "notetube-ai",
+      "name": "NoteTube AI",
+      "play_package": "com.teamzlab.notetube_ai",
+      "asc_app_id": "6774797964",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/notetube_ai",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/notetube_ai/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/notetube-ai/",
+      "crashlytics_slugs": [
+        "notetube-ai"
+      ],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present (single call site in main.dart)",
+        "push": "OneSignal + FCM"
+      }
+    },
+    {
+      "slug": "top3picks",
+      "name": "Top 3 Picks",
+      "play_package": "com.teamzlab.top3picks.top_3_picks",
+      "asc_app_id": "6759916887",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/top_3_picks",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/top_3_picks/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/top3picks/",
+      "crashlytics_slugs": [
+        "top3picks"
+      ],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present (kit, 3 call sites)",
+        "push": "NONE"
+      }
+    },
+    {
+      "slug": "toss",
+      "name": "Toss",
+      "play_package": "com.teamz.toss.toss",
+      "asc_app_id": "6739454718",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/toss_app",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/toss_app/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/toss/",
+      "crashlytics_slugs": [
+        "toss"
+      ],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present (kit, main + 4 tool screens)",
+        "push": "OneSignal"
+      }
+    },
+    {
+      "slug": "chopstick-landing-games",
+      "name": "Chopstick Landing Games",
+      "play_package": "com.teamz.lab.chopstick_landing_games",
+      "asc_app_id": "6739433404",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/chopstick_landing_games",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/chopstick_landing_games/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/chopstick-landing-games/",
+      "crashlytics_slugs": [
+        "chopstick"
+      ],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present (peak_review_prompt_sheet)",
+        "push": "OneSignal"
+      }
+    },
+    {
+      "slug": "arrow-jam-3d",
+      "name": "Arrow Jam 3D",
+      "play_package": "com.teamzlab.arrowescape3d",
+      "asc_app_id": "6778802226",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit/apps/arrow-escape-3d/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/arrow-jam-3d/",
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it",
+        "push": "OneSignal (kit-wide)"
+      }
+    },
+    {
+      "slug": "brimful",
+      "name": "Brimful",
+      "play_package": null,
+      "asc_app_id": "6780098161",
+      "platforms": "ios",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit/apps/brimful/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/brimful/",
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it",
+        "push": "OneSignal (kit-wide)"
+      }
+    },
+    {
+      "slug": "forty-thieves-solitaire",
+      "name": "Forty Thieves Solitaire",
+      "play_package": "com.teamzlab.fortythievessolitaire",
+      "asc_app_id": "6782218144",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit/apps/forty-thieves-solitaire/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/forty-thieves-solitaire/",
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it",
+        "push": "OneSignal (kit-wide)"
+      }
+    },
+    {
+      "slug": "goldmend",
+      "name": "Goldmend",
+      "play_package": "com.teamzlab.goldmend",
+      "asc_app_id": null,
+      "platforms": "android",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit/apps/goldmend/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/goldmend/",
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it",
+        "push": "OneSignal (kit-wide)"
+      }
+    },
+    {
+      "slug": "golf-solitaire",
+      "name": "Golf Solitaire",
+      "play_package": "com.teamzlab.golfsolitaire",
+      "asc_app_id": "6782107571",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit/apps/golf-solitaire/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/golf-solitaire/",
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it",
+        "push": "OneSignal (kit-wide)"
+      }
+    },
+    {
+      "slug": "scorpion-solitaire",
+      "name": "Scorpion Solitaire",
+      "play_package": "com.teamzlab.scorpionsolitaire",
+      "asc_app_id": "6782214325",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit/apps/scorpion-solitaire/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/scorpion-solitaire/",
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it",
+        "push": "OneSignal (kit-wide)"
+      }
+    },
+    {
+      "slug": "voltline",
+      "name": "Voltline",
+      "play_package": "com.teamzlab.voltline",
+      "asc_app_id": "6779659581",
+      "platforms": "both",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit/apps/voltline/automation_data",
+      "ga4_property_id": null,
+      "landing_path": "/voltline/",
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it",
+        "push": "OneSignal (kit-wide)"
+      }
+    },
+    {
+      "slug": "hyper-toad",
+      "name": "Hyper Toad",
+      "play_package": "com.teamzlab.hypertoad",
+      "asc_app_id": null,
+      "platforms": "android",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/teamz-webview-games/teamzlab-game-kit/apps/hyper-toad/automation_data",
+      "ga4_property_id": null,
+      "landing_path": null,
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": {
+        "review_prompt": "present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it",
+        "push": "OneSignal (kit-wide)"
+      }
+    },
+    {
+      "slug": "sleep-switch",
+      "name": "Sleep Switch",
+      "play_package": "com.teamzlab.sleep_switch",
+      "asc_app_id": null,
+      "platforms": "android",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/sleep-switch",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/sleep-switch/automation_data",
+      "ga4_property_id": null,
+      "landing_path": null,
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": null
+    },
+    {
+      "slug": "resume-coach",
+      "name": "Resume Coach",
+      "play_package": "com.teamzlab.airesumechecker",
+      "asc_app_id": null,
+      "platforms": "android",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/ai_resume_checker",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/ai_resume_checker/automation_data",
+      "ga4_property_id": null,
+      "landing_path": null,
+      "crashlytics_slugs": [
+        "ai-resume-checker"
+      ],
+      "own_nightly": false,
+      "hooks": null
+    },
+    {
+      "slug": "interview-boss-plus",
+      "name": "InterviewBoss+",
+      "play_package": "com.teamzlab.interviewbossplus",
+      "asc_app_id": null,
+      "platforms": "android",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/interview-boss-plus",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/interview-boss-plus/automation_data",
+      "ga4_property_id": null,
+      "landing_path": null,
+      "crashlytics_slugs": [],
+      "own_nightly": false,
+      "hooks": null
+    },
+    {
+      "slug": "zoyiai",
+      "name": "Zoyi AI",
+      "play_package": "com.teamzlab.zoyiai",
+      "asc_app_id": null,
+      "platforms": "android",
+      "repo": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/zoyiai",
+      "data_dir": "/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects/zoyiai/automation_data",
+      "ga4_property_id": null,
+      "landing_path": null,
+      "crashlytics_slugs": [
+        "zoyiai"
+      ],
+      "own_nightly": false,
+      "hooks": null
+    }
+  ]
+}

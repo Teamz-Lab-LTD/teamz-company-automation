@@ -89,62 +89,9 @@ STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 STATUS_FILE="$TEAMZ_DATA_DIR/nightly-app-status.json"
 STEPS=()
 
-record() { STEPS+=("$1=$2"); }
-
-# Run a step, never let one failure kill the night. A store API that is briefly
-# unreachable must not cost the other five signals; the status file records
-# which ones failed so the digest and a human can see it.
-# A step that fails must leave EVIDENCE. This used to run every command with
-# `>/dev/null 2>&1`, so a failure printed one rc and threw the reason away — five
-# steps on hazira-khata failed every night for weeks (listing x2, vitals,
-# ledger-integrity, bulk-reports) and no log anywhere said why. Running the same
-# command by hand, and under launchd's exact environment, both exited 0, so the
-# swallowed output WAS the whole investigation.
-#
-# Output now goes to logs/steps/<name>.log, and on failure the last few lines are
-# echoed inline so the nightly log itself carries the reason. Still never fatal: a
-# store API that is briefly unreachable must not cost the other signals.
-step() {
-  local name="$1"; shift
-  local safe="${name//[^A-Za-z0-9._-]/_}"
-  local step_log="$LOG_DIR/steps/$safe.log"
-  mkdir -p "$LOG_DIR/steps"
-  echo "--> $name"
-  local rc=0
-  "$@" >"$step_log" 2>&1 || rc=$?
-  if [ "$rc" -eq 0 ]; then
-    echo "    ok"; record "$name" "ok"
-  else
-    echo "    FAILED (rc=$rc) — continuing; last lines of $step_log:"
-    tail -n 12 "$step_log" 2>/dev/null | sed 's/^/      | /'
-    record "$name" "failed"
-  fi
-}
-
-skip() { echo "--> $1"; echo "    skipped: $2"; record "$1" "skipped:$2"; }
-
-write_status() {
-  local rc="$1"
-  python3 - "$STATUS_FILE" "$rc" "$SLUG" "$LABEL" "$STARTED_AT" "${STEPS[@]:-}" <<'PY'
-import json, sys, datetime
-path, rc, slug, label, started = sys.argv[1:6]
-steps = {}
-for pair in sys.argv[6:]:
-    if "=" in pair:
-        k, v = pair.split("=", 1)
-        steps[k] = v
-json.dump({
-    "app": slug,
-    "label": label,
-    "started_at": started,
-    "finished_at": datetime.datetime.now(datetime.timezone.utc)
-        .strftime("%Y-%m-%dT%H:%M:%SZ"),
-    "exit_code": int(rc),
-    "steps": steps,
-}, open(path, "w"), indent=2)
-print(f"status -> {path}")
-PY
-}
+# step / skip / write_status live in sh/lib/app-steps.sh so the fleet runner
+# (sh/app-fleet-nightly.sh) writes the identical status shape. Same globals.
+. "$AUTOMATION/sh/lib/app-steps.sh"
 
 LOG_DIR="$ROOT/logs"; mkdir -p "$LOG_DIR"
 PLIST_PATH="$HOME/Library/LaunchAgents/$LABEL.plist"
@@ -305,8 +252,7 @@ fi
 # "done (failures: 1)" and looked like a single blip. Every consumer only tests
 # `exit_code != 0`, so a real count keeps working for them and stops the summary
 # understating the damage to the human reading it.
-FAILED=0
-for s in "${STEPS[@]:-}"; do case "$s" in *=failed) FAILED=$((FAILED + 1));; esac; done
+FAILED="$(count_failed_steps)"
 write_status "$FAILED"
 echo "=== done (failures: $FAILED) ==="
 exit 0

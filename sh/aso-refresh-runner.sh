@@ -63,39 +63,40 @@ if [ "$FORCE_FLAG" = "--force" ]; then
 fi
 
 # ----- App slug mapping ------------------------------------------------------
-# Add new apps here. Keep one APP_DIR per slug.
+# Resolved from data/app-fleet.json (2026-09-05). The old hardcoded `case` knew 5
+# apps; the fleet has 19, and the 7 game-kit slugs share one repo but each own a
+# different Play package and data dir — which a repo-only mapping cannot express.
+# Old aliases (debugger, toss_app, top_3_picks, ntc) still resolve via the repo
+# basename so existing muscle memory keeps working.
 
 PROJECTS_ROOT="/Users/mdgolamkibriaemon/Projects/Teamz Lab Projects/teamz-projects"
+FLEET_MANIFEST="$(cd "$(dirname "$0")/.." && pwd)/data/app-fleet.json"
 APP_DIR=""
 APP_CANONICAL=""
+APP_DATA_DIR_RESOLVED=""
+APP_PLAY_PACKAGE=""
+APP_ASC_ID=""
 
-case "$APP_SLUG_RAW" in
-  devicegpt|debugger)
-    APP_DIR="$PROJECTS_ROOT/debugger"
-    APP_CANONICAL="devicegpt"
-    ;;
-  toss|toolz|toss_app)
-    APP_DIR="$PROJECTS_ROOT/toss_app"
-    APP_CANONICAL="toss_app"
-    ;;
-  top3picks|top_3_picks)
-    APP_DIR="$PROJECTS_ROOT/top_3_picks"
-    APP_CANONICAL="top_3_picks"
-    ;;
-  no-trace-chat|ntc)
-    APP_DIR="$PROJECTS_ROOT/no-trace-code-chat"
-    APP_CANONICAL="no-trace-chat"
-    ;;
-  zoyiai)
-    APP_DIR="$PROJECTS_ROOT/zoyiai"
-    APP_CANONICAL="zoyiai"
-    ;;
-  *)
-    echo "ERROR: unknown app slug '$APP_SLUG_RAW'" >&2
-    echo "  known: devicegpt|debugger toss|toolz|toss_app top3picks|top_3_picks no-trace-chat|ntc zoyiai" >&2
-    exit 2
-    ;;
-esac
+_resolved="$(python3 - "$APP_SLUG_RAW" "$FLEET_MANIFEST" <<'PY'
+import json, os, sys
+raw, manifest = sys.argv[1], sys.argv[2]
+aliases = {"debugger": "devicegpt", "toolz": "toss", "toss_app": "toss", "top_3_picks": "top3picks",
+           "ntc": "no-trace-chat", "arrow-escape-3d": "arrow-jam-3d", "notetube_ai": "notetube-ai",
+           "ai_resume_checker": "resume-coach", "interviewboss": "interview-boss-plus"}
+want = aliases.get(raw, raw)
+try:
+    apps = json.load(open(manifest))["apps"]
+except Exception as e:  # noqa: BLE001
+    print(f"ERROR: cannot read {manifest}: {e}", file=sys.stderr); sys.exit(2)
+for a in apps:
+    if a["slug"] == want or os.path.basename(a["repo"]) == raw:
+        print("\t".join([a["slug"], a["repo"], a["data_dir"], a.get("play_package") or "", a.get("asc_app_id") or ""]))
+        sys.exit(0)
+print("known: " + " ".join(a["slug"] for a in apps), file=sys.stderr)
+sys.exit(1)
+PY
+)" || { echo "ERROR: unknown app slug '$APP_SLUG_RAW' (see known list above)" >&2; exit 2; }
+IFS=$'\t' read -r APP_CANONICAL APP_DIR APP_DATA_DIR_RESOLVED APP_PLAY_PACKAGE APP_ASC_ID <<< "$_resolved"
 
 if [ ! -d "$APP_DIR" ]; then
   echo "ERROR: app dir does not exist: $APP_DIR" >&2
@@ -105,19 +106,35 @@ fi
 # ----- Submodule root + data dir --------------------------------------------
 
 SUBMODULE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-APP_DATA_DIR="$APP_DIR/automation_data"
+APP_DATA_DIR="${APP_DATA_DIR_RESOLVED:-$APP_DIR/automation_data}"
 mkdir -p "$APP_DATA_DIR"
 
 # TEAMZ_DATA_DIR for the children — per-app, never shared.
 export TEAMZ_DATA_DIR="$APP_DATA_DIR"
 
-# Load app env if present (TEAMZ_PLAY_PACKAGE_NAME, TEAMZ_APPLE_APP_ID, etc.)
-if [ -f "$APP_DIR/.teamz-automation.env" ]; then
-  set -a
-  # shellcheck disable=SC1090,SC1091
-  . "$APP_DIR/.teamz-automation.env"
-  set +a
-fi
+# Load app env if present (TEAMZ_PLAY_PACKAGE_NAME, TEAMZ_APPLE_APP_ID, etc.), then
+# the manifest's per-app ids on top. Both the shell AND _teamz_config.py (which
+# re-reads the env file with override=True) must see the same values, so the merged
+# copy is what TEAMZ_AUTOMATION_ENV points at. Without this every game-kit slug
+# inherited Arrow's package from the kit's shared env.
+_MERGED_ENV="$APP_DATA_DIR/aso-refresh/run.env"
+mkdir -p "$(dirname "$_MERGED_ENV")"
+{
+  if [ -f "$APP_DIR/.teamz-automation.env" ]; then cat "$APP_DIR/.teamz-automation.env"; fi
+  echo
+  echo "# --- manifest overrides (aso-refresh-runner.sh, last assignment wins) ---"
+  echo "TEAMZ_DATA_DIR=\"$APP_DATA_DIR\""
+  echo "TEAMZ_HOST_SITE_ROOT=\"$APP_DIR\""
+  echo "TEAMZ_APP_SLUG=\"$APP_CANONICAL\""
+  [ -n "$APP_PLAY_PACKAGE" ] && echo "TEAMZ_PLAY_PACKAGE_NAME=\"$APP_PLAY_PACKAGE\""
+  [ -n "$APP_ASC_ID" ] && { echo "TEAMZ_APPLE_APP_ID=\"$APP_ASC_ID\""; echo "TEAMZ_APP_IDS=\"$APP_ASC_ID\""; }
+} > "$_MERGED_ENV"
+set -a
+# shellcheck disable=SC1090,SC1091
+. "$_MERGED_ENV"
+set +a
+export TEAMZ_AUTOMATION_ENV="$_MERGED_ENV"
+export TEAMZ_DATA_DIR="$APP_DATA_DIR"
 
 # ----- Logging ---------------------------------------------------------------
 

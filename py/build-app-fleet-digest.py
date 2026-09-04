@@ -99,7 +99,10 @@ def read_bulk(data_dir: Path, pkg: str | None):
     rows = [r for r in (d.get("installs", {}).get("overview") or []) if (r.get("Date") or "").strip()]
     if not rows:
         missing = d.get("missing_files") or []
-        return None, f"no install rows ({len(missing)} bulk files missing)" if missing else "no install rows"
+        if missing:
+            return None, (f"Play's bulk bucket has no install CSVs for {pkg} ({len(missing)} files absent) — "
+                          f"the app is unpublished, under ~2 weeks old, or the package id is wrong")
+        return None, "no install rows"
     rows.sort(key=lambda r: r["Date"])
     end = dt.date.fromisoformat(rows[-1]["Date"])
     start = end - dt.timedelta(days=27)

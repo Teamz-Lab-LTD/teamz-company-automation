@@ -1,0 +1,977 @@
+{
+  "generated_at": "2026-09-04T21:14:14Z",
+  "counts": {
+    "RETENTION-BLOCKED": 2,
+    "CRASH-BLOCKED": 0,
+    "RATINGS-STARVED": 11,
+    "ASO-DUE": 2,
+    "GROW": 0,
+    "UNMEASURED": 4
+  },
+  "stale_pulls": [],
+  "apps": [
+    {
+      "slug": "zoyiai",
+      "name": "Zoyi AI",
+      "verdict": "RETENTION-BLOCKED",
+      "reason": "57 uninstalls vs 63 installs (90%) and active devices -4 in the 28d to 2026-08-21",
+      "next_action": "Stop buying traffic for it. Fix the first session + the D1 return hook (push: unknown). Measure D1 in GA4 (NONE \u2014 add a property).",
+      "queue_multiplier": 0.3,
+      "landing_path": null,
+      "platforms": "android",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 63,
+          "uninstalls_28d": 57,
+          "uninstall_ratio": 0.9,
+          "active_devices": 47,
+          "active_start_28d": 51,
+          "active_delta_28d": -4,
+          "active_delta_pct": -0.078,
+          "play_ratings": 0,
+          "play_avg_star": null,
+          "store_conversion": 0.12943632567849686,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": null,
+        "d1": null,
+        "refresh_age_days": {
+          "signal": null,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.0,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "ios": "no App Store id",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "devicegpt",
+      "name": "DeviceGPT",
+      "verdict": "RETENTION-BLOCKED",
+      "reason": "81 uninstalls vs 50 installs (162%) and active devices -35 in the 28d to 2026-08-21",
+      "next_action": "Stop buying traffic for it. Fix the first session + the D1 return hook (push: OneSignal + WorkManager). Measure D1 in GA4 (property 481224245).",
+      "queue_multiplier": 0.3,
+      "landing_path": "/devicegpt/",
+      "platforms": "android",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 50,
+          "uninstalls_28d": 81,
+          "uninstall_ratio": 1.62,
+          "active_devices": 395,
+          "active_start_28d": 430,
+          "active_delta_28d": -35,
+          "active_delta_pct": -0.081,
+          "play_ratings": 11,
+          "play_avg_star": 4.36,
+          "store_conversion": 0.2852664576802508,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": null,
+        "d1": 0.053,
+        "refresh_age_days": {
+          "signal": 7,
+          "android_rewrite": 53,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.4,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "ios": "no App Store id"
+        }
+      }
+    },
+    {
+      "slug": "no-trace-chat",
+      "name": "No Trace Chat",
+      "verdict": "RATINGS-STARVED",
+      "reason": "2 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present (in_app_review via kit). Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/no-trace-chat/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 112,
+          "uninstalls_28d": 103,
+          "uninstall_ratio": 0.92,
+          "active_devices": 75,
+          "active_start_28d": 65,
+          "active_delta_28d": 10,
+          "active_delta_pct": 0.154,
+          "play_ratings": 2,
+          "play_avg_star": 1.0,
+          "store_conversion": 0.2143845089903181,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 0,
+          "ios_avg_star": null
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 72,
+          "android_rewrite": 162,
+          "ios_rewrite": 92
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.4,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "scorpion-solitaire",
+      "name": "Scorpion Solitaire",
+      "verdict": "RATINGS-STARVED",
+      "reason": "0 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it. Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/scorpion-solitaire/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 68,
+          "uninstalls_28d": 58,
+          "uninstall_ratio": 0.85,
+          "active_devices": 20,
+          "active_start_28d": 6,
+          "active_delta_28d": 14,
+          "active_delta_pct": 2.333,
+          "play_ratings": 0,
+          "play_avg_star": null,
+          "store_conversion": 0.09812108559498957,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 0,
+          "ios_avg_star": null
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 76,
+          "android_rewrite": 76,
+          "ios_rewrite": 76
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.1,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "notetube-ai",
+      "name": "NoteTube AI",
+      "verdict": "RATINGS-STARVED",
+      "reason": "0 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present (single call site in main.dart). Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/notetube-ai/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 58,
+          "uninstalls_28d": 59,
+          "uninstall_ratio": 1.02,
+          "active_devices": 91,
+          "active_start_28d": 84,
+          "active_delta_28d": 7,
+          "active_delta_pct": 0.083,
+          "play_ratings": 0,
+          "play_avg_star": null,
+          "store_conversion": 0.3079470198675497,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 0,
+          "ios_avg_star": null
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 9,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.4,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "hyper-toad",
+      "name": "Hyper Toad",
+      "verdict": "RATINGS-STARVED",
+      "reason": "0 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it. Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": null,
+      "platforms": "android",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 25,
+          "uninstalls_28d": 10,
+          "uninstall_ratio": 0.4,
+          "active_devices": 18,
+          "active_start_28d": 3,
+          "active_delta_28d": 15,
+          "active_delta_pct": 5.0,
+          "play_ratings": 0,
+          "play_avg_star": null,
+          "store_conversion": 0.07453416149068323,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": null,
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 77,
+          "android_rewrite": 77,
+          "ios_rewrite": 77
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.1,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "ios": "no App Store id",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "forty-thieves-solitaire",
+      "name": "Forty Thieves Solitaire",
+      "verdict": "RATINGS-STARVED",
+      "reason": "0 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it. Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/forty-thieves-solitaire/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 21,
+          "uninstalls_28d": 20,
+          "uninstall_ratio": 0.95,
+          "active_devices": 5,
+          "active_start_28d": 4,
+          "active_delta_28d": 1,
+          "active_delta_pct": 0.25,
+          "play_ratings": 0,
+          "play_avg_star": null,
+          "store_conversion": 0.15254237288135594,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 0,
+          "ios_avg_star": null
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 54,
+          "android_rewrite": 21,
+          "ios_rewrite": 21
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.2,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "arrow-jam-3d",
+      "name": "Arrow Jam 3D",
+      "verdict": "RATINGS-STARVED",
+      "reason": "2 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it. Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/arrow-jam-3d/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 18,
+          "uninstalls_28d": 15,
+          "uninstall_ratio": 0.83,
+          "active_devices": 12,
+          "active_start_28d": 9,
+          "active_delta_28d": 3,
+          "active_delta_pct": 0.333,
+          "play_ratings": 2,
+          "play_avg_star": 5.0,
+          "store_conversion": 0.12886597938144329,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 0,
+          "ios_avg_star": null
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 54,
+          "android_rewrite": 21,
+          "ios_rewrite": 21
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.2,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "golf-solitaire",
+      "name": "Golf Solitaire",
+      "verdict": "RATINGS-STARVED",
+      "reason": "0 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it. Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/golf-solitaire/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 12,
+          "uninstalls_28d": 10,
+          "uninstall_ratio": 0.83,
+          "active_devices": 3,
+          "active_start_28d": 3,
+          "active_delta_28d": 0,
+          "active_delta_pct": 0.0,
+          "play_ratings": 0,
+          "play_avg_star": null,
+          "store_conversion": 0.10596026490066225,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 0,
+          "ios_avg_star": null
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 77,
+          "android_rewrite": 77,
+          "ios_rewrite": 77
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.2,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "toss",
+      "name": "Toss",
+      "verdict": "RATINGS-STARVED",
+      "reason": "3 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present (kit, main + 4 tool screens). Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/toss/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 9,
+          "uninstalls_28d": 4,
+          "uninstall_ratio": 0.44,
+          "active_devices": 16,
+          "active_start_28d": 12,
+          "active_delta_28d": 4,
+          "active_delta_pct": 0.333,
+          "play_ratings": 0,
+          "play_avg_star": null,
+          "store_conversion": 0.08609271523178808,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 3,
+          "ios_avg_star": 5.0
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": null,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.3,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "voltline",
+      "name": "Voltline",
+      "verdict": "RATINGS-STARVED",
+      "reason": "6 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it. Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/voltline/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 3,
+          "uninstalls_28d": 4,
+          "uninstall_ratio": 1.33,
+          "active_devices": 10,
+          "active_start_28d": 9,
+          "active_delta_28d": 1,
+          "active_delta_pct": 0.111,
+          "play_ratings": 1,
+          "play_avg_star": 5.0,
+          "store_conversion": 0.16326530612244897,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 5,
+          "ios_avg_star": 5.0
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 84,
+          "android_rewrite": 84,
+          "ios_rewrite": 84
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.1,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "top3picks",
+      "name": "Top 3 Picks",
+      "verdict": "RATINGS-STARVED",
+      "reason": "3 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present (kit, 3 call sites). Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/top3picks/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 0,
+          "uninstalls_28d": 0,
+          "uninstall_ratio": null,
+          "active_devices": 11,
+          "active_start_28d": 12,
+          "active_delta_28d": -1,
+          "active_delta_pct": -0.083,
+          "play_ratings": 0,
+          "play_avg_star": null,
+          "store_conversion": 0.034482758620689655,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 3,
+          "ios_avg_star": 5.0
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 27,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.3,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "brimful",
+      "name": "Brimful",
+      "verdict": "RATINGS-STARVED",
+      "reason": "0 ratings/reviews on record (need 10+ for social proof)",
+      "next_action": "Earn ratings before chasing installs. Review prompt: present in kit via JS bridge (game_webview_review_bridge.dart) \u2014 fires only if the GAME calls it. Fire it at the peak moment (a win, a completed task), never on launch.",
+      "queue_multiplier": 0.8,
+      "landing_path": "/brimful/",
+      "platforms": "ios",
+      "facts": {
+        "bulk": null,
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 0,
+          "ios_avg_star": null
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 54,
+          "android_rewrite": 21,
+          "ios_rewrite": 21
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.2,
+          "failed_steps": [],
+          "ok_steps": [
+            "ios-reviews",
+            "velocity"
+          ]
+        },
+        "errors": {
+          "bulk": "no Play package",
+          "vitals": "vitals.json missing",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "hazira-khata",
+      "name": "Hazira Khata",
+      "verdict": "ASO-DUE",
+      "reason": "never signal-pulled; Android rewrite floor open (never)",
+      "next_action": "`/aso-refresh hazira-khata` \u2014 the skill picks SIGNAL_ONLY vs FULL_REWRITE from the sentinels.",
+      "queue_multiplier": 1.0,
+      "landing_path": "/hazira-khata/",
+      "platforms": "android",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 1053,
+          "uninstalls_28d": 973,
+          "uninstall_ratio": 0.92,
+          "active_devices": 1309,
+          "active_start_28d": 998,
+          "active_delta_28d": 311,
+          "active_delta_pct": 0.312,
+          "play_ratings": 111,
+          "play_avg_star": 4.47,
+          "store_conversion": 0.44520930232558137,
+          "pulled_at": "2026-09-04"
+        },
+        "vitals": {
+          "date": "2026-08-31",
+          "crash_pct": 0.0,
+          "user_perceived_crash_pct": 0.0,
+          "distinct_users": 200
+        },
+        "ios": null,
+        "d1": null,
+        "refresh_age_days": {
+          "signal": null,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.hazira-nightly",
+          "age_hours": 17.0,
+          "failed_steps": [
+            "ledger-integrity",
+            "listing:bn-BD",
+            "listing:en-US",
+            "remote-config-drift"
+          ],
+          "ok_steps": [
+            "bulk-reports",
+            "competitors",
+            "play-reviews",
+            "vitals",
+            "youtube-keywords"
+          ]
+        },
+        "errors": {
+          "ios": "no App Store id",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "chopstick-landing-games",
+      "name": "Chopstick Landing Games",
+      "verdict": "ASO-DUE",
+      "reason": "signal 83d old; Android rewrite floor open (never); iOS rewrite floor open (never)",
+      "next_action": "`/aso-refresh chopstick-landing-games` \u2014 the skill picks SIGNAL_ONLY vs FULL_REWRITE from the sentinels.",
+      "queue_multiplier": 1.0,
+      "landing_path": "/chopstick-landing-games/",
+      "platforms": "both",
+      "facts": {
+        "bulk": {
+          "data_through": "2026-08-21",
+          "data_age_days": 15,
+          "window_days": 28,
+          "installs_28d": 680,
+          "uninstalls_28d": 699,
+          "uninstall_ratio": 1.03,
+          "active_devices": 802,
+          "active_start_28d": 800,
+          "active_delta_28d": 2,
+          "active_delta_pct": 0.003,
+          "play_ratings": 11,
+          "play_avg_star": 3.91,
+          "store_conversion": 0.11899119837508464,
+          "pulled_at": "2026-09-05"
+        },
+        "vitals": null,
+        "ios": {
+          "ios_reviews": 2,
+          "ios_avg_star": 5.0
+        },
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 83,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.3,
+          "failed_steps": [],
+          "ok_steps": [
+            "bulk-reports",
+            "ios-reviews",
+            "velocity",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "vitals": "vitals: no rows",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "goldmend",
+      "name": "Goldmend",
+      "verdict": "UNMEASURED",
+      "reason": "Play's bulk bucket has no install CSVs for com.teamzlab.goldmend (27 files absent) \u2014 the app is unpublished, under ~2 weeks old, or the package id is wrong; failed steps: velocity",
+      "next_action": "Run `bash sh/app-fleet-nightly.sh --only=goldmend` and read logs/app-fleet/goldmend/steps/.",
+      "queue_multiplier": 1.0,
+      "landing_path": "/goldmend/",
+      "platforms": "android",
+      "facts": {
+        "bulk": null,
+        "vitals": null,
+        "ios": null,
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 6,
+          "android_rewrite": 21,
+          "ios_rewrite": 21
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.2,
+          "failed_steps": [
+            "velocity"
+          ],
+          "ok_steps": [
+            "bulk-reports",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "bulk": "Play's bulk bucket has no install CSVs for com.teamzlab.goldmend (27 files absent) \u2014 the app is unpublished, under ~2 weeks old, or the package id is wrong",
+          "vitals": "vitals: no rows",
+          "ios": "no App Store id",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "sleep-switch",
+      "name": "Sleep Switch",
+      "verdict": "UNMEASURED",
+      "reason": "Play's bulk bucket has no install CSVs for com.teamzlab.sleep_switch (27 files absent) \u2014 the app is unpublished, under ~2 weeks old, or the package id is wrong; failed steps: velocity, vitals",
+      "next_action": "Run `bash sh/app-fleet-nightly.sh --only=sleep-switch` and read logs/app-fleet/sleep-switch/steps/.",
+      "queue_multiplier": 1.0,
+      "landing_path": null,
+      "platforms": "android",
+      "facts": {
+        "bulk": null,
+        "vitals": null,
+        "ios": null,
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 3,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.1,
+          "failed_steps": [
+            "velocity",
+            "vitals"
+          ],
+          "ok_steps": [
+            "bulk-reports"
+          ]
+        },
+        "errors": {
+          "bulk": "Play's bulk bucket has no install CSVs for com.teamzlab.sleep_switch (27 files absent) \u2014 the app is unpublished, under ~2 weeks old, or the package id is wrong",
+          "vitals": "vitals.json missing",
+          "ios": "no App Store id",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "resume-coach",
+      "name": "Resume Coach",
+      "verdict": "UNMEASURED",
+      "reason": "Play's bulk bucket has no install CSVs for com.teamzlab.airesumechecker (27 files absent) \u2014 the app is unpublished, under ~2 weeks old, or the package id is wrong; failed steps: velocity",
+      "next_action": "Run `bash sh/app-fleet-nightly.sh --only=resume-coach` and read logs/app-fleet/resume-coach/steps/.",
+      "queue_multiplier": 1.0,
+      "landing_path": null,
+      "platforms": "android",
+      "facts": {
+        "bulk": null,
+        "vitals": null,
+        "ios": null,
+        "d1": null,
+        "refresh_age_days": {
+          "signal": 0,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.1,
+          "failed_steps": [
+            "velocity"
+          ],
+          "ok_steps": [
+            "bulk-reports",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "bulk": "Play's bulk bucket has no install CSVs for com.teamzlab.airesumechecker (27 files absent) \u2014 the app is unpublished, under ~2 weeks old, or the package id is wrong",
+          "vitals": "vitals: no rows",
+          "ios": "no App Store id",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    },
+    {
+      "slug": "interview-boss-plus",
+      "name": "InterviewBoss+",
+      "verdict": "UNMEASURED",
+      "reason": "Play's bulk bucket has no install CSVs for com.teamzlab.interviewbossplus (27 files absent) \u2014 the app is unpublished, under ~2 weeks old, or the package id is wrong; failed steps: velocity",
+      "next_action": "Run `bash sh/app-fleet-nightly.sh --only=interview-boss-plus` and read logs/app-fleet/interview-boss-plus/steps/.",
+      "queue_multiplier": 1.0,
+      "landing_path": null,
+      "platforms": "android",
+      "facts": {
+        "bulk": null,
+        "vitals": null,
+        "ios": null,
+        "d1": null,
+        "refresh_age_days": {
+          "signal": null,
+          "android_rewrite": null,
+          "ios_rewrite": null
+        },
+        "crashlytics_critical": [],
+        "pull_status": {
+          "label": "com.teamzlab.app-fleet-nightly",
+          "age_hours": 0.0,
+          "failed_steps": [
+            "velocity"
+          ],
+          "ok_steps": [
+            "bulk-reports",
+            "vitals"
+          ]
+        },
+        "errors": {
+          "bulk": "Play's bulk bucket has no install CSVs for com.teamzlab.interviewbossplus (27 files absent) \u2014 the app is unpublished, under ~2 weeks old, or the package id is wrong",
+          "vitals": "vitals: no rows",
+          "ios": "no App Store id",
+          "d1": "no GA4 property in manifest"
+        }
+      }
+    }
+  ]
+}

@@ -119,6 +119,8 @@ export TEAMZ_DATA_DIR="$APP_DATA_DIR"
 # inherited Arrow's package from the kit's shared env.
 _MERGED_ENV="$APP_DATA_DIR/aso-refresh/run.env"
 mkdir -p "$(dirname "$_MERGED_ENV")"
+_BASE_ENV="${TEAMZ_BASE_ENV:-$HOME/.config/teamzlab/automation.base.env}"
+if [ -f "$_BASE_ENV" ]; then set -a; . "$_BASE_ENV"; set +a; fi
 {
   if [ -f "$APP_DIR/.teamz-automation.env" ]; then cat "$APP_DIR/.teamz-automation.env"; fi
   echo
@@ -126,6 +128,8 @@ mkdir -p "$(dirname "$_MERGED_ENV")"
   echo "TEAMZ_DATA_DIR=\"$APP_DATA_DIR\""
   echo "TEAMZ_HOST_SITE_ROOT=\"$APP_DIR\""
   echo "TEAMZ_APP_SLUG=\"$APP_CANONICAL\""
+  # An app env that says TEAMZ_PLAY_SERVICE_ACCOUNT_JSON= (empty) must not erase the base path.
+  [ -n "${TEAMZ_PLAY_SERVICE_ACCOUNT_JSON:-}" ] && echo "TEAMZ_PLAY_SERVICE_ACCOUNT_JSON=\"$TEAMZ_PLAY_SERVICE_ACCOUNT_JSON\""
   [ -n "$APP_PLAY_PACKAGE" ] && echo "TEAMZ_PLAY_PACKAGE_NAME=\"$APP_PLAY_PACKAGE\""
   [ -n "$APP_ASC_ID" ] && { echo "TEAMZ_APPLE_APP_ID=\"$APP_ASC_ID\""; echo "TEAMZ_APP_IDS=\"$APP_ASC_ID\""; }
 } > "$_MERGED_ENV"

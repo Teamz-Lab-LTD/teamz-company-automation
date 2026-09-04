@@ -67,6 +67,10 @@ run_app() {
     echo "TEAMZ_HOST_SITE_ROOT=\"$repo\""
     echo "TEAMZ_APP_SLUG=\"$slug\""
     echo "TEAMZ_PROJECT_TYPE=app"
+    # interview-boss-plus's env says TEAMZ_PLAY_SERVICE_ACCOUNT_JSON= (empty) and, last
+    # assignment winning, that erased the base env's path — every Play pull for it failed
+    # with "set TEAMZ_PLAY_SERVICE_ACCOUNT_JSON". Re-assert the fleet-wide credential.
+    [ -n "${TEAMZ_PLAY_SERVICE_ACCOUNT_JSON:-}" ] && echo "TEAMZ_PLAY_SERVICE_ACCOUNT_JSON=\"$TEAMZ_PLAY_SERVICE_ACCOUNT_JSON\""
     [ -n "$pkg" ] && echo "TEAMZ_PLAY_PACKAGE_NAME=\"$pkg\""
     [ -n "$asc" ] && { echo "TEAMZ_APP_IDS=\"$asc\""; echo "TEAMZ_APPLE_APP_ID=\"$asc\""; }
   } > "$run_env"

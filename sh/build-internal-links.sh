@@ -10,7 +10,25 @@
 SCRIPTS="$(cd "$(dirname "$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")")" && pwd)"
 source "$SCRIPTS/lib/config.sh"
 teamz_load_config "$0"
+# Where the BUILT html lives. A static property (tools, goalkit, learn) builds in place, so
+# the repo root IS the html root. Astro properties build to dist/, and scanning the repo root
+# instead made this check resolve every link against a directory that has no built pages:
+# apps.teamzlab.com reported 250 "broken href links" and 58 "orphan pages" on 2026-09-04 while
+# every single one of them returned HTTP 200 live. It had scored 0/100 CRITICAL every night,
+# which is indistinguishable from having no link check at all — real breakage could never have
+# stood out. TEAMZ_CONTENT_HTML_ROOT already existed for exactly this and was simply not read
+# here. Relative values resolve against the repo root; absolute ones are honoured as given.
 BASE="$TEAMZ_HOST_SITE_ROOT"
+if [[ -n "${TEAMZ_CONTENT_HTML_ROOT:-}" ]]; then
+  case "$TEAMZ_CONTENT_HTML_ROOT" in
+    /*) BASE="$TEAMZ_CONTENT_HTML_ROOT" ;;
+    *)  BASE="$TEAMZ_HOST_SITE_ROOT/$TEAMZ_CONTENT_HTML_ROOT" ;;
+  esac
+fi
+if [[ ! -d "$BASE" ]]; then
+  echo "FATAL: html root $BASE does not exist — run the site build first, or fix TEAMZ_CONTENT_HTML_ROOT."
+  exit 2
+fi
 
 if [[ "${TEAMZ_PROJECT_TYPE:-website}" == "app" ]]; then
   echo "INFO: build-internal-links.sh is website-focused and disabled for TEAMZ_PROJECT_TYPE=app."

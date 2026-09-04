@@ -80,6 +80,7 @@ import datetime as dt
 import json
 import os
 import smtplib
+import socket
 import ssl
 import subprocess
 import sys
@@ -272,6 +273,11 @@ def fetch_top_issues(
         raise ApiError(e.code, e.read().decode("utf-8", "replace")) from None
     except urllib.error.URLError as e:
         raise ApiError(0, f"network: {e.reason}") from None
+    except (socket.timeout, TimeoutError, OSError) as e:
+        # A READ timeout is raised as socket.timeout, not URLError, so it escaped this
+        # handler and took the whole monitor down with a traceback (exit 1, every day
+        # from 2026-09-04). One slow response must not blind the fleet.
+        raise ApiError(0, f"network: {e.__class__.__name__}: {e}") from None
 
     issues: list[dict] = []
     for group in payload.get("groups", []) or []:
@@ -320,6 +326,23 @@ def fetch_with_retry(
     except ApiError as e:
         if e.status == 404:
             raise NoCrashlyticsData(app_id) from None
+
+        if e.status == 0:
+            # Transient network failure (timeout, reset). Bounded retry with backoff;
+            # if it still fails the caller records this target as unreachable and
+            # moves on — it never aborts the run.
+            for wait in (15, 30, 45):
+                log(f"    network error ({e.body}); retrying in {wait}s")
+                time.sleep(wait)
+                try:
+                    return fetch_top_issues(tokens.get(), project_id, app_id, start, end)
+                except ApiError as e2:
+                    if e2.status == 404:
+                        raise NoCrashlyticsData(app_id) from None
+                    if e2.status != 0:
+                        raise
+                    e = e2
+            raise
 
         if e.status == 401:
             log("    token expired mid-run; re-minting and retrying")

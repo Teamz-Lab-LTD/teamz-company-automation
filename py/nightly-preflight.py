@@ -273,6 +273,63 @@ def check_shared_env_contracts(root):
             f"_teamz_geo.py (ID_TO_NAME / NAME_TO_ID / CODE_TO_ID) or unset it.")
 
 
+def check_content_agent_env(root):
+    """The content agent's own env vars must be usable BEFORE the agent is launched.
+
+    2026-09-01..09-03, apps.teamzlab.com: five variables were written with the
+    explanatory comment INSIDE the quotes —
+
+        TEAMZ_CONTENT_ENHANCE_CAP="4        # pages polished per night"
+        TEAMZ_CONTENT_MODEL_NEW="opus       # writing that has to win Upwork clients"
+
+    so the value carried the comment with it. build-content-queue.py died on
+    `int("4        # pages polished per night")`, and the agent was handed the model
+    name "opus       # writing that has to win Upwork clients", which does not exist.
+    Content produced nothing for three nights. TEAMZ_KW_GEO in the same file has its
+    comment correctly OUTSIDE the quotes, which is exactly what made the mistake easy
+    to miss. learn.teamzlab.com had six variables in the same shape and had not
+    committed content since 2026-08-27.
+
+    Worse than the outage: apps still recorded exit_code 0 with
+    `"content": "failed:exit-1"` buried in the status file, and learn recorded
+    `"content": "ok"`. Nothing shouted on either. Same class as the TEAMZ_KW_GEO
+    outage above — a config value no consumer can parse must never reach a phase that
+    fails inside a subprocess and gets written off as transient.
+
+    An int var must parse as an int; a model var must be a bare model name.
+    """
+    int_vars = ("TEAMZ_CONTENT_ENHANCE_CAP", "TEAMZ_CONTENT_NEW_CAP",
+                "TEAMZ_CONTENT_COOLDOWN", "TEAMZ_CONTENT_MIN_IMPR",
+                "TEAMZ_PILOT_CADENCE_DAYS", "TEAMZ_PILOT_IMPR_FLOOR",
+                "TEAMZ_PILOT_EXPAND_PER_WEEK", "TEAMZ_RADAR_MAX_ACTIVE_PILOTS")
+    for name in int_vars:
+        raw = os.getenv(name)
+        if raw is None or raw.strip() == "":
+            continue  # unset is legal — each consumer documents its own default
+        try:
+            int(raw.strip())
+        except ValueError:
+            raise CheckFail(
+                "content-env-not-an-int",
+                f"{name}={raw!r} is not an integer. The script that reads it calls "
+                f"int() and dies, its phase is skipped, and the night still exits 0. "
+                f"If you meant to annotate it, put the comment OUTSIDE the quotes: "
+                f"{name}=\"4\"   # like this")
+
+    for name in ("TEAMZ_CONTENT_MODEL_ENHANCE", "TEAMZ_CONTENT_MODEL_NEW"):
+        raw = os.getenv(name)
+        if raw is None or raw.strip() == "":
+            continue
+        val = raw.strip()
+        if "#" in val or " " in val or "\t" in val:
+            raise CheckFail(
+                "content-env-model-malformed",
+                f"{name}={raw!r} is not a bare model name. It is passed straight to "
+                f"`claude --model`, which answers \"There's an issue with the selected "
+                f"model\" and exits 1 — twice, because the runner retries it as a "
+                f"transient error. Put any comment OUTSIDE the quotes.")
+
+
 # --------------------------------------------------------------------------- runners
 def check_dns_was_available(root):
     """Did name resolution work DURING the run?
@@ -334,7 +391,7 @@ def check_dns_was_available(root):
 
 
 PRE = [check_root_is_real, check_manual_volume_coverage, check_min_html, check_tokens_present,
-       check_shared_env_contracts]
+       check_shared_env_contracts, check_content_agent_env]
 POST = [check_content_queue_parses, check_status_freshness, check_dns_was_available]
 
 

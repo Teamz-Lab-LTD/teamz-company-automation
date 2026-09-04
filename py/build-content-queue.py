@@ -412,6 +412,49 @@ def deny_list(env_key):
     return [s.strip().lower() for s in raw.split(",") if s.strip()]
 
 
+def redirected_paths(host):
+    """Paths this site 301s away, read from public/.htaccess — never a queue target.
+
+    GSC keeps reporting a redirected URL for weeks after the redirect ships, because the
+    rows are historical and Google consolidates slowly. The queue read those rows as live
+    pages and proposed work on them: on 2026-09-04 it queued TWO NEW posts whose stated
+    justification was "Google serves it today with: /vibe-coding-consultants/" — a URL
+    that had 301'd to /vibe-coding-agency/ since 2026-08-13. Writing new pages into a
+    cluster that was just deliberately consolidated is the exact opposite of the fix, and
+    the cluster it would have grown was already 3 pages sharing ~1,500 impressions and
+    ZERO clicks.
+
+    Editing a redirected page is equally wasted: the file still builds, so an edit looks
+    successful, but no visitor can ever reach it.
+
+    Returned lowercased and substring-shaped so they drop straight into deny_paths, which
+    every pool already honours.
+    """
+    ht = Path(host) / "public" / ".htaccess"
+    if not ht.exists():
+        return []
+    out = []
+    for line in ht.read_text(errors="ignore").splitlines():
+        s = line.strip()
+        if s.startswith("#") or "redirectmatch" not in s.lower():
+            continue
+        parts = s.split()
+        if len(parts) < 3:
+            continue
+        # RedirectMatch [status] <pattern> <target>
+        pat = parts[2] if parts[1].isdigit() else parts[1]
+        # deny_paths is matched as a SUBSTRING, so only whole-subtree rules are safe to
+        # return. `^/vibe-coding-consultants(/.*)?$` redirects the segment and everything
+        # under it, so the substring "/vibe-coding-consultants/" can never over-match.
+        # `^/hazira-khata/?$` redirects ONLY that exact URL — /hazira-khata/tutorials/*
+        # are live pages, and returning the bare prefix here would have denied every one
+        # of them. Under-deny rather than silently starve a live section.
+        m = re.match(r"\^/([A-Za-z0-9._-]+)\(/\.\*\)\?\$$", pat)
+        if m:
+            out.append(f"/{m.group(1).lower()}/")
+    return sorted(set(out))
+
+
 def denied(text, patterns):
     t = text.lower()
     return any(p in t for p in patterns)
@@ -856,7 +899,8 @@ def update_retarget_ledger(ledger, chosen):
                                        + timedelta(days=RETARGET_EXHAUST_COOLDOWN_DAYS)).isoformat()
 
 
-def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics, kw_vol=None):
+def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics, kw_vol=None,
+             deny_paths=()):
     """Proven demand with NO page behind it.
 
     A true gap is NOT simply "a query we rank badly for" — every query we get impressions
@@ -969,6 +1013,15 @@ def pool_new(prop, token, site_url, min_impr, existing_paths, deny_topics, kw_vo
         # a 50k/mo head term on a small site that is a guaranteed loss and a wasted NEW-post slot.
         if win and win["vanity"]:
             vanity_skipped.append((q, win["vol"], round(pos, 1)))
+            continue
+
+        # If the page Google currently serves for this query is one we 301 away, the whole
+        # premise of a NEW post ("real demand, no page serving it") is false — the demand
+        # already belongs to the redirect TARGET, and adding a page re-splits the cluster
+        # that the redirect was created to consolidate. 2026-09-04: this pool proposed two
+        # new pages for 'vibecoding fixing services' and 'vibecoding service and repair',
+        # both justified by /vibe-coding-consultants/, which had 301'd three weeks earlier.
+        if rp and deny_paths and denied(rp, deny_paths):
             continue
 
         t = {
@@ -1566,6 +1619,12 @@ def main():
     cool = cooldown_paths(host, args.cooldown)
     deny_paths = deny_list("TEAMZ_CONTENT_DENY_PATHS")
     deny_topics = deny_list("TEAMZ_CONTENT_DENY_TOPICS")
+    # A 301'd URL is not a page. GSC still reports it for weeks, so it must be denied
+    # explicitly or the queue proposes work no visitor can ever reach.
+    _redirected = redirected_paths(host)
+    if _redirected:
+        deny_paths = sorted(set(deny_paths) | set(_redirected))
+        print(f"  redirected : {_redirected}  (auto-denied — 301s, not pages)")
     if deny_paths or deny_topics:
         print(f"  deny paths : {deny_paths or '—'}")
         print(f"  deny topics: {deny_topics or '—'}")
@@ -1707,7 +1766,8 @@ def main():
     # pool_new returns BOTH: the queries with no page behind them (NEW), and the queries it
     # refused to write a post for because a page we already own is about them (RETARGET).
     new, retarget, vanity_skipped = pool_new(prop, token, site_url, args.min_impressions,
-                                             existing, deny_topics, kw_vol=kw_vol)
+                                             existing, deny_topics, kw_vol=kw_vol,
+                                             deny_paths=deny_paths)
 
     # A QUERY WE ARE ALREADY SPLITTING IS NOT AN UNSERVED GAP.
     # pool_new's demand-gap test is "impressions are real AND our best position is >= 25" —

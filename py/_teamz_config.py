@@ -23,13 +23,27 @@ def _load_env_file(path: Path, *, override: bool = False) -> None:
         #     TEAMZ_CONTENT_MIN_IMPR=100    # keeps the queue out of the noise
         # became the literal string "100    # keeps the queue out of the noise" and every
         # int() of it blew up (or, worse, a string compare silently did the wrong thing).
-        # Only strip when the '#' is unquoted and preceded by whitespace, so a value that
-        # legitimately contains '#' (a colour, a URL fragment) survives.
-        if not (v.startswith('"') or v.startswith("'")):
+        #
+        # 2026-09-04: the quoted form was still broken. The old code skipped the comment
+        # strip whenever the value STARTED with a quote and then called .strip('"'), so
+        #     TEAMZ_CONTENT_ENHANCE_CAP="4"   # pages polished per night
+        # lost only its leading quote and yielded '4"   # pages polished per night'.
+        # That is the MORE correct shell form and bash sources it fine, so the env file
+        # looked right and only the Python consumers died.
+        #
+        # Parse it the way a shell does: if the value opens with a quote, take exactly what
+        # is inside the matching close quote and discard the remainder of the line. A value
+        # that legitimately contains '#' (a colour, a URL fragment) therefore survives when
+        # quoted, and an unquoted value keeps the old " #" rule.
+        if v[:1] in ('"', "'"):
+            quote = v[0]
+            end = v.find(quote, 1)
+            v = v[1:end] if end != -1 else v[1:]
+        else:
             hash_at = v.find(" #")
             if hash_at != -1:
                 v = v[:hash_at].rstrip()
-        v = v.strip('"').strip("'")
+            v = v.strip('"').strip("'")
         # Match shell `source`: expand $HOME and other env refs in .env values.
         v = os.path.expandvars(os.path.expanduser(v))
         if not k:

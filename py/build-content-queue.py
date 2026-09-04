@@ -373,12 +373,40 @@ def tokens(text):
     return {_stem(w) for w in keep.split() if len(w) > 2 and w not in STOPWORDS}
 
 
+def _squash(text):
+    """Lowercase alphanumerics only — spacing and hyphens removed."""
+    return "".join(c for c in text.lower() if c.isalnum())
+
+
 def overlap(a, b):
-    """Fraction of a's meaningful tokens that b also contains. 0.0-1.0."""
+    """Fraction of a's meaningful tokens that b also contains. 0.0-1.0.
+
+    A CONCATENATED spelling used to defeat this completely. Tokenising stems each word
+    separately, so:
+
+        'vibecoding repair services' -> {'vibecod', 'repair', 'servic'}
+        'vibe-coding-repair'         -> {'vibe',    'cod',    'repair'}
+        overlap = 0.33, under SIMILARITY_KILL = 0.5
+
+    'vibecod' and 'vibe'+'cod' can never match, so a query missing one space read as a brand-new
+    topic for a page we already own. Measured on apps.teamzlab.com 2026-09-04: the single weekly
+    NEW slot went to 'vibecoding repair services', already served by /vibe-coding-repair/ — a
+    cluster of three pages holding ~1,500 impressions and 2 clicks in 90 days at positions 25-70,
+    while 14 of 18 app pages had no blog post behind them at all. 'vibecoding fixing services'
+    scored 0.0 against the same page.
+
+    So also compare the separator-free forms: when one is a substring of the other, it is the
+    same topic however it was spaced. Same normalisation family as the Bangla-blind
+    cannibalisation detector — a comparison is only as good as what it strips first.
+    """
     ta, tb = tokens(a), tokens(b)
     if not ta:
         return 0.0
-    return len(ta & tb) / len(ta)
+    tok = len(ta & tb) / len(ta)
+    sa, sb = _squash(a), _squash(b)
+    if sa and sb and len(sa) >= 8 and len(sb) >= 8 and (sa in sb or sb in sa):
+        return 1.0
+    return tok
 
 
 def is_navigational(q, site_url):
@@ -1765,10 +1793,31 @@ def main():
     existing = {e["path"] for e in enhance}
     # every page the property has ANY impression for — so NEW never duplicates a real page
     click_by_path = {}
+    impr_by_path = {}
     for r in gsc_query(prop, token, ["page"], days=90, row_limit=1000):
         p = url_to_path(r["keys"][0], site_url)
         existing.add(p)
         click_by_path[p] = click_by_path.get(p, 0) + int(r["clicks"])
+        impr_by_path[p] = impr_by_path.get(p, 0) + int(r["impressions"])
+
+    # PROVEN NON-CONVERTERS. A page with plenty of impressions and, over a full 90 days, not one
+    # click is not "an opportunity we have not reached yet" — it is a measured failure. Writing a
+    # NEW post whose own justification is "Google serves this query with <that page>" grows the
+    # cluster that already proved it cannot convert.
+    # apps.teamzlab.com, 2026-09-04: the single weekly NEW slot went to 'vibecoding repair
+    # services' (#41.9), served by /vibe-coding-repair/ — a cluster of THREE pages holding
+    # ~1,500 impressions and ZERO clicks across 90 days at positions 25-70. Meanwhile 14 of 18
+    # app pages had no blog post pointing at them at all, and pool_app_coverage — the mechanism
+    # behind the one app page that does earn non-brand traffic (/no-trace-chat/, 13 posts) — is
+    # 3rd choice and never reached.
+    # This does not re-order the pools. "Measured beats proxy" still holds; it just stops a
+    # measurement that says FAILURE from being read as demand.
+    NONCONV_MIN_IMPR = int(os.getenv("TEAMZ_CONTENT_NONCONVERTER_MIN_IMPR", "300"))
+    nonconverting = {p for p, i in impr_by_path.items()
+                     if i >= NONCONV_MIN_IMPR and click_by_path.get(p, 0) == 0}
+    if nonconverting:
+        print(f"  proven non-converters (>={NONCONV_MIN_IMPR} impr, 0 clicks / 90d): "
+              f"{sorted(nonconverting)}")
 
     # Cold-start reserves a slot or two for pages Google has never shown. Without it, a page
     # with no impressions can never enter the engine at all — see pool_coldstart.
@@ -1849,6 +1898,19 @@ def main():
         new = kept
 
     if new_budget:
+        # Drop demand-gap candidates that would feed a cluster already proved to earn nothing.
+        if new and nonconverting:
+            _kept = []
+            for t in new:
+                rp = t.get("serving_page_today")
+                if rp and rp in nonconverting:
+                    print(f"  NEW refused: '{t['topic']}' — Google serves it with {rp}, which has "
+                          f"{impr_by_path.get(rp, 0)} impressions and 0 clicks in 90 days. "
+                          f"Another page there grows a cluster that does not convert.")
+                    continue
+                _kept.append(t)
+            new = _kept
+
         # 2nd choice: net-new ground adjacent to what this site already converts. Only when
         # there is no measured gap — a proxy signal must never outrank a measured one.
         if not new:

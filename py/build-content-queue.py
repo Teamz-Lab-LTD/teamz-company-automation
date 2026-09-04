@@ -381,6 +381,30 @@ def overlap(a, b):
     return len(ta & tb) / len(ta)
 
 
+def is_navigational(q, site_url):
+    """A query where the searcher ALREADY knows us — there is no ranking upside to win.
+
+    Two shapes:
+      site:teamzlab.com      an operator search, not demand (165 impressions on
+                             apps.teamzlab.com across 39 pages, 0 clicks — our own auditing)
+      teamzlab               the bare brand. We rank #1.1 and #1.6 for it. Rewriting a page to
+                             rank better for our own name cannot add a visitor: everyone typing
+                             it has already found us.
+
+    Deliberately narrow — it matches the BARE brand only. 'hazira khata' is a product name that
+    happens to be the only term that app has, and we rank nowhere near #1 for it, so it must
+    stay a legitimate target. Same for 'teamz lab tools', which is brand + a real category word.
+
+    Reuses brand_tokens(), which already derives these from the domain for the NEW-post
+    expansion seeds — one definition of "our own name" for the whole queue.
+    """
+    ql = q.lower().strip()
+    if "site:" in ql:
+        return True
+    squashed = "".join(ch for ch in ql if ch.isalnum())
+    return squashed in brand_tokens(site_url)
+
+
 def looks_like_junk(q):
     """Not every query with impressions is DEMAND. Some are noise, and chasing noise is worse
     than doing nothing — it burns a night and teaches Google nothing.
@@ -795,11 +819,13 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
     # Confirmed on learn: 222 real striking-distance pages (position 5-25, real impressions
     # >=30) exist that Pass 1+2 combined find 3 of.
     anchor_query = {}
+    visible_rows = {}      # path -> EVERY visible query row, unfiltered by position
     for r in rows:
         page, query = r["keys"]
-        if looks_like_junk(query):
-            continue           # e.g. 'site:teamzlab.com' — a real top-impression row, not real demand
         path = url_to_path(page, site_url)
+        visible_rows.setdefault(path, []).append(r)
+        if looks_like_junk(query) or is_navigational(query, site_url):
+            continue           # e.g. 'site:teamzlab.com' — a real top-impression row, not real demand
         cur = anchor_query.get(path)
         if not cur or r["impressions"] > cur["impressions"]:
             anchor_query[path] = {"query": query, "impressions": r["impressions"]}
@@ -823,6 +849,27 @@ def pool_enhance(prop, token, site_url, cooldown, cfg_min_impr, deny_paths, deny
         # mattered most. Found and reported by the nightly agent that same night.
         if path in dead:
             continue
+        # THE PAGE-LEVEL AVERAGE CAN BE AN ARTEFACT, AND THE VISIBLE ROWS SAY SO.
+        # This pass assumes a page-level position of 5-25 means "page 1 is one push away",
+        # which holds only when GSC really is hiding the phrases. When it is NOT hiding them,
+        # the average can be a blend of terms we already own and long-tail we can never reach.
+        # apps.teamzlab.com, 2026-09-04: "/" was queued at a page-level #10.1 labelled
+        # 'teamzlab' — a query we rank #1.6 for. Its other visible rows were site:teamzlab.com
+        # (#3.0) and one-impression junk. Same for /teamz-lab-tools/ at #8.4, already #4.9 for
+        # its own name and #1.1 for the brand. Two of four ENHANCE slots went, every night, to
+        # pages with no reachable upside at all.
+        # So: when most of the page's impressions ARE visible, require that at least some of
+        # them sit in the striking band on a non-navigational query. If none do, the average is
+        # an artefact and there is nothing here to win.
+        vis = visible_rows.get(path, [])
+        vis_impr = sum(v["impressions"] for v in vis)
+        if vis and vis_impr >= 0.5 * impr:
+            winnable = sum(v["impressions"] for v in vis
+                           if 5 <= v["position"] <= 25
+                           and not is_navigational(v["keys"][1], site_url)
+                           and not looks_like_junk(v["keys"][1]))
+            if winnable == 0:
+                continue
         anchor = anchor_query.get(path)
         # A path with zero visible crossed-dimension rows has no query text to check against
         # deny_topics — deny_paths (path-based) still applies and is the primary safety net.

@@ -889,6 +889,20 @@ def main():
 
     cooldown_set = get_cooldown_slugs(host_root, args.cooldown)
     print(f"[enhance-queue] cooldown excludes {len(cooldown_set)} slugs from last {args.cooldown}d")
+    # Experiment freeze: data/enhance-freeze.json lists slugs the engine must not pick
+    # until a date — e.g. the 20 treated + 20 control pages of a hand-edit vs engine
+    # comparison. One engine edit on a control page voids the whole comparison, so
+    # this is a hard exclusion, not a score penalty. Expired or malformed file = no-op,
+    # printed so a silent expiry cannot be mistaken for protection.
+    freeze = safe_read_json(host_root / 'data' / 'enhance-freeze.json') or {}
+    frozen = set(freeze.get('slugs') or [])
+    if frozen:
+        until = str(freeze.get('until') or '')
+        if until and until < datetime.now().strftime('%Y-%m-%d'):
+            print(f"[enhance-queue] freeze file EXPIRED on {until} — {len(frozen)} slugs no longer protected")
+        else:
+            cooldown_set |= frozen
+            print(f"[enhance-queue] freeze excludes {len(frozen)} slugs until {until or 'unset'} ({freeze.get('reason','')})")
 
     errors = {}
     p1, e1 = pool_rising(host_root, cfg)
